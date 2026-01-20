@@ -133,6 +133,7 @@ void UpdateFishes(void)
 	{
 		if (pFishes[nCntFishes].bUse == true && pFishes[nCntFishes].bMoving == true)
 		{
+			//今の時点のstateを記録
 			OldState = pFishes[nCntFishes].state;
 
 			//それぞれのフラグ増加
