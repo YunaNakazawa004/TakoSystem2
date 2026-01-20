@@ -1,82 +1,71 @@
 //=============================================================================
 // 
-// 生き物ヘッダー [model.h]
+// 生き物ヘッダー [fishes.h]
 // Author : 中澤優奈
 // 
 //=============================================================================
-#ifndef _MODEL_H_		// このマクロ定義がされていなかったら
-#define _MODEL_H_		// 2重インクルード防止のマクロを定義する
+#ifndef _FISHES_H_		// このマクロ定義がされていなかったら
+#define _FISHES_H_		// 2重インクルード防止のマクロを定義する
 
 #include "main.h"
+#include "model.h"
 
 //*****************************************************************************
-// モーションの種類
-//*****************************************************************************
+// 生き物の状態
+//*****************************************************************************4
 typedef enum
 {
-	MOTIONTYPE_NEUTRAL = 0,		// 待機
-	MOTIONTYPE_MOVE,			// 移動
-	MOTIONTYPE_ACTION,			// アクション
-	MOTIONTYPE_MAX
-}MOTIONTYPE;
-
-//*****************************************************************************
-// キー要素の構造体
-//*****************************************************************************
-typedef struct
-{
-	float fPosX;		// 位置X
-	float fPosY;		// 位置Y
-	float fPosZ;		// 位置Z
-	float fRotX;		// 向きX
-	float fRotY;		// 向きY
-	float fRotZ;		// 向きZ
-}KEY;
-
-//*****************************************************************************
-// キー情報の構造体
-//*****************************************************************************
-typedef struct
-{
-	int nFrame;					// 再生フレーム
-	KEY aKey[MAX_NUMMODEL];		// 各パーツのキー要素	
-}KEY_INFO;
-
-//*****************************************************************************
-// モーション情報の構造体
-//*****************************************************************************
-typedef struct
-{
-	bool bLoop;						// ループするかどうか
-	int nNumKey;					// キーの総数
-	KEY_INFO aKeyInfo[MAX_KEY];		// キー情報
-}MOTION_INFO;
+	FISHESSTATE_NORMAL = 0,			// 通常状態
+	FISHESSTATE_APPEAR,				// 出現状態
+	FISHESSTATE_WAIT,				// 待機状態
+	FISHESSTATE_MAX
+}FISHESSTATE;
 
 //*****************************************************************************
 // 生き物の構造体
 //*****************************************************************************
 typedef struct
 {
-	LPDIRECT3DTEXTURE9 apTexture[MAX_TEXTURE];	// テクスチャへのポインタ
-	LPD3DXMESH pMesh;							// マテリアルへのポインタ
-	LPD3DXBUFFER pBuffMat;						// メッシュ(頂点情報)へのポインタ
-	DWORD dwNumMat;								// マテリアルの数
-	int nIdx;									// 生き物のインデックス
-	int nIdxModelParent;						// 親生き物のインデックス
-	D3DXVECTOR3 pos;							// 位置
+	D3DXVECTOR3 pos;							// 現在の位置
+	D3DXVECTOR3 posOld;							// 前回の位置
+	D3DXVECTOR3 move;							// 移動量
 	D3DXVECTOR3 rot;							// 向き
-	D3DXVECTOR3 posOff;							// 位置(オフセット)
-	D3DXVECTOR3 rotOff;							// 向き(オフセット)
+	float fAngle;								// 向きの最終地点
 	D3DXMATRIX mtxWorld;						// ワールドマトリックス
-}Model;
+	FISHESSTATE state;							// 状態
+	int nCounterState;							// 状態カウンター
+	float fRadius;								// 半径
+	float fHeight;								// 高さ
+	bool bMove;									// 動いているかどうか
+	bool bUse;									// 使用しているかどうか
+	Model aModel[MAX_NUMMODEL];					// モデル(パーツ)
+	int nNumModel;								// モデル(パーツ)の総数
+	MOTION_INFO aMotionInfo[MAX_MOTION];		// モーション情報
+	int nNumMotion;								// モーションの総数
+	MOTIONTYPE motionType;						// 現在のモーションの種類
+	bool bLoopMotion;							// 現在のループするかどうか
+	int nNumKey;								// 現在のキーの総数
+	int nKey;									// 現在の現在のキーNo.
+	int nCounterMotion;							// 現在のモーションのカウンター
+	bool bFinishMotion;							// 現在のモーションが終了しているかどうか
+	bool bBlendMotion;							// ブレンドモーションがあるかどうか
+	MOTIONTYPE motionTypeBlend;					// ブレンドモーションの種類
+	bool bLoopMotionBlend;						// ブレンドモーションがループするかどうか
+	int nNumKeyBlend;							// ブレンドモーションのキーの総数
+	int nKeyBlend;								// ブレンドモーションの現在のキーNo.
+	int nCounterMotionBlend;					// ブレンドモーションのカウンター
+	int nFrameBlend;							// ブレンドフレーム数
+	int nCounterBlend;							// ブレンドカウンター
+}Fishes;
 
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
-void InitModel(void);
-void UninitModel(void);
-void UpdateModel(void);
-void DrawModel(void);
-void CollisionModel(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, float fWidth, float fDepth);
+void InitFishes(void);
+void UninitFishes(void);
+void UpdateFishes(void);
+void DrawFishes(void);
+void CollisionFishes(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, float fWidth, float fDepth);
+Fishes* GetFishes(void);
 
 #endif
