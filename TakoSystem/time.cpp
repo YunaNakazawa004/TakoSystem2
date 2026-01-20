@@ -4,7 +4,7 @@
 #include "pause.h"
 #include "fade.h"
 
-#include "game.h"
+//#include "game.h"
 
 // マクロ定義
 #define	NUM_PLACE	(5)		// タイムの桁数
@@ -155,7 +155,7 @@ void UpdateTime(void)
 	if (pFade == FADE_NONE)
 	{
 		g_nTimeDelay++;
-		g_nTime100Delay += 1.6666667;
+		g_nTime100Delay += 1.6666667f;
 
 		if ((g_nTimeDelay % TIME_TRIP_60) == 0)
 		{// 時間を減らす
@@ -199,7 +199,7 @@ void SetTime(int nTime)
 {
 	int aTexU[NUM_PLACE];
 	g_nTime = nTime;
-	int nData = (g_nTimeDelay - g_nTime100Delay);
+	float fData = (g_nTimeDelay - g_nTime100Delay);
 
 	//// ステージ情報の取得
 	//int pStage;
@@ -223,8 +223,8 @@ void SetTime(int nTime)
 		aTexU[0] = (g_nTime % 1000) / 100;
 		aTexU[1] = (g_nTime % 100) / 10;
 		aTexU[2] = (g_nTime % 10) / 1;
-		aTexU[3] = ((TIME_TRIP_100 - (g_nTimeDelay - nData)) % 100) / 10;
-		aTexU[4] = ((TIME_TRIP_100 - (g_nTimeDelay - nData)) % 10) / 1;
+		aTexU[3] = ((TIME_TRIP_100 - (g_nTimeDelay - (int)fData)) % 100) / 10;
+		aTexU[4] = ((TIME_TRIP_100 - (g_nTimeDelay - (int)fData)) % 10) / 1;
 	}
 
 	for (int nCntTime = 0; nCntTime < NUM_PLACE; nCntTime++)
@@ -253,7 +253,7 @@ void AddTime(int nValue)
 	int aTexU[NUM_PLACE];
 	g_nTime += nValue;
 
-	int nData = (g_nTimeDelay - g_nTime100Delay);
+	float fData = (g_nTimeDelay - g_nTime100Delay);
 
 	VERTEX_2D* pVtx;	// 頂点情報へのポインタ
 
@@ -273,8 +273,8 @@ void AddTime(int nValue)
 		aTexU[0] = (g_nTime % 1000) / 100;
 		aTexU[1] = (g_nTime % 100) / 10;
 		aTexU[2] = (g_nTime % 10) / 1;
-		aTexU[3] = ((TIME_TRIP_100 - (g_nTimeDelay - nData)) % 100) / 10;
-		aTexU[4] = ((TIME_TRIP_100 - (g_nTimeDelay - nData)) % 10) / 1;
+		aTexU[3] = ((TIME_TRIP_100 - (g_nTimeDelay - (int)fData)) % 100) / 10;
+		aTexU[4] = ((TIME_TRIP_100 - (g_nTimeDelay - (int)fData)) % 10) / 1;
 	}
 
 	for (int nCntTime = 0; nCntTime < NUM_PLACE; nCntTime++)
@@ -287,17 +287,17 @@ void AddTime(int nValue)
 
 		if (g_nTime > PINCH_TIME)
 		{// 制限時間15秒以上
-			pVtx[0].col = D3DXCOLOR(0.0f, 1.0f, 1.0f, 1.0f);
-			pVtx[1].col = D3DXCOLOR(0.0f, 1.0f, 1.0f, 1.0f);
-			pVtx[2].col = D3DXCOLOR(0.0f, 1.0f, 1.0f, 1.0f);
-			pVtx[3].col = D3DXCOLOR(0.0f, 1.0f, 1.0f, 1.0f);
+			pVtx[0].col = DEFAULT_COLOR;
+			pVtx[1].col = DEFAULT_COLOR;
+			pVtx[2].col = DEFAULT_COLOR;
+			pVtx[3].col = DEFAULT_COLOR;
 		}
 		else
 		{// 制限時間15秒未満
-			pVtx[0].col = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
-			pVtx[1].col = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
-			pVtx[2].col = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
-			pVtx[3].col = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
+			pVtx[0].col = PINCH_COLOR;
+			pVtx[1].col = PINCH_COLOR;
+			pVtx[2].col = PINCH_COLOR;
+			pVtx[3].col = PINCH_COLOR;
 		}
 		pVtx += 4;		// 頂点データのポインタを4つ分進める
 	}
