@@ -1,6 +1,6 @@
 //=============================================================================
 // 
-// モデル [model.cpp]   ! ! このcppは呼び出さないでください ! !
+// 生き物 [model.cpp]   ! ! このcppは呼び出さないでください ! !
 // Author : 中澤優奈
 // 
 //=============================================================================
@@ -14,7 +14,7 @@
 #define MOVEMENT				(D3DXVECTOR3(1.0f, 1.0f, 1.0f))			// 移動量
 #define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// 向き移動量
 #define INERTIA_MOVE			(0.4f)									// 移動の慣性
-#define XMODEL_FILE				"data\\MODEL\\car000.x"					// モデルのファイル名
+#define XMODEL_FILE				"data\\MODEL\\car000.x"					// 生き物のファイル名
 
 //*****************************************************************************
 // グローバル変数
@@ -23,14 +23,14 @@ LPD3DXMESH g_pMeshModel = NULL;							// メッシュ(頂点情報)へのポインタ
 LPD3DXBUFFER g_pBuffMatModel = NULL;					// マテリアルへのポインタ
 LPDIRECT3DTEXTURE9 g_apTextureModel[MAX_TEXTURE] = {};	// テクスチャへのポインタ
 DWORD g_dwNumMatModel = 0;								// マテリアルの数
-D3DXVECTOR3 g_VtxMaxModel, g_VtxMinModel;				// モデルの最大値・最小値
-D3DXVECTOR3 g_posModel;									// モデルの位置情報
-D3DXVECTOR3 g_moveModel;								// モデルの移動慣性情報
-D3DXVECTOR3 g_rotModel;									// モデルの向き情報
+D3DXVECTOR3 g_VtxMaxModel, g_VtxMinModel;				// 生き物の最大値・最小値
+D3DXVECTOR3 g_posModel;									// 生き物の位置情報
+D3DXVECTOR3 g_moveModel;								// 生き物の移動慣性情報
+D3DXVECTOR3 g_rotModel;									// 生き物の向き情報
 D3DXMATRIX g_mtxWorldModel;								// ワールドマトリックス
 
 //=============================================================================
-// モデルの初期化処理
+// 生き物の初期化処理
 //=============================================================================
 void InitModel(void)
 {
@@ -41,7 +41,7 @@ void InitModel(void)
 	DWORD dwSizeFVF;		// 頂点フォーマットのサイズ
 	BYTE* pVtxBuff;			// 頂点バッファへのポインタ
 
-	// モデルの情報の初期化
+	// 生き物の情報の初期化
 	g_posModel = FIRST_POS;
 	g_moveModel = FIRST_POS;
 	g_rotModel = FIRST_POS;
@@ -122,7 +122,7 @@ void InitModel(void)
 }
 
 //=============================================================================
-// モデルの終了処理
+// 生き物の終了処理
 //=============================================================================
 void UninitModel(void)
 {
@@ -152,7 +152,7 @@ void UninitModel(void)
 }
 
 //=============================================================================
-// モデルの更新処理
+// 生き物の更新処理
 //=============================================================================
 void UpdateModel(void)
 {
@@ -242,7 +242,7 @@ void UpdateModel(void)
 }
 
 //=============================================================================
-// モデルの描画処理
+// 生き物の描画処理
 //=============================================================================
 void DrawModel(void)
 {
@@ -280,7 +280,7 @@ void DrawModel(void)
 		// テクスチャの設定
 		pDevice->SetTexture(0, g_apTextureModel[nCntMat]);
 
-		// モデルパーツの描画
+		// 生き物パーツの描画
 		g_pMeshModel->DrawSubset(nCntMat);
 	}
 
@@ -289,7 +289,7 @@ void DrawModel(void)
 }
 
 //=============================================================================
-// モデルの当たり判定
+// 生き物の当たり判定
 //=============================================================================
 void CollisionModel(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, float fWidth, float fDepth)
 {
