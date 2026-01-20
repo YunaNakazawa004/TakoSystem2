@@ -19,6 +19,7 @@
 #include "player.h"
 #include "stage.h"
 #include "esa.h"		// エサ
+#include "time.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -339,6 +340,12 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// エサの初期化処理
 	InitEsa();
 
+	// 時間の初期化処理
+	InitTime();
+
+	// 時間の初期設定
+	SetTime(DEFAULT_TIME);
+
 	// サウンドの初期化
 	////InitSound(hWnd);
 
@@ -388,6 +395,9 @@ void Uninit(void)
 
 	// エサの終了処理
 	UninitEsa();
+
+	// 時間の終了処理
+	UninitTime();
 
 	// サウンドの終了処理
 	//StopSound();
@@ -447,6 +457,9 @@ void Update(void)
 
 	// エサの更新処理
 	UpdateEsa();
+
+	// 時間の更新処理
+	UpdateTime();
 
 #if 0
 	switch (g_mode)
@@ -510,6 +523,9 @@ void Draw(void)
 
 			// エサの描画処理
 			DrawEsa();
+
+			// 時間の描画処理
+			DrawTime();
 		}
 #if 0
 		switch (g_mode)
