@@ -61,7 +61,7 @@ const char* c_apFilenameEsa[] =
 Esa_info g_aEsaInfo[] =
 {
 	{0, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
-	{0, D3DXVECTOR3(50.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
+	{1, D3DXVECTOR3(50.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
 };
 
 //========================================================================
