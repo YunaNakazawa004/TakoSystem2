@@ -18,6 +18,7 @@
 //#include "ranking.h"
 #include "player.h"
 #include "stage.h"
+#include "esa.h"		// エサ
 
 //*****************************************************************************
 // マクロ定義
@@ -335,6 +336,9 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// ステージの初期化処理
 	InitStage();
 
+	// エサの初期化処理
+	InitEsa();
+
 	// サウンドの初期化
 	////InitSound(hWnd);
 
@@ -381,6 +385,10 @@ void Uninit(void)
 
 	// ステージの終了処理
 	UninitStage();
+
+	// エサの終了処理
+	UninitEsa();
+
 	// サウンドの終了処理
 	//StopSound();
 	//UninitSound();
@@ -437,6 +445,9 @@ void Update(void)
 	// ステージの更新処理
 	UpdateStage();
 
+	// エサの更新処理
+	UpdateEsa();
+
 #if 0
 	switch (g_mode)
 	{
@@ -492,6 +503,9 @@ void Draw(void)
 
 			// ステージの描画処理
 			DrawStage();
+
+			// エサの描画処理
+			DrawEsa();
 		}
 #if 0
 		switch (g_mode)
