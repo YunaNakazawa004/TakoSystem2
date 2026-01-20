@@ -31,9 +31,9 @@ void InitLight(void)
 	g_aLight[2].Type = D3DLIGHT_DIRECTIONAL;
 
 	// ライトの拡散光を設定
-	g_aLight[0].Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	g_aLight[1].Diffuse = D3DXCOLOR(0.7f, 0.7f, 0.7f, 0.7f);
-	g_aLight[2].Diffuse = D3DXCOLOR(0.3f, 0.3f, 0.3f, 0.3f);
+	g_aLight[0].Diffuse = D3DXCOLOR(0.7f, 0.9f, 1.0f, 1.0f);
+	g_aLight[1].Diffuse = D3DXCOLOR(0.4f, 0.5f, 0.7f, 0.7f);
+	g_aLight[2].Diffuse = D3DXCOLOR(0.1f, 0.1f, 0.3f, 0.3f);
 
 	// ライトの方向を設定
 	vecDir = D3DXVECTOR3(0.2f, -0.8f, -0.4f);

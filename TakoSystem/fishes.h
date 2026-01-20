@@ -36,6 +36,7 @@ typedef struct
 	float fRadius;								// 半径
 	float fHeight;								// 高さ
 	bool bMove;									// 動いているかどうか
+	bool bMoving;								// 動くかどうか
 	bool bUse;									// 使用しているかどうか
 	Model aModel[MAX_NUMMODEL];					// モデル(パーツ)
 	int nNumModel;								// モデル(パーツ)の総数
@@ -55,6 +56,9 @@ typedef struct
 	int nCounterMotionBlend;					// ブレンドモーションのカウンター
 	int nFrameBlend;							// ブレンドフレーム数
 	int nCounterBlend;							// ブレンドカウンター
+	int MoveTime;								//	移動時間
+	float MoveRot;								//	移動角度
+	int StopTime;								//	停止時間
 }Fishes;
 
 //*****************************************************************************
