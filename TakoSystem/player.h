@@ -23,6 +23,9 @@ typedef enum
 	PLAYERSTATE_NORMAL = 0,			// 通常状態
 	PLAYERSTATE_APPEAR,				// 出現状態
 	PLAYERSTATE_WAIT,				// 待機状態
+	PLAYERSTATE_TENTACLE,			// 触手伸ばし状態
+	PLAYERSTATE_DASH,				// 高速移動状態
+	PLAYERSTATE_INK,				// 墨吐き状態
 	PLAYERSTATE_MAX
 }PLAYERSTATE;
 
@@ -41,6 +44,8 @@ typedef struct
 	int nCounterState;							// 状態カウンター
 	float fRadius;								// 半径
 	float fHeight;								// 高さ
+	D3DXVECTOR3 posX;							// リーチの位置(クロスヘアの位置)
+	D3DXVECTOR3 vecX;							// posVからposRへのベクトル(リーチへのベクトル)
 	bool bJump;									// ジャンプしているかどうか
 	bool bLand;									// 着地しているかどうか
 	bool bMove;									// 動いているかどうか
