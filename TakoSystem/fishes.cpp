@@ -117,6 +117,12 @@ void UninitFishes(void)
 void UpdateFishes(void)
 {
 	Fishes* pFishes = GetFishes();
+
+	// 追加予定
+	// 1 最初に進む距離 角度 止まる時間を設定する
+	// 2 設定した距離進むとstateをstopへ変更
+	// 3 設定した時間止まるとstateをmoveへ変更
+	// 4 1へ戻る
 }
 
 //=============================================================================
