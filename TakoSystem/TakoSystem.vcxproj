@@ -149,6 +149,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="crosshair.cpp" />
     <ClCompile Include="debugproc.cpp" />
     <ClCompile Include="esa.cpp" />
     <ClCompile Include="fade.cpp" />
@@ -164,6 +165,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
+    <ClInclude Include="crosshair.h" />
     <ClInclude Include="debugproc.h" />
     <ClInclude Include="esa.h" />
     <ClInclude Include="fade.h" />

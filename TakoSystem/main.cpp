@@ -9,6 +9,7 @@
 #include "light.h"
 #include "input.h"
 #include "debugproc.h"
+#include "crosshair.h"
 //#include "sound.h"
 //#include "fade.h"
 //#include "title.h"
@@ -340,6 +341,9 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// エサの初期化処理
 	InitEsa();
 
+	// クロスヘアの初期化処理
+	InitCrossHair();
+
 	// 時間の初期化処理
 	InitTime();
 
@@ -395,6 +399,9 @@ void Uninit(void)
 
 	// エサの終了処理
 	UninitEsa();
+
+	// クロスヘアの終了処理
+	UninitCrossHair();
 
 	// 時間の終了処理
 	UninitTime();
@@ -457,6 +464,9 @@ void Update(void)
 
 	// エサの更新処理
 	UpdateEsa();
+
+	// クロスヘアの更新処理
+	UpdateCrossHair();
 
 	// 時間の更新処理
 	UpdateTime();
@@ -523,6 +533,9 @@ void Draw(void)
 
 			// エサの描画処理
 			DrawEsa();
+
+			// クロスヘアの描画処理
+			DrawCrossHair();
 
 			// 時間の描画処理
 			DrawTime();
