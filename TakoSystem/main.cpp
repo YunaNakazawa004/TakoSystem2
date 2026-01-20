@@ -498,6 +498,10 @@ void Draw(void)
 			// カメラの描画処理
 			SetCamera(nCntCamera);
 
+			// フォグの設定
+			Player* pPlayer = GetPlayer();
+			SetFog(D3DXCOLOR(0.0f, 0.1f, 0.2f, 1.0f), 10000.0f, pPlayer->fFog);
+
 			// プレイヤーの描画処理
 			DrawPlayer();
 
@@ -661,4 +665,26 @@ void CorrectAngle(float* fAngle, float fAngleCmp)
 	{
 		*fAngle += D3DX_PI * 2;
 	}
+}
+
+//=============================================================================
+// フォグの設定
+//=============================================================================
+void SetFog(D3DXCOLOR col, float fFogStart, float fFogEnd)
+{
+	// フォグを有効にする
+	g_pD3DDevice->SetRenderState(D3DRS_FOGENABLE, TRUE);
+
+	// フォグカラー設定
+	g_pD3DDevice->SetRenderState(D3DRS_FOGCOLOR, col);
+
+	// バーテックスフォグ(線形公式)を使用
+	g_pD3DDevice->SetRenderState(D3DRS_FOGTABLEMODE, D3DFOG_LINEAR);		// D3DRS_FOGTABLEMODE (ピクセルフォグ) / D3DRS_FOGVERTEXMODE (バーテックスフォグ)
+
+	// フォグ範囲設定
+	g_pD3DDevice->SetRenderState(D3DRS_FOGSTART, *((LPDWORD)(&fFogStart)));
+	g_pD3DDevice->SetRenderState(D3DRS_FOGEND, *((LPDWORD)(&fFogEnd)));
+
+	// 範囲ベースのフォグを使用
+	g_pD3DDevice->SetRenderState(D3DRS_RANGEFOGENABLE, TRUE);
 }

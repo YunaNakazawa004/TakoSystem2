@@ -42,6 +42,7 @@ typedef struct
 	D3DXMATRIX mtxWorld;						// ワールドマトリックス
 	PLAYERSTATE state;							// 状態
 	int nCounterState;							// 状態カウンター
+	float fFog;									// フォグの終了位置
 	float fRadius;								// 半径
 	float fHeight;								// 高さ
 	D3DXVECTOR3 posX;							// リーチの位置(クロスヘアの位置)

@@ -46,6 +46,8 @@
 #define MAX_MOVE				(5.0f)									// 移動の制限
 #define INERTIA_ANGLE			(0.1f)									// 角度の慣性
 #define POS_ERROR				(50.0f)									// 位置の誤差
+#define FOG_MIN					(20000.0f)								// フォグの最低
+#define FOG_MAX					(70000.0f)								// フォグの最高
 #define PLAYER_WIDTH			(5.0f)									// 幅
 #define PLAYER_HEIGHT			(10.0f)									// 高さ
 #define PLAYER_FILE				"data\\motion_octo.txt"					// プレイヤーのデータファイル
@@ -81,6 +83,7 @@ void InitPlayer(void)
 		pPlayer->state = PLAYERSTATE_APPEAR;
 		pPlayer->nCounterState = 0;
 		pPlayer->fAngle = 0.0f;
+		pPlayer->fFog = FOG_MIN;
 		pPlayer->fRadius = PLAYER_WIDTH;
 		pPlayer->fHeight = PLAYER_HEIGHT;
 		pPlayer->bJump = false;
@@ -394,6 +397,19 @@ void UpdatePlayer(void)
 			else if (pPlayer->pos.z > ALLOW_Z)
 			{// 一番手前
 				pPlayer->pos.z = ALLOW_Z;
+			}
+
+			PrintDebugProc("fAngle : %f", pCamera->fAngle);
+
+			pPlayer->fFog = (pPlayer->pos.y * 1.5f * (-pCamera->fAngle * 0.5f)) + FOG_MIN;
+
+			if (pPlayer->fFog < FOG_MIN)
+			{// フォグの最低値
+				pPlayer->fFog = FOG_MIN;
+			}
+			else if (pPlayer->fFog > FOG_MAX)
+			{// フォグの最高値
+				pPlayer->fFog = FOG_MAX;
 			}
 
 			fmoveAngle = pPlayer->fAngle - pPlayer->rot.y;
