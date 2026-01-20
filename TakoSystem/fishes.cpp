@@ -45,7 +45,7 @@ void InitFishes(void)
 		pFishes[nCntFishes].posOld = FIRST_POS;
 		pFishes[nCntFishes].move = FIRST_POS;
 		pFishes[nCntFishes].rot = FIRST_POS;
-		pFishes[nCntFishes].state = FISHESSTATE_APPEAR;
+		pFishes[nCntFishes].state = FISHESSTATE_STOP;
 		pFishes[nCntFishes].nCounterState = 0;
 		pFishes[nCntFishes].fAngle = 0.0f;
 		pFishes[nCntFishes].fRadius = FISHES_WIDTH;

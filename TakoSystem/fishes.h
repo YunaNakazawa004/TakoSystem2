@@ -15,9 +15,8 @@
 //*****************************************************************************4
 typedef enum
 {
-	FISHESSTATE_NORMAL = 0,			// ’Êíó‘Ô
-	FISHESSTATE_APPEAR,				// oŒ»ó‘Ô
-	FISHESSTATE_WAIT,				// ‘Ò‹@ó‘Ô
+	FISHESSTATE_MOVE = 0,			// ˆÚ“®ó‘Ô
+	FISHESSTATE_STOP,				// ’âŽ~ó‘Ô
 	FISHESSTATE_MAX
 }FISHESSTATE;
 
