@@ -54,6 +54,7 @@ Esa g_aEsa[MAX_SET_ESA];				// エサの情報
 const char* c_apFilenameEsa[] =
 {
 	"data/MODEL/testmodel/car000.x",	// [0]車
+	"data/MODEL/testmodel/skitree000.x",	// [1]四角形
 };
 
 // エサの配置情報
