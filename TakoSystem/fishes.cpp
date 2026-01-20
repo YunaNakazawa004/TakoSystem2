@@ -1,152 +1,119 @@
 //=============================================================================
 // 
-// 生き物 [model.cpp]   ! ! このcppは呼び出さないでください ! !
-// Author : 中澤優奈
+// 生き物 [fishes.cpp]
+// Author : Mutsuki Uemura
 // 
 //=============================================================================
-#include "model.h"
+#include "fishes.h"
+
 #include "camera.h"
 #include "input.h"
+#include <time.h>
 
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define MOVEMENT				(D3DXVECTOR3(1.0f, 1.0f, 1.0f))			// 移動量
-#define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// 向き移動量
-#define INERTIA_MOVE			(0.4f)									// 移動の慣性
-#define XMODEL_FILE				"data\\MODEL\\car000.x"					// 生き物のファイル名
+#define FISHES_MOVEMENT			(D3DXVECTOR3(3.0f, 1.5f, 3.0f))			// 移動量
+#define FISHES_ROT				(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// 向き移動量
+#define FISHES_INERTIA_MOVE		(0.2f)									// 移動の慣性
+#define FISHES_MAX_MOVE			(5.0f)									// 移動の制限
+#define FISHES_INERTIA_ANGLE	(0.1f)									// 角度の慣性
+#define FISHES_WIDTH			(5.0f)									// 幅
+#define FISHES_HEIGHT			(10.0f)									// 高さ
+#define FISHES_XMODEL_FILENAME	"data\\motion_octo.txt"					// 生き物のデータファイル
+#define MAX_FISHES				(1)										// 置ける最大数
 
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
-LPD3DXMESH g_pMeshModel = NULL;							// メッシュ(頂点情報)へのポインタ
-LPD3DXBUFFER g_pBuffMatModel = NULL;					// マテリアルへのポインタ
-LPDIRECT3DTEXTURE9 g_apTextureModel[MAX_TEXTURE] = {};	// テクスチャへのポインタ
-DWORD g_dwNumMatModel = 0;								// マテリアルの数
-D3DXVECTOR3 g_VtxMaxModel, g_VtxMinModel;				// 生き物の最大値・最小値
-D3DXVECTOR3 g_posModel;									// 生き物の位置情報
-D3DXVECTOR3 g_moveModel;								// 生き物の移動慣性情報
-D3DXVECTOR3 g_rotModel;									// 生き物の向き情報
-D3DXMATRIX g_mtxWorldModel;								// ワールドマトリックス
+Fishes g_aFishes[256];									// 生き物の情報
+char* g_apFilenameFishes[MAX_NUMMODEL] = {};			// モデルファイルへのポインタ
 
 //=============================================================================
 // 生き物の初期化処理
 //=============================================================================
-void InitModel(void)
+void InitFishes(void)
 {
 	// ローカル変数宣言
-	LPDIRECT3DDEVICE9 pDevice = GetDevice();			// デバイスへのポインタ
+	LPDIRECT3DDEVICE9 pDevice = GetDevice();		// デバイスへのポインタ
 	D3DXMATERIAL* pMat;
-	int nNumVtx;			// 頂点数
-	DWORD dwSizeFVF;		// 頂点フォーマットのサイズ
-	BYTE* pVtxBuff;			// 頂点バッファへのポインタ
+	Fishes* pFishes = GetFishes();
+
+	srand((unsigned int)time(NULL));
 
 	// 生き物の情報の初期化
-	g_posModel = FIRST_POS;
-	g_moveModel = FIRST_POS;
-	g_rotModel = FIRST_POS;
-
-	// 最大値最小値の初期化
-	g_VtxMaxModel = D3DXVECTOR3(-10000.0f, -10000.0f, -10000.0f);
-	g_VtxMinModel = D3DXVECTOR3(10000.0f, 10000.0f, 10000.0f);
-
-	// Xファイルの読み込み
-	D3DXLoadMeshFromX(XMODEL_FILE,
-		D3DXMESH_SYSTEMMEM,
-		pDevice,
-		NULL,
-		&g_pBuffMatModel,
-		NULL,
-		&g_dwNumMatModel,
-		&g_pMeshModel);
-
-	// マテリアルデータへのポインタを取得
-	pMat = (D3DXMATERIAL*)g_pBuffMatModel->GetBufferPointer();
-
-	for (int nCntMat = 0; nCntMat < (int)g_dwNumMatModel; nCntMat++)
+	for (int nCntFishes = 0; nCntFishes < MAX_FISHES; nCntFishes++, pFishes++)
 	{
-		if (pMat[nCntMat].pTextureFilename != NULL)
-		{// テクスチャファイルが存在する
-			D3DXCreateTextureFromFile(pDevice, pMat[nCntMat].pTextureFilename, &g_apTextureModel[nCntMat]);
+		pFishes[nCntFishes].pos = FIRST_POS;
+		pFishes[nCntFishes].posOld = FIRST_POS;
+		pFishes[nCntFishes].move = FIRST_POS;
+		pFishes[nCntFishes].rot = FIRST_POS;
+		pFishes[nCntFishes].state = FISHESSTATE_STOP;
+		pFishes[nCntFishes].nCounterState = 0;
+		pFishes[nCntFishes].fAngle = 0.0f;
+		pFishes[nCntFishes].fRadius = FISHES_WIDTH;
+		pFishes[nCntFishes].fHeight = FISHES_HEIGHT;
+		pFishes[nCntFishes].bMove = false;
+		pFishes[nCntFishes].bUse = false;
+		pFishes[nCntFishes].MoveTime = 0;
+		pFishes[nCntFishes].MoveRot = 0.0f;
+		pFishes[nCntFishes].StopTime = 0;
+		pFishes[nCntFishes].bMoving = false;
+
+		// Xファイルの読み込み
+		D3DXLoadMeshFromX(FISHES_XMODEL_FILENAME,
+			D3DXMESH_SYSTEMMEM,
+			pDevice,
+			NULL,
+			&pFishes->aModel[nCntFishes].pBuffMat,
+			NULL,
+			&pFishes->aModel[nCntFishes].dwNumMat,
+			&pFishes->aModel[nCntFishes].pMesh);
+
+		// マテリアルデータへのポインタを取得
+		pMat = (D3DXMATERIAL*)pFishes->aModel[nCntFishes].pBuffMat->GetBufferPointer();
+
+		for (int nCntMat = 0; nCntMat < (int)pFishes->aModel[nCntFishes].dwNumMat; nCntMat++)
+		{
+			if (pMat[nCntMat].pTextureFilename != NULL)
+			{// テクスチャファイルが存在する
+				D3DXCreateTextureFromFile(pDevice, pMat[nCntMat].pTextureFilename, &pFishes->aModel[nCntFishes].apTexture[nCntMat]);
+			}
 		}
 	}
-
-	// 頂点数を取得
-	nNumVtx = g_pMeshModel->GetNumVertices();
-
-	// 頂点フォーマットのサイズを取得
-	dwSizeFVF = D3DXGetFVFVertexSize(g_pMeshModel->GetFVF());
-
-	// 頂点バッファをロック
-	g_pMeshModel->LockVertexBuffer(D3DLOCK_READONLY, (void**)&pVtxBuff);
-
-	for (int nCntVtx = 0; nCntVtx < nNumVtx; nCntVtx++)
-	{
-		D3DXVECTOR3 vtx = *(D3DXVECTOR3*)pVtxBuff;		// 頂点座標の代入
-
-		if (vtx.x > g_VtxMaxModel.x)
-		{// Xの最大値
-			g_VtxMaxModel.x = vtx.x;
-		}
-
-		if (vtx.x < g_VtxMinModel.x)
-		{// Xの最小値
-			g_VtxMinModel.x = vtx.x;
-		}
-
-		if (vtx.y > g_VtxMaxModel.y)
-		{// Yの最大値
-			g_VtxMaxModel.y = vtx.y;
-		}
-
-		if (vtx.y < g_VtxMinModel.y)
-		{// Yの最小値
-			g_VtxMinModel.y = vtx.y;
-		}
-
-		if (vtx.z > g_VtxMaxModel.z)
-		{// Zの最大値
-			g_VtxMaxModel.z = vtx.z;
-		}
-
-		if (vtx.z < g_VtxMinModel.z)
-		{// Zの最小値
-			g_VtxMinModel.z = vtx.z;
-		}
-
-		pVtxBuff += dwSizeFVF;		// 頂点バッファのサイズ分ポインタを進める
-	}
-
-	// 頂点バッファをアンロック
-	g_pMeshModel->UnlockVertexBuffer();
 }
 
 //=============================================================================
 // 生き物の終了処理
 //=============================================================================
-void UninitModel(void)
+void UninitFishes(void)
 {
-	// メッシュの破棄
-	if (g_pMeshModel != NULL)
-	{
-		g_pMeshModel->Release();
-		g_pMeshModel = NULL;
-	}
+	Fishes* pFishes = GetFishes();
 
-	// マテリアルの破棄
-	if (g_pBuffMatModel != NULL)
+	for (int nCntModel = 0; nCntModel < MAX_FISHES; nCntModel++, pFishes++)
 	{
-		g_pBuffMatModel->Release();
-		g_pBuffMatModel = NULL;
-	}
-
-	// テクスチャの破棄
-	for (int nCntModel = 0; nCntModel < (int)g_dwNumMatModel; nCntModel++)
-	{
-		if (g_apTextureModel[nCntModel] != NULL)
+		// メッシュの破棄
+		if (pFishes->aModel[nCntModel].pMesh != NULL)
 		{
-			g_apTextureModel[nCntModel]->Release();
-			g_apTextureModel[nCntModel] = NULL;
+			pFishes->aModel[nCntModel].pMesh->Release();
+			pFishes->aModel[nCntModel].pMesh = NULL;
+		}
+
+		// マテリアルの破棄
+		if (pFishes->aModel[nCntModel].pBuffMat != NULL)
+		{
+			pFishes->aModel[nCntModel].pBuffMat->Release();
+			pFishes->aModel[nCntModel].pBuffMat = NULL;
+		}
+
+		// テクスチャの破棄
+		for (int nCntFishes = 0; nCntFishes < (int)pFishes->aModel[0].dwNumMat; nCntFishes++)
+		{
+			if (pFishes->aModel[nCntModel].apTexture[nCntFishes] != NULL)
+			{
+				pFishes->aModel[nCntModel].apTexture[nCntFishes]->Release();
+				pFishes->aModel[nCntModel].apTexture[nCntFishes] = NULL;
+			}
 		}
 	}
 }
@@ -154,171 +121,146 @@ void UninitModel(void)
 //=============================================================================
 // 生き物の更新処理
 //=============================================================================
-void UpdateModel(void)
+void UpdateFishes(void)
 {
-	Camera* pCamera = GetCamera();
+	Fishes* pFishes = GetFishes();
+	FISHESSTATE OldState = FISHESSTATE_STOP;
+	static int nCntStop = 0, nCntMove = 0;
 
-	// 移動
-	if (GetKeyboardPress(DIK_UP) == true)
-	{// 奥に移動
-		g_moveModel.x += sinf(D3DX_PI * 0.0f + pCamera->rot.y) * MOVEMENT.x;
-		g_moveModel.z += cosf(D3DX_PI * 0.0f + pCamera->rot.y) * MOVEMENT.z;
+	// 追加予定
+	// 1 最初に進む時間 角度 止まる時間を設定する
+	for (int nCntFishes = 0; nCntFishes < MAX_FISHES; nCntFishes++, pFishes++)
+	{
+		if (pFishes[nCntFishes].bUse == true && pFishes[nCntFishes].bMoving == true)
+		{
+			//今の時点のstateを記録
+			OldState = pFishes[nCntFishes].state;
 
-		g_rotModel.y = pCamera->rot.y - D3DX_PI;
-	}
-	else if (GetKeyboardPress(DIK_DOWN) == true)
-	{// 手前に移動
-		g_moveModel.x += sinf(D3DX_PI * 1.0f + pCamera->rot.y) * MOVEMENT.x;
-		g_moveModel.z += cosf(D3DX_PI * 1.0f + pCamera->rot.y) * MOVEMENT.z;
+			//それぞれのフラグ増加
+			if (pFishes[nCntFishes].state == FISHESSTATE_STOP)
+			{
+				nCntStop++;
+			}
+			else if (pFishes[nCntFishes].state == FISHESSTATE_MOVE)
+			{
+				nCntMove++;
+			}
 
-		g_rotModel.y = pCamera->rot.y;
-	}
+			//生き物の状態遷移
+			if (pFishes[nCntFishes].MoveTime < nCntMove)
+			{
+				pFishes[nCntFishes].state = FISHESSTATE_STOP;
+				nCntMove = 0;
+			}
+			else if (pFishes[nCntFishes].StopTime < nCntStop)
+			{
+				pFishes[nCntFishes].state = FISHESSTATE_MOVE;
+				nCntStop = 0;
+			}
 
-	if (GetKeyboardPress(DIK_LEFT) == true)
-	{// 左に移動
-		g_moveModel.x += sinf(-D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.x;
-		g_moveModel.z += cosf(-D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.z;
-
-		g_rotModel.y = pCamera->rot.y + (D3DX_PI * 0.5f);
+			//stopからmoveに移行するとき数値を設定(ランダム)
+			if (OldState == FISHESSTATE_STOP && OldState == pFishes[nCntFishes].state)
+			{
+				pFishes[nCntFishes].MoveTime = rand() % (60 * 8) + 1;			//移動する時間
+				pFishes[nCntFishes].MoveRot = ((rand() % 628) - 314) * 100.0f;	//移動する角度(ｙ軸)
+				pFishes[nCntFishes].StopTime = rand() % (60 * 4) + 1;			//停止している時間
+			}
+		}
 	}
-	else if (GetKeyboardPress(DIK_RIGHT) == true)
-	{// 右に移動
-		g_moveModel.x += sinf(D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.x;
-		g_moveModel.z += cosf(D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.z;
-
-		g_rotModel.y = pCamera->rot.y - (D3DX_PI * 0.5f);
-	}
-
-	// 慣性
-	g_posModel += g_moveModel;
-	g_moveModel.x += (0.0f - g_moveModel.x) * INERTIA_MOVE;
-	g_moveModel.z += (0.0f - g_moveModel.z) * INERTIA_MOVE;
-
-	if (GetKeyboardPress(DIK_LSHIFT) == true)
-	{// Y軸回転
-		g_rotModel.y += -ROT.y;
-	}
-	else if (GetKeyboardPress(DIK_RSHIFT) == true)
-	{// Y軸回転
-		g_rotModel.y += ROT.y;
-	}
-
-	// 位置回転リセット
-	if (GetKeyboardPress(DIK_RETURN) == true)
-	{// Y軸回転
-		g_posModel = FIRST_POS;
-		g_rotModel = FIRST_POS;
-	}
-#if 0
-	if (GetKeyboardPress(DIK_I) == true)
-	{// 上に移動
-		g_moveModel.y += MOVEMENT.y;
-	}
-	else if (GetKeyboardPress(DIK_K) == true)
-	{// 下に移動
-		g_moveModel.y += -MOVEMENT.y;
-	}
-
-	// 回転
-	if (GetKeyboardPress(DIK_UP) == true)
-	{// X軸回転
-		g_rotModel.x += ROT.x;
-	}
-	else if (GetKeyboardPress(DIK_DOWN) == true)
-	{// X軸回転
-		g_rotModel.x += -ROT.x;
-	}
-
-	if (GetKeyboardPress(DIK_LEFT) == true)
-	{// Z軸回転
-		g_rotModel.z += ROT.z;
-	}
-	else if (GetKeyboardPress(DIK_RIGHT) == true)
-	{// Z軸回転
-		g_rotModel.z += -ROT.z;
-	}
-
-#endif
 }
 
 //=============================================================================
 // 生き物の描画処理
 //=============================================================================
-void DrawModel(void)
+void DrawFishes(void)
 {
 	// ローカル変数宣言
-	LPDIRECT3DDEVICE9 pDevice = GetDevice();			// デバイスへのポインタ
-	D3DXMATRIX mtxRot, mtxTrans;		// 計算用マトリックス
-	D3DMATERIAL9 matDef;				// 現在のマテリアル保存用
-	D3DXMATERIAL* pMat;					// マテリアルデータへのポインタ
+	LPDIRECT3DDEVICE9 pDevice = GetDevice();		// デバイスへのポインタ
+	D3DXMATRIX mtxRot, mtxTrans;					// 計算用マトリックス
+	D3DMATERIAL9 matDef;							// 現在のマテリアル保存用
+	D3DXMATERIAL* pMat;								// マテリアルデータへのポインタ
+	Fishes* pFishes = GetFishes();
 
-	// ワールドマトリックスの初期化
-	D3DXMatrixIdentity(&g_mtxWorldModel);
-
-	// 向きを反映
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, g_rotModel.y, g_rotModel.x, g_rotModel.z);
-	D3DXMatrixMultiply(&g_mtxWorldModel, &g_mtxWorldModel, &mtxRot);
-
-	// 位置を反映
-	D3DXMatrixTranslation(&mtxTrans, g_posModel.x, g_posModel.y, g_posModel.z);
-	D3DXMatrixMultiply(&g_mtxWorldModel, &g_mtxWorldModel, &mtxTrans);
-
-	// ワールドマトリックスの設定
-	pDevice->SetTransform(D3DTS_WORLD, &g_mtxWorldModel);
-
-	// 現在のマテリアルを取得
-	pDevice->GetMaterial(&matDef);
-
-	// マテリアルデータへのポインタを取得
-	pMat = (D3DXMATERIAL*)g_pBuffMatModel->GetBufferPointer();
-
-	for (int nCntMat = 0; nCntMat < (int)g_dwNumMatModel; nCntMat++)
+	for (int nCntModel = 0; nCntModel < MAX_FISHES; nCntModel++, pFishes++)
 	{
-		// マテリアルの設定
-		pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
+		// ワールドマトリックスの初期化
+		D3DXMatrixIdentity(&pFishes->mtxWorld);
 
-		// テクスチャの設定
-		pDevice->SetTexture(0, g_apTextureModel[nCntMat]);
+		// 向きを反映
+		D3DXMatrixRotationYawPitchRoll(&mtxRot, pFishes->rot.y, pFishes->rot.x, pFishes->rot.z);
+		D3DXMatrixMultiply(&pFishes->mtxWorld, &pFishes->mtxWorld, &mtxRot);
 
-		// 生き物パーツの描画
-		g_pMeshModel->DrawSubset(nCntMat);
+		// 位置を反映
+		D3DXMatrixTranslation(&mtxTrans, pFishes->pos.x, pFishes->pos.y, pFishes->pos.z);
+		D3DXMatrixMultiply(&pFishes->mtxWorld, &pFishes->mtxWorld, &mtxTrans);
+
+		// ワールドマトリックスの設定
+		pDevice->SetTransform(D3DTS_WORLD, &pFishes->mtxWorld);
+
+		// 現在のマテリアルを取得
+		pDevice->GetMaterial(&matDef);
+
+		// マテリアルデータへのポインタを取得
+		pMat = (D3DXMATERIAL*)pFishes->aModel[nCntModel].pBuffMat->GetBufferPointer();
+
+		for (int nCntMat = 0; nCntMat < (int)pFishes->aModel[nCntModel].dwNumMat; nCntMat++)
+		{
+			// マテリアルの設定
+			pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
+
+			// テクスチャの設定
+			pDevice->SetTexture(0, pFishes->aModel[nCntModel].apTexture[nCntMat]);
+
+			// 生き物パーツの描画
+			pFishes->aModel[nCntModel].pMesh->DrawSubset(nCntMat);
+		}
+
+		// 保存していたマテリアルを戻す
+		pDevice->SetMaterial(&matDef);
 	}
-
-	// 保存していたマテリアルを戻す
-	pDevice->SetMaterial(&matDef);
 }
 
 //=============================================================================
 // 生き物の当たり判定
 //=============================================================================
-void CollisionModel(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, float fWidth, float fDepth)
+void CollisionFishes(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, float fWidth, float fDepth)
 {
-	if ((pPos->x + fWidth > g_posModel.x + g_VtxMinModel.x) &&
-		(pPos->x - fWidth < g_posModel.x + g_VtxMaxModel.x) &&
-		(g_posModel.z + g_VtxMinModel.z <= pPos->z) &&
-		(g_posModel.z + g_VtxMaxModel.z + fDepth >= pPos->z))
+	Fishes* pFishes = GetFishes();
+
+	if ((pPos->x + fWidth > pFishes[0].pos.x - FISHES_WIDTH) &&
+		(pPos->x - fWidth < pFishes[0].pos.x + FISHES_WIDTH) &&
+		(pFishes[0].pos.z - FISHES_HEIGHT <= pPos->z) &&
+		(pFishes[0].pos.z + FISHES_HEIGHT + fDepth >= pPos->z))
 	{// 現在の位置がブロックの範囲内
-		if (((g_posModel.z + g_VtxMaxModel.z <= pPosOld->z) &&
-			(g_posModel.z + g_VtxMaxModel.z >= pPos->z)))
+		if (((pFishes[0].pos.z + FISHES_HEIGHT <= pPosOld->z) &&
+			(pFishes[0].pos.z + FISHES_HEIGHT >= pPos->z)))
 		{// 奥からの当たり判定
-			pPos->z = g_posModel.z + g_VtxMaxModel.z;
+			pPos->z = pFishes[0].pos.z + FISHES_HEIGHT;
 		}
-		else if (((g_posModel.z + g_VtxMinModel.z + fDepth >= pPosOld->z) &&
-			(g_posModel.z + g_VtxMinModel.z + fDepth <= pPos->z)))
+		else if (((pFishes[0].pos.z - FISHES_HEIGHT + fDepth >= pPosOld->z) &&
+			(pFishes[0].pos.z - FISHES_HEIGHT + fDepth <= pPos->z)))
 		{// 手前からの当たり判定
-			pPos->z = g_posModel.z + g_VtxMinModel.z + fDepth;
+			pPos->z = pFishes[0].pos.z - FISHES_HEIGHT + fDepth;
 		}
-		else if ((g_posModel.x + g_VtxMinModel.x - fWidth >= pPosOld->x) &&
-			(g_posModel.x + g_VtxMinModel.x - fWidth <= pPos->x))
+		else if ((pFishes[0].pos.x - FISHES_WIDTH - fWidth >= pPosOld->x) &&
+			(pFishes[0].pos.x - FISHES_WIDTH - fWidth <= pPos->x))
 		{// 左からの当たり判定
-			pPos->x = g_posModel.x + g_VtxMinModel.x - fWidth;
+			pPos->x = pFishes[0].pos.x - FISHES_WIDTH - fWidth;
 			pMove->x = 0.0f;							// 移動量を0にする
 		}
-		else if ((g_posModel.x + g_VtxMaxModel.x + fWidth <= pPosOld->x) &&
-			(g_posModel.x + g_VtxMaxModel.x + fWidth >= pPos->x))
+		else if ((pFishes[0].pos.x + FISHES_WIDTH + fWidth <= pPosOld->x) &&
+			(pFishes[0].pos.x + FISHES_WIDTH + fWidth >= pPos->x))
 		{// 右からの当たり判定
-			pPos->x = g_posModel.x + g_VtxMaxModel.x + fWidth;
+			pPos->x = pFishes[0].pos.x + FISHES_WIDTH + fWidth;
 			pMove->x = 0.0f;							// 移動量を0にする
 		}
 	}
+}
+
+//=============================================================================
+// 生き物の取得処理
+//=============================================================================
+Fishes* GetFishes(void)
+{
+	return &g_aFishes[0];
 }
