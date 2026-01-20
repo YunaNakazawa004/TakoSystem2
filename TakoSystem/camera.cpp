@@ -18,8 +18,8 @@
 #define HEIGHT					(100.0f)								// 視点の高さ
 #define MOVEMENT				(D3DXVECTOR3(5.0f, 5.0f, 5.0f))			// 移動量
 #define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// 向き移動量
-#define INERTIA_POSR			(0.2f)									// 注視点の慣性
-#define INERTIA_POSV			(0.2f)									// 視点の慣性
+#define INERTIA_POSR			(0.6f)									// 注視点の慣性
+#define INERTIA_POSV			(0.6f)									// 視点の慣性
 #define MAX_Y					(300.0f)								// 上の制限
 #define MIN_Y					(-300.0f)								// 下の制限
 
