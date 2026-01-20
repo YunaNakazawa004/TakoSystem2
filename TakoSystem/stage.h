@@ -1,0 +1,39 @@
+//=============================================================================
+// 
+// モデルヘッダー [stage.h]
+// Author : 中澤優奈
+// 
+//=============================================================================
+#ifndef _STAGE_H_		// このマクロ定義がされていなかったら
+#define _STAGE_H_		// 2重インクルード防止のマクロを定義する
+
+#include "main.h"
+
+//*****************************************************************************
+// モデルの構造体
+//*****************************************************************************
+typedef struct
+{
+	LPDIRECT3DTEXTURE9 apTexture[MAX_TEXTURE];	// テクスチャへのポインタ
+	LPD3DXMESH pMesh;							// マテリアルへのポインタ
+	LPD3DXBUFFER pBuffMat;						// メッシュ(頂点情報)へのポインタ
+	DWORD dwNumMat;								// マテリアルの数
+	int nIdx;									// モデルのインデックス
+	int nIdxStageParent;						// 親モデルのインデックス
+	D3DXVECTOR3 pos;							// 位置
+	D3DXVECTOR3 rot;							// 向き
+	D3DXVECTOR3 posOff;							// 位置(オフセット)
+	D3DXVECTOR3 rotOff;							// 向き(オフセット)
+	D3DXMATRIX mtxWorld;						// ワールドマトリックス
+}Stage;
+
+//*****************************************************************************
+// プロトタイプ宣言
+//*****************************************************************************
+void InitStage(void);
+void UninitStage(void);
+void UpdateStage(void);
+void DrawStage(void);
+void CollisionStage(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, float fWidth, float fDepth);
+
+#endif
