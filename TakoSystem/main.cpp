@@ -17,6 +17,7 @@
 //#include "result.h"
 //#include "ranking.h"
 #include "player.h"
+#include "stage.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -331,6 +332,9 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	SetPlayer(0, FIRST_POS, FIRST_POS);
 	SetPlayer(1, D3DXVECTOR3(10.0f, 50.0f, 10.0f), FIRST_POS);
 
+	// ステージの初期化処理
+	InitStage();
+
 	// サウンドの初期化
 	////InitSound(hWnd);
 
@@ -375,6 +379,8 @@ void Uninit(void)
 	// プレイヤーの終了処理
 	UninitPlayer();
 
+	// ステージの終了処理
+	UninitStage();
 	// サウンドの終了処理
 	//StopSound();
 	//UninitSound();
@@ -427,6 +433,9 @@ void Update(void)
 
 	// プレイヤーの更新処理
 	UpdatePlayer();
+
+	// ステージの更新処理
+	UpdateStage();
 
 #if 0
 	switch (g_mode)
@@ -481,6 +490,8 @@ void Draw(void)
 			// プレイヤーの描画処理
 			DrawPlayer();
 		}
+		// ステージの描画処理
+		DrawStage();
 
 #if 0
 		switch (g_mode)
