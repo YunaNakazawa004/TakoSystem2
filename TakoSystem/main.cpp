@@ -482,6 +482,9 @@ void Draw(void)
 		// 現在のビューポートを取得
 		g_pD3DDevice->GetViewport(&viewportDef);
 
+		// ステージの描画処理
+		DrawStage();
+
 		for (int nCntCamera = 0; nCntCamera < MAX_PLAYER; nCntCamera++)
 		{
 			// カメラの描画処理
@@ -490,8 +493,6 @@ void Draw(void)
 			// プレイヤーの描画処理
 			DrawPlayer();
 		}
-		// ステージの描画処理
-		DrawStage();
 
 #if 0
 		switch (g_mode)
