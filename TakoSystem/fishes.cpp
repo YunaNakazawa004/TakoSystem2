@@ -1,6 +1,6 @@
 //=============================================================================
 // 
-// 生き物 [fishes.cpp]   ! ! このcppは呼び出さないでください ! !
+// 生き物 [fishes.cpp]
 // Author : Mutsuki Uemura
 // 
 //=============================================================================
@@ -8,6 +8,7 @@
 
 #include "camera.h"
 #include "input.h"
+#include <time.h>
 
 //*****************************************************************************
 // マクロ定義
@@ -38,6 +39,8 @@ void InitFishes(void)
 	D3DXMATERIAL* pMat;
 	Fishes* pFishes = GetFishes();
 
+	srand((unsigned int)time(NULL));
+
 	// 生き物の情報の初期化
 	for (int nCntFishes = 0; nCntFishes < MAX_FISHES; nCntFishes++, pFishes++)
 	{
@@ -52,6 +55,10 @@ void InitFishes(void)
 		pFishes[nCntFishes].fHeight = FISHES_HEIGHT;
 		pFishes[nCntFishes].bMove = false;
 		pFishes[nCntFishes].bUse = false;
+		pFishes[nCntFishes].MoveTime = 0;
+		pFishes[nCntFishes].MoveRot = 0.0f;
+		pFishes[nCntFishes].StopTime = 0;
+		pFishes[nCntFishes].bMoving = false;
 
 		// Xファイルの読み込み
 		D3DXLoadMeshFromX(FISHES_XMODEL_FILENAME,
@@ -117,6 +124,49 @@ void UninitFishes(void)
 void UpdateFishes(void)
 {
 	Fishes* pFishes = GetFishes();
+	FISHESSTATE OldState = FISHESSTATE_STOP;
+	static int nCntStop = 0, nCntMove = 0;
+
+	// 追加予定
+	// 1 最初に進む時間 角度 止まる時間を設定する
+	for (int nCntFishes = 0; nCntFishes < MAX_FISHES; nCntFishes++, pFishes++)
+	{
+		if (pFishes[nCntFishes].bUse == true && pFishes[nCntFishes].bMoving == true)
+		{
+			//今の時点のstateを記録
+			OldState = pFishes[nCntFishes].state;
+
+			//それぞれのフラグ増加
+			if (pFishes[nCntFishes].state == FISHESSTATE_STOP)
+			{
+				nCntStop++;
+			}
+			else if (pFishes[nCntFishes].state == FISHESSTATE_MOVE)
+			{
+				nCntMove++;
+			}
+
+			//生き物の状態遷移
+			if (pFishes[nCntFishes].MoveTime < nCntMove)
+			{
+				pFishes[nCntFishes].state = FISHESSTATE_STOP;
+				nCntMove = 0;
+			}
+			else if (pFishes[nCntFishes].StopTime < nCntStop)
+			{
+				pFishes[nCntFishes].state = FISHESSTATE_MOVE;
+				nCntStop = 0;
+			}
+
+			//stopからmoveに移行するとき数値を設定(ランダム)
+			if (OldState == FISHESSTATE_STOP && OldState == pFishes[nCntFishes].state)
+			{
+				pFishes[nCntFishes].MoveTime = rand() % (60 * 8) + 1;			//移動する時間
+				pFishes[nCntFishes].MoveRot = ((rand() % 628) - 314) * 100.0f;	//移動する角度(ｙ軸)
+				pFishes[nCntFishes].StopTime = rand() % (60 * 4) + 1;			//停止している時間
+			}
+		}
+	}
 }
 
 //=============================================================================
