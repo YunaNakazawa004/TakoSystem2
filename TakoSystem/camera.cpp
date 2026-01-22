@@ -309,7 +309,7 @@ void SetCamera(int nIdx)
 		D3DXToRadian(45.0f),								// 視野角
 		(float)g_aCamera[nIdx].viewport.Width / (float)g_aCamera[nIdx].viewport.Height,			// 画面のアスペクト比
 		10.0f,												// カメラから一番近い描画距離
-		30000.0f);											// 最大描画距離
+		80000.0f);											// 最大描画距離
 
 	// プロジェクションマトリックスの設定
 	pDevice->SetTransform(D3DTS_PROJECTION, &g_aCamera[nIdx].mtxProjection);

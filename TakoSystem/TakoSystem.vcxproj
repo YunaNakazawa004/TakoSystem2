@@ -149,6 +149,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="crosshair.cpp" />
     <ClCompile Include="debugproc.cpp" />
     <ClCompile Include="esa.cpp" />
     <ClCompile Include="fade.cpp" />
@@ -160,9 +161,11 @@
     <ClCompile Include="pause.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="stage.cpp" />
+    <ClCompile Include="time.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
+    <ClInclude Include="crosshair.h" />
     <ClInclude Include="debugproc.h" />
     <ClInclude Include="esa.h" />
     <ClInclude Include="fade.h" />
@@ -174,6 +177,7 @@
     <ClInclude Include="pause.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="stage.h" />
+    <ClInclude Include="time.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

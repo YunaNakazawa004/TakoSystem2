@@ -54,13 +54,14 @@ Esa g_aEsa[MAX_SET_ESA];				// エサの情報
 const char* c_apFilenameEsa[] =
 {
 	"data/MODEL/testmodel/car000.x",	// [0]車
+	"data/MODEL/testmodel/skitree000.x",	// [1]四角形
 };
 
 // エサの配置情報
 Esa_info g_aEsaInfo[] =
 {
 	{0, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
-	{0, D3DXVECTOR3(50.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
+	{1, D3DXVECTOR3(50.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
 };
 
 //========================================================================
