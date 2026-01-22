@@ -9,6 +9,7 @@
 #include "camera.h"
 #include "input.h"
 #include <time.h>
+#include <stdio.h>
 
 //*****************************************************************************
 // マクロ定義
@@ -21,7 +22,17 @@
 #define FISHES_WIDTH			(5.0f)									// 幅
 #define FISHES_HEIGHT			(10.0f)									// 高さ
 #define FISHES_XMODEL_FILENAME	"data\\motion_octo.txt"					// 生き物のデータファイル
-#define MAX_FISHES				(1)										// 置ける最大数
+#define FISHES_MAX_NUM			(1024)									// 設置の最大数
+#define FISHES_MAX_MODELS		(100)									// 読み込めるモデルの最大数
+
+//*****************************************************************************
+// 生き物のモデル情報
+//*****************************************************************************
+typedef struct
+{
+	int Model_Idx[FISHES_MAX_MODELS];
+	char Model_FileName[FISHES_MAX_MODELS];
+}FishesModelInfo;
 
 //*****************************************************************************
 // グローバル変数
@@ -38,11 +49,13 @@ void InitFishes(void)
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();		// デバイスへのポインタ
 	D3DXMATERIAL* pMat;
 	Fishes* pFishes = GetFishes();
+	int NumScanModel = 0;
 
+	// randのランダム化
 	srand((unsigned int)time(NULL));
 
 	// 生き物の情報の初期化
-	for (int nCntFishes = 0; nCntFishes < MAX_FISHES; nCntFishes++, pFishes++)
+	for (int nCntFishes = 0; nCntFishes < FISHES_MAX_NUM; nCntFishes++, pFishes++)
 	{
 		pFishes[nCntFishes].pos = FIRST_POS;
 		pFishes[nCntFishes].posOld = FIRST_POS;
@@ -58,28 +71,29 @@ void InitFishes(void)
 		pFishes[nCntFishes].MoveTime = 0;
 		pFishes[nCntFishes].StopTime = 0;
 		pFishes[nCntFishes].bMoving = false;
+	}
+	/*
+	// Xファイルの読み込み
+	D3DXLoadMeshFromX(FISHES_XMODEL_FILENAME,
+		D3DXMESH_SYSTEMMEM,
+		pDevice,
+		NULL,
+		&pFishes->aModel[nCntFishes].pBuffMat,
+		NULL,
+		&pFishes->aModel[nCntFishes].dwNumMat,
+		&pFishes->aModel[nCntFishes].pMesh);
 
-		// Xファイルの読み込み
-		D3DXLoadMeshFromX(FISHES_XMODEL_FILENAME,
-			D3DXMESH_SYSTEMMEM,
-			pDevice,
-			NULL,
-			&pFishes->aModel[nCntFishes].pBuffMat,
-			NULL,
-			&pFishes->aModel[nCntFishes].dwNumMat,
-			&pFishes->aModel[nCntFishes].pMesh);
+	// マテリアルデータへのポインタを取得
+	pMat = (D3DXMATERIAL*)pFishes->aModel[nCntFishes].pBuffMat->GetBufferPointer();
 
-		// マテリアルデータへのポインタを取得
-		pMat = (D3DXMATERIAL*)pFishes->aModel[nCntFishes].pBuffMat->GetBufferPointer();
-
-		for (int nCntMat = 0; nCntMat < (int)pFishes->aModel[nCntFishes].dwNumMat; nCntMat++)
-		{
-			if (pMat[nCntMat].pTextureFilename != NULL)
-			{// テクスチャファイルが存在する
-				D3DXCreateTextureFromFile(pDevice, pMat[nCntMat].pTextureFilename, &pFishes->aModel[nCntFishes].apTexture[nCntMat]);
-			}
+	for (int nCntMat = 0; nCntMat < (int)pFishes->aModel[nCntFishes].dwNumMat; nCntMat++)
+	{
+		if (pMat[nCntMat].pTextureFilename != NULL)
+		{// テクスチャファイルが存在する
+			D3DXCreateTextureFromFile(pDevice, pMat[nCntMat].pTextureFilename, &pFishes->aModel[nCntFishes].apTexture[nCntMat]);
 		}
 	}
+	*/
 }
 
 //=============================================================================
@@ -87,9 +101,10 @@ void InitFishes(void)
 //=============================================================================
 void UninitFishes(void)
 {
+	// ローカル変数宣言
 	Fishes* pFishes = GetFishes();
 
-	for (int nCntModel = 0; nCntModel < MAX_FISHES; nCntModel++, pFishes++)
+	for (int nCntModel = 0; nCntModel < FISHES_MAX_NUM; nCntModel++, pFishes++)
 	{
 		// メッシュの破棄
 		if (pFishes->aModel[nCntModel].pMesh != NULL)
@@ -122,57 +137,65 @@ void UninitFishes(void)
 //=============================================================================
 void UpdateFishes(void)
 {
+	// ローカル変数宣言
 	Fishes* pFishes = GetFishes();
 	FISHESSTATE OldState = FISHESSTATE_STOP;
-	static int nCntStop = 0, nCntMove = 0;
 
-	// 追加予定
-	// 1 最初に進む時間 角度 止まる時間を設定する
-	for (int nCntFishes = 0; nCntFishes < MAX_FISHES; nCntFishes++, pFishes++)
+	for (int nCntFishes = 0; nCntFishes < FISHES_MAX_NUM; nCntFishes++, pFishes++)
 	{
 		if (pFishes[nCntFishes].bUse == true && pFishes[nCntFishes].bMoving == true)
 		{
-			//今の時点のstateを記録
+			// 今の時点のstateを記録
 			OldState = pFishes[nCntFishes].state;
 			pFishes[nCntFishes].posOld = pFishes[nCntFishes].pos;
 
-			//それぞれのフラグ増加
+			// それぞれのフラグ増加
 			if (pFishes[nCntFishes].state == FISHESSTATE_MOVE)
 			{
-
-				pFishes[nCntFishes].move.x += sinf(pFishes[nCntFishes].rot.y) * FISHES_MOVEMENT.x;
-				pFishes[nCntFishes].move.z += cosf(pFishes[nCntFishes].rot.y) * FISHES_MOVEMENT.z;
+				// 移動
+				pFishes[nCntFishes].move.x += sinf(pFishes[nCntFishes].fAngle) * FISHES_MOVEMENT.x;
+				pFishes[nCntFishes].move.z += cosf(pFishes[nCntFishes].fAngle) * FISHES_MOVEMENT.z;
 
 				pFishes[nCntFishes].pos += pFishes[nCntFishes].move;
 
+				// 移動慣性
 				pFishes[nCntFishes].move.x += (0.0f - pFishes[nCntFishes].move.x) * FISHES_INERTIA_MOVE;
 				pFishes[nCntFishes].move.z += (0.0f - pFishes[nCntFishes].move.z) * FISHES_INERTIA_MOVE;
 
-				nCntMove++;
+
+				if (pFishes[nCntFishes].rot.y != pFishes[nCntFishes].fAngle)
+				{// 目標地点につくまで慣性で角度を足す
+					pFishes[nCntFishes].rot.y += (pFishes[nCntFishes].fAngle - pFishes[nCntFishes].rot.y) * FISHES_INERTIA_ANGLE;
+
+					// 向きを調整
+					CorrectAngle(&pFishes[nCntFishes].rot.y, pFishes[nCntFishes].rot.y);
+				}
+
+				pFishes[nCntFishes].nCounterState++;
 			}
 			else if (pFishes[nCntFishes].state == FISHESSTATE_STOP)
 			{
-				nCntStop++;
+				pFishes[nCntFishes].nCounterState++;
 			}
 
-			//生き物の状態遷移
-			if (pFishes[nCntFishes].MoveTime < nCntMove)
+			// 生き物の状態遷移
+			if (pFishes[nCntFishes].MoveTime < pFishes[nCntFishes].nCounterState)
 			{
 				pFishes[nCntFishes].state = FISHESSTATE_STOP;
-				nCntMove = 0;
+				pFishes[nCntFishes].nCounterState = 0;
 			}
-			else if (pFishes[nCntFishes].StopTime < nCntStop)
+			else if (pFishes[nCntFishes].StopTime < pFishes[nCntFishes].nCounterState)
 			{
 				pFishes[nCntFishes].state = FISHESSTATE_MOVE;
-				nCntStop = 0;
+				pFishes[nCntFishes].nCounterState = 0;
 			}
 
-			//stopからmoveに移行するとき数値を設定(ランダム)
+			// stopからmoveに移行するとき数値を設定(ランダム)
 			if (OldState == FISHESSTATE_STOP && OldState == pFishes[nCntFishes].state)
 			{
-				pFishes[nCntFishes].MoveTime = rand() % (60 * 8) + 1;			//移動する時間
-				pFishes[nCntFishes].rot = D3DXVECTOR3(0.0f,((rand() % 628) - 314) * 100.0f,0.0f);	//移動する角度(ｙ軸)
-				pFishes[nCntFishes].StopTime = rand() % (60 * 4) + 1;			//停止している時間
+				pFishes[nCntFishes].MoveTime = rand() % (60 * 8) + 1;				// 移動する時間
+				pFishes[nCntFishes].fAngle = ((rand() % 628) - 314) * 100.0f;		// 移動する角度(ｙ軸)
+				pFishes[nCntFishes].StopTime = rand() % (60 * 4) + 1;				// 停止している時間
 			}
 		}
 	}
@@ -190,7 +213,7 @@ void DrawFishes(void)
 	D3DXMATERIAL* pMat;								// マテリアルデータへのポインタ
 	Fishes* pFishes = GetFishes();
 
-	for (int nCntModel = 0; nCntModel < MAX_FISHES; nCntModel++, pFishes++)
+	for (int nCntModel = 0; nCntModel < FISHES_MAX_NUM; nCntModel++, pFishes++)
 	{
 		// ワールドマトリックスの初期化
 		D3DXMatrixIdentity(&pFishes->mtxWorld);
@@ -217,11 +240,14 @@ void DrawFishes(void)
 			// マテリアルの設定
 			pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
 
-			// テクスチャの設定
-			pDevice->SetTexture(0, pFishes->aModel[nCntModel].apTexture[nCntMat]);
+			if (pFishes[nCntModel].bUse = true)
+			{
+				// テクスチャの設定
+				pDevice->SetTexture(0, pFishes->aModel[nCntModel].apTexture[nCntMat]);
 
-			// 生き物パーツの描画
-			pFishes->aModel[nCntModel].pMesh->DrawSubset(nCntMat);
+				// 生き物パーツの描画
+				pFishes->aModel[nCntModel].pMesh->DrawSubset(nCntMat);
+			}
 		}
 
 		// 保存していたマテリアルを戻す
@@ -234,6 +260,7 @@ void DrawFishes(void)
 //=============================================================================
 void CollisionFishes(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, float fWidth, float fDepth)
 {
+	// ローカル変数宣言
 	Fishes* pFishes = GetFishes();
 
 	if ((pPos->x + fWidth > pFishes[0].pos.x - FISHES_WIDTH) &&
@@ -272,4 +299,140 @@ void CollisionFishes(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 Fishes* GetFishes(void)
 {
 	return &g_aFishes[0];
+}
+
+//=============================================================================
+// ファイルスキャン
+//=============================================================================
+void ScanFile_Fishes(char* FileName)
+{/*
+	// ローカル変数宣言
+	LPDIRECT3DDEVICE9 pDevice = GetDevice();		// デバイスの取得
+	FILE* pFile;
+	char afileStr[256];
+	char NumStr[256];
+	int nWordEnd = 0;
+	bool bScanModel = false;
+	bool bScript = false;
+	
+	// ファイル開き
+	pFile = fopen(FileName, "r");
+
+	if (pFile != NULL)
+	{ // 開いたとき
+		while (1)
+		{
+			// ファイル読み込み
+			fgets(&afileStr[0], 100, pFile);
+
+			if (kStrcmp(&afileStr[0], "SCAN_MODEL", &nWordEnd) == true)
+			{
+				bScanModel = true;
+
+			}
+			while (bScanModel)
+			{
+				//ファイル読み込み
+				fgets(&afileStr[0], 100, pFile);
+
+				if (kStrcmp(&afileStr[0], "SCRIPT", &nWordEnd) == true)
+				{
+					bScript = true;
+
+				}
+				while (bScript)
+				{
+					//ファイル読み込み
+					fgets(&afileStr[0], 100, pFile);
+
+					if (kStrcmp(&afileStr[0], "NUM_MODEL", &nWordEnd) == true)
+					{
+						if (kStrcmp(&afileStr[nWordEnd], " = ", &nWordEnd) == true)
+						{
+							//文字列代入
+							kStrPrint(&afileStr[nWordEnd], &NumStr[0], &nWordEnd);
+							//変換
+							pPlayer->nNumModel = atoi(NumStr);
+							nWordEnd = 0;
+							bNumModel = true;
+						}
+					}
+					if (bNumModel == true)
+					{
+						for (nCntModel = 0; nCntModel < pPlayer->nNumModel;)
+						{
+							//ファイル読み込み
+							fgets(&afileStr[0], 100, pFile);
+
+							if (kStrcmp(&afileStr[0], "MODEL_FILENAME", &nWordEnd) == true)
+							{
+							}
+						}
+					}
+				}
+			}
+		}
+		// ファイル閉じ
+		fclose(pFile);
+
+	}*/
+}
+
+//=========================================
+// 文字判定処理
+//=========================================
+bool kStrcmp(const char* aStr, const char* aCmpStr, int* nWE)
+{
+	for (; *aStr != '\0'; aStr++)
+	{
+		*nWE += 1;
+		if (*aStr == *aCmpStr)
+		{ // SCRIPT
+			aCmpStr++;
+			if (*aCmpStr == '\0')
+			{
+				return true;
+			}
+		}
+		else if (*aStr == '#')
+		{
+			*nWE = 0;
+			return false;
+		}
+	}
+	*nWE = 0;
+	return false;
+}
+
+//=========================================
+// 文字代入処理
+//=========================================
+void kStrPrint(const char* aStr, char* aPrintStr, int* nWE)
+{
+	for (; *aStr != '\0'; aStr++)
+	{
+		*nWE += 1;
+		if (*aStr == '#')
+		{
+			break;
+		}
+		else if (*aStr == '\t')
+		{
+			break;
+		}
+		else if (*aStr == ' ')
+		{
+			break;
+		}
+		else if (*aStr == '\n')
+		{
+			break;
+		}
+		else
+		{
+			sprintf(aPrintStr, "%c", *aStr);
+			aPrintStr++;
+		}
+	}
+	aStr++;
 }

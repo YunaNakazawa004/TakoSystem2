@@ -69,5 +69,8 @@ void UpdateFishes(void);
 void DrawFishes(void);
 void CollisionFishes(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, float fWidth, float fDepth);
 Fishes* GetFishes(void);
+//void ScanFile_Fishes(char* FileName);
+bool kStrcmp(const char* aStr, const char* aCmpStr, int* nWE);
+void kStrPrint(const char* aStr, char* aPrintStr, int* nWE);
 
 #endif
