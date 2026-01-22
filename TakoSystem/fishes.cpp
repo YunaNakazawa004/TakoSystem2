@@ -56,7 +56,6 @@ void InitFishes(void)
 		pFishes[nCntFishes].bMove = false;
 		pFishes[nCntFishes].bUse = false;
 		pFishes[nCntFishes].MoveTime = 0;
-		pFishes[nCntFishes].MoveRot = 0.0f;
 		pFishes[nCntFishes].StopTime = 0;
 		pFishes[nCntFishes].bMoving = false;
 
@@ -135,15 +134,25 @@ void UpdateFishes(void)
 		{
 			//¡‚Ì“_‚Ìstate‚ğ‹L˜^
 			OldState = pFishes[nCntFishes].state;
+			pFishes[nCntFishes].posOld = pFishes[nCntFishes].pos;
 
 			//‚»‚ê‚¼‚ê‚Ìƒtƒ‰ƒO‘‰Á
-			if (pFishes[nCntFishes].state == FISHESSTATE_STOP)
+			if (pFishes[nCntFishes].state == FISHESSTATE_MOVE)
+			{
+
+				pFishes[nCntFishes].move.x += sinf(pFishes[nCntFishes].rot.y) * FISHES_MOVEMENT.x;
+				pFishes[nCntFishes].move.z += cosf(pFishes[nCntFishes].rot.y) * FISHES_MOVEMENT.z;
+
+				pFishes[nCntFishes].pos += pFishes[nCntFishes].move;
+
+				pFishes[nCntFishes].move.x += (0.0f - pFishes[nCntFishes].move.x) * FISHES_INERTIA_MOVE;
+				pFishes[nCntFishes].move.z += (0.0f - pFishes[nCntFishes].move.z) * FISHES_INERTIA_MOVE;
+
+				nCntMove++;
+			}
+			else if (pFishes[nCntFishes].state == FISHESSTATE_STOP)
 			{
 				nCntStop++;
-			}
-			else if (pFishes[nCntFishes].state == FISHESSTATE_MOVE)
-			{
-				nCntMove++;
 			}
 
 			//¶‚«•¨‚Ìó‘Ô‘JˆÚ
@@ -162,7 +171,7 @@ void UpdateFishes(void)
 			if (OldState == FISHESSTATE_STOP && OldState == pFishes[nCntFishes].state)
 			{
 				pFishes[nCntFishes].MoveTime = rand() % (60 * 8) + 1;			//ˆÚ“®‚·‚éŠÔ
-				pFishes[nCntFishes].MoveRot = ((rand() % 628) - 314) * 100.0f;	//ˆÚ“®‚·‚éŠp“x(‚™²)
+				pFishes[nCntFishes].rot = D3DXVECTOR3(0.0f,((rand() % 628) - 314) * 100.0f,0.0f);	//ˆÚ“®‚·‚éŠp“x(‚™²)
 				pFishes[nCntFishes].StopTime = rand() % (60 * 4) + 1;			//’â~‚µ‚Ä‚¢‚éŠÔ
 			}
 		}

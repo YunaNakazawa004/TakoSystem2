@@ -57,7 +57,6 @@ typedef struct
 	int nFrameBlend;							// ブレンドフレーム数
 	int nCounterBlend;							// ブレンドカウンター
 	int MoveTime;								//	移動時間
-	float MoveRot;								//	移動角度
 	int StopTime;								//	停止時間
 }Fishes;
 
