@@ -9,6 +9,7 @@
 #include "light.h"
 #include "input.h"
 #include "debugproc.h"
+#include "crosshair.h"
 //#include "sound.h"
 //#include "fade.h"
 //#include "title.h"
@@ -18,6 +19,8 @@
 //#include "ranking.h"
 #include "player.h"
 #include "stage.h"
+#include "esa.h"		// エサ
+#include "time.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -335,6 +338,18 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// ステージの初期化処理
 	InitStage();
 
+	// エサの初期化処理
+	InitEsa();
+
+	// クロスヘアの初期化処理
+	InitCrossHair();
+
+	// 時間の初期化処理
+	InitTime();
+
+	// 時間の初期設定
+	SetTime(DEFAULT_TIME);
+
 	// サウンドの初期化
 	////InitSound(hWnd);
 
@@ -381,6 +396,16 @@ void Uninit(void)
 
 	// ステージの終了処理
 	UninitStage();
+
+	// エサの終了処理
+	UninitEsa();
+
+	// クロスヘアの終了処理
+	UninitCrossHair();
+
+	// 時間の終了処理
+	UninitTime();
+
 	// サウンドの終了処理
 	//StopSound();
 	//UninitSound();
@@ -437,6 +462,15 @@ void Update(void)
 	// ステージの更新処理
 	UpdateStage();
 
+	// エサの更新処理
+	UpdateEsa();
+
+	// クロスヘアの更新処理
+	UpdateCrossHair();
+
+	// 時間の更新処理
+	UpdateTime();
+
 #if 0
 	switch (g_mode)
 	{
@@ -487,11 +521,24 @@ void Draw(void)
 			// カメラの描画処理
 			SetCamera(nCntCamera);
 
+			// フォグの設定
+			Player* pPlayer = GetPlayer();
+			SetFog(D3DXCOLOR(0.0f, 0.1f, 0.2f, 1.0f), 10000.0f, pPlayer->fFog);
+
 			// プレイヤーの描画処理
 			DrawPlayer();
 
 			// ステージの描画処理
 			DrawStage();
+
+			// エサの描画処理
+			DrawEsa();
+
+			// クロスヘアの描画処理
+			DrawCrossHair();
+
+			// 時間の描画処理
+			DrawTime();
 		}
 #if 0
 		switch (g_mode)
@@ -647,4 +694,26 @@ void CorrectAngle(float* fAngle, float fAngleCmp)
 	{
 		*fAngle += D3DX_PI * 2;
 	}
+}
+
+//=============================================================================
+// フォグの設定
+//=============================================================================
+void SetFog(D3DXCOLOR col, float fFogStart, float fFogEnd)
+{
+	// フォグを有効にする
+	g_pD3DDevice->SetRenderState(D3DRS_FOGENABLE, TRUE);
+
+	// フォグカラー設定
+	g_pD3DDevice->SetRenderState(D3DRS_FOGCOLOR, col);
+
+	// バーテックスフォグ(線形公式)を使用
+	g_pD3DDevice->SetRenderState(D3DRS_FOGTABLEMODE, D3DFOG_LINEAR);		// D3DRS_FOGTABLEMODE (ピクセルフォグ) / D3DRS_FOGVERTEXMODE (バーテックスフォグ)
+
+	// フォグ範囲設定
+	g_pD3DDevice->SetRenderState(D3DRS_FOGSTART, *((LPDWORD)(&fFogStart)));
+	g_pD3DDevice->SetRenderState(D3DRS_FOGEND, *((LPDWORD)(&fFogEnd)));
+
+	// 範囲ベースのフォグを使用
+	g_pD3DDevice->SetRenderState(D3DRS_RANGEFOGENABLE, TRUE);
 }

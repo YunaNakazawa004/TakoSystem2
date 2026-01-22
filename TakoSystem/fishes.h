@@ -1,36 +1,27 @@
 //=============================================================================
 // 
-// プレイヤーヘッダー [player.h]
-// Author : 中澤優奈
+// 生き物ヘッダー [fishes.h]
+// Author : Mutsuki Uemura
 // 
 //=============================================================================
-#ifndef _PLAYER_H_		// このマクロ定義がされていなかったら
-#define _PLAYER_H_		// 2重インクルード防止のマクロを定義する
+#ifndef _FISHES_H_		// このマクロ定義がされていなかったら
+#define _FISHES_H_		// 2重インクルード防止のマクロを定義する
 
 #include "main.h"
 #include "model.h"
 
 //*****************************************************************************
-// マクロ定義
-//*****************************************************************************
-#define START_POS		(D3DXVECTOR3(0.0f, 0.0f, -200.0f))		// 開始位置
-
-//*****************************************************************************
-// プレイヤーの状態
+// 生き物の状態
 //*****************************************************************************4
 typedef enum
 {
-	PLAYERSTATE_NORMAL = 0,			// 通常状態
-	PLAYERSTATE_APPEAR,				// 出現状態
-	PLAYERSTATE_WAIT,				// 待機状態
-	PLAYERSTATE_TENTACLE,			// 触手伸ばし状態
-	PLAYERSTATE_DASH,				// 高速移動状態
-	PLAYERSTATE_INK,				// 墨吐き状態
-	PLAYERSTATE_MAX
-}PLAYERSTATE;
+	FISHESSTATE_MOVE = 0,			// 移動状態
+	FISHESSTATE_STOP,				// 停止状態
+	FISHESSTATE_MAX
+}FISHESSTATE;
 
 //*****************************************************************************
-// プレイヤーの構造体
+// 生き物の構造体
 //*****************************************************************************
 typedef struct
 {
@@ -40,17 +31,12 @@ typedef struct
 	D3DXVECTOR3 rot;							// 向き
 	float fAngle;								// 向きの最終地点
 	D3DXMATRIX mtxWorld;						// ワールドマトリックス
-	PLAYERSTATE state;							// 状態
+	FISHESSTATE state;							// 状態
 	int nCounterState;							// 状態カウンター
-	float fFog;									// フォグの終了位置
 	float fRadius;								// 半径
 	float fHeight;								// 高さ
-	D3DXVECTOR3 posX;							// リーチの位置(クロスヘアの位置)
-	D3DXVECTOR3 vecX;							// posVからposRへのベクトル(リーチへのベクトル)
-	bool bJump;									// ジャンプしているかどうか
-	bool bLand;									// 着地しているかどうか
 	bool bMove;									// 動いているかどうか
-	bool bAct;									// アクション中かどうか
+	bool bMoving;								// 動くかどうか
 	bool bUse;									// 使用しているかどうか
 	Model aModel[MAX_NUMMODEL];					// モデル(パーツ)
 	int nNumModel;								// モデル(パーツ)の総数
@@ -70,18 +56,18 @@ typedef struct
 	int nCounterMotionBlend;					// ブレンドモーションのカウンター
 	int nFrameBlend;							// ブレンドフレーム数
 	int nCounterBlend;							// ブレンドカウンター
-}Player;
+	int MoveTime;								//	移動時間
+	int StopTime;								//	停止時間
+}Fishes;
 
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
-void InitPlayer(void);
-void UninitPlayer(void);
-void UpdatePlayer(void);
-void DrawPlayer(void);
-void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot);
-Player* GetPlayer(void);
-void UpdateMotionPlayer(void);
-void SetMotionPlayer(int nIdx, MOTIONTYPE motionType, bool bBlendMotion, int nFrameBlend);
+void InitFishes(void);
+void UninitFishes(void);
+void UpdateFishes(void);
+void DrawFishes(void);
+void CollisionFishes(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, float fWidth, float fDepth);
+Fishes* GetFishes(void);
 
 #endif

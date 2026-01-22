@@ -38,11 +38,16 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define MOVEMENT				(D3DXVECTOR3(3.0f, 1.5f, 3.0f))			// 移動量
+#define MOVEMENT				(D3DXVECTOR3(30.0f, 5.0f, 30.0f))		// 移動量
 #define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// 向き移動量
 #define INERTIA_MOVE			(0.2f)									// 移動の慣性
+#define DASH_MOVE				(0.01f)									// 高速移動の速さ
+#define DASH_REACH				(10.0f)									// 高速移動のリーチ
 #define MAX_MOVE				(5.0f)									// 移動の制限
 #define INERTIA_ANGLE			(0.1f)									// 角度の慣性
+#define POS_ERROR				(50.0f)									// 位置の誤差
+#define FOG_MIN					(20000.0f)								// フォグの最低
+#define FOG_MAX					(70000.0f)								// フォグの最高
 #define PLAYER_WIDTH			(5.0f)									// 幅
 #define PLAYER_HEIGHT			(10.0f)									// 高さ
 #define PLAYER_FILE				"data\\motion_octo.txt"					// プレイヤーのデータファイル
@@ -78,6 +83,7 @@ void InitPlayer(void)
 		pPlayer->state = PLAYERSTATE_APPEAR;
 		pPlayer->nCounterState = 0;
 		pPlayer->fAngle = 0.0f;
+		pPlayer->fFog = FOG_MIN;
 		pPlayer->fRadius = PLAYER_WIDTH;
 		pPlayer->fHeight = PLAYER_HEIGHT;
 		pPlayer->bJump = false;
@@ -205,9 +211,24 @@ void UpdatePlayer(void)
 				PrintDebugProc("プレイヤーの状態 : [ PLAYERSTATE_WAIT ]\n");
 
 				break;
+
+			case PLAYERSTATE_TENTACLE:			// 触手伸ばし状態
+				PrintDebugProc("プレイヤーの状態 : [ PLAYERSTATE_TENTACLE ]\n");
+
+				break;
+
+			case PLAYERSTATE_DASH:				// 高速移動状態
+				PrintDebugProc("プレイヤーの状態 : [ PLAYERSTATE_DASH ]\n");
+
+				break;
+
+			case PLAYERSTATE_INK:				// 墨吐き状態
+				PrintDebugProc("プレイヤーの状態 : [ PLAYERSTATE_INK ]\n");
+
+				break;
 			}
 
-			if (pPlayer->state != PLAYERSTATE_APPEAR)
+			if (pPlayer->state != PLAYERSTATE_APPEAR && pPlayer->state != PLAYERSTATE_DASH)
 			{// 出現状態のときは移動できない
 				// パッド移動
 				if (GetJoypadStick(nCntPlayer, JOYKEY_LEFTSTICK, &nValueH, &nValueV) == true)
@@ -217,7 +238,7 @@ void UpdatePlayer(void)
 					fAngle = atan2f((float)(nValueH), (float)(nValueV));
 
 					pPlayer->move.x += sinf(fAngle + pCamera->rot.y) * MOVEMENT.x * sinf((D3DX_PI * 0.5f) + pCamera->fAngle);
-					pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * (nValueV / 16100);
+					pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * (nValueV / 5050);
 					pPlayer->move.z += cosf(fAngle + pCamera->rot.y) * MOVEMENT.z * sinf((D3DX_PI * 0.5f) + pCamera->fAngle);
 					
 					pPlayer->bMove = true;
@@ -227,27 +248,27 @@ void UpdatePlayer(void)
 				{// 奥に移動
 					if (GetKeyboardPress(DIK_A) == true || GetJoypadPress(nCntPlayer, JOYKEY_LEFT) == true)
 					{// 左奥に移動
-						pPlayer->move.x += sinf(-D3DX_PI * 0.75f - pCamera->rot.y) * MOVEMENT.x;
-						pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * MOVEMENT.y;
-						pPlayer->move.z += cosf(-D3DX_PI * 0.25f + pCamera->rot.y) * MOVEMENT.z;
+						pPlayer[nCntPlayer].move.x += sinf(-D3DX_PI * 0.75f - pCamera->rot.y) * MOVEMENT.x;
+						pPlayer[nCntPlayer].move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * MOVEMENT.y;
+						pPlayer[nCntPlayer].move.z += cosf(-D3DX_PI * 0.25f + pCamera->rot.y) * MOVEMENT.z;
 
-						pPlayer->fAngle = pCamera->rot.y - (-D3DX_PI * 0.75f);
+						pPlayer[nCntPlayer].fAngle = pCamera->rot.y - (-D3DX_PI * 0.75f);
 					}
 					else if (GetKeyboardPress(DIK_D) == true || GetJoypadPress(nCntPlayer, JOYKEY_RIGHT) == true)
 					{// 右奥に移動
-						pPlayer->move.x += sinf(D3DX_PI * 0.75f - pCamera->rot.y) * MOVEMENT.x;
-						pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * MOVEMENT.y;
-						pPlayer->move.z += cosf(D3DX_PI * 0.25f + pCamera->rot.y) * MOVEMENT.z;
+						pPlayer[nCntPlayer].move.x += sinf(D3DX_PI * 0.75f - pCamera->rot.y) * MOVEMENT.x;
+						pPlayer[nCntPlayer].move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * MOVEMENT.y;
+						pPlayer[nCntPlayer].move.z += cosf(D3DX_PI * 0.25f + pCamera->rot.y) * MOVEMENT.z;
 
-						pPlayer->fAngle = pCamera->rot.y - (D3DX_PI * 0.75f);
+						pPlayer[nCntPlayer].fAngle = pCamera->rot.y - (D3DX_PI * 0.75f);
 					}
 					else if (GetKeyboardPress(DIK_W) == true || GetJoypadPress(nCntPlayer, JOYKEY_UP) == true)
 					{// 奥に移動
-						pPlayer->move.x += sinf(D3DX_PI * 0.0f + pCamera->rot.y) * MOVEMENT.x;
-						pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * MOVEMENT.y;
-						pPlayer->move.z += cosf(D3DX_PI * 0.0f + pCamera->rot.y) * MOVEMENT.z;
+						pPlayer[nCntPlayer].move.x += sinf(D3DX_PI * 0.0f + pCamera->rot.y) * MOVEMENT.x;
+						pPlayer[nCntPlayer].move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * MOVEMENT.y;
+						pPlayer[nCntPlayer].move.z += cosf(D3DX_PI * 0.0f + pCamera->rot.y) * MOVEMENT.z;
 
-						pPlayer->fAngle = pCamera->rot.y - D3DX_PI;
+						pPlayer[nCntPlayer].fAngle = pCamera->rot.y - D3DX_PI;
 					}
 
 					pPlayer->bMove = true;
@@ -256,46 +277,46 @@ void UpdatePlayer(void)
 				{// 手前に移動
 					if (GetKeyboardPress(DIK_A) == true || GetJoypadPress(nCntPlayer, JOYKEY_LEFT) == true)
 					{// 左手前に移動
-						pPlayer->move.x += sinf(-D3DX_PI * 0.25f - pCamera->rot.y) * MOVEMENT.x;
-						pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * -MOVEMENT.y;
-						pPlayer->move.z += cosf(-D3DX_PI * 0.75f + pCamera->rot.y) * MOVEMENT.z;
+						pPlayer[nCntPlayer].move.x += sinf(-D3DX_PI * 0.25f - pCamera->rot.y) * MOVEMENT.x;
+						pPlayer[nCntPlayer].move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * -MOVEMENT.y;
+						pPlayer[nCntPlayer].move.z += cosf(-D3DX_PI * 0.75f + pCamera->rot.y) * MOVEMENT.z;
 
-						pPlayer->fAngle = pCamera->rot.y + (D3DX_PI * 0.25f);
+						pPlayer[nCntPlayer].fAngle = pCamera->rot.y + (D3DX_PI * 0.25f);
 					}
 					else if (GetKeyboardPress(DIK_D) == true || GetJoypadPress(nCntPlayer, JOYKEY_RIGHT) == true)
 					{// 右手前に移動
-						pPlayer->move.x += sinf(D3DX_PI * 0.25f - pCamera->rot.y) * MOVEMENT.x;
-						pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * -MOVEMENT.y;
-						pPlayer->move.z += cosf(D3DX_PI * 0.75f + pCamera->rot.y) * MOVEMENT.z;
+						pPlayer[nCntPlayer].move.x += sinf(D3DX_PI * 0.25f - pCamera->rot.y) * MOVEMENT.x;
+						pPlayer[nCntPlayer].move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * -MOVEMENT.y;
+						pPlayer[nCntPlayer].move.z += cosf(D3DX_PI * 0.75f + pCamera->rot.y) * MOVEMENT.z;
 
-						pPlayer->fAngle = pCamera->rot.y + (-D3DX_PI * 0.25f);
+						pPlayer[nCntPlayer].fAngle = pCamera->rot.y + (-D3DX_PI * 0.25f);
 					}
 					else if (GetKeyboardPress(DIK_S) == true || GetJoypadPress(nCntPlayer, JOYKEY_DOWN) == true)
 					{// 手前に移動
-						pPlayer->move.x += sinf(D3DX_PI * 1.0f + pCamera->rot.y) * MOVEMENT.x;
-						pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * -MOVEMENT.y;
-						pPlayer->move.z += cosf(D3DX_PI * 1.0f + pCamera->rot.y) * MOVEMENT.z;
+						pPlayer[nCntPlayer].move.x += sinf(D3DX_PI * 1.0f + pCamera->rot.y) * MOVEMENT.x;
+						pPlayer[nCntPlayer].move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * -MOVEMENT.y;
+						pPlayer[nCntPlayer].move.z += cosf(D3DX_PI * 1.0f + pCamera->rot.y) * MOVEMENT.z;
 
-						pPlayer->fAngle = pCamera->rot.y;
+						pPlayer[nCntPlayer].fAngle = pCamera->rot.y;
 					}
 
 					pPlayer->bMove = true;
 				}
 				else if (GetKeyboardPress(DIK_A) == true || GetJoypadPress(nCntPlayer, JOYKEY_LEFT) == true)
 				{// 左に移動
-					pPlayer->move.x += sinf(-D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.x;
-					pPlayer->move.z += cosf(-D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.z;
+					pPlayer[nCntPlayer].move.x += sinf(-D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.x;
+					pPlayer[nCntPlayer].move.z += cosf(-D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.z;
 
-					pPlayer->fAngle = pCamera->rot.y + (D3DX_PI * 0.5f);
+					pPlayer[nCntPlayer].fAngle = pCamera->rot.y + (D3DX_PI * 0.5f);
 
 					pPlayer->bMove = true;
 				}
 				else if (GetKeyboardPress(DIK_D) == true || GetJoypadPress(nCntPlayer, JOYKEY_RIGHT) == true)
 				{// 右に移動
-					pPlayer->move.x += sinf(D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.x;
-					pPlayer->move.z += cosf(D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.z;
+					pPlayer[nCntPlayer].move.x += sinf(D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.x;
+					pPlayer[nCntPlayer].move.z += cosf(D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.z;
 
-					pPlayer->fAngle = pCamera->rot.y - (D3DX_PI * 0.5f);
+					pPlayer[nCntPlayer].fAngle = pCamera->rot.y - (D3DX_PI * 0.5f);
 
 					pPlayer->bMove = true;
 				}
@@ -305,33 +326,19 @@ void UpdatePlayer(void)
 				}
 			}
 
-#if 0
-			if (GetKeyboardPress(DIK_I) == true || xInputState.Gamepad.bLeftTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
-			{// 上に移動
-				pPlayer->move.y += MOVEMENT.y;
-				pPlayer->bJump = true;
+			if (pPlayer->state == PLAYERSTATE_DASH)
+			{// 高速移動
+				pPlayer->pos += (pPlayer->posX - pPlayer->pos) * DASH_MOVE;
 
-				// エフェクト
-				SetEffect(pPlayer->pos, FIRST_POS, WHITE_VTX, EFFECT_RADIUS, EFFECT_LIFE, true, false, pPlayer->pos);
+				if (pPlayer->pos.x < pPlayer->posX.x + POS_ERROR && pPlayer->pos.x > pPlayer->posX.x - POS_ERROR &&
+					pPlayer->pos.y < pPlayer->posX.y + POS_ERROR && pPlayer->pos.y > pPlayer->posX.y - POS_ERROR &&
+					pPlayer->pos.z < pPlayer->posX.z + POS_ERROR && pPlayer->pos.z > pPlayer->posX.z - POS_ERROR)
+				{// 着いた
+					pPlayer->state = PLAYERSTATE_WAIT;
+					pPlayer->vecX = FIRST_POS;
+					pPlayer->posX = FIRST_POS;
+				}
 			}
-			else if (GetKeyboardPress(DIK_K) == true || xInputState.Gamepad.bRightTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
-			{// 下に移動
-				pPlayer->move.y += -MOVEMENT.y;
-				pPlayer->bJump = true;
-
-				// エフェクト
-				SetEffect(pPlayer->pos, FIRST_POS, WHITE_VTX, EFFECT_RADIUS, EFFECT_LIFE, true, false, pPlayer->pos);
-			}
-
-			if (GetKeyboardPress(DIK_LSHIFT) == true || GetJoypadPress(JOYKEY_LEFT_SHOULDER) == true)
-			{// Y軸回転
-				pPlayer->fAngle += -ROT.y;
-			}
-			else if (GetKeyboardPress(DIK_RSHIFT) == true || GetJoypadPress(JOYKEY_RIGHT_SHOULDER) == true)
-			{// Y軸回転
-				pPlayer->fAngle += ROT.y;
-			}
-#endif
 
 #ifdef _DEBUG
 			if (GetKeyboardTrigger(DIK_BACKSPACE) == true || GetJoypadTrigger(nCntPlayer, JOYKEY_LEFT_THUMB) == true)
@@ -364,7 +371,7 @@ void UpdatePlayer(void)
 				pPlayer->move.z = -MAX_MOVE;
 			}
 
-			if (pPlayer->state != PLAYERSTATE_APPEAR)
+			if (pPlayer->state != PLAYERSTATE_APPEAR && pPlayer->state != PLAYERSTATE_DASH)
 			{// 出現状態以外
 				// 慣性
 				pPlayer->pos += pPlayer->move;
@@ -392,6 +399,19 @@ void UpdatePlayer(void)
 				pPlayer->pos.z = ALLOW_Z;
 			}
 
+			PrintDebugProc("fAngle : %f", pCamera->fAngle);
+
+			pPlayer->fFog = (pPlayer->pos.y * 1.5f * (-pCamera->fAngle * 0.5f)) + FOG_MIN;
+
+			if (pPlayer->fFog < FOG_MIN)
+			{// フォグの最低値
+				pPlayer->fFog = FOG_MIN;
+			}
+			else if (pPlayer->fFog > FOG_MAX)
+			{// フォグの最高値
+				pPlayer->fFog = FOG_MAX;
+			}
+
 			fmoveAngle = pPlayer->fAngle - pPlayer->rot.y;
 
 			// 向きを調整
@@ -403,6 +423,36 @@ void UpdatePlayer(void)
 
 				// 向きを調整
 				CorrectAngle(&pPlayer->rot.y, pPlayer->rot.y);
+			}
+
+			int nValue;
+
+			if (GetJoypadShoulder(nCntPlayer, JOYKEY_RIGHTTRIGGER, &nValue) == true
+				&& pPlayer->state != PLAYERSTATE_TENTACLE && pPlayer->state != PLAYERSTATE_DASH)
+			{// 触手伸ばしアクション
+				pPlayer->state = PLAYERSTATE_DASH;
+
+				pPlayer->vecX = pCamera->posR - pCamera->posV;
+				pPlayer->posX = pCamera->posR + pPlayer->vecX * DASH_REACH;
+			}
+
+			// if(触手伸ばしモーションが終わったら)
+			{
+				// if(オブジェクトとの当たり判定 == true)
+				{
+					//pPlayer->state = PLAYERSTATE_DASH;
+				}
+			}
+
+			if (GetJoypadShoulder(nCntPlayer, JOYKEY_LEFTTRIGGER, &nValue) == true
+				&& pPlayer->state != PLAYERSTATE_INK)
+			{// 墨吐きアクション
+				pPlayer->state = PLAYERSTATE_INK;
+			}
+
+			if(pPlayer->state == PLAYERSTATE_INK)
+			{// 墨吐きモーションが終わったら
+				pPlayer->state = PLAYERSTATE_WAIT;
 			}
 
 #if 0
