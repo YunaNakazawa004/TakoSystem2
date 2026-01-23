@@ -189,6 +189,7 @@ void UpdatePlayer(void)
 	Camera* pCamera = GetCamera();
 	Player* pPlayer = GetPlayer();
 	int nValueH, nValueV;
+	int nValue;
 	float fmoveAngle = 0.0f;
 	float fAngle;
 
@@ -329,7 +330,7 @@ void UpdatePlayer(void)
 				}
 			}
 
-			if (pPlayer->state == PLAYERSTATE_DASH)
+			if (pPlayer->state == PLAYERSTATE_DASH && GetJoypadShoulder(nCntPlayer, JOYKEY_RIGHTTRIGGER, &nValue) == true)
 			{// ‚‘¬ˆÚ“®
 				pPlayer->pos += (pPlayer->posX - pPlayer->pos) * DASH_MOVE;
 
@@ -341,6 +342,12 @@ void UpdatePlayer(void)
 					pPlayer->vecX = FIRST_POS;
 					pPlayer->posX = FIRST_POS;
 				}
+			}
+			else if(GetJoypadShoulder(nCntPlayer, JOYKEY_RIGHTTRIGGER, &nValue) == false)
+			{// ‚‘¬ˆÚ“®‚â‚ß‚é
+				pPlayer->state = PLAYERSTATE_WAIT;
+				pPlayer->vecX = FIRST_POS;
+				pPlayer->posX = FIRST_POS;
 			}
 
 #ifdef _DEBUG
@@ -427,8 +434,6 @@ void UpdatePlayer(void)
 				// Œü‚«‚ð’²®
 				CorrectAngle(&pPlayer->rot.y, pPlayer->rot.y);
 			}
-
-			int nValue;
 
 			if (GetJoypadShoulder(nCntPlayer, JOYKEY_RIGHTTRIGGER, &nValue) == true
 				&& pPlayer->state != PLAYERSTATE_TENTACLE && pPlayer->state != PLAYERSTATE_DASH)

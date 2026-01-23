@@ -19,6 +19,7 @@
 //#include "ranking.h"
 #include "meshcylinder.h"
 #include "player.h"
+#include "object.h"
 #include "stage.h"
 #include "esa.h"		// エサ
 #include "time.h"
@@ -340,6 +341,9 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// ステージの初期化処理
 	InitStage();
 
+	// 配置物の初期化処理
+	InitObject("objpos.txt");
+
 	// メッシュシリンダーの初期化処理
 	InitMeshCylinder();
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(2000.0f, 17500.0f), D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f), false);
@@ -406,6 +410,9 @@ void Uninit(void)
 
 	// ステージの終了処理
 	UninitStage();
+
+	// 配置物の終了処理
+	UninitObject();
 
 	// メッシュシリンダーの終了処理
 	UninitMeshCylinder();
@@ -477,6 +484,9 @@ void Update(void)
 
 	// ステージの更新処理
 	UpdateStage();
+
+	// 配置物の更新処理
+	UpdateObject();
 
 	// メッシュシリンダーの更新処理
 	UpdateMeshCylinder();
@@ -552,6 +562,9 @@ void Draw(void)
 
 			// ステージの描画処理
 			DrawStage();
+
+			// 配置物の描画処理
+			DrawObject();
 
 			// メッシュシリンダーの描画処理
 			DrawMeshCylinder();
