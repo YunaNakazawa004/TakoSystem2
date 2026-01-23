@@ -332,8 +332,8 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 
 	// プレイヤーの初期化処理
 	InitPlayer();
-	SetPlayer(0, FIRST_POS, FIRST_POS);
-	SetPlayer(1, D3DXVECTOR3(10.0f, 50.0f, 10.0f), FIRST_POS);
+	SetPlayer(0, D3DXVECTOR3(0.0f, 10000.0f, 15000.0f), FIRST_POS);
+	SetPlayer(1, D3DXVECTOR3(0.0f, 15000.0f, -15000.0f), FIRST_POS);
 
 	// ステージの初期化処理
 	InitStage();

@@ -1,0 +1,39 @@
+//=============================================================================
+// サウンド処理 [sound.h]
+//=============================================================================
+#ifndef _SOUND_H_
+#define _SOUND_H_
+
+#include "main.h"
+
+//*****************************************************************************
+// サウンド一覧
+//*****************************************************************************
+typedef enum
+{
+	SOUND_BGM_TITLE = 0,				//タイトルBGM
+	//SOUND_BGM_TUTORIAL,					//チュートリアルBGM
+	//SOUND_BGM_GAME,						//ゲームBGM
+	SOUND_BGM_RESULT,					//リザルトBGM
+	//SOUND_BGMRANKING,					//ランキングBGM
+	SOUND_SE_SWIM,						//泳ぐ音
+	SOUND_SE_TENTACLE_STRETCH,			//触手を伸ばす音
+	SOUND_SE_TENTACLE_RETRACT,			//触手を引っ込める音
+	SOUND_SE_INBAIT,					//エサを入れる音
+	SOUND_SE_OUTBAIT,					//エサを取り出す音
+	SOUND_SE_HIGHSPEED,					//高速移動音
+	SOUND_SE_LANDING,					//着地音	
+	SOUND_SE_WIN,						//勝利音
+	SOUND_MAX,
+} SOUND_LABEL;
+
+//*****************************************************************************
+// プロトタイプ宣言
+//*****************************************************************************
+HRESULT InitSound(HWND hWnd);
+void UninitSound(void);
+HRESULT PlaySound(SOUND_LABEL label);
+void StopSound(SOUND_LABEL label);
+void StopSound(void);
+
+#endif
