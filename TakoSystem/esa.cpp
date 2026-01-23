@@ -6,9 +6,10 @@
 //==================================================================================
 #include "main.h"
 
-#include "model.h"
 #include "esa.h"
 
+#include "input.h"
+#include "debugproc.h"
 // マクロ定義 ==================================================
 
 #define MAX_MODEL_ESA	(64)	// 用意出来るモデルの最大値
@@ -50,16 +51,18 @@ int g_aIdxEsaModel[MAX_MODEL_ESA];		// モデルのインデックス
 
 Esa g_aEsa[MAX_SET_ESA];				// エサの情報
 
-// モデルファイル名
-const char* c_apFilenameEsa[] =
-{
-	"data/MODEL/testmodel/car000.x",	// [0]車
-	"data/MODEL/testmodel/skitree000.x",	// [1]四角形
+// モデルファイル情報
+EsaModel_info g_aEsaModelInfo[] =
+{// {ファイル名, 当たり判定の大きさ}
+
+	{"data/MODEL/testmodel/car000.x",		10.0f},	// [0]車
+	{"data/MODEL/testmodel/skitree000.x",	10.0f},	// [1]四角形
 };
 
 // エサの配置情報
 Esa_info g_aEsaInfo[] =
-{
+{// {モデル種類, 位置, 角度}
+
 	{0, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
 	{1, D3DXVECTOR3(50.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
 };
@@ -82,11 +85,11 @@ void InitEsa(void)
 	memset(g_aIdxEsaModel,-1,sizeof g_aIdxEsaModel);	// モデルのラベルを初期化
 
 	// モデル読み込み
-	for (int nCntEsaModel = 0; nCntEsaModel < ESA_CALC_SIZEARRAY(c_apFilenameEsa); nCntEsaModel++)
+	for (int nCntEsaModel = 0; nCntEsaModel < ESA_CALC_SIZEARRAY(g_aEsaModelInfo); nCntEsaModel++)
 	{// 用意したファイルの数だけ繰り返す
 
 		// エサのモデル読み込み処理
-		g_aIdxEsaModel[nCntEsaModel] = SetModelEsa(c_apFilenameEsa[nCntEsaModel], &g_aEsaModel[0], ESA_CALC_SIZEARRAY(g_aEsaModel));
+		g_aIdxEsaModel[nCntEsaModel] = SetModelEsa(g_aEsaModelInfo[nCntEsaModel], &g_aEsaModel[0], ESA_CALC_SIZEARRAY(g_aEsaModel));
 	}
 
 	// エサの配置
@@ -139,7 +142,16 @@ void UninitEsa(void)
 //========================================================================
 void UpdateEsa(void)
 {
+	bool bD;
 
+	if (GetKeyboardPress(DIK_NUMPAD5)) g_aEsa[0].pos.z += 1.0f;
+	if (GetKeyboardPress(DIK_NUMPAD2)) g_aEsa[0].pos.z -= 1.0f;
+	if (GetKeyboardPress(DIK_NUMPAD1)) g_aEsa[0].pos.x -= 1.0f;
+	if (GetKeyboardPress(DIK_NUMPAD3)) g_aEsa[0].pos.x += 1.0f;
+
+	bD = CollisionEsa(NULL, g_aEsa[0].pos, g_aEsaModel[g_aIdxEsaModel[g_aEsa[0].nIdxModel]].fHitRadius);
+
+	PrintDebugProc("ESA_COLLISION %s", (bD == true) ? "TRUE" : "FALSE");
 }
 
 //========================================================================
@@ -232,7 +244,7 @@ void SetEsa(int nType, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 //========================================================================
 // エサのモデル設定処理
 //========================================================================
-int SetModelEsa(const char* pFilenameModel, EsaModel* pEsaModel, int nMaxSizeNum)
+int SetModelEsa(EsaModel_info infoEsaModel, EsaModel* pEsaModel, int nMaxSizeNum)
 {
 	// 変数宣言 ===========================================
 
@@ -247,7 +259,7 @@ int SetModelEsa(const char* pFilenameModel, EsaModel* pEsaModel, int nMaxSizeNum
 		{// 使用していない場合
 
 			// Xファイルの読み込み
-			D3DXLoadMeshFromX(pFilenameModel,
+			D3DXLoadMeshFromX(&infoEsaModel.aFilename[0],
 							  D3DXMESH_SYSTEMMEM,
 							  pDevice,
 							  NULL,
@@ -274,11 +286,48 @@ int SetModelEsa(const char* pFilenameModel, EsaModel* pEsaModel, int nMaxSizeNum
 				}
 			}
 
-			pEsaModel->bUse = true;	// 使用している状態に設定
+			pEsaModel->fHitRadius = infoEsaModel.fHitRadius;	// 当たり判定の大きさを設定
 
-			return nCntModel;	// 設定した位置を返す
+			pEsaModel->bUse = true;								// 使用している状態に設定
+
+			return nCntModel;									// 設定した位置を返す
 		}
 	}
 
 	return -1;
+}
+
+//========================================================================
+// エサの当たり判定処理
+//========================================================================
+bool CollisionEsa(int* pIdx, D3DXVECTOR3 pos, float fHitRadius)
+{
+	int nCntEsa = 1;
+
+	float fDistX, fDistZ;
+	float fDistLength;
+
+	//for (nCntEsa = 0; nCntEsa < MAX_SET_ESA; nCntEsa++)
+	//{}
+		if (g_aEsa[nCntEsa].bUse == true)
+		{// 使用している場合
+
+			fDistX = g_aEsa[nCntEsa].pos.x - pos.x;
+			fDistZ = g_aEsa[nCntEsa].pos.z - pos.z;
+
+			// 離れている距離を求める
+			fDistLength = fDistX * fDistX + fDistZ * fDistZ;
+
+			// 判定
+			if (fDistLength <= g_aEsaModel[g_aIdxEsaModel[g_aEsa[nCntEsa].nIdxModel]].fHitRadius + fHitRadius)
+			{// 離れている距離が当たり判定より小さい場合
+
+				*pIdx = nCntEsa;
+
+				return true;
+			}
+		}
+	
+
+	return false;
 }
