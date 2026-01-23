@@ -159,7 +159,7 @@ void UpdateFishes(void)
 	Fishes* pFishes = GetFishes();
 	FISHESSTATE OldState = FISHESSTATE_STOP;
 	float fmoveAngle = 0.0f;
-	int Radian = (D3DX_PI /10.0f);
+	int Radian = 10;
 
 	for (int nCntFishes = 0; nCntFishes < g_aFishes[0].nUseNum; nCntFishes++, pFishes++)
 	{
@@ -218,9 +218,9 @@ void UpdateFishes(void)
 			// stop‚©‚çmove‚ÉˆÚs‚·‚é‚Æ‚«”’l‚ðÝ’è(ƒ‰ƒ“ƒ_ƒ€)
 			if (OldState == FISHESSTATE_STOP && OldState != pFishes->state)
 			{
-				pFishes->MoveTime = 60;													// ˆÚ“®‚·‚éŽžŠÔ
-				pFishes->fAngle = pFishes->fAngle + (rand() % Radian - (Radian/2));		// ˆÚ“®‚·‚éŠp“x(‚™Ž²)
-				pFishes->StopTime = 1;													// ’âŽ~‚µ‚Ä‚¢‚éŽžŠÔ
+				pFishes->MoveTime = 60;																// ˆÚ“®‚·‚éŽžŠÔ
+				pFishes->fAngle = pFishes->fAngle + ((rand() % Radian -(Radian/2))*3.14f/100);		// ˆÚ“®‚·‚éŠp“x(‚™Ž²)
+				pFishes->StopTime = 1;																// ’âŽ~‚µ‚Ä‚¢‚éŽžŠÔ
 			}
 		}
 	}
