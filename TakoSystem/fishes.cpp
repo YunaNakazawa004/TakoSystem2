@@ -82,9 +82,9 @@ void InitFishes(void)
 		pFishes->bMoving = false;
 	}
 
-	for (int nCntModel = 0; nCntModel < (sizeof pFishesInfo / sizeof(pFishesInfo[0])); nCntModel++, pFishes++)
+	for (int nCntModel = 0; nCntModel < FISHES_CALC_SIZEARRAY(pFishesInfo); nCntModel++, pFishes++)
 	{
-		for (int nCntFishes = 0; nCntFishes < pFishes[nCntModel].nNumModel; nCntFishes++)
+		for (int nCntFishes = 0; nCntFishes < 1; nCntFishes++)
 		{
 			// Xファイルの読み込み
 			D3DXLoadMeshFromX(pFishesInfo[nCntModel].Model_FileName,
@@ -158,7 +158,7 @@ void UpdateFishes(void)
 	Fishes* pFishes = GetFishes();
 	FISHESSTATE OldState = FISHESSTATE_STOP;
 
-	for (int nCntFishes = 0; nCntFishes < FISHES_MAX_NUM; nCntFishes++, pFishes++)
+	for (int nCntFishes = 0; nCntFishes < g_aFishes[0].nUseNum; nCntFishes++, pFishes++)
 	{
 		if (pFishes[nCntFishes].bUse == true && pFishes[nCntFishes].bMoving == true)
 		{
@@ -230,45 +230,48 @@ void DrawFishes(void)
 	D3DXMATERIAL* pMat;								// マテリアルデータへのポインタ
 	Fishes* pFishes = GetFishes();
 
-	for (int nCntModel = 0; nCntModel < FISHES_MAX_NUM; nCntModel++, pFishes++)
+	for (int nCntFishes = 0; nCntFishes < g_aFishes[0].nUseNum; nCntFishes++, pFishes++)
 	{
-		// ワールドマトリックスの初期化
-		D3DXMatrixIdentity(&pFishes->mtxWorld);
-
-		// 向きを反映
-		D3DXMatrixRotationYawPitchRoll(&mtxRot, pFishes->rot.y, pFishes->rot.x, pFishes->rot.z);
-		D3DXMatrixMultiply(&pFishes->mtxWorld, &pFishes->mtxWorld, &mtxRot);
-
-		// 位置を反映
-		D3DXMatrixTranslation(&mtxTrans, pFishes->pos.x, pFishes->pos.y, pFishes->pos.z);
-		D3DXMatrixMultiply(&pFishes->mtxWorld, &pFishes->mtxWorld, &mtxTrans);
-
-		// ワールドマトリックスの設定
-		pDevice->SetTransform(D3DTS_WORLD, &pFishes->mtxWorld);
-
-		// 現在のマテリアルを取得
-		pDevice->GetMaterial(&matDef);
-
-		// マテリアルデータへのポインタを取得
-		pMat = (D3DXMATERIAL*)pFishes->aModel[nCntModel].pBuffMat->GetBufferPointer();
-
-		for (int nCntMat = 0; nCntMat < (int)pFishes->aModel[nCntModel].dwNumMat; nCntMat++)
+		for (int nCntModel = 0; nCntModel < 1; nCntModel++)
 		{
-			// マテリアルの設定
-			pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
+			// ワールドマトリックスの初期化
+			D3DXMatrixIdentity(&pFishes->mtxWorld);
 
-			if (pFishes->bUse == true)
+			// 向きを反映
+			D3DXMatrixRotationYawPitchRoll(&mtxRot, pFishes->rot.y, pFishes->rot.x, pFishes->rot.z);
+			D3DXMatrixMultiply(&pFishes->mtxWorld, &pFishes->mtxWorld, &mtxRot);
+
+			// 位置を反映
+			D3DXMatrixTranslation(&mtxTrans, pFishes->pos.x, pFishes->pos.y, pFishes->pos.z);
+			D3DXMatrixMultiply(&pFishes->mtxWorld, &pFishes->mtxWorld, &mtxTrans);
+
+			// ワールドマトリックスの設定
+			pDevice->SetTransform(D3DTS_WORLD, &pFishes->mtxWorld);
+
+			// 現在のマテリアルを取得
+			pDevice->GetMaterial(&matDef);
+
+			// マテリアルデータへのポインタを取得
+			pMat = (D3DXMATERIAL*)pFishes[pFishes->nModelIdx].aModel[nCntModel].pBuffMat->GetBufferPointer();
+
+			for (int nCntMat = 0; nCntMat < (int)pFishes->aModel[nCntModel].dwNumMat; nCntMat++)
 			{
-				// テクスチャの設定
-				pDevice->SetTexture(0, pFishes->aModel[nCntModel].apTexture[nCntMat]);
+				// マテリアルの設定
+				pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
 
-				// 生き物パーツの描画
-				pFishes->aModel[nCntModel].pMesh->DrawSubset(nCntMat);
+				if (pFishes->bUse == true)
+				{
+					// テクスチャの設定
+					pDevice->SetTexture(0, pFishes[pFishes->nModelIdx].aModel[nCntModel].apTexture[nCntMat]);
+
+					// 生き物パーツの描画
+					pFishes[pFishes->nModelIdx].aModel[nCntModel].pMesh->DrawSubset(nCntMat);
+				}
 			}
-		}
 
-		// 保存していたマテリアルを戻す
-		pDevice->SetMaterial(&matDef);
+			// 保存していたマテリアルを戻す
+			pDevice->SetMaterial(&matDef);
+		}
 	}
 }
 
@@ -333,7 +336,7 @@ void SetFishes(int ModelIdx, int nNumSet)
 		{
 			pFishes->bUse = true;
 			pFishes->nModelIdx = ModelIdx;
-			pFishes[0].nUseNum++;
+			g_aFishes[0].nUseNum++;
 			nModelSet++;
 		}
 		// nNumSet分設定したら
