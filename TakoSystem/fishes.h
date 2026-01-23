@@ -33,6 +33,8 @@ typedef struct
 	float fAngle;								// 向きの最終地点
 	int MoveTime;								// 移動時間
 	int StopTime;								// 停止時間
+	int nMoveCnt;								// 移動カウント
+	int	nStopCnt;								// 停止カウント
 	D3DXMATRIX mtxWorld;						// ワールドマトリックス
 	FISHESSTATE state;							// 状態
 	int nCounterState;							// 状態カウンター
