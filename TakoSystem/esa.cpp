@@ -149,9 +149,9 @@ void UpdateEsa(void)
 	if (GetKeyboardPress(DIK_NUMPAD1)) g_aEsa[0].pos.x -= 1.0f;
 	if (GetKeyboardPress(DIK_NUMPAD3)) g_aEsa[0].pos.x += 1.0f;
 
-	bD = CollisionEsa(NULL, g_aEsa[0].pos, g_aEsaModel[g_aIdxEsaModel[g_aEsa[0].nIdxModel]].fHitRadius);
+	//bD = CollisionEsa(NULL, g_aEsa[0].pos, g_aEsaModel[g_aIdxEsaModel[g_aEsa[0].nIdxModel]].fHitRadius);
 
-	PrintDebugProc("ESA_COLLISION %s", (bD == true) ? "TRUE" : "FALSE");
+	//PrintDebugProc("ESA_COLLISION %s", (bD == true) ? "TRUE" : "FALSE");
 }
 
 //========================================================================

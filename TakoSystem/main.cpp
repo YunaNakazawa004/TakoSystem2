@@ -349,7 +349,7 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	InitFishes();
 
 	// エサの初期化処理
-	InitEsa();
+	//InitEsa();
 
 	// クロスヘアの初期化処理
 	InitCrossHair();
@@ -414,7 +414,7 @@ void Uninit(void)
 	UninitFishes();
 
 	// エサの終了処理
-	UninitEsa();
+	//UninitEsa();
 
 	// クロスヘアの終了処理
 	UninitCrossHair();
@@ -485,7 +485,7 @@ void Update(void)
 	UpdateFishes();
 
 	// エサの更新処理
-	UpdateEsa();
+	//UpdateEsa();
 
 	// クロスヘアの更新処理
 	UpdateCrossHair();
@@ -560,7 +560,7 @@ void Draw(void)
 			DrawFishes();
 
 			// エサの描画処理
-			DrawEsa();
+			//DrawEsa();
 
 			// クロスヘアの描画処理
 			DrawCrossHair();
