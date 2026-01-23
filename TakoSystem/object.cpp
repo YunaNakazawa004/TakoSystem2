@@ -5,16 +5,10 @@
 // 
 //=============================================================================
 #include "object.h"
-#include "explosion.h"
-#include "particle.h"
+//#include "explosion.h"
+//#include "particle.h"
 #include "player.h"
-#include "shadow.h"
-#include "houselight.h"
-#include "meshcylinder.h"
-#include "meshwall.h"
-#include "meshfield.h"
-#include "tree.h"
-#include "goalarrow.h"
+//#include "shadow.h"
 #include "debugproc.h"
 #include "input.h"
 
@@ -22,27 +16,6 @@
 // マクロ定義
 //*****************************************************************************
 #define FIRST_SCALE				(D3DXVECTOR3(1.0f, 1.0f, 1.0f))			// 初期拡大率
-#define SMOKE_MOVE				(D3DXVECTOR3(0.0f, 1.5f, 0.0f))			// 煙の移動量
-#define SMOKE_COUNT				(30)									// 煙の設定間隔
-#define HOUSE_DISTANCE			(130.0f)								// 転んだ時に明かりがつく距離
-#define HOUSE_AUTODISTANCE		(60.0f)									// 家の明かりが変わる距離
-#define HOUSE_LIGHT_AUTOOFF		(300)									// 自動的に明かりが消えるカウント
-#define HOUSE_LIGHT_AUTOON		(800)									// 自動的に明かりがつくランダム
-#define HOUSE_CYLINDER_DISTANCE	(55.0f)									// 家の前の円柱の距離
-#define HOUSE_CYLINDER_BLOCK	(D3DXVECTOR2(32.0f, 1.0f))				// 家の前の円柱の分割数
-#define HOUSE_CYLINDER_SIZE		(D3DXVECTOR2(20.0f, 40.0f))				// 家の前の円柱のサイズ
-#define HOUSE_SHADOW_SIZE		(1.7f)									// 家の影のサイズ(何倍にするか)
-#define HOUSE_SHADOW_ALPHA		(0.9f)									// 家の影の透明度
-#define HOUSE_SMALL_PRESENT		(15)									// 小さい家の規定のプレゼント量
-#define HOUSE_MIDIUM_PRESENT	(30)									// 中くらい家の規定のプレゼント量
-#define HOUSE_BIG_PRESENT		(50)									// 大きい家の規定のプレゼント量
-#define OBS_CYLINDER_DISTANCE	(80.0f)									// 展望台の円柱の距離
-#define OBS_CYLINDER_BLOCK		(D3DXVECTOR2(32.0f, 1.0f))				// 展望台の円柱の分割数
-#define OBS_CYLINDER_SIZE		(D3DXVECTOR2(70.0f, 30.0f))				// 展望台の円柱のサイズ
-#define OBS_SHADOW_SIZE			(70.0f)									// 展望台の影のサイズ
-#define OBS_SHADOW_ALPHA		(0.5f)									// 展望台の影の透明度
-#define TREE_SHADOW_SIZE		(60.0f)									// 木の影のサイズ
-#define TREE_SHADOW_ALPHA		(0.7f)									// 木の影の透明度
 
 //*****************************************************************************
 // グローバル変数
@@ -51,13 +24,6 @@ ObjectModel g_aObjectModel[MAX_OBJECTMODEL];					// 配置物モデルの情報
 Object g_aObject[MAX_OBJECT];									// 配置物の情報
 char* g_apFilenameObject[MAX_OBJECTMODEL] = {};					// モデルファイルへのポインタ
 int g_nNumObject = 0;											// オブジェクトの総数
-int g_nGoalIdx = -1;											// ゴール番号
-int g_nRandGoal = 0;											// ゴール番号のランダム
-int g_nPresentIdx[MAX_OBJECT] = {};								// プレゼントを持っている配置物のインデックス
-int g_nNumPresentHouse = 0;										// プレゼントをもらっている配置物の総数
-int g_nNumPresent[MAX_OBJECT] = {};								// プレゼントをもらっている配置物のプレゼントの数
-int g_nPresentNumClose[MAX_OBJECT] = {};						// 持っているプレゼントの数がどれだけ近いか
-D3DXVECTOR3 g_posPresentHouse[MAX_OBJECT] = {};					// プレゼントを持っている配置物の場所
 
 //=============================================================================
 // 配置物の初期化処理
@@ -82,26 +48,12 @@ void InitObject(const char* pStr)
 		g_aObject[nCntObject].state = OBJECTSTATE_NONE;
 		g_aObject[nCntObject].nCounterState = 0;
 		g_aObject[nCntObject].nType = 0;
-		g_aObject[nCntObject].nCounterSmoke = 0;
-		g_aObject[nCntObject].nCounterLight = 0;
-		g_aObject[nCntObject].nIdxHouseLight[0] = -1;
-		g_aObject[nCntObject].nIdxHouseLight[1] = -1;
-		g_aObject[nCntObject].nIdxMeshCylinder = -1;
-		g_aObject[nCntObject].nIdxGoal = -1;
 		g_aObject[nCntObject].nIdxShadow = -1;
-		g_aObject[nCntObject].nDefPresent = 0;
-		g_aObject[nCntObject].nNumPresent = 0;
-		g_aObject[nCntObject].nNumPresentOld = 0;
 		g_aObject[nCntObject].bUse = false;
 		g_aObject[nCntObject].bCollision = true;
-
-		g_nPresentIdx[nCntObject] = -1;
 	}
 
 	g_nNumObject = 0;
-	g_nGoalIdx = -1;
-	g_nRandGoal = 0;
-	g_nNumPresentHouse = 0;
 
 	// モデルの読み込み
 	LoadStage(pStr);
@@ -229,179 +181,6 @@ void UninitObject(void)
 //=============================================================================
 void UpdateObject(void)
 {
-	PrintDebugProc("配置物の数 : %d\n", g_nNumObject);
-
-	Player* pPlayer = GetPlayer();
-	MeshCylinder* pMeshCylinder = GetMeshCylinder();
-
-	for (int nCntObject = 0; nCntObject < MAX_OBJECT; nCntObject++)
-	{
-		if (g_aObject[nCntObject].bUse == true)
-		{// 使われているとき
-			g_aObject[nCntObject].nNumPresentOld = g_aObject[nCntObject].nNumPresent;
-
-			switch (g_aObject[nCntObject].state)
-			{
-			case OBJECTSTATE_NONE:			// 動かない
-				g_aObject[nCntObject].pos = g_aObject[nCntObject].posOff;
-				g_aObject[nCntObject].move = FIRST_POS;
-				g_aObject[nCntObject].scale = FIRST_SCALE;
-
-				break;
-
-			case OBJECTSTATE_SCALE:			// スケール
-				// 拡大
-				g_aObject[nCntObject].move.x += 0.75f;
-				g_aObject[nCntObject].move.y += 0.75f;
-				g_aObject[nCntObject].move.z += 0.75f;
-
-				g_aObject[nCntObject].scale.x += sinf(g_aObject[nCntObject].move.x) * 0.01f;
-				g_aObject[nCntObject].scale.y += sinf(g_aObject[nCntObject].move.y) * 0.01f;
-				g_aObject[nCntObject].scale.z += sinf(g_aObject[nCntObject].move.z) * 0.01f;
-
-				g_aObject[nCntObject].nCounterState--;
-
-				if (g_aObject[nCntObject].nCounterState < 0)
-				{// カウントがなくなった
-					g_aObject[nCntObject].state = OBJECTSTATE_NONE;
-					g_aObject[nCntObject].nCounterState = 0;
-
-					g_aObject[nCntObject].move = FIRST_POS;
-					g_aObject[nCntObject].scale = FIRST_SCALE;
-				}
-
-				break;
-			}
-
-			float fWidth, fDepth;
-
-			if (g_aObject[nCntObject].rot.y == 0.0f || g_aObject[nCntObject].rot.y == D3DX_PI)
-			{// そのままの向き
-				fWidth = (g_aObjectModel[g_aObject[nCntObject].nType].VtxMax.x -
-					g_aObjectModel[g_aObject[nCntObject].nType].VtxMin.x) * 0.5f;
-				fDepth = (g_aObjectModel[g_aObject[nCntObject].nType].VtxMax.z -
-					g_aObjectModel[g_aObject[nCntObject].nType].VtxMin.z) * 0.5f;
-			}
-			else
-			{// 角度が変わっている
-				fWidth = (g_aObjectModel[g_aObject[nCntObject].nType].VtxMax.z -
-					g_aObjectModel[g_aObject[nCntObject].nType].VtxMin.z) * 0.5f;
-				fDepth = (g_aObjectModel[g_aObject[nCntObject].nType].VtxMax.x -
-					g_aObjectModel[g_aObject[nCntObject].nType].VtxMin.x) * 0.5f;
-			}
-
-			switch (g_aObject[nCntObject].nType)
-			{
-			case 0:
-				// 影
-				SetPositionShadow(g_aObject[nCntObject].nIdxShadow, g_aObject[nCntObject].pos,
-					fWidth * HOUSE_SHADOW_SIZE * g_aObject[nCntObject].scale.x, fDepth * HOUSE_SHADOW_SIZE * g_aObject[nCntObject].scale.z, HOUSE_SHADOW_ALPHA);
-
-				break;
-
-			case 1:
-				// 影
-				SetPositionShadow(g_aObject[nCntObject].nIdxShadow, g_aObject[nCntObject].pos,
-					fWidth * HOUSE_SHADOW_SIZE * g_aObject[nCntObject].scale.x, fDepth * HOUSE_SHADOW_SIZE * g_aObject[nCntObject].scale.z, HOUSE_SHADOW_ALPHA);
-
-				break;
-
-			case 2:		
-				// 煙突の煙
-				g_aObject[nCntObject].nCounterSmoke++;
-
-				if (g_aObject[nCntObject].nCounterSmoke % SMOKE_COUNT == 0)
-				{// カウントが間隔にあった
-					float fPosX = sinf((D3DX_PI * 0.5f) + g_aObject[nCntObject].rot.y) * 30.0f;
-					float fPosZ = cosf((D3DX_PI * 0.5f) + g_aObject[nCntObject].rot.y) * 30.0f;
-
-					SetExplosion(D3DXVECTOR3(g_aObject[nCntObject].pos.x + fPosX, 120.0f, g_aObject[nCntObject].pos.z + fPosZ), SMOKE_MOVE, 10.0f, EXPLOSIONTYPE_0);
-				}
-
-				// 影
-				SetPositionShadow(g_aObject[nCntObject].nIdxShadow, g_aObject[nCntObject].pos,
-					fWidth * HOUSE_SHADOW_SIZE * g_aObject[nCntObject].scale.x, fDepth * HOUSE_SHADOW_SIZE * g_aObject[nCntObject].scale.z, HOUSE_SHADOW_ALPHA);
-
-				break;
-
-			case 7:
-				SetPositionShadow(g_aObject[nCntObject].nIdxShadow, g_aObject[nCntObject].pos,
-					TREE_SHADOW_SIZE, TREE_SHADOW_SIZE, TREE_SHADOW_ALPHA);
-
-				break;
-
-			case 9:
-				// 影
-				SetPositionShadow(g_aObject[nCntObject].nIdxShadow, g_aObject[nCntObject].pos,
-					OBS_SHADOW_SIZE, OBS_SHADOW_SIZE, OBS_SHADOW_ALPHA);
-
-				break;
-
-			case 10:
-				// 影
-				SetPositionShadow(g_aObject[nCntObject].nIdxShadow, g_aObject[nCntObject].pos,
-					fWidth * 1.5f, fDepth * 2.0f, HOUSE_SHADOW_ALPHA);
-
-				break;
-			}
-
-			if ((g_aObject[nCntObject].nType == 0 || g_aObject[nCntObject].nType == 1 || g_aObject[nCntObject].nType == 2))
-			{// 家
-				float fLength = (pPlayer->pos.x - g_aObject[nCntObject].pos.x) * (pPlayer->pos.x - g_aObject[nCntObject].pos.x) +
-					(pPlayer->pos.z - g_aObject[nCntObject].pos.z) * (pPlayer->pos.z - g_aObject[nCntObject].pos.z);
-
-				float fHouseRadius = (g_aObjectModel[g_aObject[nCntObject].nType].VtxMax.x + (abs)((int)g_aObjectModel[g_aObject[nCntObject].nType].VtxMin.x)) / 2;
-
-				if (fLength <= ((pPlayer->fRadius + fHouseRadius + HOUSE_DISTANCE) * (pPlayer->fRadius + fHouseRadius + HOUSE_DISTANCE)))
-				{// 家の範囲内
-					if (pPlayer->motionType == MOTIONTYPE_LANDINGICE || pPlayer->motionTypeBlend == MOTIONTYPE_LANDINGICE)
-					{// 氷の上に着地
-
-						SetHouseLightONOFF(g_aObject[nCntObject].nIdxHouseLight[0], true);
-						SetHouseLightONOFF(g_aObject[nCntObject].nIdxHouseLight[1], true);
-
-						g_aObject[nCntObject].nCounterLight = HOUSE_LIGHT_AUTOOFF;
-					}
-
-					if (pPlayer->bShot == true)
-					{// 連打しすぎてたら周りの家が起きる
-						SetHouseLightONOFF(g_aObject[nCntObject].nIdxHouseLight[0], true);
-						SetHouseLightONOFF(g_aObject[nCntObject].nIdxHouseLight[1], true);
-
-						g_aObject[nCntObject].nCounterLight = HOUSE_LIGHT_AUTOOFF;
-					}
-				}
-
-				if (rand() % HOUSE_LIGHT_AUTOON == 0 && GetHouseLightONOFF(nCntObject) == false)
-				{// ランダムなタイミング
-					SetHouseLightONOFF(g_aObject[nCntObject].nIdxHouseLight[0], true);
-					SetHouseLightONOFF(g_aObject[nCntObject].nIdxHouseLight[1], true);
-
-					g_aObject[nCntObject].nCounterLight = rand() % (HOUSE_LIGHT_AUTOOFF / 2) + HOUSE_LIGHT_AUTOOFF;
-				}
-
-				g_aObject[nCntObject].nCounterLight--;
-
-				if (g_aObject[nCntObject].nCounterLight <= 0)
-				{// カウントがなくなったらライトをOFF
-					SetHouseLightONOFF(g_aObject[nCntObject].nIdxHouseLight[0], false);
-					SetHouseLightONOFF(g_aObject[nCntObject].nIdxHouseLight[1], false);
-
-					g_aObject[nCntObject].nCounterLight = 0;
-				}
-			}
-
-			if (pPlayer->nMaxPresent == -1)
-			{// プレゼントがなくなっていたら
-				if (g_aObject[nCntObject].nIdxGoal == g_nGoalIdx)
-				{// ゴール
-					GoalArrowONOFF(true);
-				}
-			}
-		}
-	}
-
-	PrintDebugProc("ゴール番号 : [ %d ]\n", g_nGoalIdx);
 }
 
 //=============================================================================
@@ -481,113 +260,9 @@ void SetObject(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nIdx, bool bCollision)
 			g_aObject[nCntObject].state = OBJECTSTATE_NONE;
 			g_aObject[nCntObject].nCounterState = 0;
 			g_aObject[nCntObject].nType = nIdx;
-			g_aObject[nCntObject].nCounterSmoke = 0;
-			g_aObject[nCntObject].nCounterLight = 0;
-			g_aObject[nCntObject].nIdxHouseLight[0] = -1;
-			g_aObject[nCntObject].nIdxHouseLight[1] = -1;
 			g_aObject[nCntObject].nIdxShadow = -1;
-			g_aObject[nCntObject].nNumPresent = 0;
-			g_aObject[nCntObject].nNumPresentOld = 0;
 			g_aObject[nCntObject].bCollision = bCollision;
 			g_aObject[nCntObject].bUse = true;		// 使用している状態にする
-
-			switch (nIdx)
-			{
-			case 0:
-				// 家の明かり設定
-				fPosX = sinf((-D3DX_PI * 0.5f) + g_aObject[nCntObject].rot.y) * 51.0f;
-				fPosZ = cosf((-D3DX_PI * 0.5f) + g_aObject[nCntObject].rot.y) * 51.0f;
-
-				g_aObject[nCntObject].nIdxHouseLight[0] =
-					SetHouseLight(D3DXVECTOR3(pos.x + fPosX, 25.0f, pos.z + fPosZ), D3DXVECTOR3(0.0f, rot.y + (D3DX_PI * 0.5f), 0.0f), 30.0f, 23.0f);
-
-				fPosX = sinf((D3DX_PI * 0.5f) + g_aObject[nCntObject].rot.y) * 112.0f;
-				fPosZ = cosf((D3DX_PI * 0.5f) + g_aObject[nCntObject].rot.y) * 112.0f;
-
-				g_aObject[nCntObject].nIdxHouseLight[1] =
-					SetHouseLight(D3DXVECTOR3(pos.x + fPosX, 25.0f, pos.z + fPosZ), D3DXVECTOR3(0.0f, rot.y - (D3DX_PI * 0.5f), 0.0f), 30.0f, 23.0f);
-
-				g_aObject[nCntObject].nDefPresent = HOUSE_BIG_PRESENT;
-
-				g_aObject[nCntObject].nIdxShadow = SetShadow(SHADOWTYPE_SQUARE);
-
-				break;
-
-			case 1:
-				// 家の明かり設定
-				fPosX = sinf((-D3DX_PI * 0.5f) + g_aObject[nCntObject].rot.y) * 91.5f;
-				fPosZ = cosf((-D3DX_PI * 0.5f) + g_aObject[nCntObject].rot.y) * 91.5f;
-
-				g_aObject[nCntObject].nIdxHouseLight[0] =
-					SetHouseLight(D3DXVECTOR3(pos.x + fPosX, 27.0f, pos.z + fPosZ), D3DXVECTOR3(0.0f, rot.y + (D3DX_PI * 0.5f), 0.0f), 32.0f, 19.0f);
-
-				fPosX = sinf((D3DX_PI * 0.5f) + g_aObject[nCntObject].rot.y) * 91.5f;
-				fPosZ = cosf((D3DX_PI * 0.5f) + g_aObject[nCntObject].rot.y) * 91.5f;
-
-				g_aObject[nCntObject].nIdxHouseLight[1] =
-					SetHouseLight(D3DXVECTOR3(pos.x + fPosX, 27.0f, pos.z + fPosZ), D3DXVECTOR3(0.0f, rot.y - (D3DX_PI * 0.5f), 0.0f), 32.0f, 19.0f);
-
-				g_aObject[nCntObject].nDefPresent = HOUSE_MIDIUM_PRESENT;
-
-				g_aObject[nCntObject].nIdxShadow = SetShadow(SHADOWTYPE_SQUARE);
-
-				break;
-
-			case 2:
-				// 家の明かり設定
-				fPosX = sinf((-D3DX_PI * 0.5f) + g_aObject[nCntObject].rot.y) * 41.5f;
-				fPosZ = cosf((-D3DX_PI * 0.5f) + g_aObject[nCntObject].rot.y) * 41.5f;
-
-				g_aObject[nCntObject].nIdxHouseLight[0] =
-					SetHouseLight(D3DXVECTOR3(pos.x + fPosX, 25.0f, pos.z + fPosZ), D3DXVECTOR3(0.0f, rot.y + (D3DX_PI * 0.5f), 0.0f), 36.0f, 16.0f);
-
-				fPosX = sinf((D3DX_PI * 0.5f) + g_aObject[nCntObject].rot.y) * 41.5f;
-				fPosZ = cosf((D3DX_PI * 0.5f) + g_aObject[nCntObject].rot.y) * 41.5f;
-
-				g_aObject[nCntObject].nIdxHouseLight[1] =
-					SetHouseLight(D3DXVECTOR3(pos.x + fPosX, 25.0f, pos.z + fPosZ), D3DXVECTOR3(0.0f, rot.y - (D3DX_PI * 0.5f), 0.0f), 36.0f, 16.0f);
-
-				g_aObject[nCntObject].nDefPresent = HOUSE_SMALL_PRESENT;
-
-				g_aObject[nCntObject].nIdxShadow = SetShadow(SHADOWTYPE_SQUARE);
-
-				break;
-
-			case 7:
-				g_aObject[nCntObject].nIdxShadow = SetShadow(SHADOWTYPE_CIRCLE);
-
-				break;
-
-			case 9:
-				// 展望台設定
-				g_aObject[nCntObject].nIdxGoal = g_nRandGoal;
-				g_nRandGoal++;
-
-				g_nGoalIdx = rand() % g_nRandGoal;
-
-				// シリンダー設置
-				fPosX = sinf((-D3DX_PI * 0.5f) + g_aObject[nCntObject].rot.y - 0.25f) * OBS_CYLINDER_DISTANCE;
-				fPosZ = cosf((-D3DX_PI * 0.5f) + g_aObject[nCntObject].rot.y - 0.25f) * OBS_CYLINDER_DISTANCE;
-
-				g_aObject[nCntObject].nIdxMeshCylinder =
-					SetMeshCylinder(D3DXVECTOR3(pos.x, 0.0f, pos.z), FIRST_POS, OBS_CYLINDER_BLOCK, OBS_CYLINDER_SIZE, YELLOW_VTX);
-
-				if (g_aObject[nCntObject].nIdxGoal == g_nGoalIdx)
-				{// ゴールの位置を設定
-					MeshCylinder* pMeshCylinder = GetMeshCylinder();
-
-					SetGoalArrow(pMeshCylinder[g_aObject[nCntObject].nIdxMeshCylinder].pos);
-				}
-
-				g_aObject[nCntObject].nIdxShadow = SetShadow(SHADOWTYPE_CIRCLE);
-
-				break;
-
-			case 10:
-				g_aObject[nCntObject].nIdxShadow = SetShadow(SHADOWTYPE_SQUARE);
-
-				break;
-			}
 
 			g_nNumObject++;
 
@@ -614,15 +289,6 @@ void SetObjectRandom(int nType, D3DXVECTOR3 posMin, D3DXVECTOR3 posMax, int nAmo
 		rot.z = 0.0f;
 
 		SetObject(pos, rot, nType, false);
-
-		if (nType == 7)
-		{// 木だったらもう片方も同じ場所に生成
-			SetObject(pos, rot, 8, false);
-		}
-		else if (nType == 8)
-		{// 上の逆
-			SetObject(pos, rot, 7, false);
-		}
 	}
 
 }
@@ -1070,7 +736,7 @@ void LoadStage(const char* pStr)
 					}
 				}
 
-				SetMeshField((MESHFIELDTYPE)nIdx, pos, D3DXVECTOR3(0.0f, D3DX_PI * rot.y / 180.0f, 0.0f), D3DXVECTOR2((float)nBlockX, (float)nBlockZ), D3DXVECTOR2(fWidth / (float)nBlockX, fDepth / (float)nBlockZ));
+				//SetMeshField((MESHFIELDTYPE)nIdx, pos, D3DXVECTOR3(0.0f, D3DX_PI * rot.y / 180.0f, 0.0f), D3DXVECTOR2((float)nBlockX, (float)nBlockZ), D3DXVECTOR2(fWidth / (float)nBlockX, fDepth / (float)nBlockZ));
 
 				continue;
 			}
@@ -1154,91 +820,7 @@ void LoadStage(const char* pStr)
 					}
 				}
 
-				SetMeshWall(pos, D3DXVECTOR3(0.0f, D3DX_PI * rot.y / 180.0f, 0.0f), D3DXVECTOR2((float)nBlockX, (float)nBlockZ), D3DXVECTOR2(fWidth / (float)nBlockX, fDepth / (float)nBlockZ));
-
-				continue;
-			}
-
-			if (strcmp(&aString[0], "TREESET") == 0)
-			{// 木の設置
-				fscanf(pFile, "%s", &aString[0]);
-
-				if (strcmp(&aString[0], "TEXTYPE") == 0)
-				{// テクスチャやモデルの種類
-					fscanf(pFile, " = %d", &nIdx);
-
-					fscanf(pFile, "%s", &aString[0]);
-
-					if (aString[0] == '#')
-					{// コメント無視
-						fgets(&aTrash[0], ONE_LINE, pFile);
-
-						// 次の文字列を読み込む
-						fscanf(pFile, "%s", &aString[0]);
-					}
-				}
-
-				if (strcmp(&aString[0], "POS") == 0)
-				{// 位置
-					fscanf(pFile, " = %f %f %f", &pos.x, &pos.y, &pos.z);
-
-					fscanf(pFile, "%s", &aString[0]);
-
-					if (aString[0] == '#')
-					{// コメント無視
-						fgets(&aTrash[0], ONE_LINE, pFile);
-
-						// 次の文字列を読み込む
-						fscanf(pFile, "%s", &aString[0]);
-					}
-				}
-
-				if (strcmp(&aString[0], "ROT") == 0)
-				{// 向き
-					fscanf(pFile, " = %f %f %f", &rot.x, &rot.y, &rot.z);
-
-					fscanf(pFile, "%s", &aString[0]);
-
-					if (aString[0] == '#')
-					{// コメント無視
-						fgets(&aTrash[0], ONE_LINE, pFile);
-
-						// 次の文字列を読み込む
-						fscanf(pFile, "%s", &aString[0]);
-					}
-				}
-
-				if (strcmp(&aString[0], "BLOCK") == 0)
-				{// 分割数
-					fscanf(pFile, " = %d %d", &nBlockX, &nBlockZ);
-
-					fscanf(pFile, "%s", &aString[0]);
-
-					if (aString[0] == '#')
-					{// コメント無視
-						fgets(&aTrash[0], ONE_LINE, pFile);
-
-						// 次の文字列を読み込む
-						fscanf(pFile, "%s", &aString[0]);
-					}
-				}
-
-				if (strcmp(&aString[0], "SIZE") == 0)
-				{// 大きさ
-					fscanf(pFile, " = %f %f", &fWidth, &fDepth);
-
-					fscanf(pFile, "%s", &aString[0]);
-
-					if (aString[0] == '#')
-					{// コメント無視
-						fgets(&aTrash[0], ONE_LINE, pFile);
-
-						// 次の文字列を読み込む
-						fscanf(pFile, "%s", &aString[0]);
-					}
-				}
-
-				SetTree(pos, (TREETYPE)(nIdx - 4));
+				//SetMeshWall(pos, D3DXVECTOR3(0.0f, D3DX_PI * rot.y / 180.0f, 0.0f), D3DXVECTOR2((float)nBlockX, (float)nBlockZ), D3DXVECTOR2(fWidth / (float)nBlockX, fDepth / (float)nBlockZ));
 
 				continue;
 			}
@@ -1258,137 +840,9 @@ void LoadStage(const char* pStr)
 }
 
 //=============================================================================
-// 配置物の取得(メッシュシリンダーのインデックスより)
-//=============================================================================
-Object GetObjectFromMCylinder(int nIdxMeshCylinder)
-{
-	for (int nCntObject = 0; nCntObject < MAX_OBJECT; nCntObject++)
-	{
-		if (g_aObject[nCntObject].bUse == true)
-		{// 使用されているとき
-			if (g_aObject[nCntObject].nIdxMeshCylinder == nIdxMeshCylinder)
-			{// 引数のインデックスと配置物のインデックスが一致
-				return g_aObject[nCntObject];
-			}
-		}
-	}
-
-	return g_aObject[0];
-}
-
-//=============================================================================
 // 配置物の取得
 //=============================================================================
 Object* GetObjectAll(void)
 {
 	return &g_aObject[0];
-}
-
-//=============================================================================
-// 配置物モデルの取得
-//=============================================================================
-ObjectModel* GetObjectModel(void)
-{
-	return &g_aObjectModel[0];
-}
-
-//=============================================================================
-// ゴール番号を取得
-//=============================================================================
-int GetGoalIdx(void)
-{
-	return g_nGoalIdx;
-}
-
-//=============================================================================
-// プレゼントをもらった家の番号を取得
-//=============================================================================
-int* GetObjectPresent(int nType)
-{
-	g_nNumPresentHouse = 0;
-
-	for (int nCntObject = 0; nCntObject < MAX_OBJECT; nCntObject++)
-	{
-		if (g_aObject[nCntObject].bUse == true)
-		{// 使用されているとき
-			if (g_aObject[nCntObject].nNumPresent != 0)
-			{// もらっている
-				g_nPresentIdx[g_nNumPresentHouse] = g_aObject[nCntObject].nType;
-				g_nNumPresent[g_nNumPresentHouse] = g_aObject[nCntObject].nNumPresent;
-				g_posPresentHouse[g_nNumPresentHouse] = g_aObject[nCntObject].pos;
-
-				if (g_aObject[nCntObject].nNumPresent == g_aObject[nCntObject].nDefPresent)
-				{// ぴったり
-					g_nPresentNumClose[g_nNumPresentHouse] = (int)PRESENTNUM_PERFECT;
-				}
-				else if (g_aObject[nCntObject].nNumPresent <= g_aObject[nCntObject].nDefPresent + CLOSE_NUMPRESENT &&
-					g_aObject[nCntObject].nNumPresent >= g_aObject[nCntObject].nDefPresent - CLOSE_NUMPRESENT)
-				{// ±1の範囲内
-					g_nPresentNumClose[g_nNumPresentHouse] = (int)PRESENTNUM_CLOSE;
-				}
-				else if (g_aObject[nCntObject].nNumPresent <= g_aObject[nCntObject].nDefPresent + NEAR_NUMPRESENT &&
-					g_aObject[nCntObject].nNumPresent >= g_aObject[nCntObject].nDefPresent - NEAR_NUMPRESENT)
-				{// ±3の範囲内
-					g_nPresentNumClose[g_nNumPresentHouse] = (int)PRESENTNUM_NEAR;
-				}
-				else
-				{// 遠い
-					g_nPresentNumClose[g_nNumPresentHouse] = (int)PRESENTNUM_NONE;
-				}
-
-				g_nNumPresentHouse++;
-			}
-		}
-	}
-
-	switch (nType)
-	{
-	case 0:			// プレゼントをもらった家の数
-		return &g_nNumPresentHouse;
-
-		break;
-
-	case 1:			// プレゼントをもらった家のインデックス
-		return &g_nPresentIdx[0];
-
-		break;
-
-	case 2:			// もらったプレゼントの数
-		return &g_nNumPresent[0];
-
-		break;
-
-	case 3:			// もらったプレゼントの数がどれくらい規定の数に近いか
-		return &g_nPresentNumClose[0];
-
-		break;
-
-	default:
-		return &g_nNumPresentHouse;
-
-		break;
-	}
-}
-
-//=============================================================================
-// プレゼントをもらった家の場所
-//=============================================================================
-D3DXVECTOR3* GetObjectPresentPos(void)
-{
-	int nPresentHouseCount = 0;
-
-	for (int nCntObject = 0; nCntObject < MAX_OBJECT; nCntObject++)
-	{
-		if (g_aObject[nCntObject].bUse == true)
-		{// 使用されているとき
-			if (g_aObject[nCntObject].nNumPresent != 0)
-			{// もらっている
-				g_posPresentHouse[nPresentHouseCount] = g_aObject[nCntObject].pos;
-
-				nPresentHouseCount++;
-			}
-		}
-	}
-
-	return &g_posPresentHouse[0];
 }

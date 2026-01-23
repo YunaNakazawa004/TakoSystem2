@@ -14,9 +14,6 @@
 //*****************************************************************************
 #define MAX_OBJECTMODEL			(30)									// 配置物モデルの最大数
 #define MAX_OBJECT				(2048)									// 配置物の最大数
-#define HOUSE_WINDOW			(2)										// 家の窓の数
-#define CLOSE_NUMPRESENT		(1)										// プレゼントの数が誤差
-#define NEAR_NUMPRESENT			(3)										// プレゼントの数が少し誤差
 
 //*****************************************************************************
 // 配置物の状態
@@ -24,21 +21,8 @@
 typedef enum
 {
 	OBJECTSTATE_NONE = 0,		// その場で動かない
-	OBJECTSTATE_SCALE,			// スケール
 	OBJECTSTATE_MAX
 }OBJECTSTATE;
-
-//*****************************************************************************
-// 配置物のプレゼントのもらった数の正確さ
-//*****************************************************************************
-typedef enum
-{
-	PRESENTNUM_CLOSE = 0,		// 近い
-	PRESENTNUM_NEAR,			// ちょっと近い
-	PRESENTNUM_NONE,			// かすってもない
-	PRESENTNUM_PERFECT,			// ぴったり
-	PRESENTNUM_MAX
-}PRESENTNUM;
 
 //*****************************************************************************
 // 配置物モデルの構造体
@@ -66,14 +50,6 @@ typedef struct
 	OBJECTSTATE state;						// 状態
 	int nCounterState;						// 状態カウンター
 	int nType;								// 種類
-	int nCounterSmoke;						// 煙のカウンター
-	int nCounterLight;						// 明かりのカウンター
-	int nIdxHouseLight[HOUSE_WINDOW];		// 家の明かりのインデックス
-	int nDefPresent;						// 既定のプレゼント量
-	int nNumPresent;						// もらったプレゼント量
-	int nNumPresentOld;						// 前回もらったプレゼント量
-	int nIdxMeshCylinder;					// 円柱のインデックス
-	int nIdxGoal;							// ゴールになるかどうかのインデックス
 	int nIdxShadow;							// 影
 	bool bUse;								// 使用しているかどうか
 	bool bCollision;						// 当たり判定するかどうか
@@ -88,12 +64,7 @@ void UpdateObject(void);
 void DrawObject(void);
 void SetObject(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nIdx, bool bCollision);
 void SetObjectRandom(int nType, D3DXVECTOR3 posMin, D3DXVECTOR3 posMax, int nAmount);
-Object GetObjectFromMCylinder(int nIdxMeshCylinder);
 Object* GetObjectAll(void);
-ObjectModel *GetObjectModel(void);
-int* GetObjectPresent(int nType);
-D3DXVECTOR3* GetObjectPresentPos(void);
-int GetGoalIdx(void);
 
 bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, float fRadius, float fHeight);
 
