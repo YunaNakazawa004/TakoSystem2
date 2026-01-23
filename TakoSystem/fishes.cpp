@@ -14,7 +14,7 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define FISHES_MOVEMENT			(D3DXVECTOR3(3.0f, 1.5f, 3.0f))			// 移動量
+#define FISHES_MOVEMENT			(D3DXVECTOR3(0.1f, 0.1f, 0.1f))			// 移動量
 #define FISHES_ROT				(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// 向き移動量
 #define FISHES_INERTIA_MOVE		(0.2f)									// 移動の慣性
 #define FISHES_MAX_MOVE			(5.0f)									// 移動の制限
@@ -45,7 +45,7 @@ char* g_apFilenameFishes[MAX_NUMMODEL] = {};			// モデルファイルへのポインタ
 FishesInfo g_aFishInfo[] =
 {
 	{0,"data\\MODEL\\octo.x"},
-	{1,"data\\MODEL\\SangoSho.x"},
+	{1,"data\\MODEL\\testmodel\\skitree000.x"},
 
 };
 
@@ -84,32 +84,32 @@ void InitFishes(void)
 		pFishes->bMoving = false;
 	}
 
-	for (int nCntModel = 0; nCntModel < FISHES_CALC_SIZEARRAY(pFishesInfo); nCntModel++, pFishesModel++)
+	for (int nCntModel = 0; nCntModel < FISHES_CALC_SIZEARRAY(g_aFishInfo); nCntModel++, pFishesModel++)
 	{
 		// Xファイルの読み込み
 		D3DXLoadMeshFromX(pFishesInfo[nCntModel].Model_FileName,
 			D3DXMESH_SYSTEMMEM,
 			pDevice,
 			NULL,
-			&g_aFishesModel->pBuffMat,
+			&pFishesModel->pBuffMat,
 			NULL,
-			&g_aFishesModel->dwNumMat,
-			&g_aFishesModel->pMesh);
+			&pFishesModel->dwNumMat,
+			&pFishesModel->pMesh);
 
 		// マテリアルデータへのポインタを取得
-		pMat = (D3DXMATERIAL*)g_aFishesModel->pBuffMat->GetBufferPointer();
+		pMat = (D3DXMATERIAL*)pFishesModel->pBuffMat->GetBufferPointer();
 
-		for (int nCntMat = 0; nCntMat < (int)g_aFishesModel->dwNumMat; nCntMat++)
+		for (int nCntMat = 0; nCntMat < (int)pFishesModel->dwNumMat; nCntMat++)
 		{
 			if (pMat[nCntMat].pTextureFilename != NULL)
 			{// テクスチャファイルが存在する
-				D3DXCreateTextureFromFile(pDevice, pMat[nCntMat].pTextureFilename, &g_aFishesModel->apTexture[nCntMat]);
+				D3DXCreateTextureFromFile(pDevice, pMat[nCntMat].pTextureFilename, &pFishesModel->apTexture[nCntMat]);
 			}
 		}
 	}
 	
 	SetFishes(1, 2);
-	SetFishes(0, 2);
+	SetFishes(0, 12);
 
 }
 
@@ -122,7 +122,7 @@ void UninitFishes(void)
 	Fishes* pFishes = GetFishes();
 	Fishes_Model* pFishesModel = &g_aFishesModel[0];
 
-	for (int nCntModel = 0; nCntModel < FISHES_MAX_NUM; nCntModel++, pFishesModel++)
+	for (int nCntModel = 0; nCntModel < FISHES_MAX_MODELS; nCntModel++, pFishesModel++)
 	{
 		// メッシュの破棄
 		if (pFishesModel->pMesh != NULL)
@@ -158,62 +158,69 @@ void UpdateFishes(void)
 	// ローカル変数宣言
 	Fishes* pFishes = GetFishes();
 	FISHESSTATE OldState = FISHESSTATE_STOP;
+	float fmoveAngle = 0.0f;
+	int Radian = (D3DX_PI /10.0f);
 
-	for (int nCntFishes = 0; nCntFishes < 0; nCntFishes++, pFishes++)
+	for (int nCntFishes = 0; nCntFishes < g_aFishes[0].nUseNum; nCntFishes++, pFishes++)
 	{
-		if (pFishes[nCntFishes].bUse == true && pFishes[nCntFishes].bMoving == true)
+		if (pFishes->bUse == true && pFishes->bMoving == true)
 		{
 			// 今の時点のstateを記録
-			OldState = pFishes[nCntFishes].state;
-			pFishes[nCntFishes].posOld = pFishes[nCntFishes].pos;
+			OldState = pFishes->state;
+			pFishes->posOld = pFishes->pos;
 
 			// それぞれのフラグ増加
-			if (pFishes[nCntFishes].state == FISHESSTATE_MOVE)
+			if (pFishes->state == FISHESSTATE_MOVE)
 			{
 				// 移動
-				pFishes[nCntFishes].move.x += sinf(pFishes[nCntFishes].fAngle) * FISHES_MOVEMENT.x;
-				pFishes[nCntFishes].move.z += cosf(pFishes[nCntFishes].fAngle) * FISHES_MOVEMENT.z;
+				pFishes->move.x += sinf(pFishes->fAngle - D3DX_PI) * FISHES_MOVEMENT.x;
+				pFishes->move.z += cosf(pFishes->fAngle - D3DX_PI) * FISHES_MOVEMENT.z;
 
-				pFishes[nCntFishes].pos += pFishes[nCntFishes].move;
+				pFishes->pos += pFishes->move;
 
 				// 移動慣性
-				pFishes[nCntFishes].move.x += (0.0f - pFishes[nCntFishes].move.x) * FISHES_INERTIA_MOVE;
-				pFishes[nCntFishes].move.z += (0.0f - pFishes[nCntFishes].move.z) * FISHES_INERTIA_MOVE;
+				pFishes->move.x += (0.0f - pFishes->move.x) * FISHES_INERTIA_MOVE;
+				pFishes->move.z += (0.0f - pFishes->move.z) * FISHES_INERTIA_MOVE;
 
-
-				if (pFishes[nCntFishes].rot.y != pFishes[nCntFishes].fAngle)
-				{// 目標地点につくまで慣性で角度を足す
-					pFishes[nCntFishes].rot.y += (pFishes[nCntFishes].fAngle - pFishes[nCntFishes].rot.y) * FISHES_INERTIA_ANGLE;
-
-					// 向きを調整
-					CorrectAngle(&pFishes[nCntFishes].rot.y, pFishes[nCntFishes].rot.y);
-				}
-
-				pFishes[nCntFishes].nCounterState++;
+				pFishes->nMoveCnt++;
 			}
-			else if (pFishes[nCntFishes].state == FISHESSTATE_STOP)
+			else if (pFishes->state == FISHESSTATE_STOP)
 			{
-				pFishes[nCntFishes].nCounterState++;
+				pFishes->nStopCnt++;
+			}
+
+			fmoveAngle = pFishes->fAngle - pFishes->rot.y;
+
+			// 向きを調整
+			CorrectAngle(&pFishes->fAngle, fmoveAngle);
+
+			if (pFishes->rot.y != pFishes->fAngle)
+
+			{// 目標地点につくまで慣性で角度を足す
+				pFishes->rot.y += (pFishes->fAngle - pFishes->rot.y) * FISHES_INERTIA_ANGLE;
+
+				// 向きを調整
+				CorrectAngle(&pFishes->rot.y, pFishes->rot.y);
 			}
 
 			// 生き物の状態遷移
-			if (pFishes[nCntFishes].MoveTime < pFishes[nCntFishes].nCounterState)
+			if (pFishes->MoveTime < pFishes->nMoveCnt)
 			{
-				pFishes[nCntFishes].state = FISHESSTATE_STOP;
-				pFishes[nCntFishes].nCounterState = 0;
+				pFishes->state = FISHESSTATE_STOP;
+				pFishes->nMoveCnt = 0;
 			}
-			else if (pFishes[nCntFishes].StopTime < pFishes[nCntFishes].nCounterState)
+			else if (pFishes->StopTime < pFishes->nStopCnt)
 			{
-				pFishes[nCntFishes].state = FISHESSTATE_MOVE;
-				pFishes[nCntFishes].nCounterState = 0;
+				pFishes->state = FISHESSTATE_MOVE;
+				pFishes->nStopCnt = 0;
 			}
 
 			// stopからmoveに移行するとき数値を設定(ランダム)
-			if (OldState == FISHESSTATE_STOP && OldState == pFishes[nCntFishes].state)
+			if (OldState == FISHESSTATE_STOP && OldState != pFishes->state)
 			{
-				pFishes[nCntFishes].MoveTime = rand() % (60 * 8) + 1;				// 移動する時間
-				pFishes[nCntFishes].fAngle = ((rand() % 628) - 314) * 100.0f;		// 移動する角度(ｙ軸)
-				pFishes[nCntFishes].StopTime = rand() % (60 * 4) + 1;				// 停止している時間
+				pFishes->MoveTime = 60;													// 移動する時間
+				pFishes->fAngle = pFishes->fAngle + (rand() % Radian - (Radian/2));		// 移動する角度(ｙ軸)
+				pFishes->StopTime = 1;													// 停止している時間
 			}
 		}
 	}
@@ -334,7 +341,8 @@ void SetFishes(int ModelIdx, int nNumSet)
 		if (pFishes->bUse == false)
 		{
 			pFishes->bUse = true;
-			pFishes->nModelIdx = ModelIdx;
+			pFishes->nModelIdx = ModelIdx; 
+			pFishes->bMoving = true;
 			g_aFishes[0].nUseNum++;
 			nModelSet++;
 		}
