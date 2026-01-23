@@ -17,6 +17,7 @@
 //#include "game.h"
 //#include "result.h"
 //#include "ranking.h"
+#include "meshcylinder.h"
 #include "player.h"
 #include "stage.h"
 #include "esa.h"		// エサ
@@ -338,6 +339,11 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// ステージの初期化処理
 	InitStage();
 
+	// メッシュシリンダーの初期化処理
+	InitMeshCylinder();
+	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(2000.0f, 17500.0f), D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f), false);
+	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(18050.0f, 17500.0f), D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f), true);
+
 	// エサの初期化処理
 	InitEsa();
 
@@ -396,6 +402,9 @@ void Uninit(void)
 
 	// ステージの終了処理
 	UninitStage();
+
+	// メッシュシリンダーの終了処理
+	UninitMeshCylinder();
 
 	// エサの終了処理
 	UninitEsa();
@@ -461,6 +470,9 @@ void Update(void)
 
 	// ステージの更新処理
 	UpdateStage();
+
+	// メッシュシリンダーの更新処理
+	UpdateMeshCylinder();
 
 	// エサの更新処理
 	UpdateEsa();
@@ -531,6 +543,9 @@ void Draw(void)
 			// ステージの描画処理
 			DrawStage();
 
+			// メッシュシリンダーの描画処理
+			DrawMeshCylinder();
+
 			// エサの描画処理
 			DrawEsa();
 
@@ -576,11 +591,11 @@ void Draw(void)
 
 		// 描画終了
 		g_pD3DDevice->EndScene();
-	}
+		}
 
 	// バックバッファとフロントバッファの入れ替え
 	g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
-}
+	}
 
 //=============================================================================
 // デバイス取得
