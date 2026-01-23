@@ -151,6 +151,7 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="crosshair.cpp" />
     <ClCompile Include="debugproc.cpp" />
+    <ClCompile Include="effect_3d.cpp" />
     <ClCompile Include="esa.cpp" />
     <ClCompile Include="fade.cpp" />
     <ClCompile Include="fishes.cpp" />
@@ -159,6 +160,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="object.cpp" />
+    <ClCompile Include="particle_3d.cpp" />
     <ClCompile Include="pause.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="stage.cpp" />
@@ -168,6 +170,7 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="crosshair.h" />
     <ClInclude Include="debugproc.h" />
+    <ClInclude Include="effect_3d.h" />
     <ClInclude Include="esa.h" />
     <ClInclude Include="fade.h" />
     <ClInclude Include="fishes.h" />
@@ -176,6 +179,7 @@
     <ClInclude Include="main.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="object.h" />
+    <ClInclude Include="particle_3d.h" />
     <ClInclude Include="pause.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="stage.h" />
