@@ -298,7 +298,7 @@ void CollisionMeshCylinder(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3*
 			D3DXVECTOR3 vecLine, vecMove, vecToPos, vecToPosOld, vecNor, vecMoveRef, vecMoveDest;		// 各ベクトル
 			static D3DXVECTOR3 insec = FIRST_POS;		// 交点
 			D3DXVECTOR3 vecLineW, posDest;
-			float fRate, fMoveRate, fDot;
+			float fRate, /*fMoveRate, */fDot;
 
 			if (pMeshC->bInside == true)
 			{// 内側
@@ -427,11 +427,11 @@ void CollisionMeshCylinder(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3*
 
 			if (fRate >= 0.0f && fRate <= 1.0f)
 			{// 交点の割合が範囲内
-				float fPosLine = (float)((int)(((vecLine.z * vecToPos.x) - (vecLine.x * vecToPos.z)) * 1000.0f) / (int)1);
-				float fPosOldLine = (float)((int)(((vecLine.z * vecToPosOld.x) - (vecLine.x * vecToPosOld.z)) * 1000.0f) / (int)1);
+				float fPosLine = (float)((int)(((vecLine.z * vecToPos.x) - (vecLine.x * vecToPos.z)) * 1.0f) / (int)1);
+				float fPosOldLine = (float)((int)(((vecLine.z * vecToPosOld.x) - (vecLine.x * vecToPosOld.z)) * 1.0f) / (int)1);
 
-				if ((pMeshC->bInside == true && fPosLine < 0.0f && fPosOldLine >= 0.0f) ||
-					(pMeshC->bInside == false && fPosLine > 0.0f && fPosOldLine <= 0.0f))
+				if ((pMeshC->bInside == true && fPosLine < 0.0f && (fPosOldLine >= 0.0f || fPosOldLine >= -10.0f)) ||
+					(pMeshC->bInside == false && fPosLine > 0.0f && (fPosOldLine <= 0.0f || fPosOldLine <= 10.0f)))
 				{// 交差した
 					if (binsec == true)
 					{// 交点出す用
