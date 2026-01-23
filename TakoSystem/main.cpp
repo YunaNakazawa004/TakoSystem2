@@ -22,6 +22,7 @@
 #include "stage.h"
 #include "esa.h"		// エサ
 #include "time.h"
+#include "fishes.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -344,6 +345,9 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(2000.0f, 17500.0f), D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f), false);
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(18050.0f, 17500.0f), D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f), true);
 
+	// 生き物の初期化処理
+	InitFishes();
+
 	// エサの初期化処理
 	InitEsa();
 
@@ -405,6 +409,9 @@ void Uninit(void)
 
 	// メッシュシリンダーの終了処理
 	UninitMeshCylinder();
+
+	// 生き物の終了処理
+	UninitFishes();
 
 	// エサの終了処理
 	UninitEsa();
@@ -473,6 +480,9 @@ void Update(void)
 
 	// メッシュシリンダーの更新処理
 	UpdateMeshCylinder();
+
+	// 生き物の更新処理
+	UpdateFishes();
 
 	// エサの更新処理
 	UpdateEsa();
@@ -545,6 +555,9 @@ void Draw(void)
 
 			// メッシュシリンダーの描画処理
 			DrawMeshCylinder();
+
+			// 生き物の描画処理
+			DrawFishes();
 
 			// エサの描画処理
 			DrawEsa();
