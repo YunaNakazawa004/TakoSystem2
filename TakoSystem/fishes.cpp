@@ -38,7 +38,7 @@ typedef struct
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
-Fishes g_aFishes[256];									// 生き物の情報
+Fishes g_aFishes[FISHES_MAX_NUM];						// 生き物の情報
 char* g_apFilenameFishes[MAX_NUMMODEL] = {};			// モデルファイルへのポインタ
 
 FishesInfo g_aFishInfo[] =
@@ -108,8 +108,8 @@ void InitFishes(void)
 			}
 		}
 	}
-	SetFishes(0, 2);
 	SetFishes(1, 2);
+	SetFishes(0, 2);
 
 }
 
