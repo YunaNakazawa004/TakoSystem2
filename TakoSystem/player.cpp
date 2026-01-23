@@ -20,7 +20,7 @@
 //#include "wall.h"
 //#include "meshwall.h"
 //#include "meshfield.h"
-//#include "meshcylinder.h"
+#include "meshcylinder.h"
 //#include "shadow.h"
 //#include "meshring.h"
 //#include "goalarrow.h"
@@ -464,6 +464,16 @@ void UpdatePlayer(void)
 				}
 			}
 #endif
+
+			D3DXVECTOR3 posAway;
+			posAway.x = pPlayer->pos.x + sinf(D3DX_PI + pPlayer->rot.y) * 10000.0f;
+			posAway.y = pPlayer->pos.y;
+			posAway.z = pPlayer->pos.z + cosf(D3DX_PI - pPlayer->rot.y) * 10000.0f;
+
+			CollisionMeshCylinder(&posAway, &pPlayer->pos, &pPlayer->move, 100.0f, 100.0f, true);
+
+			// 当たり判定
+			CollisionMeshCylinder(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, 100.0f, 100.0f, false);
 
 			// モーションの更新処理
 			UpdateMotionPlayer();
