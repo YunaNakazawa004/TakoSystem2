@@ -50,7 +50,7 @@
 #define FOG_MAX					(70000.0f)								// フォグの最高
 #define PLAYER_WIDTH			(5.0f)									// 幅
 #define PLAYER_HEIGHT			(10.0f)									// 高さ
-#define PLAYER_FILE				"data\\motion_octo.txt"					// プレイヤーのデータファイル
+#define PLAYER_FILE				"data\\motion_octo_1.txt"				// プレイヤーのデータファイル
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -118,14 +118,17 @@ void InitPlayer(void)
 		for (int nCntModel = 0; nCntModel < pPlayer->nNumModel; nCntModel++)
 		{
 			// Xファイルの読み込み
-			D3DXLoadMeshFromX(g_apFilenamePlayer[pPlayer->aModel[nCntModel].nIdx],
+			if (FAILED(D3DXLoadMeshFromX(g_apFilenamePlayer[pPlayer->aModel[nCntModel].nIdx],
 				D3DXMESH_SYSTEMMEM,
 				pDevice,
 				NULL,
 				&pPlayer->aModel[nCntModel].pBuffMat,
 				NULL,
 				&pPlayer->aModel[nCntModel].dwNumMat,
-				&pPlayer->aModel[nCntModel].pMesh);
+				&pPlayer->aModel[nCntModel].pMesh)))
+			{
+				return;
+			}
 
 			// マテリアルデータへのポインタを取得
 			pMat = (D3DXMATERIAL*)pPlayer->aModel[nCntModel].pBuffMat->GetBufferPointer();
@@ -644,9 +647,9 @@ void LoadPlayer(void)
 	// ローカル変数宣言
 	FILE* pFile;
 	Player* pPlayer = GetPlayer();
-	char aString[256] = {};				// ファイルのテキスト読み込み
-	char aTrash[256] = {};				// ごみ箱
-	char aModelName[64][256] = {};		// モデルの名前
+	char aString[512] = {};				// ファイルのテキスト読み込み
+	char aTrash[512] = {};				// ごみ箱
+	char aModelName[128][512] = {};		// モデルの名前
 
 	// テクスチャ読み込み用の変数
 	int nNumTexture = 0;

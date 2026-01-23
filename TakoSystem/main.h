@@ -51,9 +51,9 @@
 #define MAX_POLYGON			(2)																// 最大ポリゴン数
 #define DEFAULT_RHW			(1.0f)															// rhwの規定値
 #define ONE_LINE			(100)															// 一行
-#define MAX_TEXTURE			(20)															// 最大テクスチャ数
-#define MAX_NUMMODEL		(20)															// モデルの最大数
-#define MAX_KEY				(100)															// キーの最大数
+#define MAX_TEXTURE			(50)															// 最大テクスチャ数
+#define MAX_NUMMODEL		(70)															// モデルの最大数
+#define MAX_KEY				(500)															// キーの最大数
 #define MAX_MOTION			(20)															// モーションの最大数
 #define ALLOW_X				(10000000)														// X方向の移動制限
 #define ALLOW_Z				(10000000)														// Z方向の移動制限
