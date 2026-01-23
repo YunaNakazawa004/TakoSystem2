@@ -108,8 +108,8 @@ void InitFishes(void)
 		}
 	}
 	
-	SetFishes(1, 2);
-	SetFishes(0, 12);
+	SetFishes(0, 1);
+	SetFishes(1, 0);
 
 }
 
@@ -159,7 +159,7 @@ void UpdateFishes(void)
 	Fishes* pFishes = GetFishes();
 	FISHESSTATE OldState = FISHESSTATE_STOP;
 	float fmoveAngle = 0.0f;
-	int Radian = 10;
+	int Radian = 300;
 
 	for (int nCntFishes = 0; nCntFishes < g_aFishes[0].nUseNum; nCntFishes++, pFishes++)
 	{
@@ -218,8 +218,8 @@ void UpdateFishes(void)
 			// stopからmoveに移行するとき数値を設定(ランダム)
 			if (OldState == FISHESSTATE_STOP && OldState != pFishes->state)
 			{
-				pFishes->MoveTime = 60;																// 移動する時間
-				pFishes->fAngle = pFishes->fAngle + ((rand() % Radian -(Radian/2))*3.14f/100);		// 移動する角度(ｙ軸)
+				pFishes->MoveTime = 18;																// 移動する時間
+				pFishes->fAngle = pFishes->fAngle + ((rand() % Radian -(Radian/2))/10*3.14f/100);	// 移動する角度(ｙ軸)
 				pFishes->StopTime = 1;																// 停止している時間
 			}
 		}
@@ -338,6 +338,12 @@ void SetFishes(int ModelIdx, int nNumSet)
 
 	for (int nCntFishes = 0; nCntFishes < FISHES_MAX_NUM; nCntFishes++, pFishes++)
 	{
+		// nNumSet分設定したら
+		if (nModelSet == nNumSet)
+		{
+			nModelSet = 0;
+			break;
+		}
 		if (pFishes->bUse == false)
 		{
 			pFishes->bUse = true;
@@ -345,12 +351,6 @@ void SetFishes(int ModelIdx, int nNumSet)
 			pFishes->bMoving = true;
 			g_aFishes[0].nUseNum++;
 			nModelSet++;
-		}
-		// nNumSet分設定したら
-		if (nModelSet == nNumSet)
-		{
-			nModelSet = 0;
-			break;
 		}
 	}
 }
