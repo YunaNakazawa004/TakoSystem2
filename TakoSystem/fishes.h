@@ -25,7 +25,7 @@ typedef enum
 //*****************************************************************************
 typedef struct
 {
-	int nUseNum;									// 使用数
+	int nUseNum;								// 使用数
 	D3DXVECTOR3 pos;							// 現在の位置
 	D3DXVECTOR3 posOld;							// 前回の位置
 	D3DXVECTOR3 move;							// 移動量
@@ -42,26 +42,22 @@ typedef struct
 	bool bMoving;								// 動くかどうか
 	bool bUse;									// 使用しているかどうか
 	int nModelIdx;								// 使用するモデル
-	Model aModel[MAX_NUMMODEL];					// モデル(パーツ)
 	int nNumModel;								// モデル(パーツ)の総数
-	MOTION_INFO aMotionInfo[MAX_MOTION];		// モーション情報
-	int nNumMotion;								// モーションの総数
-	MOTIONTYPE motionType;						// 現在のモーションの種類
-	bool bLoopMotion;							// 現在のループするかどうか
-	int nNumKey;								// 現在のキーの総数
-	int nKey;									// 現在の現在のキーNo.
-	int nCounterMotion;							// 現在のモーションのカウンター
-	bool bFinishMotion;							// 現在のモーションが終了しているかどうか
-	bool bBlendMotion;							// ブレンドモーションがあるかどうか
-	MOTIONTYPE motionTypeBlend;					// ブレンドモーションの種類
-	bool bLoopMotionBlend;						// ブレンドモーションがループするかどうか
-	int nNumKeyBlend;							// ブレンドモーションのキーの総数
-	int nKeyBlend;								// ブレンドモーションの現在のキーNo.
-	int nCounterMotionBlend;					// ブレンドモーションのカウンター
-	int nFrameBlend;							// ブレンドフレーム数
-	int nCounterBlend;							// ブレンドカウンター
 }Fishes;
 
+//*****************************************************************************
+// 生き物のモデル構造体
+//*****************************************************************************
+typedef struct
+{
+	LPDIRECT3DTEXTURE9 apTexture[MAX_TEXTURE];	// テクスチャへのポインタ
+	LPD3DXMESH pMesh;							// マテリアルへのポインタ
+	LPD3DXBUFFER pBuffMat;						// メッシュ(頂点情報)へのポインタ
+	DWORD dwNumMat;								// マテリアルの数
+
+	bool bUse;									// 使用状態
+
+}Fishes_Model;
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
