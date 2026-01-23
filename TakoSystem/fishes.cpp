@@ -24,21 +24,29 @@
 #define FISHES_XMODEL_FILENAME	"data\\motion_octo.txt"					// 生き物のデータファイル
 #define FISHES_MAX_NUM			(1024)									// 設置の最大数
 #define FISHES_MAX_MODELS		(100)									// 読み込めるモデルの最大数
+#define FISHES_CALC_SIZEARRAY(aArray)(sizeof aArray / sizeof(aArray[0]))
 
 //*****************************************************************************
 // 生き物のモデル情報
 //*****************************************************************************
 typedef struct
 {
-	int Model_Idx[FISHES_MAX_MODELS];
+	int Model_Idx;
 	char Model_FileName[FISHES_MAX_MODELS];
-}FishesModelInfo;
+}FishesInfo;
 
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
 Fishes g_aFishes[256];									// 生き物の情報
 char* g_apFilenameFishes[MAX_NUMMODEL] = {};			// モデルファイルへのポインタ
+
+FishesInfo g_aFishInfo[] =
+{
+	{0,"data\\MODEL\\octo.x"},
+	{1,"data\\MODEL\\SangoSho.x"},
+
+};
 
 //=============================================================================
 // 生き物の初期化処理
@@ -49,6 +57,7 @@ void InitFishes(void)
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();		// デバイスへのポインタ
 	D3DXMATERIAL* pMat;
 	Fishes* pFishes = GetFishes();
+	FishesInfo* pFishesInfo = &g_aFishInfo[0];
 	int NumScanModel = 0;
 
 	// randのランダム化
@@ -57,43 +66,51 @@ void InitFishes(void)
 	// 生き物の情報の初期化
 	for (int nCntFishes = 0; nCntFishes < FISHES_MAX_NUM; nCntFishes++, pFishes++)
 	{
-		pFishes[nCntFishes].pos = FIRST_POS;
-		pFishes[nCntFishes].posOld = FIRST_POS;
-		pFishes[nCntFishes].move = FIRST_POS;
-		pFishes[nCntFishes].rot = FIRST_POS;
-		pFishes[nCntFishes].state = FISHESSTATE_STOP;
-		pFishes[nCntFishes].nCounterState = 0;
-		pFishes[nCntFishes].fAngle = 0.0f;
-		pFishes[nCntFishes].fRadius = FISHES_WIDTH;
-		pFishes[nCntFishes].fHeight = FISHES_HEIGHT;
-		pFishes[nCntFishes].bMove = false;
-		pFishes[nCntFishes].bUse = false;
-		pFishes[nCntFishes].MoveTime = 0;
-		pFishes[nCntFishes].StopTime = 0;
-		pFishes[nCntFishes].bMoving = false;
+		pFishes->pos = FIRST_POS;
+		pFishes->posOld = FIRST_POS;
+		pFishes->move = FIRST_POS;
+		pFishes->rot = FIRST_POS;
+		pFishes->state = FISHESSTATE_STOP;
+		pFishes->nCounterState = 0;
+		pFishes->fAngle = 0.0f;
+		pFishes->fRadius = FISHES_WIDTH;
+		pFishes->fHeight = FISHES_HEIGHT;
+		pFishes->bMove = false;
+		pFishes->bUse = false;
+		pFishes->MoveTime = 0;
+		pFishes->StopTime = 0;
+		pFishes->bMoving = false;
 	}
-	/*
-	// Xファイルの読み込み
-	D3DXLoadMeshFromX(FISHES_XMODEL_FILENAME,
-		D3DXMESH_SYSTEMMEM,
-		pDevice,
-		NULL,
-		&pFishes->aModel[nCntFishes].pBuffMat,
-		NULL,
-		&pFishes->aModel[nCntFishes].dwNumMat,
-		&pFishes->aModel[nCntFishes].pMesh);
 
-	// マテリアルデータへのポインタを取得
-	pMat = (D3DXMATERIAL*)pFishes->aModel[nCntFishes].pBuffMat->GetBufferPointer();
-
-	for (int nCntMat = 0; nCntMat < (int)pFishes->aModel[nCntFishes].dwNumMat; nCntMat++)
+	for (int nCntModel = 0; nCntModel < (sizeof pFishesInfo / sizeof(pFishesInfo[0])); nCntModel++, pFishes++)
 	{
-		if (pMat[nCntMat].pTextureFilename != NULL)
-		{// テクスチャファイルが存在する
-			D3DXCreateTextureFromFile(pDevice, pMat[nCntMat].pTextureFilename, &pFishes->aModel[nCntFishes].apTexture[nCntMat]);
+		for (int nCntFishes = 0; nCntFishes < pFishes[nCntModel].nNumModel; nCntFishes++)
+		{
+			// Xファイルの読み込み
+			D3DXLoadMeshFromX(pFishesInfo[nCntModel].Model_FileName,
+				D3DXMESH_SYSTEMMEM,
+				pDevice,
+				NULL,
+				&pFishes->aModel[nCntFishes].pBuffMat,
+				NULL,
+				&pFishes->aModel[nCntFishes].dwNumMat,
+				&pFishes->aModel[nCntFishes].pMesh);
+
+			// マテリアルデータへのポインタを取得
+			pMat = (D3DXMATERIAL*)pFishes->aModel[nCntFishes].pBuffMat->GetBufferPointer();
+
+			for (int nCntMat = 0; nCntMat < (int)pFishes->aModel[nCntFishes].dwNumMat; nCntMat++)
+			{
+				if (pMat[nCntMat].pTextureFilename != NULL)
+				{// テクスチャファイルが存在する
+					D3DXCreateTextureFromFile(pDevice, pMat[nCntMat].pTextureFilename, &pFishes->aModel[nCntFishes].apTexture[nCntMat]);
+				}
+			}
 		}
 	}
-	*/
+	SetFishes(0, 2);
+	SetFishes(1, 2);
+
 }
 
 //=============================================================================
@@ -240,7 +257,7 @@ void DrawFishes(void)
 			// マテリアルの設定
 			pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
 
-			if (pFishes[nCntModel].bUse = true)
+			if (pFishes->bUse == true)
 			{
 				// テクスチャの設定
 				pDevice->SetTexture(0, pFishes->aModel[nCntModel].apTexture[nCntMat]);
@@ -302,137 +319,28 @@ Fishes* GetFishes(void)
 }
 
 //=============================================================================
-// ファイルスキャン
+// 生き物の設定処理
 //=============================================================================
-void ScanFile_Fishes(char* FileName)
-{/*
+void SetFishes(int ModelIdx, int nNumSet)
+{
 	// ローカル変数宣言
-	LPDIRECT3DDEVICE9 pDevice = GetDevice();		// デバイスの取得
-	FILE* pFile;
-	char afileStr[256];
-	char NumStr[256];
-	int nWordEnd = 0;
-	bool bScanModel = false;
-	bool bScript = false;
-	
-	// ファイル開き
-	pFile = fopen(FileName, "r");
+	Fishes* pFishes = GetFishes();
+	int nModelSet = 0;
 
-	if (pFile != NULL)
-	{ // 開いたとき
-		while (1)
-		{
-			// ファイル読み込み
-			fgets(&afileStr[0], 100, pFile);
-
-			if (kStrcmp(&afileStr[0], "SCAN_MODEL", &nWordEnd) == true)
-			{
-				bScanModel = true;
-
-			}
-			while (bScanModel)
-			{
-				//ファイル読み込み
-				fgets(&afileStr[0], 100, pFile);
-
-				if (kStrcmp(&afileStr[0], "SCRIPT", &nWordEnd) == true)
-				{
-					bScript = true;
-
-				}
-				while (bScript)
-				{
-					//ファイル読み込み
-					fgets(&afileStr[0], 100, pFile);
-
-					if (kStrcmp(&afileStr[0], "NUM_MODEL", &nWordEnd) == true)
-					{
-						if (kStrcmp(&afileStr[nWordEnd], " = ", &nWordEnd) == true)
-						{
-							//文字列代入
-							kStrPrint(&afileStr[nWordEnd], &NumStr[0], &nWordEnd);
-							//変換
-							pPlayer->nNumModel = atoi(NumStr);
-							nWordEnd = 0;
-							bNumModel = true;
-						}
-					}
-					if (bNumModel == true)
-					{
-						for (nCntModel = 0; nCntModel < pPlayer->nNumModel;)
-						{
-							//ファイル読み込み
-							fgets(&afileStr[0], 100, pFile);
-
-							if (kStrcmp(&afileStr[0], "MODEL_FILENAME", &nWordEnd) == true)
-							{
-							}
-						}
-					}
-				}
-			}
-		}
-		// ファイル閉じ
-		fclose(pFile);
-
-	}*/
-}
-
-//=========================================
-// 文字判定処理
-//=========================================
-bool kStrcmp(const char* aStr, const char* aCmpStr, int* nWE)
-{
-	for (; *aStr != '\0'; aStr++)
+	for (int nCntFishes = 0; nCntFishes < FISHES_MAX_NUM; nCntFishes++, pFishes++)
 	{
-		*nWE += 1;
-		if (*aStr == *aCmpStr)
-		{ // SCRIPT
-			aCmpStr++;
-			if (*aCmpStr == '\0')
-			{
-				return true;
-			}
-		}
-		else if (*aStr == '#')
+		if (pFishes->bUse == false)
 		{
-			*nWE = 0;
-			return false;
+			pFishes->bUse = true;
+			pFishes->nModelIdx = ModelIdx;
+			pFishes[0].nUseNum++;
+			nModelSet++;
+		}
+		// nNumSet分設定したら
+		if (nModelSet == nNumSet)
+		{
+			nModelSet = 0;
+			break;
 		}
 	}
-	*nWE = 0;
-	return false;
-}
-
-//=========================================
-// 文字代入処理
-//=========================================
-void kStrPrint(const char* aStr, char* aPrintStr, int* nWE)
-{
-	for (; *aStr != '\0'; aStr++)
-	{
-		*nWE += 1;
-		if (*aStr == '#')
-		{
-			break;
-		}
-		else if (*aStr == '\t')
-		{
-			break;
-		}
-		else if (*aStr == ' ')
-		{
-			break;
-		}
-		else if (*aStr == '\n')
-		{
-			break;
-		}
-		else
-		{
-			sprintf(aPrintStr, "%c", *aStr);
-			aPrintStr++;
-		}
-	}
-	aStr++;
 }

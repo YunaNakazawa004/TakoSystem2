@@ -25,11 +25,14 @@ typedef enum
 //*****************************************************************************
 typedef struct
 {
+	int nUseNum;									// 使用数
 	D3DXVECTOR3 pos;							// 現在の位置
 	D3DXVECTOR3 posOld;							// 前回の位置
 	D3DXVECTOR3 move;							// 移動量
 	D3DXVECTOR3 rot;							// 向き
 	float fAngle;								// 向きの最終地点
+	int MoveTime;								// 移動時間
+	int StopTime;								// 停止時間
 	D3DXMATRIX mtxWorld;						// ワールドマトリックス
 	FISHESSTATE state;							// 状態
 	int nCounterState;							// 状態カウンター
@@ -38,6 +41,7 @@ typedef struct
 	bool bMove;									// 動いているかどうか
 	bool bMoving;								// 動くかどうか
 	bool bUse;									// 使用しているかどうか
+	int nModelIdx;								// 使用するモデル
 	Model aModel[MAX_NUMMODEL];					// モデル(パーツ)
 	int nNumModel;								// モデル(パーツ)の総数
 	MOTION_INFO aMotionInfo[MAX_MOTION];		// モーション情報
@@ -56,8 +60,6 @@ typedef struct
 	int nCounterMotionBlend;					// ブレンドモーションのカウンター
 	int nFrameBlend;							// ブレンドフレーム数
 	int nCounterBlend;							// ブレンドカウンター
-	int MoveTime;								//	移動時間
-	int StopTime;								//	停止時間
 }Fishes;
 
 //*****************************************************************************
@@ -69,8 +71,6 @@ void UpdateFishes(void);
 void DrawFishes(void);
 void CollisionFishes(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, float fWidth, float fDepth);
 Fishes* GetFishes(void);
-//void ScanFile_Fishes(char* FileName);
-bool kStrcmp(const char* aStr, const char* aCmpStr, int* nWE);
-void kStrPrint(const char* aStr, char* aPrintStr, int* nWE);
+void SetFishes(int ModelIdx, int nNumSet);
 
 #endif
