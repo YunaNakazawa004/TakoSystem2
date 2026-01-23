@@ -38,7 +38,8 @@ typedef struct
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
-Fishes g_aFishes[256];									// 生き物の情報
+Fishes g_aFishes[FISHES_MAX_NUM];						// 生き物の情報
+Fishes_Model g_aFishesModel[FISHES_MAX_MODELS];			// 生き物のモデル情報
 char* g_apFilenameFishes[MAX_NUMMODEL] = {};			// モデルファイルへのポインタ
 
 FishesInfo g_aFishInfo[] =
@@ -57,6 +58,7 @@ void InitFishes(void)
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();		// デバイスへのポインタ
 	D3DXMATERIAL* pMat;
 	Fishes* pFishes = GetFishes();
+	Fishes_Model* pFishesModel = &g_aFishesModel[0];
 	FishesInfo* pFishesInfo = &g_aFishInfo[0];
 	int NumScanModel = 0;
 
@@ -82,34 +84,32 @@ void InitFishes(void)
 		pFishes->bMoving = false;
 	}
 
-	for (int nCntModel = 0; nCntModel < (sizeof pFishesInfo / sizeof(pFishesInfo[0])); nCntModel++, pFishes++)
+	for (int nCntModel = 0; nCntModel < FISHES_CALC_SIZEARRAY(pFishesInfo); nCntModel++, pFishesModel++)
 	{
-		for (int nCntFishes = 0; nCntFishes < pFishes[nCntModel].nNumModel; nCntFishes++)
+		// Xファイルの読み込み
+		D3DXLoadMeshFromX(pFishesInfo[nCntModel].Model_FileName,
+			D3DXMESH_SYSTEMMEM,
+			pDevice,
+			NULL,
+			&g_aFishesModel->pBuffMat,
+			NULL,
+			&g_aFishesModel->dwNumMat,
+			&g_aFishesModel->pMesh);
+
+		// マテリアルデータへのポインタを取得
+		pMat = (D3DXMATERIAL*)g_aFishesModel->pBuffMat->GetBufferPointer();
+
+		for (int nCntMat = 0; nCntMat < (int)g_aFishesModel->dwNumMat; nCntMat++)
 		{
-			// Xファイルの読み込み
-			D3DXLoadMeshFromX(pFishesInfo[nCntModel].Model_FileName,
-				D3DXMESH_SYSTEMMEM,
-				pDevice,
-				NULL,
-				&pFishes->aModel[nCntFishes].pBuffMat,
-				NULL,
-				&pFishes->aModel[nCntFishes].dwNumMat,
-				&pFishes->aModel[nCntFishes].pMesh);
-
-			// マテリアルデータへのポインタを取得
-			pMat = (D3DXMATERIAL*)pFishes->aModel[nCntFishes].pBuffMat->GetBufferPointer();
-
-			for (int nCntMat = 0; nCntMat < (int)pFishes->aModel[nCntFishes].dwNumMat; nCntMat++)
-			{
-				if (pMat[nCntMat].pTextureFilename != NULL)
-				{// テクスチャファイルが存在する
-					D3DXCreateTextureFromFile(pDevice, pMat[nCntMat].pTextureFilename, &pFishes->aModel[nCntFishes].apTexture[nCntMat]);
-				}
+			if (pMat[nCntMat].pTextureFilename != NULL)
+			{// テクスチャファイルが存在する
+				D3DXCreateTextureFromFile(pDevice, pMat[nCntMat].pTextureFilename, &g_aFishesModel->apTexture[nCntMat]);
 			}
 		}
 	}
-	SetFishes(0, 2);
+	
 	SetFishes(1, 2);
+	SetFishes(0, 2);
 
 }
 
@@ -120,30 +120,31 @@ void UninitFishes(void)
 {
 	// ローカル変数宣言
 	Fishes* pFishes = GetFishes();
+	Fishes_Model* pFishesModel = &g_aFishesModel[0];
 
-	for (int nCntModel = 0; nCntModel < FISHES_MAX_NUM; nCntModel++, pFishes++)
+	for (int nCntModel = 0; nCntModel < FISHES_MAX_NUM; nCntModel++, pFishesModel++)
 	{
 		// メッシュの破棄
-		if (pFishes->aModel[nCntModel].pMesh != NULL)
+		if (pFishesModel->pMesh != NULL)
 		{
-			pFishes->aModel[nCntModel].pMesh->Release();
-			pFishes->aModel[nCntModel].pMesh = NULL;
+			pFishesModel->pMesh->Release();
+			pFishesModel->pMesh = NULL;
 		}
 
 		// マテリアルの破棄
-		if (pFishes->aModel[nCntModel].pBuffMat != NULL)
+		if (pFishesModel->pBuffMat != NULL)
 		{
-			pFishes->aModel[nCntModel].pBuffMat->Release();
-			pFishes->aModel[nCntModel].pBuffMat = NULL;
+			pFishesModel->pBuffMat->Release();
+			pFishesModel->pBuffMat = NULL;
 		}
 
 		// テクスチャの破棄
-		for (int nCntFishes = 0; nCntFishes < (int)pFishes->aModel[0].dwNumMat; nCntFishes++)
+		for (int nCntFishes = 0; nCntFishes < (int)pFishesModel->dwNumMat; nCntFishes++)
 		{
-			if (pFishes->aModel[nCntModel].apTexture[nCntFishes] != NULL)
+			if (pFishesModel->apTexture[nCntFishes] != NULL)
 			{
-				pFishes->aModel[nCntModel].apTexture[nCntFishes]->Release();
-				pFishes->aModel[nCntModel].apTexture[nCntFishes] = NULL;
+				pFishesModel->apTexture[nCntFishes]->Release();
+				pFishesModel->apTexture[nCntFishes] = NULL;
 			}
 		}
 	}
@@ -158,7 +159,7 @@ void UpdateFishes(void)
 	Fishes* pFishes = GetFishes();
 	FISHESSTATE OldState = FISHESSTATE_STOP;
 
-	for (int nCntFishes = 0; nCntFishes < FISHES_MAX_NUM; nCntFishes++, pFishes++)
+	for (int nCntFishes = 0; nCntFishes < 0; nCntFishes++, pFishes++)
 	{
 		if (pFishes[nCntFishes].bUse == true && pFishes[nCntFishes].bMoving == true)
 		{
@@ -229,8 +230,9 @@ void DrawFishes(void)
 	D3DMATERIAL9 matDef;							// 現在のマテリアル保存用
 	D3DXMATERIAL* pMat;								// マテリアルデータへのポインタ
 	Fishes* pFishes = GetFishes();
+	Fishes_Model* pFishesModel = &g_aFishesModel[0];
 
-	for (int nCntModel = 0; nCntModel < FISHES_MAX_NUM; nCntModel++, pFishes++)
+	for (int nCntFishes = 0; nCntFishes < g_aFishes[0].nUseNum; nCntFishes++, pFishes++)
 	{
 		// ワールドマトリックスの初期化
 		D3DXMatrixIdentity(&pFishes->mtxWorld);
@@ -250,9 +252,9 @@ void DrawFishes(void)
 		pDevice->GetMaterial(&matDef);
 
 		// マテリアルデータへのポインタを取得
-		pMat = (D3DXMATERIAL*)pFishes->aModel[nCntModel].pBuffMat->GetBufferPointer();
+		pMat = (D3DXMATERIAL*)pFishesModel[pFishes->nModelIdx].pBuffMat->GetBufferPointer();
 
-		for (int nCntMat = 0; nCntMat < (int)pFishes->aModel[nCntModel].dwNumMat; nCntMat++)
+		for (int nCntMat = 0; nCntMat < (int)pFishesModel[pFishes->nModelIdx].dwNumMat; nCntMat++)
 		{
 			// マテリアルの設定
 			pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
@@ -260,10 +262,10 @@ void DrawFishes(void)
 			if (pFishes->bUse == true)
 			{
 				// テクスチャの設定
-				pDevice->SetTexture(0, pFishes->aModel[nCntModel].apTexture[nCntMat]);
+				pDevice->SetTexture(0, pFishesModel[pFishes->nModelIdx].apTexture[nCntMat]);
 
 				// 生き物パーツの描画
-				pFishes->aModel[nCntModel].pMesh->DrawSubset(nCntMat);
+				pFishesModel[pFishes->nModelIdx].pMesh->DrawSubset(nCntMat);
 			}
 		}
 
@@ -333,7 +335,7 @@ void SetFishes(int ModelIdx, int nNumSet)
 		{
 			pFishes->bUse = true;
 			pFishes->nModelIdx = ModelIdx;
-			pFishes[0].nUseNum++;
+			g_aFishes[0].nUseNum++;
 			nModelSet++;
 		}
 		// nNumSet分設定したら
