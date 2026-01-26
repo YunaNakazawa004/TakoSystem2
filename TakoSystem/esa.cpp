@@ -15,20 +15,6 @@
 
 #define ESA_CALC_SIZEARRAY(aArray)	(sizeof aArray / sizeof(aArray[0]))
 
-// 構造体の定義 ================================================
-
-// エサの設定情報
-typedef struct
-{
-	int nidxType;		// エサの種類
-
-	ESATYPE esaType;	// エサの挙動
-
-	D3DXVECTOR3 pos;	// 位置
-	D3DXVECTOR3 rot;	// 角度
-
-}Esa_info;
-
 // グローバル宣言 ==============================================
 
 EsaModel g_aEsaModel[MAX_MODEL_ESA];	// エサのモデル情報
@@ -290,6 +276,23 @@ int SetModelEsa(EsaModel_info infoEsaModel, EsaModel* pEsaModel, int nMaxSizeNum
 }
 
 //========================================================================
+// エサの挙動の処理
+//========================================================================
+void BehaviorEsa(Esa* pEsa)
+{
+	switch (pEsa->esaType)
+	{
+	case ESATYPE_LAND:
+
+		break;
+
+	case ESATYPE_SWIM:
+
+		break;
+	}
+}
+
+//========================================================================
 // エサの当たり判定処理
 //========================================================================
 bool CollisionEsa(int* pIdx, bool bCollision, D3DXVECTOR3 *pos, float fHitRadius)
@@ -319,10 +322,10 @@ bool CollisionEsa(int* pIdx, bool bCollision, D3DXVECTOR3 *pos, float fHitRadius
 			// 角度を求める
 			fRot = atan2f(fDistX * fDistX, fDistZ * fDistX);
 
-			PrintDebugProc("left", "ESA_COLLISION_DISTX %f\n", fDistX);
-			PrintDebugProc("left", "ESA_COLLISION_DISTZ %f\n", fDistZ);
-			PrintDebugProc("left", "ESA_COLLISION_DIST  %f\n", fDistLength);
-			PrintDebugProc("left", "ESA_COLLISION_ROT  %f\n", fRot);
+			PrintDebugProc("ESA_COLLISION_DISTX %f\n", fDistX);
+			PrintDebugProc("ESA_COLLISION_DISTZ %f\n", fDistZ);
+			PrintDebugProc("ESA_COLLISION_DIST  %f\n", fDistLength);
+			PrintDebugProc("ESA_COLLISION_ROT  %f\n", fRot);
 
 			// 判定
 			if (fDistLength < g_aEsaModel[g_aIdxEsaModel[g_aEsa[nCntEsa].nIdxModel]].fHitRadius + fHitRadius)

@@ -27,6 +27,18 @@ typedef enum
 
 // 構造体の定義 ================================================
 
+// エサの設定情報
+typedef struct
+{
+	int nidxType;		// エサの種類
+
+	ESATYPE esaType;	// エサの挙動
+
+	D3DXVECTOR3 pos;	// 位置
+	D3DXVECTOR3 rot;	// 角度
+
+}Esa_info;
+
 // エサの情報
 typedef struct
 {
@@ -36,6 +48,8 @@ typedef struct
 	D3DXVECTOR3 rot;		// 角度
 
 	D3DXMATRIX mtxWorld;	// ワールドマトリックス
+
+	ESATYPE esaType;		// エサの挙動
 
 	bool bDisp;				// 表示状態
 	bool bUse;				// 使用状態
@@ -79,7 +93,10 @@ int SetModelEsa				// エサのモデル読み込み処理
 void SetEsa					// エサの設定処理
 (int nEsaType, ESATYPE esaType,			// 設定するエサのタイプ, エサの挙動
  D3DXVECTOR3 pos, D3DXVECTOR3 rot);		// 位置, 角度			
- 						 
+
+void BehaviorEsa			// エサの挙動の処理
+(Esa *pEsa);							// 処理するエサのポインタ
+
 bool CollisionEsa			// エサの当たり判定処理
 (int* pIdx,	bool bCollision,			// 判定したエサのインデックス, ぶつかりの判定をするか 
  D3DXVECTOR3 *pos, float fHitRadius);	// 位置, 大きさ 
