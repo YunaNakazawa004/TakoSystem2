@@ -10,6 +10,7 @@
 
 #include "input.h"
 #include "debugproc.h"
+
 // マクロ定義 ==================================================
 
 #define MAX_MODEL_ESA	(64)	// 用意出来るモデルの最大値
@@ -82,14 +83,14 @@ void InitEsa(void)
 		g_aEsa[nCntEsa].bUse = false;							// 使用していない状態に設定
 	}
 
-	memset(g_aIdxEsaModel,-1,sizeof g_aIdxEsaModel);	// モデルのラベルを初期化
+	memset(g_aIdxEsaModel,-1,sizeof g_aIdxEsaModel);	// モデルのインデックスを初期化
 
 	// モデル読み込み
 	for (int nCntEsaModel = 0; nCntEsaModel < ESA_CALC_SIZEARRAY(g_aEsaModelInfo); nCntEsaModel++)
 	{// 用意したファイルの数だけ繰り返す
 
 		// エサのモデル読み込み処理
-		g_aIdxEsaModel[nCntEsaModel] = SetModelEsa(g_aEsaModelInfo[nCntEsaModel], &g_aEsaModel[0], ESA_CALC_SIZEARRAY(g_aEsaModel));
+		//g_aIdxEsaModel[nCntEsaModel] = SetModelEsa(g_aEsaModelInfo[nCntEsaModel], &g_aEsaModel[0], ESA_CALC_SIZEARRAY(g_aEsaModel));
 	}
 
 	// エサの配置
@@ -97,7 +98,7 @@ void InitEsa(void)
 	{// 配置する数だけ繰り返す
 
 		// エサの設定処理
-		SetEsa(g_aEsaInfo[nCntEsa].nidxType, g_aEsaInfo[nCntEsa].pos, g_aEsaInfo[nCntEsa].rot);
+		//SetEsa(g_aEsaInfo[nCntEsa].nidxType, g_aEsaInfo[nCntEsa].pos, g_aEsaInfo[nCntEsa].rot);
 	}
 }
 
@@ -143,12 +144,12 @@ void UninitEsa(void)
 void UpdateEsa(void)
 {
 	bool bD;
-
+#if 0
 	if (GetKeyboardPress(DIK_NUMPAD5)) g_aEsa[0].pos.z += 1.0f;
 	if (GetKeyboardPress(DIK_NUMPAD2)) g_aEsa[0].pos.z -= 1.0f;
 	if (GetKeyboardPress(DIK_NUMPAD1)) g_aEsa[0].pos.x -= 1.0f;
 	if (GetKeyboardPress(DIK_NUMPAD3)) g_aEsa[0].pos.x += 1.0f;
-
+#endif
 	//bD = CollisionEsa(NULL, g_aEsa[0].pos, g_aEsaModel[g_aIdxEsaModel[g_aEsa[0].nIdxModel]].fHitRadius);
 
 	//PrintDebugProc("ESA_COLLISION %s", (bD == true) ? "TRUE" : "FALSE");
@@ -196,19 +197,19 @@ void DrawEsa(void)
 			pDevice->GetMaterial(&matDef);
 
 			// マテリアルデータへのポインタを所得
-			pMat = (D3DXMATERIAL*)g_aEsaModel[g_aIdxEsaModel[g_aEsa[nCntEsa].nIdxModel]].pBuffMat->GetBufferPointer();
+			pMat = (D3DXMATERIAL*)g_aEsaModel[g_aEsa[nCntEsa].nIdxModel].pBuffMat->GetBufferPointer();
 
-			for (int nCntMat = 0; nCntMat < (int)g_aEsaModel[g_aIdxEsaModel[g_aEsa[nCntEsa].nIdxModel]].dwNumMat; nCntMat++)
+			for (int nCntMat = 0; nCntMat < (int)g_aEsaModel[g_aEsa[nCntEsa].nIdxModel].dwNumMat; nCntMat++)
 			{// マテリアルの数分繰り返す
 
 				// マテリアルの設定
 				pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
 
 				// テクスチャの設定
-				pDevice->SetTexture(0, g_aEsaModel[g_aIdxEsaModel[g_aEsa[nCntEsa].nIdxModel]].apTexture[nCntMat]);
+				pDevice->SetTexture(0, g_aEsaModel[g_aEsa[nCntEsa].nIdxModel].apTexture[nCntMat]);
 
 				// モデルパーツの描画
-				g_aEsaModel[g_aIdxEsaModel[g_aEsa[nCntEsa].nIdxModel]].pMesh->DrawSubset(nCntMat);
+				g_aEsaModel[g_aEsa[nCntEsa].nIdxModel].pMesh->DrawSubset(nCntMat);
 			}
 
 			// 保存していたマテリアルを戻す
@@ -220,21 +221,21 @@ void DrawEsa(void)
 //========================================================================
 // エサの設定処理
 //========================================================================
-void SetEsa(int nType, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
+void SetEsa(int nEsaType, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 {
-	// モデルが設定されていない場合
-	if (g_aIdxEsaModel[nType] == -1) return;	// 処理を抜ける
+	// 設定したいモデルがない場合
+	if (g_aIdxEsaModel[nEsaType] == -1) return;	// 処理を抜ける
 
 	for (int nCntEsa = 0; nCntEsa < MAX_SET_ESA; nCntEsa++)
 	{
 		if (g_aEsa[nCntEsa].bUse == false)
 		{// 使用していない場合
 
-			g_aEsa[nCntEsa].nIdxModel = nType;	// 種類を設定
-			g_aEsa[nCntEsa].pos = pos;			// 位置を設定
-			g_aEsa[nCntEsa].rot = rot;			// 角度を設定
-			g_aEsa[nCntEsa].bDisp = true;		// 表示している状態に設定
-			g_aEsa[nCntEsa].bUse = true;		// 使用している状態に設定
+			g_aEsa[nCntEsa].nIdxModel = g_aIdxEsaModel[nEsaType];	// 種類を設定
+			g_aEsa[nCntEsa].pos = pos;								// 位置を設定
+			g_aEsa[nCntEsa].rot = rot;								// 角度を設定
+			g_aEsa[nCntEsa].bDisp = true;							// 表示している状態に設定
+			g_aEsa[nCntEsa].bUse = true;							// 使用している状態に設定
 
 			break;	// for文を抜ける
 		}
@@ -259,20 +260,25 @@ int SetModelEsa(EsaModel_info infoEsaModel, EsaModel* pEsaModel, int nMaxSizeNum
 		{// 使用していない場合
 
 			// Xファイルの読み込み
-			D3DXLoadMeshFromX(&infoEsaModel.aFilename[0],
-							  D3DXMESH_SYSTEMMEM,
-							  pDevice,
-							  NULL,
-							  &pEsaModel->pBuffMat,
-							  NULL,
-							  &pEsaModel->dwNumMat,
-							  &pEsaModel->pMesh);
+			if(FAILED(D3DXLoadMeshFromX(&infoEsaModel.aFilename[0],
+									    D3DXMESH_SYSTEMMEM,
+									    pDevice,
+									    NULL,
+									    &pEsaModel->pBuffMat,
+									    NULL,
+									    &pEsaModel->dwNumMat,
+									    &pEsaModel->pMesh)))
+			{// Xファイルの読み込みに失敗した場合
+
+				return -1;	// 設定した場所がない事を返す
+			}
 
 			D3DXMATERIAL* pMat;	// マテリアルのポインタを宣言
 
 			// マテリアルデータへのポインタを所得
 			pMat = (D3DXMATERIAL*)pEsaModel->pBuffMat->GetBufferPointer();
 
+			// マテリアルの設定
 			for (int nCntMat = 0; nCntMat < (int)pEsaModel->dwNumMat; nCntMat++)
 			{// マテリアルの数分繰り返す
 
@@ -290,44 +296,66 @@ int SetModelEsa(EsaModel_info infoEsaModel, EsaModel* pEsaModel, int nMaxSizeNum
 
 			pEsaModel->bUse = true;								// 使用している状態に設定
 
-			return nCntModel;									// 設定した位置を返す
+			return nCntModel;									// 設定した場所を返す
+			
 		}
 	}
 
-	return -1;
+	// 設定できる場所が残っていなかった場合
+	return -1;		// 設定した場所がない事を返す
 }
 
 //========================================================================
 // エサの当たり判定処理
 //========================================================================
-bool CollisionEsa(int* pIdx, D3DXVECTOR3 pos, float fHitRadius)
+bool CollisionEsa(int* pIdx, bool bCollision, D3DXVECTOR3 *pos, float fHitRadius)
 {
+	// 変数宣言 ===========================================
+
 	int nCntEsa = 1;
 
 	float fDistX, fDistZ;
 	float fDistLength;
+
+	float fRot;
+
+	// ====================================================
 
 	//for (nCntEsa = 0; nCntEsa < MAX_SET_ESA; nCntEsa++)
 	//{}
 		if (g_aEsa[nCntEsa].bUse == true)
 		{// 使用している場合
 
-			fDistX = g_aEsa[nCntEsa].pos.x - pos.x;
-			fDistZ = g_aEsa[nCntEsa].pos.z - pos.z;
+			fDistX = g_aEsa[nCntEsa].pos.x - pos->x;
+			fDistZ = g_aEsa[nCntEsa].pos.z - pos->z;
 
 			// 離れている距離を求める
-			fDistLength = fDistX * fDistX + fDistZ * fDistZ;
+			fDistLength = sqrtf((fDistX * fDistX + fDistZ * fDistZ) * 0.5f);
+
+			// 角度を求める
+			fRot = atan2f(fDistX * fDistX, fDistZ * fDistX);
+
+			PrintDebugProc("left", "ESA_COLLISION_DISTX %f\n", fDistX);
+			PrintDebugProc("left", "ESA_COLLISION_DISTZ %f\n", fDistZ);
+			PrintDebugProc("left", "ESA_COLLISION_DIST  %f\n", fDistLength);
+			PrintDebugProc("left", "ESA_COLLISION_ROT  %f\n", fRot);
 
 			// 判定
-			if (fDistLength <= g_aEsaModel[g_aIdxEsaModel[g_aEsa[nCntEsa].nIdxModel]].fHitRadius + fHitRadius)
+			if (fDistLength < g_aEsaModel[g_aIdxEsaModel[g_aEsa[nCntEsa].nIdxModel]].fHitRadius + fHitRadius)
 			{// 離れている距離が当たり判定より小さい場合
 
-				*pIdx = nCntEsa;
+				if (pIdx)*pIdx = nCntEsa;	// 接触したエサのインデックスを設定
+
+				if (bCollision == true)
+				{// 当たった時の処理をおこなう場合
+
+					pos->x = g_aEsa[nCntEsa].pos.x + sinf(fRot + D3DX_PI) * g_aEsaModel[g_aIdxEsaModel[g_aEsa[nCntEsa].nIdxModel]].fHitRadius + fHitRadius;
+					pos->z = g_aEsa[nCntEsa].pos.z + cosf(fRot + D3DX_PI) * g_aEsaModel[g_aIdxEsaModel[g_aEsa[nCntEsa].nIdxModel]].fHitRadius + fHitRadius;
+				}
 
 				return true;
 			}
 		}
-	
 
 	return false;
 }

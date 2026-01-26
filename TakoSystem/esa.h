@@ -8,6 +8,19 @@
 #ifndef _ESA_H_
 #define _ESA_H_
 
+//#define MAX_TEXTURE		(128)
+
+// 列挙型の定義 ================================================
+
+typedef enum
+{
+	ESATYPE_LAND = 0,
+	ESATYPE_SWIM,
+
+	ESATYPE_MAX
+
+}ESATYPE;
+
 // 構造体の定義 ================================================
 
 // エサのモデルの設定情報
@@ -27,7 +40,7 @@ typedef struct
 	LPD3DXBUFFER pBuffMat;						// メッシュ(頂点情報)へのポインタ
 	DWORD dwNumMat;								// マテリアルの数
 
-	float fHitRadius;
+	float fHitRadius;							// 当たり判定の大きさ
 
 	bool bUse;									// 使用状態
 
@@ -40,15 +53,16 @@ void UninitEsa(void);		// エサの終了処理
 void UpdateEsa(void);		// エサの更新処理
 void DrawEsa(void);			// エサの描画処理
 
-void SetEsa					// エサの設定処理
-(int nType, D3DXVECTOR3 pos, D3DXVECTOR3 rot);				
-
 int SetModelEsa				// エサのモデル読み込み処理
 (EsaModel_info infoEsaModel,			// 
  EsaModel *pEsaModel, int nMaxSizeNum);	// 
+
+void SetEsa					// エサの設定処理
+(int nEsaType,							// 
+ D3DXVECTOR3 pos, D3DXVECTOR3 rot);		// 			
  						 
 bool CollisionEsa			// エサの当たり判定処理
-(int* pIdx,								// 
- D3DXVECTOR3 pos, float fHitRadius);	// 
+(int* pIdx,	bool bCollision,			// 
+ D3DXVECTOR3 *pos, float fHitRadius);	// 
 
 #endif
