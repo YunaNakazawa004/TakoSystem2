@@ -20,25 +20,12 @@
 
 // 構造体の定義 ================================================
 
-// エサの情報
-typedef struct
-{
-	int nIdxModel;			// モデルのインデックス
-
-	D3DXVECTOR3 pos;		// 位置
-	D3DXVECTOR3 rot;		// 角度
-
-	D3DXMATRIX mtxWorld;	// ワールドマトリックス
-
-	bool bDisp;				// 表示状態
-	bool bUse;				// 使用状態
-
-}Esa;
-
 // エサの設定情報
 typedef struct
 {
 	int nidxType;		// エサの種類
+
+	ESATYPE esaType;	// エサの挙動
 
 	D3DXVECTOR3 pos;	// 位置
 	D3DXVECTOR3 rot;	// 角度
@@ -64,8 +51,8 @@ EsaModel_info g_aEsaModelInfo[] =
 Esa_info g_aEsaInfo[] =
 {// {モデル種類, 位置, 角度}
 
-	{0, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
-	{1, D3DXVECTOR3(50.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
+	{0, ESATYPE_LAND, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
+	{1, ESATYPE_LAND, D3DXVECTOR3(50.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
 };
 
 //========================================================================
@@ -90,7 +77,7 @@ void InitEsa(void)
 	{// 用意したファイルの数だけ繰り返す
 
 		// エサのモデル読み込み処理
-		//g_aIdxEsaModel[nCntEsaModel] = SetModelEsa(g_aEsaModelInfo[nCntEsaModel], &g_aEsaModel[0], ESA_CALC_SIZEARRAY(g_aEsaModel));
+		g_aIdxEsaModel[nCntEsaModel] = SetModelEsa(g_aEsaModelInfo[nCntEsaModel], &g_aEsaModel[0], ESA_CALC_SIZEARRAY(g_aEsaModel));
 	}
 
 	// エサの配置
@@ -98,7 +85,7 @@ void InitEsa(void)
 	{// 配置する数だけ繰り返す
 
 		// エサの設定処理
-		//SetEsa(g_aEsaInfo[nCntEsa].nidxType, g_aEsaInfo[nCntEsa].pos, g_aEsaInfo[nCntEsa].rot);
+		SetEsa(g_aEsaInfo[nCntEsa].nidxType, g_aEsaInfo[nCntEsa].esaType, g_aEsaInfo[nCntEsa].pos, g_aEsaInfo[nCntEsa].rot);
 	}
 }
 
@@ -221,7 +208,7 @@ void DrawEsa(void)
 //========================================================================
 // エサの設定処理
 //========================================================================
-void SetEsa(int nEsaType, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
+void SetEsa(int nEsaType, ESATYPE esaType, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 {
 	// 設定したいモデルがない場合
 	if (g_aIdxEsaModel[nEsaType] == -1) return;	// 処理を抜ける
@@ -358,4 +345,12 @@ bool CollisionEsa(int* pIdx, bool bCollision, D3DXVECTOR3 *pos, float fHitRadius
 		}
 
 	return false;
+}
+
+//========================================================================
+// エサの情報を返す処理
+//========================================================================
+Esa* GetEsa(void)
+{
+	return &g_aEsa[0];
 }
