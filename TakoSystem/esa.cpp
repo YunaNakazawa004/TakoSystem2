@@ -13,9 +13,6 @@
 
 // マクロ定義 ==================================================
 
-#define MAX_MODEL_ESA	(64)	// 用意出来るモデルの最大値
-#define MAX_SET_ESA		(128)	// 設定出来るエサの総数
-
 #define ESA_CALC_SIZEARRAY(aArray)	(sizeof aArray / sizeof(aArray[0]))
 
 // 構造体の定義 ================================================

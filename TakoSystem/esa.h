@@ -8,16 +8,20 @@
 #ifndef _ESA_H_
 #define _ESA_H_
 
-//#define MAX_TEXTURE		(128)
+// マクロ定義 ==================================================
+
+#define MAX_MODEL_ESA	(64)	// 用意出来るモデルの最大値
+#define MAX_SET_ESA		(128)	// 設定出来るエサの総数
 
 // 列挙型の定義 ================================================
 
+// エサの挙動の種類
 typedef enum
 {
-	ESATYPE_LAND = 0,
-	ESATYPE_SWIM,
+	ESATYPE_LAND = 0,	// [0]何かしらに接触している状態
+	ESATYPE_SWIM,		// [1]泳いでいる状態
 
-	ESATYPE_MAX
+	ESATYPE_MAX			// 最大値
 
 }ESATYPE;
 
