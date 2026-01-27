@@ -26,7 +26,10 @@ NUM_MODEL = 2
 # モデルファイル名
 #------------------------------------------------------------------------------
 MODEL_FILENAME = data/MODEL/rock/iwa000.x		# [0]岩
+MODEL_FILENAME = data/MODEL/rock/iwa000.x		# [0]岩2
 MODEL_FILENAME = data/MODEL/rock/iwa001.x		# [0]岩2
+MODEL_FILENAME = data/MODEL/rock/iwa001.x		# [0]岩2
+MODEL_FILENAME = data/MODEL/Others_Object/ami000.x		# [0]岩2
 
 
 #------------------------------------------------------------------------------
@@ -115,6 +118,20 @@ MODELSET
 	TYPE = 0
 	POS = -100 0 -100
 	ROT = 0 315 0
+	SHADOW = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 0
+	POS = 200 0 -150
+	ROT = 0 180 0
+	SHADOW = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 0
+	POS = 50 0 -170
+	ROT = 0 180 0
 	SHADOW = 0
 END_MODELSET
 
