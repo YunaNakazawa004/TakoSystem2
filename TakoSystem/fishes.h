@@ -57,6 +57,8 @@ typedef struct
 	LPD3DXBUFFER pBuffMat;						// メッシュ(頂点情報)へのポインタ
 	DWORD dwNumMat;								// マテリアルの数
 
+	
+
 	bool bUse;									// 使用状態
 
 }Fishes_Model;
