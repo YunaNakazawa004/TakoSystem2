@@ -22,7 +22,7 @@
 #define FISHES_WIDTH			(5.0f)									// 幅
 #define FISHES_HEIGHT			(10.0f)									// 高さ
 #define FISHES_XMODEL_FILENAME	"data\\motion_octo.txt"					// 生き物のデータファイル
-#define FISHES_MAX_NUM			(1024)									// 設置の最大数
+#define FISHES_MAX_NUM			(100)									// 設置の最大数
 #define FISHES_MAX_MODELS		(100)									// 読み込めるモデルの最大数
 #define FISHES_CALC_SIZEARRAY(aArray)(sizeof aArray / sizeof(aArray[0]))
 
