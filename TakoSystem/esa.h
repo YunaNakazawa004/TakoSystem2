@@ -49,7 +49,10 @@ typedef struct
 
 	D3DXMATRIX mtxWorld;	// ワールドマトリックス
 
+	float fMoveAngle;		// 移動角度
+
 	ESATYPE esaType;		// エサの挙動
+	float fNumBehavior;		// 挙動の値
 
 	bool bDisp;				// 表示状態
 	bool bUse;				// 使用状態
@@ -95,6 +98,9 @@ void SetEsa					// エサの設定処理
  D3DXVECTOR3 pos, D3DXVECTOR3 rot);		// 位置, 角度			
 
 void BehaviorEsa			// エサの挙動の処理
+(Esa *pEsa);							// 処理するエサのポインタ
+
+void MoveEsa				// エサの移動処理
 (Esa *pEsa);							// 処理するエサのポインタ
 
 bool CollisionEsa			// エサの当たり判定処理

@@ -13,7 +13,26 @@
 
 // マクロ定義 ==================================================
 
-#define ESA_CALC_SIZEARRAY(aArray)	(sizeof aArray / sizeof(aArray[0]))
+// 設定値 ===================
+
+// 挙動 : 地面
+#define ESA_LANDING_MOVEVALUE	(0.1f)				// 地面にいるときの値の増加量	
+#define ESA_LANDING_MOVESPEED	(0.05f)				// 地面にいるときの値の増加量
+
+// 挙動 : 浮遊
+#define ESA_BUOYANCY_MOVEVALUE	(0.3f)				// 浮いているときの値の増加量	
+#define ESA_BUOYANCY_MOVESPEED	(0.05f)				// 浮いているときの値の増加量	
+
+// 移動
+#define ESA_SWIM_SPEED			(0.0f)
+
+// 計算用 ===================
+
+#define ESA_CALC_SIZEARRAY(aArray)	(sizeof aArray / sizeof(aArray[0]))	// 配列の大きさを求める
+
+#define ESA_CALC_REVROT(rot)		(((rot) < -D3DX_PI) ? (rot) + D3DX_PI * 2 :  /* rotの値が-PIを超えた場合、超えた-PI分を戻す */ \
+									 ((rot) >  D3DX_PI) ? (rot) - D3DX_PI * 2 :  /* rotの値が+PIを超えた場合、超えた+PI分を戻す */ \
+									 (rot))										 /* そのまま */
 
 // グローバル宣言 ==============================================
 
@@ -32,10 +51,10 @@ EsaModel_info g_aEsaModelInfo[] =
 
 // エサの配置情報
 Esa_info g_aEsaInfo[] =
-{// {モデル種類, 位置, 角度}
+{// {モデル種類, エサの挙動, 位置, 角度}
 
-	{0, ESATYPE_LAND, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
-	{1, ESATYPE_LAND, D3DXVECTOR3(50.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
+	{0, ESATYPE_LAND, D3DXVECTOR3(50.0f, 10070.0f,15000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
+	{1, ESATYPE_SWIM, D3DXVECTOR3(-50.0f, 10070.0f, 15000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
 };
 
 //========================================================================
@@ -49,6 +68,9 @@ void InitEsa(void)
 		g_aEsa[nCntEsa].nIdxModel = -1;							// モデルのインデックスを初期化
 		g_aEsa[nCntEsa].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 位置を初期化
 		g_aEsa[nCntEsa].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 角度を初期化
+		g_aEsa[nCntEsa].fMoveAngle = 0.0f;						// 移動角度を初期化
+		g_aEsa[nCntEsa].esaType = ESATYPE_LAND;					// エサの挙動をLANDに設定
+		g_aEsa[nCntEsa].fNumBehavior = 0.0f;					// 挙動の値を初期化
 		g_aEsa[nCntEsa].bDisp = false;							// 表示していない状態に設定
 		g_aEsa[nCntEsa].bUse = false;							// 使用していない状態に設定
 	}
@@ -114,6 +136,20 @@ void UninitEsa(void)
 void UpdateEsa(void)
 {
 	bool bD;
+
+	for (int nCntEsa = 0; nCntEsa < MAX_SET_ESA; nCntEsa++)
+	{
+		if (g_aEsa[nCntEsa].bUse == true)
+		{// 使用している場合
+
+			// エサの挙動処理
+			BehaviorEsa(&g_aEsa[nCntEsa]);
+
+			// エサの移動処理
+			MoveEsa(&g_aEsa[nCntEsa]);
+		}
+	}
+
 #if 0
 	if (GetKeyboardPress(DIK_NUMPAD5)) g_aEsa[0].pos.z += 1.0f;
 	if (GetKeyboardPress(DIK_NUMPAD2)) g_aEsa[0].pos.z -= 1.0f;
@@ -144,7 +180,8 @@ void DrawEsa(void)
 	for (int nCntEsa = 0; nCntEsa < MAX_SET_ESA; nCntEsa++)
 	{
 		if (g_aEsa[nCntEsa].bUse == true && g_aEsa[nCntEsa].bDisp == true)
-		{
+		{// 使用している場合
+
 			// ワールドマトリックスの初期化
 			D3DXMatrixIdentity(&g_aEsa[nCntEsa].mtxWorld);	// ワールドマトリックスの初期値を設定
 
@@ -204,6 +241,9 @@ void SetEsa(int nEsaType, ESATYPE esaType, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 			g_aEsa[nCntEsa].nIdxModel = g_aIdxEsaModel[nEsaType];	// 種類を設定
 			g_aEsa[nCntEsa].pos = pos;								// 位置を設定
 			g_aEsa[nCntEsa].rot = rot;								// 角度を設定
+			g_aEsa[nCntEsa].fMoveAngle = 0.0f;						// 移動角度を初期化
+			g_aEsa[nCntEsa].esaType = esaType;						// エサの挙動を設定
+			g_aEsa[nCntEsa].fNumBehavior = 0.0f;					// 挙動の値を初期化
 			g_aEsa[nCntEsa].bDisp = true;							// 表示している状態に設定
 			g_aEsa[nCntEsa].bUse = true;							// 使用している状態に設定
 
@@ -267,7 +307,6 @@ int SetModelEsa(EsaModel_info infoEsaModel, EsaModel* pEsaModel, int nMaxSizeNum
 			pEsaModel->bUse = true;								// 使用している状態に設定
 
 			return nCntModel;									// 設定した場所を返す
-			
 		}
 	}
 
@@ -282,13 +321,43 @@ void BehaviorEsa(Esa* pEsa)
 {
 	switch (pEsa->esaType)
 	{
-	case ESATYPE_LAND:
+	case ESATYPE_LAND:	// 着地状態
+
+		pEsa->fNumBehavior = ESA_CALC_REVROT(pEsa->fNumBehavior + ESA_LANDING_MOVESPEED);	// 挙動の値(回転角度)を加算
+
+		// エサの角度を更新
+		pEsa->rot.z = sinf(pEsa->fNumBehavior) * ESA_LANDING_MOVEVALUE;
 
 		break;
 
-	case ESATYPE_SWIM:
+	case ESATYPE_SWIM:	// 浮遊状態
+
+		pEsa->fNumBehavior = ESA_CALC_REVROT(pEsa->fNumBehavior + ESA_BUOYANCY_MOVESPEED);	// 挙動の値(移動角度)を加算
+
+		// エサの位置を更新
+		pEsa->pos.y += sinf(pEsa->fNumBehavior) * ESA_BUOYANCY_MOVEVALUE;
 
 		break;
+	}
+}
+
+//========================================================================
+// エサの移動処理
+//========================================================================
+void MoveEsa(Esa* pEsa)
+{
+	float fDistLength;	// 距離の長さ
+	
+
+	if (pEsa->esaType == ESATYPE_SWIM)
+	{// 浮いている場合
+
+		fDistLength = sqrtf(pEsa->pos.x * pEsa->pos.x + pEsa->pos.z * pEsa->pos.z);	// 距離を求める
+
+		pEsa->fMoveAngle = ESA_CALC_REVROT(pEsa->fMoveAngle + ESA_SWIM_SPEED);
+		
+		pEsa->pos.x = sinf(D3DX_PI + pEsa->fMoveAngle) * fDistLength;
+		pEsa->pos.z = cosf(D3DX_PI + pEsa->fMoveAngle) * fDistLength;
 	}
 }
 
