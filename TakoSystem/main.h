@@ -34,6 +34,7 @@
 #define SCREEN_HEIGHT		(720)															// ウィンドウの高さ
 #define FVF_VERTEX_2D		(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1)					// 頂点フォーマット[2D]
 #define FVF_VERTEX_3D		(D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1)		// 頂点フォーマット[3D]
+#define FVF_VERTEX_3D_MALTI	(D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX2)		// 3Dフォーマット(マルチテクスチャver)
 #define MAX_PLAYER			(2)																// プレイ人数
 #define ONE_GAME			(120)															// 1ゲームの制限時間
 #define ONE_SECOND			(60)															// 1秒
@@ -92,6 +93,20 @@ typedef struct
 	D3DCOLOR col;				// 頂点カラー(r,g,b,a)
 	D3DXVECTOR2 tex;			// テクスチャ座標(x,y)
 }VERTEX_3D;
+
+//*****************************************************************************
+// 頂点情報[3D_MALTI]の構造体を定義
+//*****************************************************************************
+typedef struct
+{
+	D3DXVECTOR3 pos;	// 頂点情報(X,Y,Z)
+	D3DXVECTOR3 nor;	// 法線ベクトル
+	D3DCOLOR col;		// 頂点カラー（r,g,b,a）
+
+	D3DXVECTOR2 tex;	// テクスチャの座標0(X,Y)
+	D3DXVECTOR2 texM;	// テクスチャの座標1(X,Y)
+
+}VERTEX_3D_MALTI;
 
 //*****************************************************************************
 // プロトタイプ宣言
