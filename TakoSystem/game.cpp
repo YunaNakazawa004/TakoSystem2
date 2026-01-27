@@ -14,6 +14,7 @@
 #include "esa.h"		// エサ
 #include "time.h"
 #include "fishes.h"
+#include "light.h"
 
 #include "game.h"
 
@@ -29,6 +30,11 @@ int g_nPointOld[3];	// 前回のポイント
 void InitGame(void)
 {
 	srand((unsigned int)time(NULL));
+
+	// ライトの設定
+	SetLightColor(0, D3DXCOLOR(0.7f, 0.9f, 1.0f, 1.0f));
+	SetLightColor(1, D3DXCOLOR(0.4f, 0.5f, 0.7f, 0.7f));
+	SetLightColor(2, D3DXCOLOR(0.1f, 0.1f, 0.3f, 0.3f));
 
 	// カメラの初期化処理
 	SetNumCamera(MAX_PLAYER);

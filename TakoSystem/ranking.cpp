@@ -8,6 +8,7 @@
 #include "ranking.h"
 #include "sound.h"
 #include "input.h"
+#include "light.h"
 #include "fade.h"
 
 // マクロ定義
@@ -25,6 +26,11 @@ int g_nRankingDeley;			// ランキング表示時間
 // ランキングの初期化処理
 void InitRanking(void)
 {
+	// ライトの設定
+	SetLightColor(0, D3DXCOLOR(0.8f, 0.9f, 1.0f, 1.0f));
+	SetLightColor(1, D3DXCOLOR(0.5f, 0.6f, 0.8f, 0.7f));
+	SetLightColor(2, D3DXCOLOR(0.3f, 0.3f, 0.5f, 0.3f));
+
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();	// デバイスへのポインタ
 
 	g_nRankingDeley = 0;	// 表示時間の初期化

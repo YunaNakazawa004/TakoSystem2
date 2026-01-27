@@ -8,6 +8,7 @@
 #include "title.h"
 #include "input.h"
 #include "sound.h"
+#include "light.h"
 #include "fade.h"
 #include "game.h"
 
@@ -31,6 +32,11 @@ void InitTitle(void)
 
 	g_TitleDeley = 0.0f;	// ディレイの値を初期化
 	g_PressEnterDeley = 0;
+
+	// ライトの設定
+	SetLightColor(0, D3DXCOLOR(0.8f, 0.9f, 1.0f, 1.0f));
+	SetLightColor(1, D3DXCOLOR(0.5f, 0.6f, 0.8f, 0.7f));
+	SetLightColor(2, D3DXCOLOR(0.3f, 0.3f, 0.5f, 0.3f));
 
 	// デバイスの取得
 	pDevice = GetDevice();
