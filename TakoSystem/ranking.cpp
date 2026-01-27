@@ -10,6 +10,7 @@
 #include "input.h"
 #include "light.h"
 #include "fade.h"
+#include "camera.h"
 
 // マクロ定義
 #define TEXT_NAME	"data/RANKING/RankingData.bin"	// 相対パスのテキスト名
@@ -30,6 +31,9 @@ void InitRanking(void)
 	SetLightColor(0, D3DXCOLOR(0.8f, 0.9f, 1.0f, 1.0f));
 	SetLightColor(1, D3DXCOLOR(0.5f, 0.6f, 0.8f, 0.7f));
 	SetLightColor(2, D3DXCOLOR(0.3f, 0.3f, 0.5f, 0.3f));
+
+	// カメラの数の設定
+	SetNumCamera(1);
 
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();	// デバイスへのポインタ
 

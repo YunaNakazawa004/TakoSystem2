@@ -548,14 +548,14 @@ void Draw(void)
 		// 現在のビューポートを取得
 		g_pD3DDevice->GetViewport(&viewportDef);
 
-		for (int nCntCamera = 0; nCntCamera < MAX_PLAYER; nCntCamera++)
+		for (int nCntCamera = 0; nCntCamera < GetNumCamera(); nCntCamera++)
 		{
 			// カメラの描画処理
 			SetCamera(nCntCamera);
 
 			// フォグの設定
 			Player* pPlayer = GetPlayer();
-			SetFog(D3DXCOLOR(0.0f, 0.1f, 0.2f, 1.0f), 10000.0f, pPlayer->fFog);
+			SetFog(D3DXCOLOR(0.0f, 0.1f, 0.2f, 1.0f), 10000.0f, pPlayer[nCntCamera].fFog);
 
 			//// プレイヤーの描画処理
 			//DrawPlayer();
