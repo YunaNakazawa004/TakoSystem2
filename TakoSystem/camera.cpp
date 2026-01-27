@@ -79,7 +79,7 @@ void UpdateCamera(void)
 	Player* pPlayer = GetPlayer();
 
 	// それぞれのカメラの処理
-	for (int nCntCamera = 0; nCntCamera < MAX_PLAYER; nCntCamera++, pCamera++, pPlayer++)
+	for (int nCntCamera = 0; nCntCamera < g_nNumCamera; nCntCamera++, pCamera++, pPlayer++)
 	{
 		int nValueH, nValueV;
 
@@ -325,8 +325,6 @@ void SetCamera(int nIdx)
 
 	// ビューマトリックスの設定
 	pDevice->SetTransform(D3DTS_VIEW, &g_aCamera[nIdx].mtxView);
-
-	g_nNumCamera = nIdx;
 }
 
 //=============================================================================

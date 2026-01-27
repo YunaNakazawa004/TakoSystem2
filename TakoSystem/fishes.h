@@ -83,6 +83,8 @@ typedef struct
 	int nFrameBlend;							// ブレンドフレーム数
 	int nCounterBlend;							// ブレンドカウンター
 
+	
+
 	bool bUse;									// 使用状態
 
 }Fishes_Model;
