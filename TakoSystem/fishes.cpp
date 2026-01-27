@@ -14,15 +14,15 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define FISHES_MOVEMENT			(D3DXVECTOR3(0.1f, 0.1f, 0.1f))			// 移動量
+#define FISHES_MOVEMENT			(D3DXVECTOR3(0.4f, 0.4f, 0.4f))			// 移動量
 #define FISHES_ROT				(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// 向き移動量
 #define FISHES_INERTIA_MOVE		(0.2f)									// 移動の慣性
 #define FISHES_MAX_MOVE			(5.0f)									// 移動の制限
-#define FISHES_INERTIA_ANGLE	(0.1f)									// 角度の慣性
+#define FISHES_INERTIA_ANGLE	(0.05f)									// 角度の慣性
 #define FISHES_WIDTH			(5.0f)									// 幅
 #define FISHES_HEIGHT			(10.0f)									// 高さ
 #define FISHES_XMODEL_FILENAME	"data\\motion_octo.txt"					// 生き物のデータファイル
-#define FISHES_MAX_NUM			(1024)									// 設置の最大数
+#define FISHES_MAX_NUM			(100)									// 設置の最大数
 #define FISHES_MAX_MODELS		(100)									// 読み込めるモデルの最大数
 #define FISHES_CALC_SIZEARRAY(aArray)(sizeof aArray / sizeof(aArray[0]))
 
@@ -107,8 +107,8 @@ void InitFishes(void)
 			}
 		}
 	}
-	
-	SetFishes(0, 1);
+	// どのモデルをどれだけ呼び出すか
+	SetFishes(0, 3);
 	SetFishes(1, 0);
 
 }
@@ -159,7 +159,7 @@ void UpdateFishes(void)
 	Fishes* pFishes = GetFishes();
 	FISHESSTATE OldState = FISHESSTATE_STOP;
 	float fmoveAngle = 0.0f;
-	int Radian = 300;
+	int Radian = 400;
 
 	for (int nCntFishes = 0; nCntFishes < g_aFishes[0].nUseNum; nCntFishes++, pFishes++)
 	{
@@ -173,8 +173,8 @@ void UpdateFishes(void)
 			if (pFishes->state == FISHESSTATE_MOVE)
 			{
 				// 移動
-				pFishes->move.x += sinf(pFishes->fAngle - D3DX_PI) * FISHES_MOVEMENT.x;
-				pFishes->move.z += cosf(pFishes->fAngle - D3DX_PI) * FISHES_MOVEMENT.z;
+				pFishes->move.x += sinf(pFishes->rot.y - D3DX_PI) * FISHES_MOVEMENT.x;
+				pFishes->move.z += cosf(pFishes->rot.y - D3DX_PI) * FISHES_MOVEMENT.z;
 
 				pFishes->pos += pFishes->move;
 
@@ -218,9 +218,9 @@ void UpdateFishes(void)
 			// stopからmoveに移行するとき数値を設定(ランダム)
 			if (OldState == FISHESSTATE_STOP && OldState != pFishes->state)
 			{
-				pFishes->MoveTime = 18;																// 移動する時間
-				pFishes->fAngle = pFishes->fAngle + ((rand() % Radian -(Radian/2))/10*3.14f/100);	// 移動する角度(ｙ軸)
-				pFishes->StopTime = 1;																// 停止している時間
+				pFishes->MoveTime = 10;																		// 移動する時間
+				pFishes->fAngle = pFishes->fAngle + ((rand() % Radian - (Radian / 2)) / 10 * 3.14f / 100);	// 移動する角度(ｙ軸)
+				pFishes->StopTime = 0;																		// 停止している時間
 			}
 		}
 	}
