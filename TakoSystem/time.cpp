@@ -1,3 +1,9 @@
+//=============================================================================
+// 
+// タイム [time.cpp]
+// Author : 井上 祐一
+// 
+//=============================================================================
 #include "main.h"
 #include "time.h"
 #include "player.h"
@@ -149,8 +155,7 @@ void UninitTime(void)
 void UpdateTime(void)
 {
 	// フェード情報の取得
-	FADE pFade;
-	pFade = GetFade();
+	FADE pFade = GetFade();
 
 	if (pFade == FADE_NONE)
 	{
@@ -167,6 +172,8 @@ void UpdateTime(void)
 		{// 下の桁を減らす
 			AddTime(0);
 		}
+
+		if (g_nTime == 0) SetFade(MODE_RESULT);
 	}
 }
 
