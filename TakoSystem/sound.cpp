@@ -30,19 +30,21 @@ DWORD g_aSizeAudio[SOUND_MAX] = {};							// オーディオデータサイズ
 // サウンドの情報
 SOUNDINFO g_aSoundInfo[SOUND_MAX] =
 {
-	{"data/BGM/title.wav", -1},				//タイトルBGM
-	//{"data/BGM/", -1},			//チュートリアルBGM
-	//{"data/BGM/", -1},			//ゲームBGM
+	{"data/BGM/title.wav",-1},				//タイトルBGM
+	{"data/BGM/tutorial.wav",-1},			//チュートリアルBGM
+	{"data/BGM/game.wav", -1},				//ゲームBGM
 	{"data/BGM/result.wav",-1},				//リザルトBGM
-	//{"data/BGM/",-1},				//ランキングBGM
-	{"data/SE/swim.wav", 0},				//泳ぐ音
-	{"data/SE/stretchtentacle.wav", 0},		//触手を伸ばす音
+	{"data/BGM/ranking.wav",-1},			//ランキングBGM
+	{"data/SE/swim.wav",0},					//泳ぐ音
+	{"data/SE/stretchtentacle.wav",0},		//触手を伸ばす音
 	{"data/SE/retracttentacle.wav",0},		//触手を引っ込める音
 	{"data/SE/inbait.wav",0},				//エサを入れる音
 	{"data/SE/outbait.wav", 0},				//エサを取り出す音
 	{"data/SE/highspeed.wav",0},			//高速移動音
 	{"data/SE/landing.wav",0},				//着地音
 	{"data/SE/applause.wav",0},				//勝利音
+	{"data/SE/countdown.wav",0},			//カウントダウン音
+	{"data/SE/timeup.wav",0},				//タイムアップ音
 };
 
 //=============================================================================
