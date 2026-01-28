@@ -43,7 +43,7 @@
 #define INERTIA_MOVE			(0.2f)									// 移動の慣性
 #define DASH_MOVE				(0.01f)									// 高速移動の速さ
 #define DASH_REACH				(10.0f)									// 高速移動のリーチ
-#define MAX_MOVE				(5.0f)									// 移動の制限
+#define MAX_MOVE				(10.0f)									// 移動の制限
 #define INERTIA_ANGLE			(0.1f)									// 角度の慣性
 #define POS_ERROR				(50.0f)									// 位置の誤差
 #define FOG_MIN					(20000.0f)								// フォグの最低

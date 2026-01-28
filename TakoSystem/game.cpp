@@ -8,6 +8,9 @@
 #include "camera.h"
 #include "crosshair.h"
 #include "meshcylinder.h"
+#include "meshdome.h"
+#include "meshfield.h"
+#include "meshring.h"
 #include "player.h"
 #include "object.h"
 #include "stage.h"
@@ -55,6 +58,15 @@ void InitGame(void)
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(2000.0f, 17500.0f), D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f), false);
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(18050.0f, 17500.0f), D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f), true);
 
+	// メッシュドームの初期化処理
+	InitMeshDome();
+
+	// メッシュフィールドの初期化処理
+	InitMeshField();
+
+	// メッシュリングの初期化処理
+	InitMeshRing();
+
 	// 生き物の初期化処理
 	InitFishes();
 
@@ -85,6 +97,15 @@ void UninitGame(void)
 
 	// メッシュシリンダーの終了処理
 	UninitMeshCylinder();
+
+	// メッシュドームの終了処理
+	UninitMeshDome();
+
+	// メッシュフィールドの終了処理
+	UninitMeshField();
+
+	// メッシュリングの終了処理
+	UninitMeshRing();
 
 	// 生き物の終了処理
 	UninitFishes();
@@ -121,6 +142,15 @@ void UpdateGame(void)
 	// メッシュシリンダーの更新処理
 	UpdateMeshCylinder();
 
+	// メッシュドームの更新処理
+	UpdateMeshRing();
+
+	// メッシュフィールドの更新処理
+	UpdateMeshField();
+
+	// メッシュリングの更新処理
+	UpdateMeshRing();
+
 	// 生き物の更新処理
 	UpdateFishes();
 
@@ -148,6 +178,15 @@ void DrawGame(void)
 
 	// メッシュシリンダーの描画処理
 	DrawMeshCylinder();
+
+	// メッシュドームの描画処理
+	DrawMeshDome();
+
+	// メッシュフィールドの描画処理
+	DrawMeshField();
+
+	// メッシュリングの描画処理
+	DrawMeshRing();
 
 	// 生き物の描画処理
 	DrawFishes();
