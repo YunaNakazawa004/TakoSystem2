@@ -33,6 +33,8 @@ typedef struct
 	float fAngle;								// 向きの最終地点
 	int MoveTime;								// 移動時間
 	int StopTime;								// 停止時間
+	int nMoveCnt;								// 移動カウント
+	int	nStopCnt;								// 停止カウント
 	D3DXMATRIX mtxWorld;						// ワールドマトリックス
 	FISHESSTATE state;							// 状態
 	int nCounterState;							// 状態カウンター
@@ -42,7 +44,24 @@ typedef struct
 	bool bMoving;								// 動くかどうか
 	bool bUse;									// 使用しているかどうか
 	int nModelIdx;								// 使用するモデル
+	Model aModel[MAX_NUMMODEL];					// モデル(パーツ)
 	int nNumModel;								// モデル(パーツ)の総数
+	MOTION_INFO aMotionInfo[MAX_MOTION];		// モーション情報
+	int nNumMotion;								// モーションの総数
+	MOTIONTYPE motionType;						// 現在のモーションの種類
+	bool bLoopMotion;							// 現在のループするかどうか
+	int nNumKey;								// 現在のキーの総数
+	int nKey;									// 現在の現在のキーNo.
+	int nCounterMotion;							// 現在のモーションのカウンター
+	bool bFinishMotion;							// 現在のモーションが終了しているかどうか
+	bool bBlendMotion;							// ブレンドモーションがあるかどうか
+	MOTIONTYPE motionTypeBlend;					// ブレンドモーションの種類
+	bool bLoopMotionBlend;						// ブレンドモーションがループするかどうか
+	int nNumKeyBlend;							// ブレンドモーションのキーの総数
+	int nKeyBlend;								// ブレンドモーションの現在のキーNo.
+	int nCounterMotionBlend;					// ブレンドモーションのカウンター
+	int nFrameBlend;							// ブレンドフレーム数
+	int nCounterBlend;							// ブレンドカウンター
 }Fishes;
 
 //*****************************************************************************
@@ -50,10 +69,21 @@ typedef struct
 //*****************************************************************************
 typedef struct
 {
-	LPDIRECT3DTEXTURE9 apTexture[MAX_TEXTURE];	// テクスチャへのポインタ
-	LPD3DXMESH pMesh;							// マテリアルへのポインタ
-	LPD3DXBUFFER pBuffMat;						// メッシュ(頂点情報)へのポインタ
-	DWORD dwNumMat;								// マテリアルの数
+	float fRadius;								// 半径
+	float fHeight;								// 高さ
+	Model aModel[MAX_NUMMODEL];					// モデル(パーツ)
+	int nNumModel;								// モデル(パーツ)の総数
+	char sModelFileName[100][100];				// モデル(パーツ)のファイル名
+	MOTION_INFO aMotionInfo[MAX_MOTION];		// モーション情報
+	int nNumMotion;								// モーションの総数
+	bool bBlendMotion;							// ブレンドモーションがあるかどうか
+	MOTIONTYPE motionTypeBlend;					// ブレンドモーションの種類
+	bool bLoopMotionBlend;						// ブレンドモーションがループするかどうか
+	int nNumKeyBlend;							// ブレンドモーションのキーの総数
+	int nFrameBlend;							// ブレンドフレーム数
+	int nCounterBlend;							// ブレンドカウンター
+
+	
 
 	bool bUse;									// 使用状態
 
@@ -67,6 +97,10 @@ void UpdateFishes(void);
 void DrawFishes(void);
 void CollisionFishes(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, float fWidth, float fDepth);
 Fishes* GetFishes(void);
+Fishes_Model* GetFishesModel(void);
 void SetFishes(int ModelIdx, int nNumSet);
+void LoadFishes(int Idx);
+void UpdateMotionFishes(void);
+void SetMotionFishes(int nIdx, MOTIONTYPE motionType, bool bBlendMotion, int nFrameBlend);
 
 #endif

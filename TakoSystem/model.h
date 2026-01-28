@@ -16,7 +16,10 @@ typedef enum
 {
 	MOTIONTYPE_NEUTRAL = 0,		// 待機
 	MOTIONTYPE_MOVE,			// 移動
-	MOTIONTYPE_ACTION,			// アクション
+	MOTIONTYPE_INK,				// 墨吐きアクション
+	MOTIONTYPE_TENTACLELONG,	// 触手伸ばしアクション
+	MOTIONTYPE_TENTACLESHORT,	// 触手戻しアクション
+	MOTIONTYPE_DASH,			// 高速移動
 	MOTIONTYPE_MAX
 }MOTIONTYPE;
 

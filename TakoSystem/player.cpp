@@ -20,7 +20,7 @@
 //#include "wall.h"
 //#include "meshwall.h"
 //#include "meshfield.h"
-//#include "meshcylinder.h"
+#include "meshcylinder.h"
 //#include "shadow.h"
 //#include "meshring.h"
 //#include "goalarrow.h"
@@ -43,14 +43,14 @@
 #define INERTIA_MOVE			(0.2f)									// 移動の慣性
 #define DASH_MOVE				(0.01f)									// 高速移動の速さ
 #define DASH_REACH				(10.0f)									// 高速移動のリーチ
-#define MAX_MOVE				(5.0f)									// 移動の制限
+#define MAX_MOVE				(10.0f)									// 移動の制限
 #define INERTIA_ANGLE			(0.1f)									// 角度の慣性
 #define POS_ERROR				(50.0f)									// 位置の誤差
 #define FOG_MIN					(20000.0f)								// フォグの最低
 #define FOG_MAX					(70000.0f)								// フォグの最高
 #define PLAYER_WIDTH			(5.0f)									// 幅
 #define PLAYER_HEIGHT			(10.0f)									// 高さ
-#define PLAYER_FILE				"data\\motion_octo.txt"					// プレイヤーのデータファイル
+#define PLAYER_FILE				"data\\motion_octo_1.txt"				// プレイヤーのデータファイル
 
 //*****************************************************************************
 // プロトタイプ宣言
@@ -118,14 +118,17 @@ void InitPlayer(void)
 		for (int nCntModel = 0; nCntModel < pPlayer->nNumModel; nCntModel++)
 		{
 			// Xファイルの読み込み
-			D3DXLoadMeshFromX(g_apFilenamePlayer[pPlayer->aModel[nCntModel].nIdx],
+			if (FAILED(D3DXLoadMeshFromX(g_apFilenamePlayer[pPlayer->aModel[nCntModel].nIdx],
 				D3DXMESH_SYSTEMMEM,
 				pDevice,
 				NULL,
 				&pPlayer->aModel[nCntModel].pBuffMat,
 				NULL,
 				&pPlayer->aModel[nCntModel].dwNumMat,
-				&pPlayer->aModel[nCntModel].pMesh);
+				&pPlayer->aModel[nCntModel].pMesh)))
+			{
+				return;
+			}
 
 			// マテリアルデータへのポインタを取得
 			pMat = (D3DXMATERIAL*)pPlayer->aModel[nCntModel].pBuffMat->GetBufferPointer();
@@ -186,6 +189,7 @@ void UpdatePlayer(void)
 	Camera* pCamera = GetCamera();
 	Player* pPlayer = GetPlayer();
 	int nValueH, nValueV;
+	int nValue;
 	float fmoveAngle = 0.0f;
 	float fAngle;
 
@@ -326,7 +330,7 @@ void UpdatePlayer(void)
 				}
 			}
 
-			if (pPlayer->state == PLAYERSTATE_DASH)
+			if (pPlayer->state == PLAYERSTATE_DASH && GetJoypadShoulder(nCntPlayer, JOYKEY_RIGHTTRIGGER, &nValue) == true)
 			{// 高速移動
 				pPlayer->pos += (pPlayer->posX - pPlayer->pos) * DASH_MOVE;
 
@@ -338,6 +342,12 @@ void UpdatePlayer(void)
 					pPlayer->vecX = FIRST_POS;
 					pPlayer->posX = FIRST_POS;
 				}
+			}
+			else if(GetJoypadShoulder(nCntPlayer, JOYKEY_RIGHTTRIGGER, &nValue) == false)
+			{// 高速移動やめる
+				pPlayer->state = PLAYERSTATE_WAIT;
+				pPlayer->vecX = FIRST_POS;
+				pPlayer->posX = FIRST_POS;
 			}
 
 #ifdef _DEBUG
@@ -425,8 +435,6 @@ void UpdatePlayer(void)
 				CorrectAngle(&pPlayer->rot.y, pPlayer->rot.y);
 			}
 
-			int nValue;
-
 			if (GetJoypadShoulder(nCntPlayer, JOYKEY_RIGHTTRIGGER, &nValue) == true
 				&& pPlayer->state != PLAYERSTATE_TENTACLE && pPlayer->state != PLAYERSTATE_DASH)
 			{// 触手伸ばしアクション
@@ -464,6 +472,16 @@ void UpdatePlayer(void)
 				}
 			}
 #endif
+
+			D3DXVECTOR3 posAway;
+			posAway.x = pPlayer->pos.x + sinf(D3DX_PI + pPlayer->rot.y) * 10000.0f;
+			posAway.y = pPlayer->pos.y;
+			posAway.z = pPlayer->pos.z + cosf(D3DX_PI - pPlayer->rot.y) * 10000.0f;
+
+			CollisionMeshCylinder(&posAway, &pPlayer->pos, &pPlayer->move, 100.0f, 100.0f, true);
+
+			// 当たり判定
+			CollisionMeshCylinder(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, 100.0f, 100.0f, false);
 
 			// モーションの更新処理
 			UpdateMotionPlayer();
@@ -634,9 +652,9 @@ void LoadPlayer(void)
 	// ローカル変数宣言
 	FILE* pFile;
 	Player* pPlayer = GetPlayer();
-	char aString[256] = {};				// ファイルのテキスト読み込み
-	char aTrash[256] = {};				// ごみ箱
-	char aModelName[64][256] = {};		// モデルの名前
+	char aString[512] = {};				// ファイルのテキスト読み込み
+	char aTrash[512] = {};				// ごみ箱
+	char aModelName[128][512] = {};		// モデルの名前
 
 	// テクスチャ読み込み用の変数
 	int nNumTexture = 0;

@@ -11,16 +11,19 @@
 #include "debugproc.h"
 #include "crosshair.h"
 //#include "sound.h"
-//#include "fade.h"
-//#include "title.h"
-//#include "tutorial.h"
-//#include "game.h"
-//#include "result.h"
-//#include "ranking.h"
+#include "fade.h"
+#include "title.h"
+#include "tutorial.h"
+#include "game.h"
+#include "result.h"
+#include "ranking.h"
+#include "meshcylinder.h"
 #include "player.h"
+#include "object.h"
 #include "stage.h"
 #include "esa.h"		// エサ
 #include "time.h"
+#include "fishes.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -330,31 +333,42 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// デバッグ表示の初期化処理
 	InitDebugProc();
 
-	// プレイヤーの初期化処理
-	InitPlayer();
-	SetPlayer(0, D3DXVECTOR3(0.0f, 10000.0f, 15000.0f), FIRST_POS);
-	SetPlayer(1, D3DXVECTOR3(0.0f, 15000.0f, -15000.0f), FIRST_POS);
+	//// プレイヤーの初期化処理
+	//InitPlayer();
+	//SetPlayer(0, D3DXVECTOR3(0.0f, 10000.0f, 15000.0f), FIRST_POS);
+	//SetPlayer(1, D3DXVECTOR3(0.0f, 15000.0f, -15000.0f), FIRST_POS);
 
-	// ステージの初期化処理
-	InitStage();
+	//// ステージの初期化処理
+	//InitStage();
 
-	// エサの初期化処理
-	InitEsa();
+	//// 配置物の初期化処理
+	//InitObject("objpos.txt");
 
-	// クロスヘアの初期化処理
-	InitCrossHair();
+	//// メッシュシリンダーの初期化処理
+	//InitMeshCylinder();
+	//SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(2000.0f, 17500.0f), D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f), false);
+	//SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(18050.0f, 17500.0f), D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f), true);
 
-	// 時間の初期化処理
-	InitTime();
+	//// 生き物の初期化処理
+	//InitFishes();
 
-	// 時間の初期設定
-	SetTime(DEFAULT_TIME);
+	//// エサの初期化処理
+	//InitEsa();
+
+	//// クロスヘアの初期化処理
+	//InitCrossHair();
+
+	//// 時間の初期化処理
+	//InitTime();
+
+	//// 時間の初期設定
+	//SetTime(DEFAULT_TIME);
 
 	// サウンドの初期化
 	////InitSound(hWnd);
 
 	// フェードの初期化
-	//InitFade(g_mode);
+	InitFade(g_mode);
 
 	return S_OK;
 }
@@ -364,7 +378,7 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 //=============================================================================
 void Uninit(void)
 {
-#if 0
+#if 1
 	// タイトル画面の終了処理
 	UninitTitle();
 
@@ -391,27 +405,36 @@ void Uninit(void)
 	// デバッグ表示の終了処理
 	UninitDebugProc();
 
-	// プレイヤーの終了処理
-	UninitPlayer();
+	//// プレイヤーの終了処理
+	//UninitPlayer();
 
-	// ステージの終了処理
-	UninitStage();
+	//// ステージの終了処理
+	//UninitStage();
 
-	// エサの終了処理
-	UninitEsa();
+	//// 配置物の終了処理
+	//UninitObject();
 
-	// クロスヘアの終了処理
-	UninitCrossHair();
+	//// メッシュシリンダーの終了処理
+	//UninitMeshCylinder();
 
-	// 時間の終了処理
-	UninitTime();
+	//// 生き物の終了処理
+	//UninitFishes();
+
+	//// エサの終了処理
+	//UninitEsa();
+
+	//// クロスヘアの終了処理
+	//UninitCrossHair();
+
+	//// 時間の終了処理
+	//UninitTime();
 
 	// サウンドの終了処理
 	//StopSound();
 	//UninitSound();
 
 	// フェードの終了処理
-	//UninitFade();
+	UninitFade();
 
 	// カメラの終了処理
 	UninitCamera();
@@ -456,22 +479,31 @@ void Update(void)
 	UpdateJoypad();
 	UpdateVibration();
 
-	// プレイヤーの更新処理
-	UpdatePlayer();
+	//// プレイヤーの更新処理
+	//UpdatePlayer();
 
-	// ステージの更新処理
-	UpdateStage();
+	//// ステージの更新処理
+	//UpdateStage();
 
-	// エサの更新処理
-	UpdateEsa();
+	//// 配置物の更新処理
+	//UpdateObject();
 
-	// クロスヘアの更新処理
-	UpdateCrossHair();
+	//// メッシュシリンダーの更新処理
+	//UpdateMeshCylinder();
 
-	// 時間の更新処理
-	UpdateTime();
+	//// 生き物の更新処理
+	//UpdateFishes();
 
-#if 0
+	//// エサの更新処理
+	//UpdateEsa();
+
+	//// クロスヘアの更新処理
+	//UpdateCrossHair();
+
+	//// 時間の更新処理
+	//UpdateTime();
+
+#if 1
 	switch (g_mode)
 	{
 	case MODE_TITLE:			// タイトル画面
@@ -516,57 +548,61 @@ void Draw(void)
 		// 現在のビューポートを取得
 		g_pD3DDevice->GetViewport(&viewportDef);
 
-		for (int nCntCamera = 0; nCntCamera < MAX_PLAYER; nCntCamera++)
+		for (int nCntCamera = 0; nCntCamera < GetNumCamera(); nCntCamera++)
 		{
 			// カメラの描画処理
 			SetCamera(nCntCamera);
 
-			// フォグの設定
-			Player* pPlayer = GetPlayer();
-			SetFog(D3DXCOLOR(0.0f, 0.1f, 0.2f, 1.0f), 10000.0f, pPlayer->fFog);
+			//// プレイヤーの描画処理
+			//DrawPlayer();
 
-			// プレイヤーの描画処理
-			DrawPlayer();
+			//// ステージの描画処理
+			//DrawStage();
 
-			// ステージの描画処理
-			DrawStage();
+			//// 配置物の描画処理
+			//DrawObject();
 
-			// エサの描画処理
-			DrawEsa();
+			//// メッシュシリンダーの描画処理
+			//DrawMeshCylinder();
 
-			// クロスヘアの描画処理
-			DrawCrossHair();
+			//// 生き物の描画処理
+			//DrawFishes();
 
-			// 時間の描画処理
-			DrawTime();
-		}
-#if 0
-		switch (g_mode)
-		{
-		case MODE_TITLE:			// タイトル画面
-			DrawTitle();
-			break;
+			//// エサの描画処理
+			//DrawEsa();
 
-		case MODE_TUTORIAL:			// チュートリアル画面
-			DrawTutorial();
-			break;
+			//// クロスヘアの描画処理
+			//DrawCrossHair();
 
-		case MODE_GAME:				// ゲーム画面
-			DrawGame();
-			break;
+			//// 時間の描画処理
+			//DrawTime();
 
-		case MODE_RESULT:			// リザルト画面
-			DrawResult();
-			break;
+			switch (g_mode)
+			{
+			case MODE_TITLE:			// タイトル画面
+				DrawTitle();
+				break;
 
-		case MODE_RANKING:			// ランキング画面
-			DrawRanking();
-			break;
+			case MODE_TUTORIAL:			// チュートリアル画面
+				DrawTutorial();
+				break;
+
+			case MODE_GAME:				// ゲーム画面
+				DrawGame();
+				break;
+
+			case MODE_RESULT:			// リザルト画面
+				DrawResult();
+				break;
+
+			case MODE_RANKING:			// ランキング画面
+				DrawRanking();
+				break;
+			}
 		}
 
 		// フェードの描画処理
 		DrawFade();
-#endif
 
 		// デバッグ表示の描画処理
 		DrawDebugProc();
@@ -576,11 +612,11 @@ void Draw(void)
 
 		// 描画終了
 		g_pD3DDevice->EndScene();
-	}
+		}
 
 	// バックバッファとフロントバッファの入れ替え
 	g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
-}
+	}
 
 //=============================================================================
 // デバイス取得
@@ -595,7 +631,7 @@ LPDIRECT3DDEVICE9 GetDevice(void)
 //=============================================================================
 void SetMode(MODE mode)
 {
-#if 0
+#if 1
 	// 現在の画面(モード)の終了処理
 	switch (g_mode)
 	{
