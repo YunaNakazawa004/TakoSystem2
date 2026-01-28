@@ -553,10 +553,6 @@ void Draw(void)
 			// カメラの描画処理
 			SetCamera(nCntCamera);
 
-			// フォグの設定
-			Player* pPlayer = GetPlayer();
-			SetFog(D3DXCOLOR(0.0f, 0.1f, 0.2f, 1.0f), 10000.0f, pPlayer[nCntCamera].fFog);
-
 			//// プレイヤーの描画処理
 			//DrawPlayer();
 
