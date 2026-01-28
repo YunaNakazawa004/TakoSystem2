@@ -117,10 +117,10 @@ void InitTime(void)
 		pVtx[3].rhw = 1.0f;
 
 		// 頂点カラーの設定
-		pVtx[0].col = D3DXCOLOR(0.0f, 1.0f, 1.0f, 1.0f);
-		pVtx[1].col = D3DXCOLOR(0.0f, 1.0f, 1.0f, 1.0f);
-		pVtx[2].col = D3DXCOLOR(0.0f, 1.0f, 1.0f, 1.0f);
-		pVtx[3].col = D3DXCOLOR(0.0f, 1.0f, 1.0f, 1.0f);
+		pVtx[0].col = DEFAULT_COLOR;
+		pVtx[1].col = DEFAULT_COLOR;
+		pVtx[2].col = DEFAULT_COLOR;
+		pVtx[3].col = DEFAULT_COLOR;
 
 		// UV座標設定
 		pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
@@ -173,7 +173,8 @@ void UpdateTime(void)
 			AddTime(0);
 		}
 
-		if (g_nTime == 0) SetFade(MODE_RESULT);
+		// 時間切れ
+		if (g_nTime < 0) SetFade(MODE_RESULT);
 	}
 }
 
