@@ -8,6 +8,16 @@
 
 #include "main.h"
 
+#define MAX_PAUSE				(3)										// ポーズメニューの最大数
+#define MAX_WIDTH				(160.0f)								// ポリゴンの幅
+#define MAX_HEIGHT				(30.0f)									// ポリゴンの高さ
+#define X_CENTER				(640.0f)								// 中心座標のX座標
+#define Y_DEFAULT				(260.0f)								// 基準位置のY座標
+#define Y_PLUS					(100.0f)								// Y座標のずれ方
+#define REPEAT_MAX				(40)									// リピートまでの最大フレーム数
+#define REPEAT_COUNT			(10)									// リピート間隔
+#define GRAY_VTX				(D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f))		// 頂点カラーが灰
+
 //ポーズメニューの状態
 typedef enum
 {
