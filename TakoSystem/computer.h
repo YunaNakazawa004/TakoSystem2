@@ -152,6 +152,7 @@ void FinalCollect(Computer* pComputer);
 // 行動管理の補助関数
 D3DXVECTOR3 GetFoodPosition(Computer* pComputer);
 D3DXVECTOR3 GetEnemyPosition(Computer* pComputer);
+D3DXVECTOR3 GetNearestEnemy(Computer* pComputer);
 
 // スコア計算
 void CalcFoodScore(Computer* pComputer);

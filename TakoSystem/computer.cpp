@@ -979,6 +979,47 @@ D3DXVECTOR3 GetEnemyPosition(Computer* pComputer)
 }
 
 //=============================================================================
+// 一番近い敵の場所を取得
+//=============================================================================
+D3DXVECTOR3 GetNearestEnemy(Computer* pComputer)
+{
+	float fBestDist = 9999.9f;
+	int nBestCount = -1;
+	Computer* pEnemy = GetComputer();
+
+	// 最も危険な敵を探す
+	for (int nCntEnemy = 0; nCntEnemy < MAX_COMPUTER; nCntEnemy++, pEnemy++)
+	{
+		if (pEnemy->nIdx == pComputer->nIdx)
+		{// 自分自身は無視
+			continue;
+		}
+
+		D3DXVECTOR3 toEnemy = pEnemy->phys.pos - pComputer->phys.pos;
+
+		float dist = D3DXVec3Length(&toEnemy);
+
+		if (dist > ESCAPE_ENEMY_DIST)
+		{// 遠すぎる敵は無視
+			continue;
+		}
+
+		if (fBestDist > dist)
+		{// より近い
+			fBestDist = dist;
+			nBestCount = nCntEnemy;
+		}
+	}
+
+	if (nBestCount == -1)
+	{// 誰も近くない
+		return pComputer->phys.pos;
+	}
+
+	return pEnemy[nBestCount].phys.pos;
+}
+
+//=============================================================================
 // エサのスコア計算
 //=============================================================================
 void CalcFoodScore(Computer* pComputer)
