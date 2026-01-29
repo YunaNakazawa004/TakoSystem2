@@ -48,7 +48,6 @@ void InitPause(void)
 		NULL);
 
 	// ポーズメニューの初期化
-	g_pauseMenu = PAUSE_MENU_CONTINUE;
 	g_nSelect = 0;
 
 	// フェードの連打阻止の初期化
@@ -151,16 +150,13 @@ void UpdatePause(void)
 		switch (g_nSelect)
 		{
 		case PAUSE_MENU_CONTINUE:
-			g_pauseMenu = PAUSE_MENU_CONTINUE;
 			break;
 
 		case PAUSE_MENU_RETRY:
-			g_pauseMenu = PAUSE_MENU_RETRY;
 			SetFade(MODE_GAME);
 			break;
 
 		case PAUSE_MENU_QUIT:
-			g_pauseMenu = PAUSE_MENU_QUIT;
 			SetFade(MODE_TITLE);
 			break;
 
