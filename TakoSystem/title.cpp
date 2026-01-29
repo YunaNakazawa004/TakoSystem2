@@ -101,7 +101,7 @@ void InitTitle(void)
 		}
 		else
 		{// タイトル：(C)WPO
-			pVtx[0].pos = D3DXVECTOR3(0.0f, 690.0f, 0.0f);	// 右回りで設定する
+			pVtx[0].pos = D3DXVECTOR3(0.0f, 690.0f, 0.0f);		// 右回りで設定する
 			pVtx[1].pos = D3DXVECTOR3(310.0f, 690.0f, 0.0f);	// 2Dの場合Zの値は0にする
 			pVtx[2].pos = D3DXVECTOR3(0.0f, 720.0f, 0.0f);
 			pVtx[3].pos = D3DXVECTOR3(310.0f, 720.0f, 0.0f);
