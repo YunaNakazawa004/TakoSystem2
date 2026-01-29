@@ -130,7 +130,7 @@ void InitFishes(void)
 
 	// ‚Ç‚Ìƒ‚ƒfƒ‹‚ğ‚Ç‚ê‚¾‚¯ŒÄ‚Ño‚·‚©
 	SetFishes(0, 0);
-	SetFishes(1, 5);
+	SetFishes(1, 3);
 
 	for (int nCntFishes = 0; nCntFishes < g_aFishes[0].nUseNum; nCntFishes++)
 	{
