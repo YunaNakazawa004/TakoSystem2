@@ -65,6 +65,8 @@ typedef struct
 	char aFilename[128];	// モデルファイル名
 
 	float fHitRadius;		// 当たり判定の大きさ
+	
+	int nScore;				// モデル(エサ)の獲得スコア
 
 }EsaModel_info;
 
@@ -75,6 +77,8 @@ typedef struct
 	LPD3DXMESH pMesh;							// マテリアルへのポインタ
 	LPD3DXBUFFER pBuffMat;						// メッシュ(頂点情報)へのポインタ
 	DWORD dwNumMat;								// マテリアルの数
+
+	int nScore;									// モデル(エサ)の獲得スコア
 
 	float fHitRadius;							// 当たり判定の大きさ
 
