@@ -149,6 +149,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="computer.cpp" />
     <ClCompile Include="crosshair.cpp" />
     <ClCompile Include="debugproc.cpp" />
     <ClCompile Include="effect_3d.cpp" />
@@ -168,6 +169,7 @@
     <ClCompile Include="particle_3d.cpp" />
     <ClCompile Include="pause.cpp" />
     <ClCompile Include="player.cpp" />
+    <ClCompile Include="pot.cpp" />
     <ClCompile Include="ranking.cpp" />
     <ClCompile Include="result.cpp" />
     <ClCompile Include="sound.cpp" />
@@ -178,6 +180,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
+    <ClInclude Include="computer.h" />
     <ClInclude Include="crosshair.h" />
     <ClInclude Include="debugproc.h" />
     <ClInclude Include="effect_3d.h" />
@@ -197,6 +200,7 @@
     <ClInclude Include="particle_3d.h" />
     <ClInclude Include="pause.h" />
     <ClInclude Include="player.h" />
+    <ClInclude Include="pot.h" />
     <ClInclude Include="ranking.h" />
     <ClInclude Include="result.h" />
     <ClInclude Include="sound.h" />

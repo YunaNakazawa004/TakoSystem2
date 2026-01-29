@@ -14,6 +14,8 @@
 #include "meshring.h"
 
 #include "player.h"
+#include "computer.h"
+#include "pot.h"
 #include "object.h"
 #include "stage.h"
 #include "esa.h"		// エサ
@@ -57,6 +59,9 @@ void InitGame(void)
 	SetPlayer(0, D3DXVECTOR3(0.0f, 10000.0f, 15000.0f), FIRST_POS);
 	SetPlayer(1, D3DXVECTOR3(0.0f, 15000.0f, -15000.0f), FIRST_POS);
 
+	// CPUの初期化処理
+	InitComputer();
+
 	// ステージの初期化処理
 	InitStage();
 
@@ -82,6 +87,9 @@ void InitGame(void)
 	
 	// 生き物の初期化処理
 	InitFishes();
+
+	// タコつぼの初期化処理
+	InitPot();
 
 	// エサの初期化処理
 	InitEsa();
@@ -111,6 +119,9 @@ void UninitGame(void)
 	// プレイヤーの終了処理
 	UninitPlayer();
 
+	// CPUの終了処理
+	UninitComputer();
+
 	// ステージの終了処理
 	UninitStage();
 
@@ -134,6 +145,9 @@ void UninitGame(void)
 	
 	// 生き物の終了処理
 	UninitFishes();
+
+	// タコつぼの終了処理
+	UninitPot();
 
 	// エサの終了処理
 	UninitEsa();
@@ -183,6 +197,9 @@ void UpdateGame(void)
 		// プレイヤーの更新処理
 		UpdatePlayer();
 
+		// CPUの更新処理
+		UpdateComputer();
+
 		// ステージの更新処理
 		UpdateStage();
 
@@ -206,6 +223,9 @@ void UpdateGame(void)
 	
 		// 生き物の更新処理
 		UpdateFishes();
+
+		// タコつぼの更新処理
+		UpdatePot();
 
 		// エサの更新処理
 		UpdateEsa();
@@ -235,6 +255,9 @@ void DrawGame(void)
 	// プレイヤーの描画処理
 	DrawPlayer();
 
+	// CPUの描画処理
+	DrawComputer();
+
 	// ステージの描画処理
 	DrawStage();
 
@@ -258,6 +281,9 @@ void DrawGame(void)
 	
 	// 生き物の描画処理
 	DrawFishes();
+
+	// タコつぼの描画処理
+	DrawPot();
 
 	// エサの描画処理
 	DrawEsa();
