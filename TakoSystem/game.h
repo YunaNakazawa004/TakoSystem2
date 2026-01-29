@@ -12,7 +12,7 @@ void InitGame(void);
 void UninitGame(void);
 void UpdateGame(void);
 void DrawGame(void);
-//void SetEnablePause(bool bPause);
-//bool GetPause(void);
+void SetEnablePause(bool bPause);
+bool GetPause(void);
 
 #endif

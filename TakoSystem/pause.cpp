@@ -6,6 +6,7 @@
 #include "pause.h"
 #include "input.h"
 #include "fade.h"
+#include "game.h"
 
 
 //ƒOƒ[ƒoƒ‹•Ï”éŒ¾
@@ -151,6 +152,7 @@ void UpdatePause(void)
 		switch (g_nSelect)
 		{
 		case PAUSE_MENU_CONTINUE:
+			SetEnablePause(false);
 			g_pauseMenu = PAUSE_MENU_CONTINUE;
 			break;
 
