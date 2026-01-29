@@ -61,25 +61,24 @@ void InitPause(void)
 	for (int nCntPause = 0; nCntPause < MAX_PAUSE; nCntPause++)
 	{
 
-		// 頂点座標の設定
-		pVtx[0].pos = D3DXVECTOR3(X_CENTER - MAX_WIDTH, (Y_DEFAULT + (nCntPause * Y_PLUS)) - MAX_HEIGHT, 0.0f);
-		pVtx[1].pos = D3DXVECTOR3(X_CENTER + MAX_WIDTH, (Y_DEFAULT + (nCntPause * Y_PLUS)) - MAX_HEIGHT, 0.0f);
-		pVtx[2].pos = D3DXVECTOR3(X_CENTER - MAX_WIDTH, (Y_DEFAULT + (nCntPause * Y_PLUS)) + MAX_HEIGHT, 0.0f);
-		pVtx[3].pos = D3DXVECTOR3(X_CENTER + MAX_WIDTH, (Y_DEFAULT + (nCntPause * Y_PLUS)) + MAX_HEIGHT, 0.0f);
+		pVtx[0].pos = D3DXVECTOR3(SCREEN_WIDTH / 2.0f - 125.0f, 200.0f + (nCntPause * 120.0f), 0.0f);
+		pVtx[1].pos = D3DXVECTOR3(SCREEN_WIDTH / 2.0f + 125.0f, 200.0f + (nCntPause * 120.0f), 0.0f);
+		pVtx[2].pos = D3DXVECTOR3(SCREEN_WIDTH / 2.0f - 125.0f, 200.0f + (nCntPause * 120.0f) + 100.0f, 0.0f);
+		pVtx[3].pos = D3DXVECTOR3(SCREEN_WIDTH / 2.0f + 125.0f, 200.0f + (nCntPause * 120.0f) + 100.0f, 0.0f);
 
-		// rhwの設定
-		pVtx[0].rhw = DEFAULT_RHW;
-		pVtx[1].rhw = DEFAULT_RHW;
-		pVtx[2].rhw = DEFAULT_RHW;
-		pVtx[3].rhw = DEFAULT_RHW;
+		//rhwの設定
+		pVtx[0].rhw = 1.0f;
+		pVtx[1].rhw = 1.0f;
+		pVtx[2].rhw = 1.0f;
+		pVtx[3].rhw = 1.0f;
 
-		// 頂点カラーの設定
-		pVtx[0].col = WHITE_VTX;
-		pVtx[1].col = WHITE_VTX;
-		pVtx[2].col = WHITE_VTX;
-		pVtx[3].col = WHITE_VTX;
+		//頂点カラーの設定
+		pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+		pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+		pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+		pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 
-		// テクスチャ座標の設定
+		//テクスチャ座標の設定
 		pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
 		pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
 		pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
