@@ -291,7 +291,7 @@ void CollisionMeshCylinder(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3*
 
 		for (int nCnt = 0; nCnt < pMeshC->block.x; nCnt++)
 		{
-			PrintDebugProc("[ %d ]\n", nCnt);
+			//PrintDebugProc("[ %d ]\n", nCnt);
 
 			D3DXVECTOR3 start, end;
 			float fXS, fZS, fXE, fZE;
@@ -322,21 +322,21 @@ void CollisionMeshCylinder(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3*
 			start.y = 0.0f;
 			start.z = pMeshC->pos.z + fZS;
 
-			PrintDebugProc("始点( %f %f %f )\n", start.x, start.y, start.z);
+			//PrintDebugProc("始点( %f %f %f )\n", start.x, start.y, start.z);
 
 			// 終点
 			end.x = pMeshC->pos.x + fXE;
 			end.y = 0.0f;
 			end.z = pMeshC->pos.z + fZE;
 
-			PrintDebugProc("終点( %f %f %f )\n", end.x, end.y, end.z);
+			//PrintDebugProc("終点( %f %f %f )\n", end.x, end.y, end.z);
 
 			// 境界線ベクトル
 			vecLine.x = (end.x) - (start.x);
 			vecLine.y = 0.0f;
 			vecLine.z = (end.z) - (start.z);
 
-			PrintDebugProc("境界線ベクトル( %f %f %f )\n", vecLine.x, vecLine.y, vecLine.z);
+			//PrintDebugProc("境界線ベクトル( %f %f %f )\n", vecLine.x, vecLine.y, vecLine.z);
 
 			// 移動ベクトル
 			vecMove.x = pPos->x - pPosOld->x;
@@ -409,7 +409,7 @@ void CollisionMeshCylinder(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3*
 				CorrectAngle(&fAngle, fAngle);
 			}
 
-			PrintDebugProc("入射角 : %f\n", fAngle);
+			//PrintDebugProc("入射角 : %f\n", fAngle);
 
 			// 反射後の移動ベクトル
 			vecMoveRef.x = vecMove.x + ((vecNor.x * fDot) * 2);
@@ -449,7 +449,7 @@ void CollisionMeshCylinder(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3*
 						vecPosDiff.z = -(insec.z - pPos->z);
 						D3DXVec3Normalize(&vecPosDiff, &vecPosDiff);		// ベクトルを正規化する
 
-						PrintDebugProc("めり込みベクトル( %f %f %f )\n", vecPosDiff.x, vecPosDiff.y, vecPosDiff.z);
+						//PrintDebugProc("めり込みベクトル( %f %f %f )\n", vecPosDiff.x, vecPosDiff.y, vecPosDiff.z);
 
 						if (fAngle < 0)
 						{// 壁に対して右側から
@@ -464,7 +464,7 @@ void CollisionMeshCylinder(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3*
 							vecMoveDest.z = (vecPosDiff.x * sinf(-(D3DX_PI * 0.5f) - fAngle)) - (vecPosDiff.z * cosf(-(D3DX_PI * 0.5f) - fAngle));
 						}
 
-						PrintDebugProc("壁刷りベクトル( %f %f %f )\n", vecMoveDest.x, vecMoveDest.y, vecMoveDest.z);
+						//PrintDebugProc("壁刷りベクトル( %f %f %f )\n", vecMoveDest.x, vecMoveDest.y, vecMoveDest.z);
 
 						pPos->x = start.x + (vecLine.x * fRate);
 						pPos->z = start.z + (vecLine.z * fRate);
