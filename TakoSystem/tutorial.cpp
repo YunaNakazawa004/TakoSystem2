@@ -75,7 +75,7 @@ void InitTutorial(void)
 	g_pVtxBuffTutorial->Unlock();
 
 	// サウンドの再生
-	//PlaySound(SOUND_LABEL_TUTORIAL);		// 再生したいサウンドを指定
+	PlaySound(SOUND_BGM_TUTORIAL);
 }
 
 // リザルトの終了処理

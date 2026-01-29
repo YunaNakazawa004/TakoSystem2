@@ -131,7 +131,7 @@ void InitTitle(void)
 	g_pVtxBuffTitle->Unlock();
 
 	// サウンドの再生
-	PlaySound(SOUND_BGM_TITLE);		// 再生したいサウンドを指定
+	PlaySound(SOUND_BGM_TITLE);
 }
 
 // タイトルの終了処理

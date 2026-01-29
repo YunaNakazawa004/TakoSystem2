@@ -86,8 +86,8 @@ void InitResult(void)
 	//// スコアのセット処理
 	//SetScore(g_aResult.nAddScore, SCORE_RESULT);
 
-	//// サウンドの再生
-	//PlaySound(SOUND_LABEL_RESULT);		// 再生したいサウンドを指定
+	// サウンドの再生
+	PlaySound(SOUND_BGM_RESULT);
 }
 
 // リザルトの終了処理
