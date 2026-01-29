@@ -14,7 +14,7 @@
 #include "game.h"
 
 // マクロ定義
-#define	MAX_TITLE	(2)	// タイトルの最大数
+#define	MAX_TITLE	(4)	// タイトルで表示するテクスチャの最大数
 #define	RANKING_DELEY	(720)	// ランキング移行に掛かる時間
 #define	CLEAR_DELEY	(60)	// 消滅にかかる時間
 #define	TITLE_DELEY_MAX	(500.0f)	// タイトルの最大数
@@ -46,18 +46,21 @@ void InitTitle(void)
 	pDevice = GetDevice();
 
 	// テクスチャの読み込み
-	
-	//D3DXCreateTextureFromFile(pDevice,
-	//	"data/TEXTURE/TITLE_BG.png",
-	//	&g_pTextureTitle[0]);
-
 	D3DXCreateTextureFromFile(pDevice,
 		"data/TEXTURE/TITLE.png",
 		&g_pTextureTitle[0]);
 
 	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/PRESS.png",
+		"data/TEXTURE/PLAYER_SELECT000.png",
 		&g_pTextureTitle[1]);
+
+	D3DXCreateTextureFromFile(pDevice,
+		"data/TEXTURE/START002.png",
+		&g_pTextureTitle[2]);
+
+	D3DXCreateTextureFromFile(pDevice,
+		"data/TEXTURE/WPO.png",
+		&g_pTextureTitle[3]);
 
 	// 頂点バッファの生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4 * MAX_TITLE,
@@ -82,12 +85,26 @@ void InitTitle(void)
 			pVtx[2].pos = D3DXVECTOR3(160.0f, 0.0f, 0.0f);
 			pVtx[3].pos = D3DXVECTOR3(1120.0f, 0.0f, 0.0f);
 		}
+		else if (nCntTitle == 1)
+		{// タイトル：プレイ人数
+			pVtx[0].pos = D3DXVECTOR3(640.0f, 460.0f, 0.0f);	// 右回りで設定する
+			pVtx[1].pos = D3DXVECTOR3(1000.0f, 460.0f, 0.0f);	// 2Dの場合Zの値は0にする
+			pVtx[2].pos = D3DXVECTOR3(640.0f, 640.0f, 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(1000.0f, 640.0f, 0.0f);
+		}
+		else if (nCntTitle == 2)
+		{// タイトル：START
+			pVtx[0].pos = D3DXVECTOR3(640.0f, 540.0f, 0.0f);	// 右回りで設定する
+			pVtx[1].pos = D3DXVECTOR3(1280.0f, 540.0f, 0.0f);	// 2Dの場合Zの値は0にする
+			pVtx[2].pos = D3DXVECTOR3(640.0f, 720.0f, 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(1280.0f, 720.0f, 0.0f);
+		}
 		else
-		{// タイトル：PRESS ENTER
-			pVtx[0].pos = D3DXVECTOR3(480.0f, 450.0f, 0.0f);	// 右回りで設定する
-			pVtx[1].pos = D3DXVECTOR3(800.0f, 450.0f, 0.0f);	// 2Dの場合Zの値は0にする
-			pVtx[2].pos = D3DXVECTOR3(480.0f, 630.0f, 0.0f);
-			pVtx[3].pos = D3DXVECTOR3(800.0f, 630.0f, 0.0f);
+		{// タイトル：(C)WPO
+			pVtx[0].pos = D3DXVECTOR3(0.0f, 690.0f, 0.0f);		// 右回りで設定する
+			pVtx[1].pos = D3DXVECTOR3(310.0f, 690.0f, 0.0f);	// 2Dの場合Zの値は0にする
+			pVtx[2].pos = D3DXVECTOR3(0.0f, 720.0f, 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(310.0f, 720.0f, 0.0f);
 		}
 
 		// rhwの設定
@@ -168,7 +185,7 @@ void UpdateTitle(void)
 			pVtx[2].pos = D3DXVECTOR3(160.0f, 0.0f + g_TitleDeley, 0.0f);
 			pVtx[3].pos = D3DXVECTOR3(1120.0f, 0.0f + g_TitleDeley, 0.0f);
 		}
-		else
+		else if (nCntTitle == 2)
 		{// タイトル：PRESS ENTER
 			if (pFade == FADE_OUT && g_PressEnterDeley <= RANKING_DELEY)
 			{// PRESSENTERをクリック

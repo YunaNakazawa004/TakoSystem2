@@ -160,6 +160,9 @@
     <ClCompile Include="light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="meshcylinder.cpp" />
+    <ClCompile Include="meshdome.cpp" />
+    <ClCompile Include="meshfield.cpp" />
+    <ClCompile Include="meshring.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="particle_3d.cpp" />
@@ -186,6 +189,9 @@
     <ClInclude Include="light.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="meshcylinder.h" />
+    <ClInclude Include="meshdome.h" />
+    <ClInclude Include="meshfield.h" />
+    <ClInclude Include="meshring.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="particle_3d.h" />

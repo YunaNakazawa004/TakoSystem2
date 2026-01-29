@@ -6,15 +6,23 @@
 //=============================================================================
 #include "main.h"
 #include "camera.h"
-#include "crosshair.h"
+#include "light.h"
+
 #include "meshcylinder.h"
+#include "meshdome.h"
+#include "meshfield.h"
+#include "meshring.h"
+
 #include "player.h"
 #include "object.h"
 #include "stage.h"
 #include "esa.h"		// エサ
-#include "time.h"
 #include "fishes.h"
-#include "light.h"
+
+#include "crosshair.h"	// クロスヘア
+#include "time.h"
+
+#include "effect_3d.h"
 
 #include "game.h"
 
@@ -26,7 +34,9 @@ int g_Stage = 0;		// 現在のステージ
 
 int g_nPointOld[3];	// 前回のポイント
 
+//===================================================================
 // ゲーム画面の初期化処理
+//===================================================================
 void InitGame(void)
 {
 	srand((unsigned int)time(NULL));
@@ -55,6 +65,18 @@ void InitGame(void)
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(2000.0f, 17500.0f), D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f), false);
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(18050.0f, 17500.0f), D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f), true);
 
+	// メッシュドームの初期化処理
+	InitMeshDome();
+
+	// メッシュフィールドの初期化処理
+	InitMeshField();
+
+	// メッシュリングの初期化処理
+	InitMeshRing();
+		
+	// 3Dエフェクトの初期化処理
+	InitEffect3D();
+	
 	// 生き物の初期化処理
 	InitFishes();
 
@@ -64,6 +86,8 @@ void InitGame(void)
 	// クロスヘアの初期化処理
 	InitCrossHair();
 
+	
+
 	// 時間の初期化処理
 	InitTime();
 
@@ -71,7 +95,9 @@ void InitGame(void)
 	SetTime(DEFAULT_TIME);
 }
 
+//===================================================================
 // ゲーム画面の終了処理
+//===================================================================
 void UninitGame(void)
 {
 	// プレイヤーの終了処理
@@ -86,6 +112,18 @@ void UninitGame(void)
 	// メッシュシリンダーの終了処理
 	UninitMeshCylinder();
 
+	// メッシュドームの終了処理
+	UninitMeshDome();
+
+	// メッシュフィールドの終了処理
+	UninitMeshField();
+
+	// メッシュリングの終了処理
+	UninitMeshRing();
+
+	// 3Dエフェクトの終了処理
+	UninitEffect3D();
+	
 	// 生き物の終了処理
 	UninitFishes();
 
@@ -95,6 +133,8 @@ void UninitGame(void)
 	// クロスヘアの終了処理
 	UninitCrossHair();
 
+	
+	
 	// 時間の終了処理
 	UninitTime();
 
@@ -106,7 +146,9 @@ void UninitGame(void)
 	//UninitFade();
 }
 
+//===================================================================
 // ゲーム画面の更新処理
+//===================================================================
 void UpdateGame(void)
 {
 	// プレイヤーの更新処理
@@ -121,6 +163,18 @@ void UpdateGame(void)
 	// メッシュシリンダーの更新処理
 	UpdateMeshCylinder();
 
+	// メッシュドームの更新処理
+	UpdateMeshRing();
+
+	// メッシュフィールドの更新処理
+	UpdateMeshField();
+
+	// メッシュリングの更新処理
+	UpdateMeshRing();
+
+	// 3Dエフェクトの更新処理
+	UpdateEffect3D();
+	
 	// 生き物の更新処理
 	UpdateFishes();
 
@@ -130,13 +184,24 @@ void UpdateGame(void)
 	// クロスヘアの更新処理
 	UpdateCrossHair();
 
+	
 	// 時間の更新処理
 	UpdateTime();
 }
 
+//===================================================================
 // ゲーム画面の描画処理
+//===================================================================
 void DrawGame(void)
 {
+	// フォグの設定
+	Player* pPlayer = GetPlayer();
+
+	for (int nCntCamera = 0; nCntCamera < GetNumCamera(); nCntCamera++)
+	{
+		SetFog(D3DXCOLOR(0.0f, 0.1f, 0.2f, 1.0f), 10000.0f, pPlayer[nCntCamera].fFog);
+	}
+
 	// プレイヤーの描画処理
 	DrawPlayer();
 
@@ -149,6 +214,18 @@ void DrawGame(void)
 	// メッシュシリンダーの描画処理
 	DrawMeshCylinder();
 
+	// メッシュドームの描画処理
+	DrawMeshDome();
+
+	// メッシュフィールドの描画処理
+	DrawMeshField();
+
+	// メッシュリングの描画処理
+	DrawMeshRing();
+
+	// 3Dエフェクトの描画処理
+	DrawEffect3D();
+	
 	// 生き物の描画処理
 	DrawFishes();
 
@@ -158,6 +235,8 @@ void DrawGame(void)
 	// クロスヘアの描画処理
 	DrawCrossHair();
 
+	
+	
 	// 時間の描画処理
 	DrawTime();
 

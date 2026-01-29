@@ -1,3 +1,9 @@
+//=============================================================================
+// 
+// タイム [time.cpp]
+// Author : 井上 祐一
+// 
+//=============================================================================
 #include "main.h"
 #include "time.h"
 #include "player.h"
@@ -111,10 +117,10 @@ void InitTime(void)
 		pVtx[3].rhw = 1.0f;
 
 		// 頂点カラーの設定
-		pVtx[0].col = D3DXCOLOR(0.0f, 1.0f, 1.0f, 1.0f);
-		pVtx[1].col = D3DXCOLOR(0.0f, 1.0f, 1.0f, 1.0f);
-		pVtx[2].col = D3DXCOLOR(0.0f, 1.0f, 1.0f, 1.0f);
-		pVtx[3].col = D3DXCOLOR(0.0f, 1.0f, 1.0f, 1.0f);
+		pVtx[0].col = DEFAULT_COLOR;
+		pVtx[1].col = DEFAULT_COLOR;
+		pVtx[2].col = DEFAULT_COLOR;
+		pVtx[3].col = DEFAULT_COLOR;
 
 		// UV座標設定
 		pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
@@ -149,8 +155,7 @@ void UninitTime(void)
 void UpdateTime(void)
 {
 	// フェード情報の取得
-	FADE pFade;
-	pFade = GetFade();
+	FADE pFade = GetFade();
 
 	if (pFade == FADE_NONE)
 	{
@@ -167,6 +172,9 @@ void UpdateTime(void)
 		{// 下の桁を減らす
 			AddTime(0);
 		}
+
+		// 時間切れ
+		if (g_nTime < 0) SetFade(MODE_RESULT);
 	}
 }
 

@@ -9,6 +9,7 @@
 //#include "particle.h"
 #include "player.h"
 //#include "shadow.h"
+#include "meshfield.h"
 #include "debugproc.h"
 #include "input.h"
 
@@ -736,7 +737,7 @@ void LoadStage(const char* pStr)
 					}
 				}
 
-				//SetMeshField((MESHFIELDTYPE)nIdx, pos, D3DXVECTOR3(0.0f, D3DX_PI * rot.y / 180.0f, 0.0f), D3DXVECTOR2((float)nBlockX, (float)nBlockZ), D3DXVECTOR2(fWidth / (float)nBlockX, fDepth / (float)nBlockZ));
+				SetMeshField((MESHFIELDTYPE)nIdx, pos, D3DXVECTOR3(0.0f, D3DX_PI * rot.y / 180.0f, 0.0f), D3DXVECTOR2((float)nBlockX, (float)nBlockZ), D3DXVECTOR2(fWidth / (float)nBlockX, fDepth / (float)nBlockZ));
 
 				continue;
 			}
