@@ -44,10 +44,10 @@ Esa g_aEsa[MAX_SET_ESA];				// エサの情報
 
 // モデルファイル情報
 EsaModel_info g_aEsaModelInfo[] =
-{// {ファイル名, 当たり判定の大きさ}
+{// {ファイル名, 当たり判定の大きさ, 獲得スコア}
 
-	{"data/MODEL/testmodel/car000.x",		10.0f},	// [0]車
-	{"data/MODEL/testmodel/skitree000.x",	10.0f},	// [1]四角形
+	{"data/MODEL/testmodel/car000.x",		10.0f,	10},	// [0]車
+	{"data/MODEL/testmodel/skitree000.x",	10.0f,	10},	// [1]四角形
 };
 
 // エサの配置情報
@@ -136,8 +136,6 @@ void UninitEsa(void)
 //========================================================================
 void UpdateEsa(void)
 {
-	bool bD;
-
 	for (int nCntEsa = 0; nCntEsa < MAX_SET_ESA; nCntEsa++)
 	{
 		if (g_aEsa[nCntEsa].bUse == true)
@@ -154,15 +152,7 @@ void UpdateEsa(void)
 		}
 	}
 
-#if 0
-	if (GetKeyboardPress(DIK_NUMPAD5)) g_aEsa[0].pos.z += 1.0f;
-	if (GetKeyboardPress(DIK_NUMPAD2)) g_aEsa[0].pos.z -= 1.0f;
-	if (GetKeyboardPress(DIK_NUMPAD1)) g_aEsa[0].pos.x -= 1.0f;
-	if (GetKeyboardPress(DIK_NUMPAD3)) g_aEsa[0].pos.x += 1.0f;
-#endif
-	//bD = CollisionEsa(NULL, g_aEsa[0].pos, g_aEsaModel[g_aIdxEsaModel[g_aEsa[0].nIdxModel]].fHitRadius);
 
-	//PrintDebugProc("ESA_COLLISION %s", (bD == true) ? "TRUE" : "FALSE");
 }
 
 //========================================================================
@@ -350,8 +340,11 @@ void BehaviorEsa(Esa* pEsa)
 //========================================================================
 void MoveEsa(Esa* pEsa)
 {
+	// 変数宣言 ===========================================
+
 	float fDistLength;	// 距離の長さ
 	
+	// ====================================================
 
 	if (pEsa->esaType == ESATYPE_SWIM)
 	{// 浮いている場合
