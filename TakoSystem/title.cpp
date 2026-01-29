@@ -130,8 +130,8 @@ void InitTitle(void)
 	// 頂点バッファをアンロックする
 	g_pVtxBuffTitle->Unlock();
 
-	//// サウンドの再生
-	//PlaySound(SOUND_LABEL_TITLE);		// 再生したいサウンドを指定
+	// サウンドの再生
+	PlaySound(SOUND_BGM_TITLE);		// 再生したいサウンドを指定
 }
 
 // タイトルの終了処理

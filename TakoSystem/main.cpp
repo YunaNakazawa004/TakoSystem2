@@ -10,7 +10,7 @@
 #include "input.h"
 #include "debugproc.h"
 #include "crosshair.h"
-//#include "sound.h"
+#include "sound.h"
 #include "fade.h"
 #include "title.h"
 #include "tutorial.h"
@@ -365,7 +365,7 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	//SetTime(DEFAULT_TIME);
 
 	// サウンドの初期化
-	////InitSound(hWnd);
+	InitSound(hWnd);
 
 	// フェードの初期化
 	InitFade(g_mode);
@@ -430,8 +430,8 @@ void Uninit(void)
 	//UninitTime();
 
 	// サウンドの終了処理
-	//StopSound();
-	//UninitSound();
+	StopSound();
+	UninitSound();
 
 	// フェードの終了処理
 	UninitFade();
