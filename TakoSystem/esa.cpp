@@ -11,20 +11,21 @@
 #include "input.h"
 #include "debugproc.h"
 
+#include "effect_3d.h"
+
 // マクロ定義 ==================================================
 
 // 設定値 ===================
 
 // 挙動 : 地面
-#define ESA_LANDING_MOVEVALUE	(0.1f)				// 地面にいるときの値の増加量	
-#define ESA_LANDING_MOVESPEED	(0.05f)				// 地面にいるときの値の増加量
+#define ESA_LANDING_MOVEVALUE	(0.1f)				// 地面にいる時の値の増加量	
+#define ESA_LANDING_MOVESPEED	(0.05f)				// 地面にいる時の値の増加量
 
 // 挙動 : 浮遊
-#define ESA_BUOYANCY_MOVEVALUE	(0.3f)				// 浮いているときの値の増加量	
-#define ESA_BUOYANCY_MOVESPEED	(0.05f)				// 浮いているときの値の増加量	
+#define ESA_BUOYANCY_MOVEVALUE	(0.3f)				// 浮いている時の値の増加量	
+#define ESA_BUOYANCY_MOVESPEED	(0.05f)				// 浮いている時の値の増加量	
 
-// 移動
-#define ESA_SWIM_SPEED			(0.0f)
+#define ESA_SWIM_SPEED			(0.01f)			// 浮いている時の移動(回転)速度
 
 // 計算用 ===================
 
@@ -53,8 +54,8 @@ EsaModel_info g_aEsaModelInfo[] =
 Esa_info g_aEsaInfo[] =
 {// {モデル種類, エサの挙動, 位置, 角度}
 
-	{0, ESATYPE_LAND, D3DXVECTOR3(50.0f, 10070.0f,15000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
-	{1, ESATYPE_SWIM, D3DXVECTOR3(-50.0f, 10070.0f, 15000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
+	{0, ESATYPE_SWIM, D3DXVECTOR3( 50.0f, 10070.0f,10000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
+	{1, ESATYPE_SWIM, D3DXVECTOR3(-50.0f, 10070.0f, 5000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
 };
 
 //========================================================================
@@ -147,6 +148,9 @@ void UpdateEsa(void)
 
 			// エサの移動処理
 			MoveEsa(&g_aEsa[nCntEsa]);
+
+
+			SetEffect3D(70, g_aEsa[nCntEsa].pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0.0f, 30.0f, -0.1f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 		}
 	}
 
@@ -386,7 +390,7 @@ bool CollisionEsa(int* pIdx, bool bCollision, D3DXVECTOR3 *pos, float fHitRadius
 			fDistZ = g_aEsa[nCntEsa].pos.z - pos->z;
 
 			// 離れている距離を求める
-			fDistLength = sqrtf((fDistX * fDistX + fDistZ * fDistZ) * 0.5f);
+			fDistLength = sqrtf(fDistX * fDistX + fDistZ * fDistZ) * 0.5f;
 
 			// 角度を求める
 			fRot = atan2f(fDistX * fDistX, fDistZ * fDistX);
