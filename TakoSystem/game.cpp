@@ -6,18 +6,23 @@
 //=============================================================================
 #include "main.h"
 #include "camera.h"
-#include "crosshair.h"
+#include "light.h"
+
 #include "meshcylinder.h"
 #include "meshdome.h"
 #include "meshfield.h"
 #include "meshring.h"
+
 #include "player.h"
 #include "object.h"
 #include "stage.h"
 #include "esa.h"		// エサ
-#include "time.h"
 #include "fishes.h"
-#include "light.h"
+
+#include "crosshair.h"	// クロスヘア
+#include "time.h"
+
+#include "effect_3d.h"
 
 #include "game.h"
 
@@ -29,7 +34,9 @@ int g_Stage = 0;		// 現在のステージ
 
 int g_nPointOld[3];	// 前回のポイント
 
+//===================================================================
 // ゲーム画面の初期化処理
+//===================================================================
 void InitGame(void)
 {
 	srand((unsigned int)time(NULL));
@@ -66,7 +73,10 @@ void InitGame(void)
 
 	// メッシュリングの初期化処理
 	InitMeshRing();
-
+		
+	// 3Dエフェクトの初期化処理
+	InitEffect3D();
+	
 	// 生き物の初期化処理
 	InitFishes();
 
@@ -76,6 +86,8 @@ void InitGame(void)
 	// クロスヘアの初期化処理
 	InitCrossHair();
 
+	
+
 	// 時間の初期化処理
 	InitTime();
 
@@ -83,7 +95,9 @@ void InitGame(void)
 	SetTime(DEFAULT_TIME);
 }
 
+//===================================================================
 // ゲーム画面の終了処理
+//===================================================================
 void UninitGame(void)
 {
 	// プレイヤーの終了処理
@@ -107,6 +121,9 @@ void UninitGame(void)
 	// メッシュリングの終了処理
 	UninitMeshRing();
 
+	// 3Dエフェクトの終了処理
+	UninitEffect3D();
+	
 	// 生き物の終了処理
 	UninitFishes();
 
@@ -116,6 +133,8 @@ void UninitGame(void)
 	// クロスヘアの終了処理
 	UninitCrossHair();
 
+	
+	
 	// 時間の終了処理
 	UninitTime();
 
@@ -127,7 +146,9 @@ void UninitGame(void)
 	//UninitFade();
 }
 
+//===================================================================
 // ゲーム画面の更新処理
+//===================================================================
 void UpdateGame(void)
 {
 	// プレイヤーの更新処理
@@ -151,6 +172,9 @@ void UpdateGame(void)
 	// メッシュリングの更新処理
 	UpdateMeshRing();
 
+	// 3Dエフェクトの更新処理
+	UpdateEffect3D();
+	
 	// 生き物の更新処理
 	UpdateFishes();
 
@@ -160,11 +184,14 @@ void UpdateGame(void)
 	// クロスヘアの更新処理
 	UpdateCrossHair();
 
+	
 	// 時間の更新処理
 	UpdateTime();
 }
 
+//===================================================================
 // ゲーム画面の描画処理
+//===================================================================
 void DrawGame(void)
 {
 	// フォグの設定
@@ -196,6 +223,9 @@ void DrawGame(void)
 	// メッシュリングの描画処理
 	DrawMeshRing();
 
+	// 3Dエフェクトの描画処理
+	DrawEffect3D();
+	
 	// 生き物の描画処理
 	DrawFishes();
 
@@ -205,6 +235,8 @@ void DrawGame(void)
 	// クロスヘアの描画処理
 	DrawCrossHair();
 
+	
+	
 	// 時間の描画処理
 	DrawTime();
 
