@@ -5,35 +5,12 @@
 // 
 //=============================================================================
 #include "player.h"
-//#include "game.h"
-//#include "bullet.h"
-//#include "pageback.h"
-//#include "presentmeter.h"
-//#include "presentnumber.h"
-//#include "present.h"
-//#include "object.h"
-//#include "house.h"
-//#include "houselight.h"
-//#include "snowman.h"
-//#include "icicle.h"
-//#include "ufo.h"
-//#include "wall.h"
-//#include "meshwall.h"
-//#include "meshfield.h"
 #include "meshcylinder.h"
-//#include "shadow.h"
-//#include "meshring.h"
-//#include "goalarrow.h"
-//#include "footprint.h"
-//#include "explosion.h"
-//#include "effect.h"
-//#include "timer.h"
-//#include "score.h"
+#include "esa.h"
 #include "camera.h"
 #include "input.h"
 //#include "sound.h"
 #include "debugproc.h"
-//#include "line.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -48,8 +25,9 @@
 #define POS_ERROR				(50.0f)									// 位置の誤差
 #define FOG_MIN					(20000.0f)								// フォグの最低
 #define FOG_MAX					(70000.0f)								// フォグの最高
-#define PLAYER_WIDTH			(5.0f)									// 幅
-#define PLAYER_HEIGHT			(10.0f)									// 高さ
+#define PLAYER_TENTACLE			(8)										// プレイヤーの足の数
+#define PLAYER_RADIUS			(100.0f)								// 半径
+#define PLAYER_HEIGHT			(100.0f)								// 高さ
 #define PLAYER_FILE				"data\\motion_octo_1.txt"				// プレイヤーのデータファイル
 
 //*****************************************************************************
@@ -84,13 +62,15 @@ void InitPlayer(void)
 		pPlayer->nCounterState = 0;
 		pPlayer->fAngle = 0.0f;
 		pPlayer->fFog = FOG_MIN;
-		pPlayer->fRadius = PLAYER_WIDTH;
+		pPlayer->fRadius = PLAYER_RADIUS;
 		pPlayer->fHeight = PLAYER_HEIGHT;
 		pPlayer->bJump = false;
 		pPlayer->bLand = true;
 		pPlayer->bMove = false;
 		pPlayer->bAct = false;
 		pPlayer->bUse = false;
+		pPlayer->nFood = 0;
+		pPlayer->nMaxFood = 0;
 	}
 
 	// ファイルからキャラクター情報をロード
@@ -478,10 +458,12 @@ void UpdatePlayer(void)
 			posAway.y = pPlayer->pos.y;
 			posAway.z = pPlayer->pos.z + cosf(D3DX_PI - pPlayer->rot.y) * 10000.0f;
 
-			CollisionMeshCylinder(&posAway, &pPlayer->pos, &pPlayer->move, 100.0f, 100.0f, true);
+			CollisionMeshCylinder(&posAway, &pPlayer->pos, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight, true);
 
 			// 当たり判定
-			CollisionMeshCylinder(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, 100.0f, 100.0f, false);
+			CollisionMeshCylinder(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight, false);
+
+			CollisionEsa(NULL, false, &pPlayer->pos, pPlayer->fRadius);
 
 			// モーションの更新処理
 			UpdateMotionPlayer();
@@ -619,6 +601,8 @@ void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	pPlayer[nIdx].bAct = false;
 	pPlayer[nIdx].bMove = false;
 	pPlayer[nIdx].bUse = true;
+	pPlayer[nIdx].nFood = 0;
+	pPlayer[nIdx].nMaxFood = 1;
 
 	pPlayer[nIdx].motionType = MOTIONTYPE_NEUTRAL;
 	pPlayer[nIdx].bLoopMotion = pPlayer[nIdx].aMotionInfo[MOTIONTYPE_NEUTRAL].bLoop;

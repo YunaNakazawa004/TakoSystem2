@@ -23,6 +23,9 @@
 #include "time.h"
 
 #include "effect_3d.h"
+#include "pause.h"
+#include "input.h"
+#include "fade.h"
 
 #include "game.h"
 
@@ -93,6 +96,11 @@ void InitGame(void)
 
 	// 時間の初期設定
 	SetTime(DEFAULT_TIME);
+
+	// ポーズの初期化処理
+	InitPause();
+
+	g_bPause = false;	// ポーズ解除
 }
 
 //===================================================================
@@ -138,6 +146,9 @@ void UninitGame(void)
 	// 時間の終了処理
 	UninitTime();
 
+	// ポーズ終了処理
+	UninitPause();
+
 	// サウンドの終了処理
 	//StopSound();
 	//UninitSound();
@@ -151,42 +162,61 @@ void UninitGame(void)
 //===================================================================
 void UpdateGame(void)
 {
-	// プレイヤーの更新処理
-	UpdatePlayer();
+	// フェード情報の取得
+	FADE pFade = GetFade();
 
-	// ステージの更新処理
-	UpdateStage();
+	if (pFade == FADE_NONE)
+	{// フェードが何もしていない状態のみ発動
+		if (GetKeyboardTrigger(DIK_P) || GetJoypadTrigger(0, JOYKEY_START) == true)
+		{// ポーズの確認
+			g_bPause = g_bPause ? false : true;
+		}
+	}
 
-	// 配置物の更新処理
-	UpdateObject();
+	if (g_bPause == true)
+	{
+		// ポーズの更新処理
+		UpdatePause();
+	}
+	else
+	{
+		// プレイヤーの更新処理
+		UpdatePlayer();
 
-	// メッシュシリンダーの更新処理
-	UpdateMeshCylinder();
+		// ステージの更新処理
+		UpdateStage();
 
-	// メッシュドームの更新処理
-	UpdateMeshRing();
+		// 配置物の更新処理
+		UpdateObject();
 
-	// メッシュフィールドの更新処理
-	UpdateMeshField();
+		// メッシュシリンダーの更新処理
+		UpdateMeshCylinder();
 
-	// メッシュリングの更新処理
-	UpdateMeshRing();
+		// メッシュドームの更新処理
+		UpdateMeshRing();
 
-	// 3Dエフェクトの更新処理
-	UpdateEffect3D();
+		// メッシュフィールドの更新処理
+		UpdateMeshField();
+
+		// メッシュリングの更新処理
+		UpdateMeshRing();
+
+		// 3Dエフェクトの更新処理
+		UpdateEffect3D();
 	
-	// 生き物の更新処理
-	UpdateFishes();
+		// 生き物の更新処理
+		UpdateFishes();
 
-	// エサの更新処理
-	UpdateEsa();
+		// エサの更新処理
+		UpdateEsa();
 
-	// クロスヘアの更新処理
-	UpdateCrossHair();
+		// クロスヘアの更新処理
+		UpdateCrossHair();
 
 	
-	// 時間の更新処理
-	UpdateTime();
+		// 時間の更新処理
+		UpdateTime();
+	}
 }
 
 //===================================================================
@@ -240,18 +270,18 @@ void DrawGame(void)
 	// 時間の描画処理
 	DrawTime();
 
-	//// ポーズ中の描画処理
-	//if (g_bPause == true) DrawPause();
+	// ポーズ中の描画処理
+	if (g_bPause == true) DrawPause();
 }
 
-//// ポーズの有効無効設定
-//void SetEnablePause(bool bPause)
-//{
-//	g_bPause = bPause;
-//}
-//
-//// ポーズの取得
-//bool GetPause(void)
-//{
-//	return g_bPause;	// ポーズの情報を返す
-//}
+// ポーズの有効無効設定
+void SetEnablePause(bool bPause)
+{
+	g_bPause = bPause;
+}
+
+// ポーズの取得
+bool GetPause(void)
+{
+	return g_bPause;	// ポーズの情報を返す
+}
