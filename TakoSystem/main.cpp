@@ -599,10 +599,12 @@ void Draw(void)
 				DrawRanking();
 				break;
 			}
+			
+			// フェードの描画処理
+			DrawFade();
 		}
 
-		// フェードの描画処理
-		DrawFade();
+	
 
 		// デバッグ表示の描画処理
 		DrawDebugProc();
