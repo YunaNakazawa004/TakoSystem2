@@ -85,6 +85,8 @@ void InitParticle3D(void)
 
 		// 状態
 		g_aPaticle3D[nCntPaticle].bUse = false;								// 使用していない状況に設定
+
+		g_aPaticle3D[nCntPaticle].effecttype = EFFECTTYPE_NORMAL;			// エフェクトタイプを初期化
 	}
 
 }
@@ -115,52 +117,55 @@ void UpdateParticle3D(void)
 		if (g_aPaticle3D[nCntPaticle].bUse == true)
 		{// 使用している場合
 
-			// パーティクル本体の位置を移動
-			g_aPaticle3D[nCntPaticle].pos += (g_aPaticle3D[nCntPaticle].fVecMoveParticle * g_aPaticle3D[nCntPaticle].fSpeedPaticle);
+			if (g_aPaticle3D[nCntPaticle].effecttype = EFFECTTYPE_OCTOINK)
+			{ // 用途がタコ墨の場合
 
-			// パーティクルの生成
+				// パーティクル本体の位置を移動
+				g_aPaticle3D[nCntPaticle].pos += (g_aPaticle3D[nCntPaticle].fVecMoveParticle * g_aPaticle3D[nCntPaticle].fSpeedPaticle);
 
-			if (g_aPaticle3D[nCntPaticle].nParticleLifeV < g_aPaticle3D[nCntPaticle].nParticleLifeO / 6)
-			{
+				// パーティクルの生成
+				if (g_aPaticle3D[nCntPaticle].nParticleLifeV < g_aPaticle3D[nCntPaticle].nParticleLifeO / 6)
+				{ //発射から一定時間経過
 
-				for (int nCntAppear = 0; nCntAppear < g_aPaticle3D[nCntPaticle].nParticleValue; nCntAppear++)
-				{// 生成するだけ繰り返す
+					for (int nCntAppear = 0; nCntAppear < g_aPaticle3D[nCntPaticle].nParticleValue; nCntAppear++)
+					{// 生成するだけ繰り返す
 
-					rot.x = (float)(rand() % 629 - 314) / 100.0f;		// 角度を設定
-					rot.y = (float)(rand() % 629 - 314) / 100.0f;		// 角度を設定
-					rot.z = (float)(rand() % 629 - 314) / 100.0f;		// 角度を設定
+						rot.x = (float)(rand() % 629 - 314) / 100.0f;		// 角度を設定
+						rot.y = (float)(rand() % 629 - 314) / 100.0f;		// 角度を設定
+						rot.z = (float)(rand() % 629 - 314) / 100.0f;		// 角度を設定
 
-					D3DXVec3Normalize(&rot, &rot);						// 正規化
+						D3DXVec3Normalize(&rot, &rot);						// 正規化
 
-					// 3Dエフェクトの設定
-					SetEffect3D(g_aPaticle3D[nCntPaticle].nEffectLife,	// 寿命
-						g_aPaticle3D[nCntPaticle].pos,					// 位置
-						D3DXVECTOR3(rot.x, rot.y, rot.z),				// 移動方向
-						g_aPaticle3D[nCntPaticle].fSpeedEffect,			// 移動速度
-						g_aPaticle3D[nCntPaticle].fEffectRadius,		// 大きさ
-						g_aPaticle3D[nCntPaticle].faddEffectRadius,		// 大きさの加算量
-						g_aPaticle3D[nCntPaticle].col,					// エフェクトの色	
-						g_aPaticle3D[nCntPaticle].effecttype);
+						// 3Dエフェクトの設定
+						SetEffect3D(g_aPaticle3D[nCntPaticle].nEffectLife,	// 寿命
+							g_aPaticle3D[nCntPaticle].pos,					// 位置
+							D3DXVECTOR3(rot.x, rot.y, rot.z),				// 移動方向
+							g_aPaticle3D[nCntPaticle].fSpeedEffect,			// 移動速度
+							g_aPaticle3D[nCntPaticle].fEffectRadius,		// 大きさ
+							g_aPaticle3D[nCntPaticle].faddEffectRadius,		// 大きさの加算量
+							g_aPaticle3D[nCntPaticle].col,					// エフェクトの色	
+							g_aPaticle3D[nCntPaticle].effecttype);
+					}
 				}
-			}
-			else
-			{
-				rot.x = (float)(rand() % 629 - 314) / 1000.0f;		// 角度を設定
-				rot.y = (float)(rand() % 629 - 314) / 1000.0f;		// 角度を設定
-				rot.z = (float)(rand() % 629 - 314) / 1000.0f;		// 角度を設定
+				else
+				{
+					rot.x = (float)(rand() % 629 - 314) / 1000.0f;		// 角度を設定
+					rot.y = (float)(rand() % 629 - 314) / 1000.0f;		// 角度を設定
+					rot.z = (float)(rand() % 629 - 314) / 1000.0f;		// 角度を設定
 
-				for (int nCntAppear = 0; nCntAppear < 1; nCntAppear++)
-				{// 生成するだけ繰り返す
+					for (int nCntAppear = 0; nCntAppear < 1; nCntAppear++)
+					{// 生成するだけ繰り返す
 
-					// 3Dエフェクトの設定
-					SetEffect3D(100,										// 寿命
-						g_aPaticle3D[nCntPaticle].pos,						// 位置
-						D3DXVECTOR3(rot.x, rot.y, rot.z),					// 移動方向
-						g_aPaticle3D[nCntPaticle].fSpeedEffect * ((float)g_aPaticle3D[nCntPaticle].nParticleLifeV / g_aPaticle3D[nCntPaticle].nParticleLifeO),			// 移動速度
-						g_aPaticle3D[nCntPaticle].fEffectRadius / 2,		// 大きさ
-						g_aPaticle3D[nCntPaticle].faddEffectRadius / 2,		// 大きさの加算量
-						g_aPaticle3D[nCntPaticle].col,						// エフェクトの色	
-						g_aPaticle3D[nCntPaticle].effecttype);
+						// 3Dエフェクトの設定
+						SetEffect3D(100,										// 寿命
+							g_aPaticle3D[nCntPaticle].pos,						// 位置
+							D3DXVECTOR3(rot.x, rot.y, rot.z),					// 移動方向
+							g_aPaticle3D[nCntPaticle].fSpeedEffect * ((float)g_aPaticle3D[nCntPaticle].nParticleLifeV / g_aPaticle3D[nCntPaticle].nParticleLifeO),			// 移動速度
+							g_aPaticle3D[nCntPaticle].fEffectRadius / 2,		// 大きさ
+							g_aPaticle3D[nCntPaticle].faddEffectRadius / 2,		// 大きさの加算量
+							g_aPaticle3D[nCntPaticle].col,						// エフェクトの色	
+							g_aPaticle3D[nCntPaticle].effecttype);
+					}
 				}
 			}
 
