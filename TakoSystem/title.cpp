@@ -304,3 +304,9 @@ void DrawTitle(void)
 		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, nCntTitle * 4, 2);
 	}
 }
+
+// プレイヤーの人数を取得
+int GetPlayerSelect(void)
+{
+	return g_PlayerSelect;
+}

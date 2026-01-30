@@ -13,4 +13,6 @@ void UninitTitle(void);
 void UpdateTitle(void);
 void DrawTitle(void);
 
+int GetPlayerSelect(void);
+
 #endif
