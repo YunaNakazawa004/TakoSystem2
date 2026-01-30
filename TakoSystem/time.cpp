@@ -177,7 +177,11 @@ void UpdateTime(void)
 		}
 
 		// 時間切れ
-		if (g_nTime < 0) SetFade(MODE_RESULT);
+		if (g_nTime < 0)
+		{
+			SetFade(MODE_RESULT);
+			PlaySound(SOUND_SE_TIMEUP);	// カウントダウン
+		}
 	}
 }
 
