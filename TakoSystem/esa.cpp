@@ -25,7 +25,7 @@
 #define ESA_BUOYANCY_MOVEVALUE	(0.3f)				// •‚‚¢‚Ä‚¢‚éŽž‚Ì’l‚Ì‘‰Á—Ê	
 #define ESA_BUOYANCY_MOVESPEED	(0.05f)				// •‚‚¢‚Ä‚¢‚éŽž‚Ì’l‚Ì‘‰Á—Ê	
 
-#define ESA_SWIM_SPEED			(0.01f)			// •‚‚¢‚Ä‚¢‚éŽž‚ÌˆÚ“®(‰ñ“])‘¬“x
+#define ESA_SWIM_SPEED			(0.001f)			// •‚‚¢‚Ä‚¢‚éŽž‚ÌˆÚ“®(‰ñ“])‘¬“x
 
 // ŒvŽZ—p ===================
 
@@ -72,6 +72,7 @@ void InitEsa(void)
 		g_aEsa[nCntEsa].fMoveAngle = 0.0f;						// ˆÚ“®Šp“x‚ð‰Šú‰»
 		g_aEsa[nCntEsa].esaType = ESATYPE_LAND;					// ƒGƒT‚Ì‹““®‚ðLAND‚ÉÝ’è
 		g_aEsa[nCntEsa].fNumBehavior = 0.0f;					// ‹““®‚Ì’l‚ð‰Šú‰»
+		g_aEsa[nCntEsa].bHave = false;							// ŠŽ‚³‚ê‚Ä‚È‚¢ó‘Ô‚ÉÝ’è
 		g_aEsa[nCntEsa].bDisp = false;							// •\Ž¦‚µ‚Ä‚¢‚È‚¢ó‘Ô‚ÉÝ’è
 		g_aEsa[nCntEsa].bUse = false;							// Žg—p‚µ‚Ä‚¢‚È‚¢ó‘Ô‚ÉÝ’è
 	}
@@ -148,7 +149,7 @@ void UpdateEsa(void)
 			MoveEsa(&g_aEsa[nCntEsa]);
 
 
-			SetEffect3D(70, g_aEsa[nCntEsa].pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0.0f, 30.0f, -0.1f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+			SetEffect3D(70, g_aEsa[nCntEsa].pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0.0f, 30.0f, -0.1f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f),EFFECTTYPE_NORMAL);
 		}
 	}
 
@@ -342,19 +343,25 @@ void MoveEsa(Esa* pEsa)
 {
 	// •Ï”éŒ¾ ===========================================
 
-	float fDistLength;	// ‹——£‚Ì’·‚³
-	
+	float fDistRadius;	// ’†S‚©‚ç‚Ì‹——£(”¼Œa)
+	float fNomRadius;	// ³‹K‰»‚µ‚½‹——£(”¼Œa)
+	float fNowAngle;	// Œ»Ý‚ÌŠp“x
+
 	// ====================================================
 
 	if (pEsa->esaType == ESATYPE_SWIM)
 	{// •‚‚¢‚Ä‚¢‚éê‡
 
-		fDistLength = sqrtf(pEsa->pos.x * pEsa->pos.x + pEsa->pos.z * pEsa->pos.z);	// ‹——£‚ð‹‚ß‚é
+		fDistRadius = sqrtf(pEsa->pos.x * pEsa->pos.x + pEsa->pos.z * pEsa->pos.z);	// ’†S‚©‚ç‚Ì‹——£‚ð‹‚ß‚é
+		fNomRadius = fDistRadius / 18050.0f;										// MAX‚Æ‚Ì³‹K‰»‚µ‚½’l‚ð‹‚ß‚é
+		fNowAngle = (float)atan2(pEsa->pos.x, pEsa->pos.z);							// ’†S‚©‚ç‚ÌŠp“x‚ð‹‚ß‚é
 
-		pEsa->fMoveAngle = ESA_CALC_REVROT(pEsa->fMoveAngle + ESA_SWIM_SPEED);
+		// Šp“x‚ðXV
+		fNowAngle += ESA_SWIM_SPEED / fNomRadius;									// ˆÚ“®—Ê(Šp“x)‚ð³‹K‰»‚µ‚½‹——£‚Ì’·‚³‚É‚·‚é
 		
-		pEsa->pos.x = sinf(D3DX_PI + pEsa->fMoveAngle) * fDistLength;
-		pEsa->pos.z = cosf(D3DX_PI + pEsa->fMoveAngle) * fDistLength;
+		// ˆÊ’u‚ðÝ’è
+		pEsa->pos.x = sinf(ESA_CALC_REVROT(fNowAngle)) * fDistRadius;
+		pEsa->pos.z = cosf(ESA_CALC_REVROT(fNowAngle)) * fDistRadius;
 	}
 }
 

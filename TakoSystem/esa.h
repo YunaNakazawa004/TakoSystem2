@@ -54,6 +54,7 @@ typedef struct
 	ESATYPE esaType;		// エサの挙動
 	float fNumBehavior;		// 挙動の値
 
+	bool bHave;				// 所持され状態(持っているか)
 	bool bDisp;				// 表示状態
 	bool bUse;				// 使用状態
 

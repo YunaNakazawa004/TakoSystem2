@@ -25,7 +25,7 @@ LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffTitle = NULL;	// 頂点バッファへのポインタ
 
 float g_TitleDeley;	// タイトル移動表示時間
 int g_PressEnterDeley;	// PRESSENTER表示時間
-int g_PlayerSelect = 2;	// プレイヤーの人数
+int g_PlayerSelect = 1;	// プレイヤーの人数
 
 // タイトルの初期化処理
 void InitTitle(void)
