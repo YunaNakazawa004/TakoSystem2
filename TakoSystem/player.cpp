@@ -463,7 +463,18 @@ void UpdatePlayer(void)
 			// 当たり判定
 			CollisionMeshCylinder(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight, false);
 
-			CollisionEsa(NULL, false, &pPlayer->pos, pPlayer->fRadius);
+			if (pPlayer->nFood < pPlayer->nMaxFood * PLAYER_TENTACLE)
+			{// 持てる数より少ない
+				int nIdx = -1;
+
+				if (CollisionEsa(&nIdx, false, &pPlayer->pos, pPlayer->fRadius) == true)
+				{// エサと接触した
+					Esa* pEsa = GetEsa();
+					pEsa[nIdx].bUse = false;
+
+					pPlayer->nFood++;
+				}
+			}
 
 			// モーションの更新処理
 			UpdateMotionPlayer();
