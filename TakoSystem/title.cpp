@@ -192,12 +192,14 @@ void UpdateTitle(void)
 	}
 	g_PressEnterDeley++;
 
-	if ((GetKeyboardTrigger(DIK_A) || GetJoypadTrigger(0, JOYKEY_LEFT) == true)
+	if ((GetKeyboardTrigger(DIK_A) || GetJoypadTrigger(0, JOYKEY_LEFT) ||
+		GetJoypadStick(0, JOYKEY_LEFTSTICK_LEFT, NULL, NULL) == true)
 		&& g_PlayerSelect > 1)
 	{
 		g_PlayerSelect--;
 	}
-	else if ((GetKeyboardTrigger(DIK_D) || GetJoypadTrigger(0, JOYKEY_RIGHT) == true)
+	else if ((GetKeyboardTrigger(DIK_D) || GetJoypadTrigger(0, JOYKEY_RIGHT) ||
+		GetJoypadStick(0, JOYKEY_LEFTSTICK_RIGHT, NULL, NULL) == true)
 		&& g_PlayerSelect < MAX_PLAYER)
 	{
 		g_PlayerSelect++;
