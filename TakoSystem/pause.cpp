@@ -145,7 +145,6 @@ void UpdatePause(void)
 
 	}
 	if (GetKeyboardTrigger(DIK_RETURN)||
-		GetJoypadTrigger(0, JOYKEY_START)||
 		GetJoypadTrigger(0, JOYKEY_A) == true)
 	{
 		switch (g_nSelect)

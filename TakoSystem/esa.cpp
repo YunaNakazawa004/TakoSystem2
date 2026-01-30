@@ -72,6 +72,7 @@ void InitEsa(void)
 		g_aEsa[nCntEsa].fMoveAngle = 0.0f;						// 移動角度を初期化
 		g_aEsa[nCntEsa].esaType = ESATYPE_LAND;					// エサの挙動をLANDに設定
 		g_aEsa[nCntEsa].fNumBehavior = 0.0f;					// 挙動の値を初期化
+		g_aEsa[nCntEsa].bHave = false;							// 所持されてない状態に設定
 		g_aEsa[nCntEsa].bDisp = false;							// 表示していない状態に設定
 		g_aEsa[nCntEsa].bUse = false;							// 使用していない状態に設定
 	}
