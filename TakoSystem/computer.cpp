@@ -513,7 +513,7 @@ void UpdateComputer(void)
 				CorrectAngle(&pComputer->phys.rot.y, pComputer->phys.rot.y);
 			}
 
-			SetEffect3D(70, pComputer->phys.pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0.0f, 30.0f, -0.1f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+			//SetEffect3D(70, pComputer->phys.pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0.0f, 30.0f, -0.1f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 
 			//PrintDebugProc("ENEMY : pos ( %f %f %f )\n",
 			//	pComputer->phys.pos.x, pComputer->phys.pos.y, pComputer->phys.pos.z);

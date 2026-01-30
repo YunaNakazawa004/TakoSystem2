@@ -10,6 +10,12 @@
 #include "main.h"
 
 //*****************************************************************************
+// マクロ定義
+//*****************************************************************************
+
+#define MAX_ARIA_STAGE		(18050.0f)		// ステージの最大の範囲(半径)
+
+//*****************************************************************************
 // ステージの構造体
 //*****************************************************************************
 typedef struct
@@ -35,5 +41,8 @@ void UninitStage(void);
 void UpdateStage(void);
 void DrawStage(void);
 void CollisionStage(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, float fWidth, float fDepth);
+
+void MoveOceanCurrents			// 中心を軸にした海流の移動処理
+(D3DXVECTOR3 *pPos);				// 位置
 
 #endif

@@ -25,7 +25,7 @@
 #define ESA_BUOYANCY_MOVEVALUE	(0.3f)				// •‚‚¢‚Ä‚¢‚éŽž‚Ì’l‚Ì‘‰Á—Ê	
 #define ESA_BUOYANCY_MOVESPEED	(0.05f)				// •‚‚¢‚Ä‚¢‚éŽž‚Ì’l‚Ì‘‰Á—Ê	
 
-#define ESA_SWIM_SPEED			(0.01f)			// •‚‚¢‚Ä‚¢‚éŽž‚ÌˆÚ“®(‰ñ“])‘¬“x
+#define ESA_SWIM_SPEED			(0.001f)				// •‚‚¢‚Ä‚¢‚éŽž‚ÌˆÚ“®(‰ñ“])‘¬“x
 
 // ŒvŽZ—p ===================
 
@@ -343,19 +343,25 @@ void MoveEsa(Esa* pEsa)
 {
 	// •Ï”éŒ¾ ===========================================
 
-	float fDistLength;	// ‹——£‚Ì’·‚³
-	
+	float fDistRadius;	// ’†S‚©‚ç‚Ì‹——£(”¼Œa)
+	float fNomRadius;	// ³‹K‰»‚µ‚½‹——£(”¼Œa)
+	float fNowAngle;	// Œ»Ý‚ÌŠp“x
+
 	// ====================================================
 
 	if (pEsa->esaType == ESATYPE_SWIM)
 	{// •‚‚¢‚Ä‚¢‚éê‡
 
-		fDistLength = sqrtf(pEsa->pos.x * pEsa->pos.x + pEsa->pos.z * pEsa->pos.z);	// ‹——£‚ð‹‚ß‚é
+		fDistRadius = sqrtf(pEsa->pos.x * pEsa->pos.x + pEsa->pos.z * pEsa->pos.z);	// ’†S‚©‚ç‚Ì‹——£‚ð‹‚ß‚é
+		fNomRadius = fDistRadius / 18050.0f;
+		fNowAngle = atan2(pEsa->pos.x, pEsa->pos.z);								// ’†S‚©‚ç‚ÌŠp“x‚ð‹‚ß‚é
 
-		pEsa->fMoveAngle = ESA_CALC_REVROT(pEsa->fMoveAngle + ESA_SWIM_SPEED);
+		// Šp“x‚ðXV
+		fNowAngle += ESA_SWIM_SPEED / fNomRadius;
 		
-		pEsa->pos.x = sinf(D3DX_PI + pEsa->fMoveAngle) * fDistLength;
-		pEsa->pos.z = cosf(D3DX_PI + pEsa->fMoveAngle) * fDistLength;
+		// ˆÊ’u‚ðÝ’è
+		pEsa->pos.x = sinf(ESA_CALC_REVROT(fNowAngle)) * fDistRadius;
+		pEsa->pos.z = cosf(ESA_CALC_REVROT(fNowAngle)) * fDistRadius;
 	}
 }
 
