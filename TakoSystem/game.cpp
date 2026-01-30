@@ -28,6 +28,7 @@
 #include "pause.h"
 #include "input.h"
 #include "fade.h"
+#include "title.h"
 
 #include "game.h"
 
@@ -52,7 +53,7 @@ void InitGame(void)
 	SetLightColor(2, D3DXCOLOR(0.1f, 0.1f, 0.3f, 0.3f));
 
 	// カメラの初期化処理
-	SetNumCamera(MAX_PLAYER);
+	SetNumCamera(GetPlayerSelect());
 
 	// プレイヤーの初期化処理
 	InitPlayer();

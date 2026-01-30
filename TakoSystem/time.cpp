@@ -9,6 +9,7 @@
 #include "player.h"
 #include "pause.h"
 #include "fade.h"
+#include "sound.h"
 
 //#include "game.h"
 
@@ -167,6 +168,8 @@ void UpdateTime(void)
 			g_nTimeDelay = 0;
 			g_nTime100Delay = 0;
 			AddTime(-1);
+			if (g_nTime < (PINCH_TIME / 2) && g_nTime >= 0)
+				PlaySound(SOUND_SE_COUNTDOWN);	// カウントダウン
 		}
 		else
 		{// 下の桁を減らす
@@ -174,7 +177,11 @@ void UpdateTime(void)
 		}
 
 		// 時間切れ
-		if (g_nTime < 0) SetFade(MODE_RESULT);
+		if (g_nTime < 0)
+		{
+			SetFade(MODE_RESULT);
+			PlaySound(SOUND_SE_TIMEUP);	// カウントダウン
+		}
 	}
 }
 
