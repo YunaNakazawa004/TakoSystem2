@@ -6,15 +6,29 @@
 //=============================================================================
 #include "main.h"
 #include "camera.h"
-#include "crosshair.h"
+#include "light.h"
+
 #include "meshcylinder.h"
+#include "meshdome.h"
+#include "meshfield.h"
+#include "meshring.h"
+
 #include "player.h"
+#include "computer.h"
+#include "pot.h"
 #include "object.h"
 #include "stage.h"
 #include "esa.h"		// エサ
-#include "time.h"
 #include "fishes.h"
-#include "light.h"
+
+#include "crosshair.h"	// クロスヘア
+#include "time.h"
+
+#include "effect_3d.h"
+#include "pause.h"
+#include "input.h"
+#include "fade.h"
+#include "title.h"
 
 #include "game.h"
 
@@ -26,7 +40,9 @@ int g_Stage = 0;		// 現在のステージ
 
 int g_nPointOld[3];	// 前回のポイント
 
+//===================================================================
 // ゲーム画面の初期化処理
+//===================================================================
 void InitGame(void)
 {
 	srand((unsigned int)time(NULL));
@@ -37,12 +53,15 @@ void InitGame(void)
 	SetLightColor(2, D3DXCOLOR(0.1f, 0.1f, 0.3f, 0.3f));
 
 	// カメラの初期化処理
-	SetNumCamera(MAX_PLAYER);
+	SetNumCamera(GetPlayerSelect());
 
 	// プレイヤーの初期化処理
 	InitPlayer();
 	SetPlayer(0, D3DXVECTOR3(0.0f, 10000.0f, 15000.0f), FIRST_POS);
 	SetPlayer(1, D3DXVECTOR3(0.0f, 15000.0f, -15000.0f), FIRST_POS);
+
+	// CPUの初期化処理
+	InitComputer();
 
 	// ステージの初期化処理
 	InitStage();
@@ -55,8 +74,23 @@ void InitGame(void)
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(2000.0f, 17500.0f), D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f), false);
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(18050.0f, 17500.0f), D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f), true);
 
+	// メッシュドームの初期化処理
+	InitMeshDome();
+
+	// メッシュフィールドの初期化処理
+	InitMeshField();
+
+	// メッシュリングの初期化処理
+	InitMeshRing();
+		
+	// 3Dエフェクトの初期化処理
+	InitEffect3D();
+	
 	// 生き物の初期化処理
 	InitFishes();
+
+	// タコつぼの初期化処理
+	InitPot();
 
 	// エサの初期化処理
 	InitEsa();
@@ -64,18 +98,30 @@ void InitGame(void)
 	// クロスヘアの初期化処理
 	InitCrossHair();
 
+	
+
 	// 時間の初期化処理
 	InitTime();
 
 	// 時間の初期設定
 	SetTime(DEFAULT_TIME);
+
+	// ポーズの初期化処理
+	InitPause();
+
+	g_bPause = false;	// ポーズ解除
 }
 
+//===================================================================
 // ゲーム画面の終了処理
+//===================================================================
 void UninitGame(void)
 {
 	// プレイヤーの終了処理
 	UninitPlayer();
+
+	// CPUの終了処理
+	UninitComputer();
 
 	// ステージの終了処理
 	UninitStage();
@@ -86,8 +132,23 @@ void UninitGame(void)
 	// メッシュシリンダーの終了処理
 	UninitMeshCylinder();
 
+	// メッシュドームの終了処理
+	UninitMeshDome();
+
+	// メッシュフィールドの終了処理
+	UninitMeshField();
+
+	// メッシュリングの終了処理
+	UninitMeshRing();
+
+	// 3Dエフェクトの終了処理
+	UninitEffect3D();
+	
 	// 生き物の終了処理
 	UninitFishes();
+
+	// タコつぼの終了処理
+	UninitPot();
 
 	// エサの終了処理
 	UninitEsa();
@@ -95,8 +156,13 @@ void UninitGame(void)
 	// クロスヘアの終了処理
 	UninitCrossHair();
 
+	
+	
 	// 時間の終了処理
 	UninitTime();
+
+	// ポーズ終了処理
+	UninitPause();
 
 	// サウンドの終了処理
 	//StopSound();
@@ -106,39 +172,92 @@ void UninitGame(void)
 	//UninitFade();
 }
 
+//===================================================================
 // ゲーム画面の更新処理
+//===================================================================
 void UpdateGame(void)
 {
-	// プレイヤーの更新処理
-	UpdatePlayer();
+	// フェード情報の取得
+	FADE pFade = GetFade();
 
-	// ステージの更新処理
-	UpdateStage();
+	if (pFade == FADE_NONE)
+	{// フェードが何もしていない状態のみ発動
+		if (GetKeyboardTrigger(DIK_P) || GetJoypadTrigger(0, JOYKEY_START) == true)
+		{// ポーズの確認
+			g_bPause = g_bPause ? false : true;
+		}
+	}
 
-	// 配置物の更新処理
-	UpdateObject();
+	if (g_bPause == true)
+	{
+		// ポーズの更新処理
+		UpdatePause();
+	}
+	else
+	{
+		// プレイヤーの更新処理
+		UpdatePlayer();
 
-	// メッシュシリンダーの更新処理
-	UpdateMeshCylinder();
+		// CPUの更新処理
+		UpdateComputer();
 
-	// 生き物の更新処理
-	UpdateFishes();
+		// ステージの更新処理
+		UpdateStage();
 
-	// エサの更新処理
-	UpdateEsa();
+		// 配置物の更新処理
+		UpdateObject();
 
-	// クロスヘアの更新処理
-	UpdateCrossHair();
+		// メッシュシリンダーの更新処理
+		UpdateMeshCylinder();
 
-	// 時間の更新処理
-	UpdateTime();
+		// メッシュドームの更新処理
+		UpdateMeshRing();
+
+		// メッシュフィールドの更新処理
+		UpdateMeshField();
+
+		// メッシュリングの更新処理
+		UpdateMeshRing();
+
+		// 3Dエフェクトの更新処理
+		UpdateEffect3D();
+	
+		// 生き物の更新処理
+		UpdateFishes();
+
+		// タコつぼの更新処理
+		UpdatePot();
+
+		// エサの更新処理
+		UpdateEsa();
+
+		// クロスヘアの更新処理
+		UpdateCrossHair();
+
+	
+		// 時間の更新処理
+		UpdateTime();
+	}
 }
 
+//===================================================================
 // ゲーム画面の描画処理
+//===================================================================
 void DrawGame(void)
 {
+	// フォグの設定
+	Player* pPlayer = GetPlayer();
+
+	for (int nCntCamera = 0; nCntCamera < GetNumCamera(); nCntCamera++)
+	{
+		SetFog(D3DXCOLOR(0.0f, 0.1f, 0.2f, 1.0f), 10000.0f, pPlayer[nCntCamera].fFog);
+	}
+
 	// プレイヤーの描画処理
 	DrawPlayer();
+
+	// CPUの描画処理
+	DrawComputer();
 
 	// ステージの描画処理
 	DrawStage();
@@ -149,8 +268,23 @@ void DrawGame(void)
 	// メッシュシリンダーの描画処理
 	DrawMeshCylinder();
 
+	// メッシュドームの描画処理
+	DrawMeshDome();
+
+	// メッシュフィールドの描画処理
+	DrawMeshField();
+
+	// メッシュリングの描画処理
+	DrawMeshRing();
+
+	// 3Dエフェクトの描画処理
+	DrawEffect3D();
+	
 	// 生き物の描画処理
 	DrawFishes();
+
+	// タコつぼの描画処理
+	DrawPot();
 
 	// エサの描画処理
 	DrawEsa();
@@ -158,21 +292,23 @@ void DrawGame(void)
 	// クロスヘアの描画処理
 	DrawCrossHair();
 
+	
+	
 	// 時間の描画処理
 	DrawTime();
 
-	//// ポーズ中の描画処理
-	//if (g_bPause == true) DrawPause();
+	// ポーズ中の描画処理
+	if (g_bPause == true) DrawPause();
 }
 
-//// ポーズの有効無効設定
-//void SetEnablePause(bool bPause)
-//{
-//	g_bPause = bPause;
-//}
-//
-//// ポーズの取得
-//bool GetPause(void)
-//{
-//	return g_bPause;	// ポーズの情報を返す
-//}
+// ポーズの有効無効設定
+void SetEnablePause(bool bPause)
+{
+	g_bPause = bPause;
+}
+
+// ポーズの取得
+bool GetPause(void)
+{
+	return g_bPause;	// ポーズの情報を返す
+}

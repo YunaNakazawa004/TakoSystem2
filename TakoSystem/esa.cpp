@@ -11,20 +11,21 @@
 #include "input.h"
 #include "debugproc.h"
 
+#include "effect_3d.h"
+
 // マクロ定義 ==================================================
 
 // 設定値 ===================
 
 // 挙動 : 地面
-#define ESA_LANDING_MOVEVALUE	(0.1f)				// 地面にいるときの値の増加量	
-#define ESA_LANDING_MOVESPEED	(0.05f)				// 地面にいるときの値の増加量
+#define ESA_LANDING_MOVEVALUE	(0.1f)				// 地面にいる時の値の増加量	
+#define ESA_LANDING_MOVESPEED	(0.05f)				// 地面にいる時の値の増加量
 
 // 挙動 : 浮遊
-#define ESA_BUOYANCY_MOVEVALUE	(0.3f)				// 浮いているときの値の増加量	
-#define ESA_BUOYANCY_MOVESPEED	(0.05f)				// 浮いているときの値の増加量	
+#define ESA_BUOYANCY_MOVEVALUE	(0.3f)				// 浮いている時の値の増加量	
+#define ESA_BUOYANCY_MOVESPEED	(0.05f)				// 浮いている時の値の増加量	
 
-// 移動
-#define ESA_SWIM_SPEED			(0.0f)
+#define ESA_SWIM_SPEED			(0.001f)			// 浮いている時の移動(回転)速度
 
 // 計算用 ===================
 
@@ -43,18 +44,18 @@ Esa g_aEsa[MAX_SET_ESA];				// エサの情報
 
 // モデルファイル情報
 EsaModel_info g_aEsaModelInfo[] =
-{// {ファイル名, 当たり判定の大きさ}
+{// {ファイル名, 当たり判定の大きさ, 獲得スコア}
 
-	{"data/MODEL/testmodel/car000.x",		10.0f},	// [0]車
-	{"data/MODEL/testmodel/skitree000.x",	10.0f},	// [1]四角形
+	{"data/MODEL/testmodel/car000.x",		10.0f,	10},	// [0]車
+	{"data/MODEL/testmodel/skitree000.x",	10.0f,	10},	// [1]四角形
 };
 
 // エサの配置情報
 Esa_info g_aEsaInfo[] =
 {// {モデル種類, エサの挙動, 位置, 角度}
 
-	{0, ESATYPE_LAND, D3DXVECTOR3(50.0f, 10070.0f,15000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
-	{1, ESATYPE_SWIM, D3DXVECTOR3(-50.0f, 10070.0f, 15000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
+	{0, ESATYPE_SWIM, D3DXVECTOR3( 50.0f, 10070.0f,10000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
+	{1, ESATYPE_SWIM, D3DXVECTOR3(-50.0f, 10070.0f, 5000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
 };
 
 //========================================================================
@@ -71,6 +72,7 @@ void InitEsa(void)
 		g_aEsa[nCntEsa].fMoveAngle = 0.0f;						// 移動角度を初期化
 		g_aEsa[nCntEsa].esaType = ESATYPE_LAND;					// エサの挙動をLANDに設定
 		g_aEsa[nCntEsa].fNumBehavior = 0.0f;					// 挙動の値を初期化
+		g_aEsa[nCntEsa].bHave = false;							// 所持されてない状態に設定
 		g_aEsa[nCntEsa].bDisp = false;							// 表示していない状態に設定
 		g_aEsa[nCntEsa].bUse = false;							// 使用していない状態に設定
 	}
@@ -135,8 +137,6 @@ void UninitEsa(void)
 //========================================================================
 void UpdateEsa(void)
 {
-	bool bD;
-
 	for (int nCntEsa = 0; nCntEsa < MAX_SET_ESA; nCntEsa++)
 	{
 		if (g_aEsa[nCntEsa].bUse == true)
@@ -147,18 +147,13 @@ void UpdateEsa(void)
 
 			// エサの移動処理
 			MoveEsa(&g_aEsa[nCntEsa]);
+
+
+			SetEffect3D(70, g_aEsa[nCntEsa].pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0.0f, 30.0f, -0.1f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f),EFFECTTYPE_NORMAL);
 		}
 	}
 
-#if 0
-	if (GetKeyboardPress(DIK_NUMPAD5)) g_aEsa[0].pos.z += 1.0f;
-	if (GetKeyboardPress(DIK_NUMPAD2)) g_aEsa[0].pos.z -= 1.0f;
-	if (GetKeyboardPress(DIK_NUMPAD1)) g_aEsa[0].pos.x -= 1.0f;
-	if (GetKeyboardPress(DIK_NUMPAD3)) g_aEsa[0].pos.x += 1.0f;
-#endif
-	//bD = CollisionEsa(NULL, g_aEsa[0].pos, g_aEsaModel[g_aIdxEsaModel[g_aEsa[0].nIdxModel]].fHitRadius);
 
-	//PrintDebugProc("ESA_COLLISION %s", (bD == true) ? "TRUE" : "FALSE");
 }
 
 //========================================================================
@@ -346,18 +341,27 @@ void BehaviorEsa(Esa* pEsa)
 //========================================================================
 void MoveEsa(Esa* pEsa)
 {
-	float fDistLength;	// 距離の長さ
-	
+	// 変数宣言 ===========================================
+
+	float fDistRadius;	// 中心からの距離(半径)
+	float fNomRadius;	// 正規化した距離(半径)
+	float fNowAngle;	// 現在の角度
+
+	// ====================================================
 
 	if (pEsa->esaType == ESATYPE_SWIM)
 	{// 浮いている場合
 
-		fDistLength = sqrtf(pEsa->pos.x * pEsa->pos.x + pEsa->pos.z * pEsa->pos.z);	// 距離を求める
+		fDistRadius = sqrtf(pEsa->pos.x * pEsa->pos.x + pEsa->pos.z * pEsa->pos.z);	// 中心からの距離を求める
+		fNomRadius = fDistRadius / 18050.0f;										// MAXとの正規化した値を求める
+		fNowAngle = (float)atan2(pEsa->pos.x, pEsa->pos.z);							// 中心からの角度を求める
 
-		pEsa->fMoveAngle = ESA_CALC_REVROT(pEsa->fMoveAngle + ESA_SWIM_SPEED);
+		// 角度を更新
+		fNowAngle += ESA_SWIM_SPEED / fNomRadius;									// 移動量(角度)を正規化した距離の長さにする
 		
-		pEsa->pos.x = sinf(D3DX_PI + pEsa->fMoveAngle) * fDistLength;
-		pEsa->pos.z = cosf(D3DX_PI + pEsa->fMoveAngle) * fDistLength;
+		// 位置を設定
+		pEsa->pos.x = sinf(ESA_CALC_REVROT(fNowAngle)) * fDistRadius;
+		pEsa->pos.z = cosf(ESA_CALC_REVROT(fNowAngle)) * fDistRadius;
 	}
 }
 
@@ -386,7 +390,7 @@ bool CollisionEsa(int* pIdx, bool bCollision, D3DXVECTOR3 *pos, float fHitRadius
 			fDistZ = g_aEsa[nCntEsa].pos.z - pos->z;
 
 			// 離れている距離を求める
-			fDistLength = sqrtf((fDistX * fDistX + fDistZ * fDistZ) * 0.5f);
+			fDistLength = sqrtf(fDistX * fDistX + fDistZ * fDistZ) * 0.5f;
 
 			// 角度を求める
 			fRot = atan2f(fDistX * fDistX, fDistZ * fDistX);

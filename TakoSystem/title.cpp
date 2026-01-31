@@ -14,7 +14,7 @@
 #include "game.h"
 
 // マクロ定義
-#define	MAX_TITLE	(2)	// タイトルの最大数
+#define	MAX_TITLE	(5)	// タイトルで表示するテクスチャの最大数
 #define	RANKING_DELEY	(720)	// ランキング移行に掛かる時間
 #define	CLEAR_DELEY	(60)	// 消滅にかかる時間
 #define	TITLE_DELEY_MAX	(500.0f)	// タイトルの最大数
@@ -25,6 +25,7 @@ LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffTitle = NULL;	// 頂点バッファへのポインタ
 
 float g_TitleDeley;	// タイトル移動表示時間
 int g_PressEnterDeley;	// PRESSENTER表示時間
+int g_PlayerSelect = 1;	// プレイヤーの人数
 
 // タイトルの初期化処理
 void InitTitle(void)
@@ -46,18 +47,25 @@ void InitTitle(void)
 	pDevice = GetDevice();
 
 	// テクスチャの読み込み
-	
-	//D3DXCreateTextureFromFile(pDevice,
-	//	"data/TEXTURE/TITLE_BG.png",
-	//	&g_pTextureTitle[0]);
-
 	D3DXCreateTextureFromFile(pDevice,
 		"data/TEXTURE/TITLE.png",
 		&g_pTextureTitle[0]);
 
 	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/PRESS.png",
+		"data/TEXTURE/PLAYER_SELECT000.png",
 		&g_pTextureTitle[1]);
+
+	D3DXCreateTextureFromFile(pDevice,
+		"data/TEXTURE/START002.png",
+		&g_pTextureTitle[2]);
+
+	D3DXCreateTextureFromFile(pDevice,
+		"data/TEXTURE/number000.png",
+		&g_pTextureTitle[3]);
+
+	D3DXCreateTextureFromFile(pDevice,
+		"data/TEXTURE/WPO.png",
+		&g_pTextureTitle[4]);
 
 	// 頂点バッファの生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4 * MAX_TITLE,
@@ -82,12 +90,33 @@ void InitTitle(void)
 			pVtx[2].pos = D3DXVECTOR3(160.0f, 0.0f, 0.0f);
 			pVtx[3].pos = D3DXVECTOR3(1120.0f, 0.0f, 0.0f);
 		}
+		else if (nCntTitle == 1)
+		{// タイトル：プレイ人数
+			pVtx[0].pos = D3DXVECTOR3(640.0f, 460.0f, 0.0f);	// 右回りで設定する
+			pVtx[1].pos = D3DXVECTOR3(1000.0f, 460.0f, 0.0f);	// 2Dの場合Zの値は0にする
+			pVtx[2].pos = D3DXVECTOR3(640.0f, 640.0f, 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(1000.0f, 640.0f, 0.0f);
+		}
+		else if (nCntTitle == 2)
+		{// タイトル：START
+			pVtx[0].pos = D3DXVECTOR3(640.0f, 540.0f, 0.0f);	// 右回りで設定する
+			pVtx[1].pos = D3DXVECTOR3(1280.0f, 540.0f, 0.0f);	// 2Dの場合Zの値は0にする
+			pVtx[2].pos = D3DXVECTOR3(640.0f, 720.0f, 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(1280.0f, 720.0f, 0.0f);
+		}
+		else if (nCntTitle == 3)
+		{// タイトル：プレイ数値
+			pVtx[0].pos = D3DXVECTOR3(1080.0f, 480.0f, 0.0f);	// 右回りで設定する
+			pVtx[1].pos = D3DXVECTOR3(1150.0f, 480.0f, 0.0f);	// 2Dの場合Zの値は0にする
+			pVtx[2].pos = D3DXVECTOR3(1080.0f, 620.0f, 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(1150.0f, 620.0f, 0.0f);
+		}
 		else
-		{// タイトル：PRESS ENTER
-			pVtx[0].pos = D3DXVECTOR3(480.0f, 450.0f, 0.0f);	// 右回りで設定する
-			pVtx[1].pos = D3DXVECTOR3(800.0f, 450.0f, 0.0f);	// 2Dの場合Zの値は0にする
-			pVtx[2].pos = D3DXVECTOR3(480.0f, 630.0f, 0.0f);
-			pVtx[3].pos = D3DXVECTOR3(800.0f, 630.0f, 0.0f);
+		{// タイトル：(C)WPO
+			pVtx[0].pos = D3DXVECTOR3(0.0f, 690.0f, 0.0f);		// 右回りで設定する
+			pVtx[1].pos = D3DXVECTOR3(310.0f, 690.0f, 0.0f);	// 2Dの場合Zの値は0にする
+			pVtx[2].pos = D3DXVECTOR3(0.0f, 720.0f, 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(310.0f, 720.0f, 0.0f);
 		}
 
 		// rhwの設定
@@ -103,18 +132,28 @@ void InitTitle(void)
 		pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 
 		// UV座標設定
-		pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
-		pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
-		pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
-		pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
+		if (nCntTitle == 3)
+		{// タイトル：プレイ人数
+			pVtx[0].tex = D3DXVECTOR2((g_PlayerSelect * 0.1f), 0.0f);
+			pVtx[1].tex = D3DXVECTOR2(0.1f + (g_PlayerSelect * 0.1f), 0.0f);
+			pVtx[2].tex = D3DXVECTOR2((g_PlayerSelect * 0.1f), 1.0f);
+			pVtx[3].tex = D3DXVECTOR2(0.1f + (g_PlayerSelect * 0.1f), 1.0f);
+		}
+		else
+		{
+			pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
+			pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
+			pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
+			pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
+		}
 
 		pVtx += 4;		// 頂点データのポインタを4つ分進める
 	}
 	// 頂点バッファをアンロックする
 	g_pVtxBuffTitle->Unlock();
 
-	//// サウンドの再生
-	//PlaySound(SOUND_LABEL_TITLE);		// 再生したいサウンドを指定
+	// サウンドの再生
+	PlaySound(SOUND_BGM_TITLE);
 }
 
 // タイトルの終了処理
@@ -153,6 +192,19 @@ void UpdateTitle(void)
 	}
 	g_PressEnterDeley++;
 
+	if ((GetKeyboardTrigger(DIK_A) || GetJoypadTrigger(0, JOYKEY_LEFT) ||
+		GetJoypadStick(0, JOYKEY_LEFTSTICK_LEFT, NULL, NULL) == true)
+		&& g_PlayerSelect > 1)
+	{
+		g_PlayerSelect--;
+	}
+	else if ((GetKeyboardTrigger(DIK_D) || GetJoypadTrigger(0, JOYKEY_RIGHT) ||
+		GetJoypadStick(0, JOYKEY_LEFTSTICK_RIGHT, NULL, NULL) == true)
+		&& g_PlayerSelect < MAX_PLAYER)
+	{
+		g_PlayerSelect++;
+	}
+
 	VERTEX_2D* pVtx;	// 頂点情報へのポインタ
 
 	// 頂点バッファをロックし、頂点情報へのポインタを取得
@@ -168,7 +220,7 @@ void UpdateTitle(void)
 			pVtx[2].pos = D3DXVECTOR3(160.0f, 0.0f + g_TitleDeley, 0.0f);
 			pVtx[3].pos = D3DXVECTOR3(1120.0f, 0.0f + g_TitleDeley, 0.0f);
 		}
-		else
+		else if (nCntTitle == 2)
 		{// タイトル：PRESS ENTER
 			if (pFade == FADE_OUT && g_PressEnterDeley <= RANKING_DELEY)
 			{// PRESSENTERをクリック
@@ -191,6 +243,13 @@ void UpdateTitle(void)
 				pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 				pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 			}
+		}
+		else if (nCntTitle == 3)
+		{
+			pVtx[0].tex = D3DXVECTOR2((g_PlayerSelect * 0.1f), 0.0f);
+			pVtx[1].tex = D3DXVECTOR2(0.1f + (g_PlayerSelect * 0.1f), 0.0f);
+			pVtx[2].tex = D3DXVECTOR2((g_PlayerSelect * 0.1f), 1.0f);
+			pVtx[3].tex = D3DXVECTOR2(0.1f + (g_PlayerSelect * 0.1f), 1.0f);
 		}
 
 		pVtx += 4;		// 頂点データのポインタを4つ分進める
@@ -244,4 +303,10 @@ void DrawTitle(void)
 		// ポリゴンの描画
 		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, nCntTitle * 4, 2);
 	}
+}
+
+// プレイヤーの人数を取得
+int GetPlayerSelect(void)
+{
+	return g_PlayerSelect;
 }

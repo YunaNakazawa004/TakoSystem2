@@ -12,10 +12,10 @@
 typedef enum
 {
 	SOUND_BGM_TITLE = 0,				//タイトルBGM
-	//SOUND_BGM_TUTORIAL,					//チュートリアルBGM
-	//SOUND_BGM_GAME,						//ゲームBGM
+	SOUND_BGM_TUTORIAL,					//チュートリアルBGM
+	SOUND_BGM_GAME,						//ゲームBGM
 	SOUND_BGM_RESULT,					//リザルトBGM
-	//SOUND_BGMRANKING,					//ランキングBGM
+	SOUND_BGMRANKING,					//ランキングBGM
 	SOUND_SE_SWIM,						//泳ぐ音
 	SOUND_SE_TENTACLE_STRETCH,			//触手を伸ばす音
 	SOUND_SE_TENTACLE_RETRACT,			//触手を引っ込める音
@@ -24,6 +24,8 @@ typedef enum
 	SOUND_SE_HIGHSPEED,					//高速移動音
 	SOUND_SE_LANDING,					//着地音	
 	SOUND_SE_WIN,						//勝利音
+	SOUND_SE_COUNTDOWN,					//カウントダウン音
+	SOUND_SE_TIMEUP,					//タイムアップ音
 	SOUND_MAX,
 } SOUND_LABEL;
 

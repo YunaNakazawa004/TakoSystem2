@@ -54,6 +54,7 @@ typedef struct
 	ESATYPE esaType;		// エサの挙動
 	float fNumBehavior;		// 挙動の値
 
+	bool bHave;				// 所持され状態(持っているか)
 	bool bDisp;				// 表示状態
 	bool bUse;				// 使用状態
 
@@ -65,6 +66,8 @@ typedef struct
 	char aFilename[128];	// モデルファイル名
 
 	float fHitRadius;		// 当たり判定の大きさ
+	
+	int nScore;				// モデル(エサ)の獲得スコア
 
 }EsaModel_info;
 
@@ -75,6 +78,8 @@ typedef struct
 	LPD3DXMESH pMesh;							// マテリアルへのポインタ
 	LPD3DXBUFFER pBuffMat;						// メッシュ(頂点情報)へのポインタ
 	DWORD dwNumMat;								// マテリアルの数
+
+	int nScore;									// モデル(エサ)の獲得スコア
 
 	float fHitRadius;							// 当たり判定の大きさ
 

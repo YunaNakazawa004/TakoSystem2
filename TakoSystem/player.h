@@ -39,29 +39,39 @@ typedef struct
 	D3DXVECTOR3 move;							// 移動量
 	D3DXVECTOR3 rot;							// 向き
 	float fAngle;								// 向きの最終地点
-	D3DXMATRIX mtxWorld;						// ワールドマトリックス
-	PLAYERSTATE state;							// 状態
-	int nCounterState;							// 状態カウンター
-	float fFog;									// フォグの終了位置
 	float fRadius;								// 半径
 	float fHeight;								// 高さ
 	D3DXVECTOR3 posX;							// リーチの位置(クロスヘアの位置)
 	D3DXVECTOR3 vecX;							// posVからposRへのベクトル(リーチへのベクトル)
+	D3DXMATRIX mtxWorld;						// ワールドマトリックス
+
+	PLAYERSTATE state;							// 状態
+	int nCounterState;							// 状態カウンター
+
+	float fFog;									// フォグの終了位置
+
 	bool bJump;									// ジャンプしているかどうか
 	bool bLand;									// 着地しているかどうか
 	bool bMove;									// 動いているかどうか
 	bool bAct;									// アクション中かどうか
 	bool bUse;									// 使用しているかどうか
+
+	int nFood;									// 持っているエサの数
+	int nMaxFood;								// 一本の腕に一度に持てるエサの数
+
 	Model aModel[MAX_NUMMODEL];					// モデル(パーツ)
 	int nNumModel;								// モデル(パーツ)の総数
+
 	MOTION_INFO aMotionInfo[MAX_MOTION];		// モーション情報
 	int nNumMotion;								// モーションの総数
+
 	MOTIONTYPE motionType;						// 現在のモーションの種類
 	bool bLoopMotion;							// 現在のループするかどうか
 	int nNumKey;								// 現在のキーの総数
 	int nKey;									// 現在の現在のキーNo.
 	int nCounterMotion;							// 現在のモーションのカウンター
 	bool bFinishMotion;							// 現在のモーションが終了しているかどうか
+
 	bool bBlendMotion;							// ブレンドモーションがあるかどうか
 	MOTIONTYPE motionTypeBlend;					// ブレンドモーションの種類
 	bool bLoopMotionBlend;						// ブレンドモーションがループするかどうか

@@ -10,7 +10,7 @@
 #include "input.h"
 #include "debugproc.h"
 #include "crosshair.h"
-//#include "sound.h"
+#include "sound.h"
 #include "fade.h"
 #include "title.h"
 #include "tutorial.h"
@@ -365,7 +365,7 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	//SetTime(DEFAULT_TIME);
 
 	// サウンドの初期化
-	////InitSound(hWnd);
+	InitSound(hWnd);
 
 	// フェードの初期化
 	InitFade(g_mode);
@@ -430,8 +430,8 @@ void Uninit(void)
 	//UninitTime();
 
 	// サウンドの終了処理
-	//StopSound();
-	//UninitSound();
+	StopSound();
+	UninitSound();
 
 	// フェードの終了処理
 	UninitFade();
@@ -553,10 +553,6 @@ void Draw(void)
 			// カメラの描画処理
 			SetCamera(nCntCamera);
 
-			// フォグの設定
-			Player* pPlayer = GetPlayer();
-			SetFog(D3DXCOLOR(0.0f, 0.1f, 0.2f, 1.0f), 10000.0f, pPlayer[nCntCamera].fFog);
-
 			//// プレイヤーの描画処理
 			//DrawPlayer();
 
@@ -603,10 +599,12 @@ void Draw(void)
 				DrawRanking();
 				break;
 			}
+			
+			// フェードの描画処理
+			DrawFade();
 		}
 
-		// フェードの描画処理
-		DrawFade();
+	
 
 		// デバッグ表示の描画処理
 		DrawDebugProc();

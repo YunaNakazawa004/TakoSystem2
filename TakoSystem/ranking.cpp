@@ -87,8 +87,8 @@ void InitRanking(void)
 	//// スコアのセット処理
 	//SetScoreRanking(g_aRanking[0].nScore, g_aRanking[1].nScore, g_aRanking[2].nScore, g_aRanking[3].nScore, g_aRanking[4].nScore);
 	
-	//// サウンドの再生
-	//PlaySound(SOUND_LABEL_RANKING);		// 再生したいサウンドを指定
+	// サウンドの再生
+	PlaySound(SOUND_BGMRANKING);
 }
 
 // ランキングの終了処理

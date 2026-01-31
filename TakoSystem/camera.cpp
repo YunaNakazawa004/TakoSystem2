@@ -14,7 +14,6 @@
 //*****************************************************************************
 #define CAMERA_POS				(D3DXVECTOR3(0.0f, 100.0f, -200.0f))	// 初期座標
 #define FIRST_ROT_X				(200.0f)								// 視点と注視点間の距離
-#define DISTANCE				(200.0f)								// 視点と注視点間の距離
 #define HEIGHT					(100.0f)								// 視点の高さ
 #define MOVEMENT				(D3DXVECTOR3(5.0f, 5.0f, 5.0f))			// 移動量
 #define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// 向き移動量

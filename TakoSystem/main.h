@@ -36,6 +36,7 @@
 #define FVF_VERTEX_3D		(D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1)		// 頂点フォーマット[3D]
 #define FVF_VERTEX_3D_MALTI	(D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX2)		// 3Dフォーマット(マルチテクスチャver)
 #define MAX_PLAYER			(2)																// プレイ人数
+#define MAX_COMPUTER		(10)															// CPUの数
 #define ONE_GAME			(120)															// 1ゲームの制限時間
 #define ONE_SECOND			(60)															// 1秒
 #define WHITE_VTX			(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f))								// 頂点カラーが白
@@ -58,6 +59,9 @@
 #define MAX_MOTION			(20)															// モーションの最大数
 #define ALLOW_X				(10000000)														// X方向の移動制限
 #define ALLOW_Z				(10000000)														// Z方向の移動制限
+#define OUTCYLINDER_RADIUS	(9000.0f)														// 外側の円柱の半径
+#define INCYLINDER_RADIUS	(2000.0f)														// 内側の円柱の半径
+#define CYLINDER_HEIGHT		(17500.0f)														// 円柱の高さ
 
 //*****************************************************************************
 // 画面(モード)の種類

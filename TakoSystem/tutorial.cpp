@@ -48,10 +48,10 @@ void InitTutorial(void)
 	g_pVtxBuffTutorial->Lock(0, 0, (void**)&pVtx, 0);
 
 	// 頂点座標の設定
-	pVtx[0].pos = D3DXVECTOR3(0.0f, 360.0f, 0.0f);	// 右回りで設定する
-	pVtx[1].pos = D3DXVECTOR3(1280.0f, 360.0f, 0.0f);	// 2Dの場合Zの値は0にする
-	pVtx[2].pos = D3DXVECTOR3(0.0f, 720.0f, 0.0f);
-	pVtx[3].pos = D3DXVECTOR3(1280.0f, 720.0f, 0.0f);
+	pVtx[0].pos = D3DXVECTOR3(460.0f, 0.0f, 0.0f);	// 右回りで設定する
+	pVtx[1].pos = D3DXVECTOR3(820.0f, 0.0f, 0.0f);	// 2Dの場合Zの値は0にする
+	pVtx[2].pos = D3DXVECTOR3(460.0f, 180.0f, 0.0f);
+	pVtx[3].pos = D3DXVECTOR3(820.0f, 180.0f, 0.0f);
 
 	// rhwの設定
 	pVtx[0].rhw = 1.0f;	// 値は1.0fで固定
@@ -75,7 +75,7 @@ void InitTutorial(void)
 	g_pVtxBuffTutorial->Unlock();
 
 	// サウンドの再生
-	//PlaySound(SOUND_LABEL_TUTORIAL);		// 再生したいサウンドを指定
+	PlaySound(SOUND_BGM_TUTORIAL);
 }
 
 // リザルトの終了処理
