@@ -113,7 +113,7 @@ void UpdateCamera(void)
 		}
 
 		// Ž‹“_ˆÚ“®
-		if (GetKeyboardPress(DIK_T) == true || GetJoypadStick(nCntCamera, JOYKEY_RIGHTSTICK_DOWN, &nValueH, &nValueV) == true)
+		if (GetKeyboardPress(DIK_B) == true || GetJoypadStick(nCntCamera, JOYKEY_RIGHTSTICK_DOWN, &nValueH, &nValueV) == true)
 		{// ã‚ÉˆÚ“®
 			pCamera->fAngle += ROT.y;
 
@@ -128,7 +128,7 @@ void UpdateCamera(void)
 			pCamera->posVDest.y = pCamera->posRDest.y + cosf((D3DX_PI * 0.5f) - pCamera->fAngle) * pCamera->fDistance;
 			pCamera->posVDest.z = pCamera->posRDest.z + cosf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance * sinf((D3DX_PI * 0.5f) - pCamera->fAngle);
 		}
-		else if (GetKeyboardPress(DIK_B) == true || GetJoypadStick(nCntCamera, JOYKEY_RIGHTSTICK_UP, &nValueH, &nValueV) == true)
+		else if (GetKeyboardPress(DIK_T) == true || GetJoypadStick(nCntCamera, JOYKEY_RIGHTSTICK_UP, &nValueH, &nValueV) == true)
 		{// ‰º‚ÉˆÚ“®
 			pCamera->fAngle += -ROT.y;
 

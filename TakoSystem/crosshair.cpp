@@ -5,6 +5,7 @@
 // 
 //=============================================================================
 #include "crosshair.h"
+#include "camera.h"
 #include "input.h"
 
 //*****************************************************************************
@@ -61,25 +62,25 @@ void InitCrossHair(void)
 	}
 
 	// クロスヘア情報の初期化
-	for (int nCntCrossHair = 0; nCntCrossHair < MAX_PLAYER; nCntCrossHair++)
+	for (int nCntCrossHair = 0; nCntCrossHair < GetNumCamera(); nCntCrossHair++)
 	{
 		g_aCrossHair[nCntCrossHair].state = CROSSHAIRSTATE_NONE;
 		g_aCrossHair[nCntCrossHair].nCounterState = 0;
 		g_aCrossHair[nCntCrossHair].bDisp = true;
 	}
 
-	if (MAX_PLAYER == 1)
+	if (GetNumCamera() == 1)
 	{// 1人プレイ
 		g_aCrossHair[0].pos = CENTER;
 	}
-	else if (MAX_PLAYER == 2)
+	else if (GetNumCamera() == 2)
 	{// 2人プレイ
 		g_aCrossHair[0].pos = LEFT_SENTER;
 		g_aCrossHair[1].pos = RIGHT_SENTER;
 	}
 
 	// 頂点バッファの生成
-	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * MAX_VERTEX * MAX_PLAYER,
+	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * MAX_VERTEX * GetNumCamera(),
 		D3DUSAGE_WRITEONLY,
 		FVF_VERTEX_2D,
 		D3DPOOL_MANAGED,
