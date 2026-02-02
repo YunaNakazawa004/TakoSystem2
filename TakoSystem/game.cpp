@@ -24,6 +24,7 @@
 #include "crosshair.h"	// クロスヘア
 #include "time.h"
 #include "ui_gaugeicon.h"
+#include "ui_esa.h"
 
 #include "effect_3d.h"
 #include "pause.h"
@@ -102,6 +103,9 @@ void InitGame(void)
 	// UIゲージアイコンの初期化処理
 	InitUiGaugeIcon();
 
+	// エサUIの初期化処理
+	//InitUiEsa();
+
 	// 時間の初期化処理
 	InitTime();
 
@@ -161,6 +165,9 @@ void UninitGame(void)
 	// UIゲージアイコンの終了処理
 	UninitUiGaugeIcon();
 	
+	// エサUIの終了処理
+	//UninitUiEsa();
+
 	// 時間の終了処理
 	UninitTime();
 
@@ -240,6 +247,9 @@ void UpdateGame(void)
 		// UIゲージアイコンの更新処理
 		UpdateUiGaugeIcon();
 	
+		// エサUIの更新処理
+		//UpdateUiEsa();
+
 		// 時間の更新処理
 		UpdateTime();
 	}
@@ -300,6 +310,9 @@ void DrawGame(void)
 	// UIゲージアイコンの描画処理
 	DrawUiGaugeIcon();
 	
+	// エサUIの描画処理
+	//DrawUiEsa();
+
 	// 時間の描画処理
 	DrawTime();
 
@@ -307,13 +320,17 @@ void DrawGame(void)
 	if (g_bPause == true) DrawPause();
 }
 
+//===================================================================
 // ポーズの有効無効設定
+//===================================================================
 void SetEnablePause(bool bPause)
 {
 	g_bPause = bPause;
 }
 
+//===================================================================
 // ポーズの取得
+//===================================================================
 bool GetPause(void)
 {
 	return g_bPause;	// ポーズの情報を返す

@@ -229,7 +229,7 @@ void UpdateUiGaugeIcon(void)
 
 	// =========================================================
 
-#if 1
+#if 0
 	if (GetKeyboardPress(DIK_I)) g_aUiGaugeIcon[2].pos.y -= 1.0f;
 	if (GetKeyboardPress(DIK_K)) g_aUiGaugeIcon[2].pos.y += 1.0f;
 	if (GetKeyboardPress(DIK_J)) g_aUiGaugeIcon[2].pos.x -= 1.0f;

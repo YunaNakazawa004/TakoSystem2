@@ -114,4 +114,6 @@ bool CollisionEsa			// エサの当たり判定処理
 
 Esa *GetEsa(void);			// エサの情報を返す処理
 
+int GetNumEsaType(void);	// エサの種類数を返す処理
+
 #endif

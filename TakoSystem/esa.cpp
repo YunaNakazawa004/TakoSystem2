@@ -50,6 +50,8 @@ EsaModel_info g_aEsaModelInfo[] =
 	{"data/MODEL/testmodel/skitree000.x",	10.0f,	10},	// [1]四角形
 };
 
+int g_nNumEsatype;						// エサの種類の総数
+
 // エサの配置情報
 Esa_info g_aEsaInfo[] =
 {// {モデル種類, エサの挙動, 位置, 角度}
@@ -78,6 +80,8 @@ void InitEsa(void)
 	}
 
 	memset(g_aIdxEsaModel,-1,sizeof g_aIdxEsaModel);	// モデルのインデックスを初期化
+
+	g_nNumEsatype = 0;									// エサの種類の総数を初期化
 
 	// モデル読み込み
 	for (int nCntEsaModel = 0; nCntEsaModel < ESA_CALC_SIZEARRAY(g_aEsaModelInfo); nCntEsaModel++)
@@ -301,6 +305,8 @@ int SetModelEsa(EsaModel_info infoEsaModel, EsaModel* pEsaModel, int nMaxSizeNum
 
 			pEsaModel->bUse = true;								// 使用している状態に設定
 
+			g_nNumEsatype++;									// エサの種類の総数を増やす
+
 			return nCntModel;									// 設定した場所を返す
 		}
 	}
@@ -426,4 +432,12 @@ bool CollisionEsa(int* pIdx, bool bCollision, D3DXVECTOR3 *pos, float fHitRadius
 Esa* GetEsa(void)
 {
 	return &g_aEsa[0];
+}
+
+//========================================================================
+// エサの種類数を返す処理
+//========================================================================
+int GetNumEsaType(void)
+{
+	return g_nNumEsatype;
 }
