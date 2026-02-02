@@ -26,6 +26,7 @@
 #include "ui_gaugeicon.h"
 
 #include "effect_3d.h"
+#include "particle_3d.h"
 #include "pause.h"
 #include "input.h"
 #include "fade.h"
@@ -87,6 +88,9 @@ void InitGame(void)
 	// 3Dエフェクトの初期化処理
 	InitEffect3D();
 	
+	// 3Dパーティクルの初期化処理
+	InitParticle3D();
+
 	// 生き物の初期化処理
 	InitFishes();
 
@@ -145,7 +149,10 @@ void UninitGame(void)
 
 	// 3Dエフェクトの終了処理
 	UninitEffect3D();
-	
+
+	// 3Dパーティクルの終了処理
+	UninitParticle3D();
+
 	// 生き物の終了処理
 	UninitFishes();
 
@@ -224,6 +231,9 @@ void UpdateGame(void)
 
 		// 3Dエフェクトの更新処理
 		UpdateEffect3D();
+
+		// 3Dパーティクルの更新処理
+		UpdateParticle3D();
 	
 		// 生き物の更新処理
 		UpdateFishes();
@@ -285,6 +295,9 @@ void DrawGame(void)
 	// 3Dエフェクトの描画処理
 	DrawEffect3D();
 	
+	// 3Dパーティクルの描画処理
+	DrawParticle3D();
+
 	// 生き物の描画処理
 	DrawFishes();
 
