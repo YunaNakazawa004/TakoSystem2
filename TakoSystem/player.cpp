@@ -182,7 +182,7 @@ void UpdatePlayer(void)
 	float fmoveAngle = 0.0f;
 	float fAngle;
 
-	for (int nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++, pPlayer++)
+	for (int nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++, pPlayer++, pCamera++)
 	{
 		if (pPlayer->bUse == true)
 		{
@@ -1590,46 +1590,44 @@ void UpdateMotionPlayer(void)
 void SetMotionPlayer(int nIdx, MOTIONTYPE motionType, bool bBlendMotion, int nFrameBlend)
 {
 	Player* pPlayer = GetPlayer();
+	pPlayer = &pPlayer[nIdx];
 
-	for (int nCntPlayer = 0; nCntPlayer < MAX_PLAYER; nCntPlayer++, pPlayer++)
-	{
-		if (pPlayer->motionTypeBlend != motionType)
-		{// 違うモーションが設定されたときだけ
-			if (bBlendMotion == true)
-			{// ブレンドあり
-				pPlayer->motionTypeBlend = motionType;
-				pPlayer->bLoopMotionBlend = pPlayer->aMotionInfo[motionType].bLoop;
-				pPlayer->nNumKeyBlend = pPlayer->aMotionInfo[motionType].nNumKey;
-				pPlayer->nKeyBlend = 0;
-				pPlayer->nCounterMotionBlend = 0;
-				pPlayer->bFinishMotion = false;
+	if (pPlayer->motionTypeBlend != motionType)
+	{// 違うモーションが設定されたときだけ
+		if (bBlendMotion == true)
+		{// ブレンドあり
+			pPlayer->motionTypeBlend = motionType;
+			pPlayer->bLoopMotionBlend = pPlayer->aMotionInfo[motionType].bLoop;
+			pPlayer->nNumKeyBlend = pPlayer->aMotionInfo[motionType].nNumKey;
+			pPlayer->nKeyBlend = 0;
+			pPlayer->nCounterMotionBlend = 0;
+			pPlayer->bFinishMotion = false;
 
-				pPlayer->bBlendMotion = bBlendMotion;
-				pPlayer->nFrameBlend = nFrameBlend;
-				pPlayer->nCounterBlend = 0;
-			}
-			else
-			{// ブレンドなし
-				pPlayer->motionType = motionType;
-				pPlayer->bLoopMotion = pPlayer->aMotionInfo[motionType].bLoop;
-				pPlayer->nNumKey = pPlayer->aMotionInfo[motionType].nNumKey;
-				pPlayer->nKey = 0;
-				pPlayer->nCounterMotion = 0;
-				pPlayer->bFinishMotion = false;
+			pPlayer->bBlendMotion = bBlendMotion;
+			pPlayer->nFrameBlend = nFrameBlend;
+			pPlayer->nCounterBlend = 0;
+		}
+		else
+		{// ブレンドなし
+			pPlayer->motionType = motionType;
+			pPlayer->bLoopMotion = pPlayer->aMotionInfo[motionType].bLoop;
+			pPlayer->nNumKey = pPlayer->aMotionInfo[motionType].nNumKey;
+			pPlayer->nKey = 0;
+			pPlayer->nCounterMotion = 0;
+			pPlayer->bFinishMotion = false;
 
-				pPlayer->bBlendMotion = bBlendMotion;
+			pPlayer->bBlendMotion = bBlendMotion;
 
-				// 全モデル(パーツ)の初期設定
-				for (int nCntModel = 0; nCntModel < pPlayer->nNumModel; nCntModel++)
-				{
-					pPlayer->aModel[nCntModel].pos.x = pPlayer->aMotionInfo[motionType].aKeyInfo[0].aKey[0].fPosX;
-					pPlayer->aModel[nCntModel].pos.y = pPlayer->aMotionInfo[motionType].aKeyInfo[0].aKey[0].fPosY;
-					pPlayer->aModel[nCntModel].pos.z = pPlayer->aMotionInfo[motionType].aKeyInfo[0].aKey[0].fPosZ;
+			// 全モデル(パーツ)の初期設定
+			for (int nCntModel = 0; nCntModel < pPlayer->nNumModel; nCntModel++)
+			{
+				pPlayer->aModel[nCntModel].pos.x = pPlayer->aMotionInfo[motionType].aKeyInfo[0].aKey[0].fPosX;
+				pPlayer->aModel[nCntModel].pos.y = pPlayer->aMotionInfo[motionType].aKeyInfo[0].aKey[0].fPosY;
+				pPlayer->aModel[nCntModel].pos.z = pPlayer->aMotionInfo[motionType].aKeyInfo[0].aKey[0].fPosZ;
 
-					pPlayer->aModel[nCntModel].rot.x = pPlayer->aMotionInfo[motionType].aKeyInfo[0].aKey[0].fRotX;
-					pPlayer->aModel[nCntModel].rot.y = pPlayer->aMotionInfo[motionType].aKeyInfo[0].aKey[0].fRotY;
-					pPlayer->aModel[nCntModel].rot.z = pPlayer->aMotionInfo[motionType].aKeyInfo[0].aKey[0].fRotZ;
-				}
+				pPlayer->aModel[nCntModel].rot.x = pPlayer->aMotionInfo[motionType].aKeyInfo[0].aKey[0].fRotX;
+				pPlayer->aModel[nCntModel].rot.y = pPlayer->aMotionInfo[motionType].aKeyInfo[0].aKey[0].fRotY;
+				pPlayer->aModel[nCntModel].rot.z = pPlayer->aMotionInfo[motionType].aKeyInfo[0].aKey[0].fRotZ;
 			}
 		}
 	}
