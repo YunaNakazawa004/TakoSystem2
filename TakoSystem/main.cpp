@@ -17,6 +17,7 @@
 #include "game.h"
 #include "result.h"
 #include "ranking.h"
+#include "logo.h"
 #include "meshcylinder.h"
 #include "player.h"
 #include "object.h"
@@ -525,6 +526,10 @@ void Update(void)
 	case MODE_RANKING:			// ランキング画面
 		UpdateRanking();
 		break;
+
+	case MODE_LOGO:				// ロゴ画面
+		UpdateLogo();
+		break;
 	}
 
 	// フェードの更新処理
@@ -598,6 +603,10 @@ void Draw(void)
 			case MODE_RANKING:			// ランキング画面
 				DrawRanking();
 				break;
+
+			case MODE_LOGO:				// ロゴ画面
+				DrawLogo();
+				break;
 			}
 			
 			// フェードの描画処理
@@ -661,6 +670,11 @@ void SetMode(MODE mode)
 		UninitRanking();
 
 		break;
+
+	case MODE_LOGO:				// ロゴ画面
+		UninitLogo();
+
+		break;
 	}
 
 	// 新しい画面(モード)の初期化処理
@@ -688,6 +702,11 @@ void SetMode(MODE mode)
 
 	case MODE_RANKING:			// ランキング画面
 		InitRanking();
+
+		break;
+
+	case MODE_LOGO:			// ロゴ画面
+		InitLogo();
 
 		break;
 	}
