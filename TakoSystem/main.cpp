@@ -46,7 +46,7 @@ void Draw(void);
 //*****************************************************************************
 LPDIRECT3D9 g_pD3D = NULL;							// Direct3Dオブジェクトへのポインタ
 LPDIRECT3DDEVICE9 g_pD3DDevice = NULL;				// Direct3Dデバイスへのポインタ
-MODE g_mode = MODE_TITLE;							// 現在のモード
+MODE g_mode = MODE_LOGO;							// 現在のモード
 int g_nCountFPS = 0;								// FPSカウンタ
 bool g_bWindowSize = TRUE;							// ウィンドウサイズ(TRUE : ウィンドウ FALSE : フルスクリーン)
 
@@ -394,6 +394,10 @@ void Uninit(void)
 
 	// ランキング画面の終了処理
 	UninitRanking();
+
+	// ロゴ画面の終了処理
+	UninitLogo();
+
 #endif
 
 	// キーボードの終了処理
