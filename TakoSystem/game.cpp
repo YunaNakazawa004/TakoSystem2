@@ -24,6 +24,7 @@
 #include "crosshair.h"	// クロスヘア
 #include "time.h"
 #include "ui_gaugeicon.h"
+#include "map.h"
 
 #include "effect_3d.h"
 #include "particle_3d.h"
@@ -112,6 +113,9 @@ void InitGame(void)
 	// 時間の初期設定
 	SetTime(DEFAULT_TIME);
 
+	// マップの初期化処理
+	InitMap();
+
 	// ポーズの初期化処理
 	InitPause();
 
@@ -170,6 +174,9 @@ void UninitGame(void)
 	
 	// 時間の終了処理
 	UninitTime();
+
+	// マップの終了処理
+	UninitMap();
 
 	// ポーズ終了処理
 	UninitPause();
@@ -252,6 +259,9 @@ void UpdateGame(void)
 	
 		// 時間の更新処理
 		UpdateTime();
+
+		// マップの更新処理
+		UpdateMap();
 	}
 }
 
@@ -315,6 +325,9 @@ void DrawGame(void)
 	
 	// 時間の描画処理
 	DrawTime();
+
+	// マップの描画処理
+	DrawMap();
 
 	// ポーズ中の描画処理
 	if (g_bPause == true) DrawPause();

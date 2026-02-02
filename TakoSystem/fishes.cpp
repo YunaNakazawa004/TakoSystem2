@@ -12,38 +12,28 @@
 #include <stdio.h>
 #include "debugproc.h"
 
-//*****************************************************************************
-// マクロ定義
-//*****************************************************************************
-#define FISHES_MOVEMENT			(D3DXVECTOR3(0.4f, 0.4f, 0.4f))			// 移動量
-#define FISHES_ROT				(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// 向き移動量
-#define FISHES_INERTIA_MOVE		(0.2f)									// 移動の慣性
-#define FISHES_MAX_MOVE			(5.0f)									// 移動の制限
-#define FISHES_INERTIA_ANGLE	(0.05f)									// 角度の慣性
-#define FISHES_WIDTH			(5.0f)									// 幅
-#define FISHES_HEIGHT			(10.0f)									// 高さ
-#define FISHES_XMODEL_FILENAME	"data\\motion_octo.txt"					// 生き物のデータファイル
-#define FISHES_MAX_NUM			(100)									// 設置の最大数
-#define FISHES_MAX_MODELS		(100)									// 読み込めるモデルの最大数
-#define FISHES_CALC_SIZEARRAY(aArray)(sizeof aArray / sizeof(aArray[0]))
+//=======================================
+// マクロ定義 
+//=======================================
 
-//*****************************************************************************
-// 生き物のモデル情報
-//*****************************************************************************
-typedef struct
-{
-	int Model_Idx;
-	char Model_FileName[FISHES_MAX_MODELS];
-}FishesInfo;
+#define FISHES_MOVEMENT					(D3DXVECTOR3(0.4f, 0.4f, 0.4f))		// 移動量
+#define FISHES_ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))	// 向き移動量
+#define FISHES_INERTIA_MOVE				(0.2f)								// 移動の慣性
+#define FISHES_MAX_MOVE					(5.0f)								// 移動の制限
+#define FISHES_INERTIA_ANGLE			(0.05f)								// 角度の慣性
 
-//*****************************************************************************
-// グローバル変数
-//*****************************************************************************
+//=======================================
+// グローバル宣言
+//=======================================
+
 Fishes g_aFishes[FISHES_MAX_NUM];						// 生き物の情報
 Fishes_Model g_aFishesModel[FISHES_MAX_MODELS];			// 生き物のモデル情報
 
+// 生き物の状態 -------------------------
+
 FishesInfo g_aFishInfo[] =
-{
+{ // [ モデルのインデックス,モデルのファイル名 ]
+
 	{0,"data\\motion_octo_0.txt"},
 	{1,"data\\motion_octo_1.txt"},
 
