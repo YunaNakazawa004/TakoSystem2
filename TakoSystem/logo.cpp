@@ -14,7 +14,7 @@
 // マクロ定義
 #define	MAX_LOGO	(2)	// ロゴで表示するテクスチャの最大数
 #define	LOGO_MOVE	(1.0f)	// ロゴが大きくなるサイズ
-#define	LOGO_DELEY_MAX	(100.0f)	// ロゴの最大サイズ
+#define	LOGO_DELEY_MAX	(150.0f)	// ロゴの最大サイズ
 #define	TITLE_TRANS	(LOGO_DELEY_MAX + 50.0f)	// タイトルまでの時間
 
 // グローバル変数

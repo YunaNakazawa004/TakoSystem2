@@ -266,7 +266,7 @@ void UpdateTitle(void)
 	}
 	else if (pFade == FADE_NONE && g_PressEnterDeley > RANKING_DELEY)
 	{
-		SetFade(MODE_RANKING);
+		SetFade(MODE_LOGO);
 	}
 
 	if ((GetKeyboardTrigger(DIK_RETURN) == true ||

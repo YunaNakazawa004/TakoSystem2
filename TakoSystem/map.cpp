@@ -5,59 +5,131 @@
 // 
 //=============================================================================
 #include "main.h"
+#include "map.h"
 #include "fade.h"
 #include "camera.h"
 #include "game.h"
 #include "player.h"
+#include "debugproc.h"
+#include "title.h"
 
-// マクロ定義　==============================================
+//=======================================
+// マクロ定義 
+//=======================================
 
-#define	MAX_MAP		(1)			// マップで表示するテクスチャの最大数
-#define MAP_SIZE	(100)		// マップサイズ
+#define	MAX_MAP			(2)						// マップで表示するテクスチャの最大数
+#define	MAP_USE_NUM		(4)						// マップで使用するオブジェクト数
+#define	PIN_USE_NUM		(2)						// マップで使用するピン数
+#define MAP_SIZE		(100)					// マップサイズ
+#define MAP_SIZE_INSIDE (INCYLINDER_RADIUS/OUTCYLINDER_RADIUS)
+#define MAP_PIN_SIZE	(10)					// ピンサイズ
+#define MAP_CALC_SIZEARRAY(aArray)	(sizeof aArray / sizeof(aArray[0]))	// サイズ比較
 
-// グローバル変数　==========================================
+//=======================================
+// グローバル宣言
+//=======================================
 
 LPDIRECT3DTEXTURE9 g_pTextureMap[MAX_MAP] = {};	// テクスチャへのポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffMap = NULL;	// 頂点バッファへのポインタ
+
+// テクスチャ情報 -----------------------
+
+MapTextureInfo g_aMapTexInfo[] =
+{ // [テクスチャの線の太さ分の調整,ファイルネーム,テクスチャ番号]
+
+	//map
+	{10,"data\\TEXTURE\\maptest000.png",0},
+
+	//pin
+	{0,"data\\TEXTURE\\playerpin.png",1},
+};
+
+// マップの情報 -------------------------
+
+Map g_aMap[] =
+{ // [位置,サイズ,テクスチャ割り当て番号]
+
+	{{SCREEN_WIDTH - MAP_SIZE - 50,MAP_SIZE + 50,0.0f},
+	{MAP_SIZE,MAP_SIZE,0.0f},
+	g_aMapTexInfo[0].TexIdx},
+
+	{{SCREEN_WIDTH - MAP_SIZE - 50,MAP_SIZE + 50,0.0f},
+	{MAP_SIZE * MAP_SIZE_INSIDE,MAP_SIZE * MAP_SIZE_INSIDE,0.0f},
+	g_aMapTexInfo[0].TexIdx},
+
+	{{SCREEN_WIDTH - MAP_SIZE - 50,MAP_SIZE + 50,0.0f},
+	{MAP_PIN_SIZE,MAP_PIN_SIZE,0.0f},
+	g_aMapTexInfo[1].TexIdx},
+
+	{{SCREEN_WIDTH - MAP_SIZE - 50,MAP_SIZE + 50,0.0f},
+	{MAP_PIN_SIZE,MAP_PIN_SIZE,0.0f},
+	g_aMapTexInfo[1].TexIdx},
+};
+
 
 //======================================================================== 
 // マップの初期化処理
 //======================================================================== 
 void InitMap(void)
 {
-	float posX = 0.0f, posY = 0.0f;
+	// ローカル変数宣言 -----------------
+
 	LPDIRECT3DDEVICE9 pDevice;	// デバイスへのポインタ
+	VERTEX_2D* pVtx;			// 頂点情報へのポインタ
+	Map* pMap = GetMap();
+	int PlayerNum = GetPlayerSelect();
+	MapTextureInfo* pMapInfo = &g_aMapTexInfo[0];
 
+	// デバイスの取得 -------------------
 
-	posX = SCREEN_WIDTH / 2;
-	posY = SCREEN_HEIGHT / 2;
-	// デバイスの取得
 	pDevice = GetDevice();
 
-	// テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/maptest000.png",
-		&g_pTextureMap[0]);
+	// 構造体の初期化 -------------------
 
-	// 頂点バッファの生成
-	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4 * MAX_MAP,
+	if (PlayerNum == 1)
+	{
+		for (int nCntMap = 0; nCntMap < MAP_USE_NUM; nCntMap++)
+		{
+			pMap[nCntMap].pos =
+			{ SCREEN_WIDTH - MAP_SIZE - 50,MAP_SIZE + 50,0.0f };
+		}
+	}
+	else
+	{
+		for (int nCntMap = 0; nCntMap < MAP_USE_NUM; nCntMap++)
+		{
+			pMap[nCntMap].pos =
+			{ SCREEN_WIDTH / 2,SCREEN_HEIGHT / 2 - 80,0.0f };
+		}
+	}
+
+	// テクスチャの読み込み -------------
+
+	for (int nCntMap = 0; nCntMap < MAX_MAP; nCntMap++)
+	{
+		D3DXCreateTextureFromFile(pDevice,
+			g_aMapTexInfo[nCntMap].Model_FileName,
+			&g_pTextureMap[nCntMap]);
+	}
+
+	// 頂点バッファの生成 ---------------
+
+	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4 * MAP_USE_NUM,
 		D3DUSAGE_WRITEONLY,
 		FVF_VERTEX_2D,
 		D3DPOOL_MANAGED,
 		&g_pVtxBuffMap,
 		NULL);
 
-	VERTEX_2D* pVtx;	// 頂点情報へのポインタ
-
 	// 頂点バッファをロックし、頂点情報へのポインタを取得
 	g_pVtxBuffMap->Lock(0, 0, (void**)&pVtx, 0);
 
-	for (int nCntMap = 0; nCntMap < MAX_MAP; nCntMap++)
+	for (int nCntMap = 0; nCntMap < MAP_USE_NUM; nCntMap++, pMap++)
 	{
-		pVtx[0].pos = D3DXVECTOR3(posX - MAP_SIZE, posY - MAP_SIZE, 0.0f);	// 右回りで設定する
-		pVtx[1].pos = D3DXVECTOR3(posX + MAP_SIZE, posY - MAP_SIZE, 0.0f);	// 2Dの場合Zの値は0にする
-		pVtx[2].pos = D3DXVECTOR3(posX - MAP_SIZE, posY + MAP_SIZE, 0.0f);
-		pVtx[3].pos = D3DXVECTOR3(posX + MAP_SIZE, posY + MAP_SIZE, 0.0f);
+		pVtx[0].pos = D3DXVECTOR3(pMap->pos.x - (pMap->size.x + pMapInfo[nCntMap].Dif_Texture_Line), pMap->pos.y - (pMap->size.y + pMapInfo[nCntMap].Dif_Texture_Line), 0.0f);	// 右回りで設定する
+		pVtx[1].pos = D3DXVECTOR3(pMap->pos.x + (pMap->size.x + pMapInfo[nCntMap].Dif_Texture_Line), pMap->pos.y - (pMap->size.y + pMapInfo[nCntMap].Dif_Texture_Line), 0.0f);	// 2Dの場合Zの値は0にする
+		pVtx[2].pos = D3DXVECTOR3(pMap->pos.x - (pMap->size.x + pMapInfo[nCntMap].Dif_Texture_Line), pMap->pos.y + (pMap->size.y + pMapInfo[nCntMap].Dif_Texture_Line), 0.0f);
+		pVtx[3].pos = D3DXVECTOR3(pMap->pos.x + (pMap->size.x + pMapInfo[nCntMap].Dif_Texture_Line), pMap->pos.y + (pMap->size.y + pMapInfo[nCntMap].Dif_Texture_Line), 0.0f);
 
 		// rhwの設定
 		pVtx[0].rhw = 1.0f;	// 値は1.0fで固定
@@ -88,17 +160,21 @@ void InitMap(void)
 //======================================================================== 
 void UninitMap(void)
 {
-	// テクスチャの破棄
+	// テクスチャの破棄 -----------------
+
 	for (int nCntMap = 0; nCntMap < MAX_MAP; nCntMap++)
 	{// マップの数だけ確認する
+
 		if (g_pTextureMap[nCntMap] != NULL)
 		{// テクスチャの破棄
+
 			g_pTextureMap[nCntMap]->Release();
 			g_pTextureMap[nCntMap] = NULL;
 		}
 	}
 
-	// 頂点バッファの破棄
+	// 頂点バッファの破棄 ---------------
+
 	if (g_pVtxBuffMap != NULL)
 	{
 		g_pVtxBuffMap->Release();
@@ -111,10 +187,36 @@ void UninitMap(void)
 //======================================================================== 
 void UpdateMap(void)
 {
-	Player* pPlayer = GetPlayer();
-	D3DXVECTOR3 MapMax = { ALLOW_X,0.0f,ALLOW_Z };
-	D3DXVECTOR3 Mapmin = { -ALLOW_X,0.0f,-ALLOW_Z };
+	// ローカル変数宣言 -----------------
 
+	VERTEX_2D* pVtx;															// 頂点情報へのポインタ
+	D3DXVECTOR3 MapMax = { OUTCYLINDER_RADIUS,0.0f,OUTCYLINDER_RADIUS };		// マップ座標の最大値
+	D3DXVECTOR3 Mapmin = { -OUTCYLINDER_RADIUS ,0.0f,-OUTCYLINDER_RADIUS };		// マップ座標の最小値
+	D3DXVECTOR3 posRate[MAX_PLAYER] = {};										// 中心地からのプレイヤーの位置の割合
+	Player* pPlayer = GetPlayer();
+	Map* pMap = GetMap();
+	MapTextureInfo* pMapInfo = &g_aMapTexInfo[0];
+
+	// 頂点バッファをロックし、頂点情報へのポインタを取得
+	g_pVtxBuffMap->Lock(0, 0, (void**)&pVtx, 0);
+
+	pVtx += 8;
+
+	for (int nCntMap = 2, nCntPlayer = 0; nCntMap < MAP_USE_NUM; nCntMap++, nCntPlayer++)
+	{
+		posRate[nCntPlayer] = { pPlayer[nCntPlayer].pos.x / MapMax.x ,pPlayer[nCntPlayer].pos.y,pPlayer[nCntPlayer].pos.z / MapMax.z };
+
+		PrintDebugProc("\nプレイヤーの位置 : [ %f : %f : %f ]\n", posRate[nCntPlayer].x, posRate[nCntPlayer].y, posRate[nCntPlayer].z);
+
+		pVtx[0].pos = D3DXVECTOR3(pMap[nCntMap].pos.x - ((posRate[nCntPlayer].x * MapMax.x) * (MAP_SIZE / MapMax.z)) - pMap[nCntMap].size.x, pMap[nCntMap].pos.y + ((posRate[nCntPlayer].z * MapMax.z) * (MAP_SIZE / MapMax.z)) - pMap[nCntMap].size.y - (pMap[nCntMap].size.y / 2), 0.0f);	// 右回りで設定する
+		pVtx[1].pos = D3DXVECTOR3(pMap[nCntMap].pos.x - ((posRate[nCntPlayer].x * MapMax.x) * (MAP_SIZE / MapMax.x)) + pMap[nCntMap].size.x, pMap[nCntMap].pos.y + ((posRate[nCntPlayer].z * MapMax.z) * (MAP_SIZE / MapMax.z)) - pMap[nCntMap].size.y - (pMap[nCntMap].size.y / 2), 0.0f);	// 2Dの場合Zの値は0にする
+		pVtx[2].pos = D3DXVECTOR3(pMap[nCntMap].pos.x - ((posRate[nCntPlayer].x * MapMax.x) * (MAP_SIZE / MapMax.x)) - pMap[nCntMap].size.x, pMap[nCntMap].pos.y + ((posRate[nCntPlayer].z * MapMax.z) * (MAP_SIZE / MapMax.z)) + pMap[nCntMap].size.y - (pMap[nCntMap].size.y / 2), 0.0f);
+		pVtx[3].pos = D3DXVECTOR3(pMap[nCntMap].pos.x - ((posRate[nCntPlayer].x * MapMax.x) * (MAP_SIZE / MapMax.x)) + pMap[nCntMap].size.x, pMap[nCntMap].pos.y + ((posRate[nCntPlayer].z * MapMax.z) * (MAP_SIZE / MapMax.z)) + pMap[nCntMap].size.y - (pMap[nCntMap].size.y / 2), 0.0f);
+
+		pVtx += 4;		// 頂点データのポインタを4つ分進める
+	}
+	// 頂点バッファをアンロックする
+	g_pVtxBuffMap->Unlock();
 }
 
 //======================================================================== 
@@ -122,7 +224,10 @@ void UpdateMap(void)
 //======================================================================== 
 void DrawMap(void)
 {
+	// ローカル変数宣言 -----------------
+
 	LPDIRECT3DDEVICE9 pDevice;	// デバイスへのポインタ
+	Map* pMap = GetMap();
 
 
 	// デバイスの取得
@@ -133,23 +238,33 @@ void DrawMap(void)
 	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);	// アルファブレンドの設定2
 	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);		// アルファブレンドの設定3
 
-	// 頂点バッファをデータストリームに設定
+
+
+		// 頂点バッファをデータストリームに設定
 	pDevice->SetStreamSource(0, g_pVtxBuffMap, 0, sizeof(VERTEX_2D));
 
 	// 頂点フォーマットの設定
 	pDevice->SetFVF(FVF_VERTEX_2D);
 
-	for (int nCntMap = 0; nCntMap < MAX_MAP; nCntMap++)
+	for (int nCntMap = 0; nCntMap < MAP_USE_NUM; nCntMap++)
 	{// 敵の最大数まで繰り返す
+
 		// テクスチャの設定
-		pDevice->SetTexture(0, g_pTextureMap[nCntMap]);
+		pDevice->SetTexture(0, g_pTextureMap[pMap[nCntMap].TexIdx]);
 
 		// ポリゴンの描画
 		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, nCntMap * 4, 2);
-	}
 
+	}
 	// ブレンディング(減算合成)を元に戻す 
 	pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);			// アルファブレンドの設定1
 	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);		// アルファブレンドの設定2
 	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);	// アルファブレンドの設定3
+}
+//=============================================================================
+// マップの取得処理
+//=============================================================================
+Map* GetMap(void)
+{
+	return &g_aMap[0];
 }

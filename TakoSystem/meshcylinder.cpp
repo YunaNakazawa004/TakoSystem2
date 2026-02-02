@@ -15,13 +15,21 @@
 #define MOVEMENT				(D3DXVECTOR3(1.0f, 1.0f, 1.0f))			// 移動量
 #define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// 向き移動量
 #define FIRST_SIZE				(D3DXVECTOR2(0.0f, 0.0f))				// 初期サイズ
-#define MESHCYLINDER_TEX		"data\\TEXTURE\\ski000.jpg"				// メッシュシリンダーのテクスチャ
 
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
-LPDIRECT3DTEXTURE9 g_pTextureMeshCylinder = NULL;				// テクスチャへのポインタ
+LPDIRECT3DTEXTURE9 g_apTextureMeshCylinder[MESHCYLINDERTYPE_MAX] = {};				// テクスチャへのポインタ
 MeshCylinder g_aMeshCylinder[MAX_MESHCYLINDER];			// メッシュシリンダーの情報
+
+//*****************************************************************************
+// テクスチャファイル名
+//*****************************************************************************
+const char* c_apFilenameMeshCylinder[MESHCYLINDERTYPE_MAX] =
+{
+	"data\\TEXTURE\\sea2.jpg",
+	"data\\TEXTURE\\rock.jpg",
+};
 
 //=============================================================================
 // メッシュシリンダーの初期化処理
@@ -32,7 +40,10 @@ void InitMeshCylinder(void)
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();			// デバイスへのポインタ
 
 	// テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice, MESHCYLINDER_TEX, &g_pTextureMeshCylinder);
+	for (int nCntTex = 0; nCntTex < MESHCYLINDERTYPE_MAX; nCntTex++)
+	{
+		D3DXCreateTextureFromFile(pDevice, c_apFilenameMeshCylinder[nCntTex], &g_apTextureMeshCylinder[nCntTex]);
+	}
 
 	// メッシュシリンダー情報の初期化
 	for (int nCntMeshCylinder = 0; nCntMeshCylinder < MAX_MESHCYLINDER; nCntMeshCylinder++)
@@ -55,10 +66,13 @@ void InitMeshCylinder(void)
 void UninitMeshCylinder(void)
 {
 	// テクスチャの破棄
-	if (g_pTextureMeshCylinder != NULL)
+	for (int nCntTex = 0; nCntTex < MESHCYLINDERTYPE_MAX; nCntTex++)
 	{
-		g_pTextureMeshCylinder->Release();
-		g_pTextureMeshCylinder = NULL;
+		if (g_apTextureMeshCylinder[nCntTex] != NULL)
+		{
+			g_apTextureMeshCylinder[nCntTex]->Release();
+			g_apTextureMeshCylinder[nCntTex] = NULL;
+		}
 	}
 
 	for (int nCntMeshCylinder = 0; nCntMeshCylinder < MAX_MESHCYLINDER; nCntMeshCylinder++)
@@ -84,6 +98,35 @@ void UninitMeshCylinder(void)
 //=============================================================================
 void UpdateMeshCylinder(void)
 {
+#if 0
+	for (int nCntMeshC = 0; nCntMeshC < MAX_MESHCYLINDER; nCntMeshC++)
+	{
+		if (g_aMeshCylinder[nCntMeshC].bUse == false)
+		{
+			continue;
+		}
+
+		VERTEX_3D* pVtx;					// 頂点情報へのポインタ
+
+		// 頂点バッファをロックし、頂点情報へのポインタを取得
+		g_aMeshCylinder[nCntMeshC].pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+		
+		for (int nCntMeshCylinder1 = 0; nCntMeshCylinder1 < (int)g_aMeshCylinder[nCntMeshC].block.y + 1; nCntMeshCylinder1++)
+		{
+			for (int nCntMeshCylinder2 = 0; nCntMeshCylinder2 < (int)g_aMeshCylinder[nCntMeshC].block.x + 1; nCntMeshCylinder2++)
+			{
+				// テクスチャ座標の設定
+				pVtx[0].tex.x += -0.001f;
+
+				pVtx++;
+			}
+		}
+
+
+		// 頂点バッファをアンロックする
+		g_aMeshCylinder[nCntMeshC].pVtxBuff->Unlock();
+	}
+#endif
 }
 
 //=============================================================================
@@ -137,7 +180,7 @@ void DrawMeshCylinder(void)
 			pDevice->SetFVF(FVF_VERTEX_3D);
 
 			// テクスチャの設定
-			pDevice->SetTexture(0, NULL);
+			pDevice->SetTexture(0, g_apTextureMeshCylinder[g_aMeshCylinder[nCntMeshCylinder].type]);
 
 			// ポリゴンの描画
 			pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, ((int)g_aMeshCylinder[nCntMeshCylinder].block.x + 1) * ((int)g_aMeshCylinder[nCntMeshCylinder].block.y + 1), 0,
@@ -163,7 +206,7 @@ void DrawMeshCylinder(void)
 //=============================================================================
 // メッシュシリンダーの設定処理
 //=============================================================================
-int SetMeshCylinder(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVECTOR2 size, D3DXCOLOR col, bool bInside)
+int SetMeshCylinder(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVECTOR2 size, D3DXCOLOR col, bool bInside, MESHCYLINDERTYPE type)
 {
 	int nCntMeshCylinder = -1;
 
@@ -177,6 +220,7 @@ int SetMeshCylinder(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVEC
 			g_aMeshCylinder[nCntMeshCylinder].block = block;
 			g_aMeshCylinder[nCntMeshCylinder].size = size;
 			g_aMeshCylinder[nCntMeshCylinder].bInside = bInside;
+			g_aMeshCylinder[nCntMeshCylinder].type = type;
 			g_aMeshCylinder[nCntMeshCylinder].bUse = true;
 
 			LPDIRECT3DDEVICE9 pDevice = GetDevice();			// デバイスへのポインタ
@@ -420,7 +464,7 @@ void CollisionMeshCylinder(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3*
 			//vecMoveDest.x = (insec.x - pPos->x) + (vecNor.x * fDot * (1.0f - fRate));
 			//vecMoveDest.y = 0.0f;
 			//vecMoveDest.z = (insec.z - pPos->z) + (vecNor.z * fDot * (1.0f - fRate));
-			
+
 			//vecMoveDest.x = -(insec.x - pPos->x);
 			//vecMoveDest.y = 0.0f;
 			//vecMoveDest.z = -(insec.z - pPos->z);
