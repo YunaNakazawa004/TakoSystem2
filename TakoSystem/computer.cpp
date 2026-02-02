@@ -519,7 +519,7 @@ void UpdateComputer(void)
 			//	pComputer->phys.pos.x, pComputer->phys.pos.y, pComputer->phys.pos.z);
 			//PrintDebugProc("ENEMY : move ( %f %f %f )\n",
 			//	pComputer->phys.move.x, pComputer->phys.move.y, pComputer->phys.move.z);
-			//PrintDebugProc("ENEMY : nFood ( %d )\n", pComputer->nFoodCount);
+			PrintDebugProc("ENEMY : nFood ( %d )\n", pComputer->nFoodCount);
 			//PrintDebugProc("ENEMY : ƒm[ƒh ( %f %f %f )\n",
 			//	pComputer->extarget.x, pComputer->extarget.y, pComputer->extarget.z);
 
@@ -698,22 +698,20 @@ void AttackEnemy(Computer* pComputer)
 //=============================================================================
 void Escape(Computer* pComputer)
 {
-	//D3DXVECTOR3 enemyPos = GetNearestEnemy(pComputer);
-	//D3DXVECTOR3 dir = pComputer->phys.pos - enemyPos; // “G‚Æ‹t•ûŒü
-	//D3DXVec3Normalize(&dir, &dir);
+	D3DXVECTOR3 enemyPos = GetNearestEnemy(pComputer);
+	D3DXVECTOR3 dir = pComputer->phys.pos - enemyPos; // “G‚Æ‹t•ûŒü
+	D3DXVec3Normalize(&dir, &dir);
 
-	//// Šµ«ˆÚ“®
-	//pComputer->phys.move.x += dir.x * MOVEMENT.x;
-	//pComputer->phys.move.y += dir.y * MOVEMENT.y;
-	//pComputer->phys.move.z += dir.z * MOVEMENT.z;
+	// Šµ«ˆÚ“®
+	pComputer->phys.move.x += dir.x * MOVEMENT.x;
+	pComputer->phys.move.y += dir.y * MOVEMENT.y;
+	pComputer->phys.move.z += dir.z * MOVEMENT.z;
 
-	//// ’Œ‚ª‹ß‚¢‚È‚ç‰B‚ê‚éó‘Ô‚Ö
-	//if (IsNearPillar(pComputer->phys.pos))
-	//{
-	//	pComputer->state = CPUSTATE_HIDE;
-	//}
+	if (IsNearPillar(pComputer->phys.pos))
+	{// ’Œ‚ª‹ß‚¢‚È‚ç‰B‚ê‚éó‘Ô‚Ö
+		pComputer->state = CPUSTATE_HIDE;
+	}
 }
-
 
 //=============================================================================
 // ’Œ‚É‰B‚ê‚é

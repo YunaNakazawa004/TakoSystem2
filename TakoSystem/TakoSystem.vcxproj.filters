@@ -105,10 +105,12 @@
     <ClCompile Include="map.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="ui_gaugeicon.cpp">
+    <ClCompile Include="logo.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-  </ItemGroup>
+    <ClCompile Include="ui_gaugeicon.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>  </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
       <Filter>ヘッダー ファイル</Filter>
@@ -200,8 +202,10 @@
     <ClInclude Include="map.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="ui_gaugeicon.h">
+    <ClInclude Include="logo.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-  </ItemGroup>
+    <ClInclude Include="ui_gaugeicon.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>  </ItemGroup>
 </Project>

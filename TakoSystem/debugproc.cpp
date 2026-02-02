@@ -49,6 +49,9 @@ void UninitDebugProc(void)
 		g_pFont->Release();
 		g_pFont = NULL;
 	}
+
+	// デバッグ情報バッファのクリア
+	memset(&g_aStrDebug[0], 0, sizeof g_aStrDebug);
 }
 
 //=============================================================================
