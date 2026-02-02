@@ -18,13 +18,17 @@
 #define MOVEMENT				(D3DXVECTOR3(30.0f, 5.0f, 30.0f))		// 移動量
 #define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// 向き移動量
 #define INERTIA_MOVE			(0.2f)									// 移動の慣性
-#define DASH_MOVE				(0.01f)									// 高速移動の速さ
+#define DASH_MOVE				(0.04f)									// 高速移動の速さ
 #define DASH_REACH				(10.0f)									// 高速移動のリーチ
 #define MAX_MOVE				(10.0f)									// 移動の制限
 #define INERTIA_ANGLE			(0.1f)									// 角度の慣性
 #define POS_ERROR				(50.0f)									// 位置の誤差
+#define MOVE_ERROR				(5.0f)									// 移動量の誤差
 #define FOG_MIN					(20000.0f)								// フォグの最低
 #define FOG_MAX					(70000.0f)								// フォグの最高
+#define TENTACLE_RANGE			(DISTANCE * DASH_REACH)					// 触手のリーチ
+#define TENTACLE_CT				(ONE_SECOND * 1 + ONE_SECOND)			// 触手のクールダウン
+#define INK_CT					(ONE_SECOND * 5 + ONE_SECOND)			// 墨吐きのクールダウン
 #define PLAYER_TENTACLE			(8)										// プレイヤーの足の数
 #define PLAYER_RADIUS			(100.0f)								// 半径
 #define PLAYER_HEIGHT			(100.0f)								// 高さ
@@ -59,6 +63,7 @@ void InitPlayer(void)
 		pPlayer->move = FIRST_POS;
 		pPlayer->rot = FIRST_POS;
 		pPlayer->state = PLAYERSTATE_APPEAR;
+		pPlayer->TentacleState = PLTENTACLESTATE_NORMAL;
 		pPlayer->nCounterState = 0;
 		pPlayer->fAngle = 0.0f;
 		pPlayer->fFog = FOG_MIN;
@@ -71,6 +76,8 @@ void InitPlayer(void)
 		pPlayer->bUse = false;
 		pPlayer->nFood = 0;
 		pPlayer->nMaxFood = 0;
+		pPlayer->nTentacleCooldown = 0;
+		pPlayer->nInkCooldown = 0;
 	}
 
 	// ファイルからキャラクター情報をロード
@@ -173,7 +180,7 @@ void UpdatePlayer(void)
 	float fmoveAngle = 0.0f;
 	float fAngle;
 
-	for (int nCntPlayer = 0; nCntPlayer < MAX_PLAYER; nCntPlayer++, pPlayer++)
+	for (int nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++, pPlayer++)
 	{
 		if (pPlayer->bUse == true)
 		{
@@ -186,6 +193,11 @@ void UpdatePlayer(void)
 
 				break;
 
+			case PLAYERSTATE_MOVE:				// 移動状態
+				PrintDebugProc("プレイヤーの状態 : [ PLAYERSTATE_MOVE ]\n");
+
+				break;
+
 			case PLAYERSTATE_APPEAR:			// 出現状態
 				PrintDebugProc("プレイヤーの状態 : [ PLAYERSTATE_APPEAR ]\n");
 
@@ -193,11 +205,6 @@ void UpdatePlayer(void)
 
 			case PLAYERSTATE_WAIT:				// 待機状態
 				PrintDebugProc("プレイヤーの状態 : [ PLAYERSTATE_WAIT ]\n");
-
-				break;
-
-			case PLAYERSTATE_TENTACLE:			// 触手伸ばし状態
-				PrintDebugProc("プレイヤーの状態 : [ PLAYERSTATE_TENTACLE ]\n");
 
 				break;
 
@@ -224,11 +231,10 @@ void UpdatePlayer(void)
 					pPlayer->move.x += sinf(fAngle + pCamera->rot.y) * MOVEMENT.x * sinf((D3DX_PI * 0.5f) + pCamera->fAngle);
 					pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * (nValueV / 5050);
 					pPlayer->move.z += cosf(fAngle + pCamera->rot.y) * MOVEMENT.z * sinf((D3DX_PI * 0.5f) + pCamera->fAngle);
-					
+
 					pPlayer->bMove = true;
 				}
-				
-				if (GetKeyboardPress(DIK_W) == true || GetJoypadPress(nCntPlayer, JOYKEY_UP) == true)		// キーボード移動
+				else if (GetKeyboardPress(DIK_W) == true || GetJoypadPress(nCntPlayer, JOYKEY_UP) == true)		// キーボード移動
 				{// 奥に移動
 					if (GetKeyboardPress(DIK_A) == true || GetJoypadPress(nCntPlayer, JOYKEY_LEFT) == true)
 					{// 左奥に移動
@@ -310,24 +316,97 @@ void UpdatePlayer(void)
 				}
 			}
 
-			if (pPlayer->state == PLAYERSTATE_DASH && GetJoypadShoulder(nCntPlayer, JOYKEY_RIGHTTRIGGER, &nValue) == true)
-			{// 高速移動
-				pPlayer->pos += (pPlayer->posX - pPlayer->pos) * DASH_MOVE;
+			switch (pPlayer->TentacleState)
+			{
+			case PLTENTACLESTATE_NORMAL:			// 通常状態
+				pPlayer->aModel[2].scale.y = 1.0f;
 
-				if (pPlayer->pos.x < pPlayer->posX.x + POS_ERROR && pPlayer->pos.x > pPlayer->posX.x - POS_ERROR &&
-					pPlayer->pos.y < pPlayer->posX.y + POS_ERROR && pPlayer->pos.y > pPlayer->posX.y - POS_ERROR &&
-					pPlayer->pos.z < pPlayer->posX.z + POS_ERROR && pPlayer->pos.z > pPlayer->posX.z - POS_ERROR)
-				{// 着いた
-					pPlayer->state = PLAYERSTATE_WAIT;
+				break;
+
+			case PLTENTACLESTATE_TENTACLELONG:		// 触手伸ばし状態
+				if (pPlayer->bFinishMotion == true)
+				{// 触手が伸ばし終わったら
+					//if ()
+					//{// 壁との当たり判定
+					//	pPlayer->state = PLAYERSTATE_DASH;
+					//	pPlayer->TentacleState = PLTENTACLESTATE_TENTACLESHORT;
+					//	SetMotionPlayer(nCntPlayer, MOTIONTYPE_DASH, true, 20);
+					//}
+					//else
+					{// 触手を伸ばす
+						if (pPlayer->aModel[2].scale.y < TENTACLE_RANGE * 0.1f)
+						{// リーチより短い
+							pPlayer->aModel[2].scale.y += 5.0f;
+						}
+						else
+						{// リーチの長さになった
+							// 当たり判定つけるまで
+							pPlayer->state = PLAYERSTATE_DASH;
+							SetMotionPlayer(nCntPlayer, MOTIONTYPE_DASH, true, 20);
+
+							pPlayer->TentacleState = PLTENTACLESTATE_TENTACLESHORT;
+
+							//SetMotionPlayer(nCntPlayer, MOTIONTYPE_TENTACLESHORT, true, 20);
+						}
+					}
+				}
+
+				break;
+
+			case PLTENTACLESTATE_TENTACLESHORT:		// 触手縮め状態
+				if (pPlayer->aModel[2].scale.y > 1.0f)
+				{// 触手を短くする
+					pPlayer->aModel[2].scale.y += (1.0f - pPlayer->aModel[2].scale.y) * 0.5f;
+				}
+				else
+				{// 元の長さに戻す
+					pPlayer->aModel[2].scale.y = 1.0f;
+					pPlayer->TentacleState = PLTENTACLESTATE_NORMAL;
+				}
+
+				break;
+			}
+
+			if (pPlayer->state == PLAYERSTATE_DASH)
+			{// 高速移動
+				pPlayer->pos += pPlayer->vecX;
+				pPlayer->vecX.x += (0.0f - pPlayer->vecX.x) * DASH_MOVE;
+				pPlayer->vecX.y += (0.0f - pPlayer->vecX.y) * DASH_MOVE;
+				pPlayer->vecX.z += (0.0f - pPlayer->vecX.z) * DASH_MOVE;
+
+				if (pPlayer->vecX.x < MOVE_ERROR && pPlayer->vecX.x > -MOVE_ERROR &&
+					pPlayer->vecX.y < MOVE_ERROR && pPlayer->vecX.y > -MOVE_ERROR &&
+					pPlayer->vecX.z < MOVE_ERROR && pPlayer->vecX.z > -MOVE_ERROR)
+				{// 止まった
 					pPlayer->vecX = FIRST_POS;
 					pPlayer->posX = FIRST_POS;
+
+					if (pPlayer->motionType == MOTIONTYPE_DASH)
+					{// 高速移動モーションしていたら
+						if (pPlayer->bMove == true)
+						{// 移動してる
+							pPlayer->state = PLAYERSTATE_MOVE;
+							SetMotionPlayer(nCntPlayer, MOTIONTYPE_MOVE, true, 20);
+						}
+						else
+						{// 移動してない
+							pPlayer->state = PLAYERSTATE_WAIT;
+							SetMotionPlayer(nCntPlayer, MOTIONTYPE_NEUTRAL, true, 20);
+						}
+					}
 				}
 			}
-			else if(GetJoypadShoulder(nCntPlayer, JOYKEY_RIGHTTRIGGER, &nValue) == false)
-			{// 高速移動やめる
-				pPlayer->state = PLAYERSTATE_WAIT;
-				pPlayer->vecX = FIRST_POS;
-				pPlayer->posX = FIRST_POS;
+
+			if (pPlayer->state != PLAYERSTATE_DASH && pPlayer->state != PLAYERSTATE_INK
+				&& pPlayer->bMove == true && pPlayer->TentacleState == PLTENTACLESTATE_NORMAL)
+			{// 普通に移動しているとき
+				pPlayer->state = PLAYERSTATE_MOVE;
+				SetMotionPlayer(nCntPlayer, MOTIONTYPE_MOVE, true, 20);
+			}
+			else if (pPlayer->bMove == false && pPlayer->state != PLAYERSTATE_DASH &&
+				pPlayer->state != PLAYERSTATE_INK && pPlayer->TentacleState == PLTENTACLESTATE_NORMAL)
+			{// 待機モーション
+				SetMotionPlayer(nCntPlayer, MOTIONTYPE_NEUTRAL, true, 20);
 			}
 
 #ifdef _DEBUG
@@ -341,6 +420,16 @@ void UpdatePlayer(void)
 				pPlayer->state = PLAYERSTATE_WAIT;
 			}
 #endif
+			// クールダウン
+			if (pPlayer->nTentacleCooldown > 0)
+			{// 触手クールダウン
+				pPlayer->nTentacleCooldown--;
+			}
+
+			if (pPlayer->nInkCooldown > 0)
+			{// 墨吐きクールダウン
+				pPlayer->nInkCooldown--;
+			}
 
 			// 移動量制限
 			if (pPlayer->move.x > MAX_MOVE)
@@ -389,7 +478,12 @@ void UpdatePlayer(void)
 				pPlayer->pos.z = ALLOW_Z;
 			}
 
-			PrintDebugProc("fAngle : %f", pCamera->fAngle);
+			if (pPlayer->pos.y < 0.0f)
+			{// 底
+				pPlayer->pos.y = 0.0f;
+			}
+
+			//PrintDebugProc("fAngle : %f", pCamera->fAngle);
 
 			pPlayer->fFog = (pPlayer->pos.y * 1.5f * (-pCamera->fAngle * 0.5f)) + FOG_MIN;
 
@@ -416,42 +510,35 @@ void UpdatePlayer(void)
 			}
 
 			if (GetJoypadShoulder(nCntPlayer, JOYKEY_RIGHTTRIGGER, &nValue) == true
-				&& pPlayer->state != PLAYERSTATE_TENTACLE && pPlayer->state != PLAYERSTATE_DASH)
+				&& pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG && pPlayer->state != PLAYERSTATE_DASH &&
+				pPlayer->nTentacleCooldown == 0)
 			{// 触手伸ばしアクション
-				pPlayer->state = PLAYERSTATE_DASH;
+				pPlayer->TentacleState = PLTENTACLESTATE_TENTACLELONG;
 
 				pPlayer->vecX = pCamera->posR - pCamera->posV;
 				pPlayer->posX = pCamera->posR + pPlayer->vecX * DASH_REACH;
-			}
 
-			// if(触手伸ばしモーションが終わったら)
-			{
-				// if(オブジェクトとの当たり判定 == true)
-				{
-					//pPlayer->state = PLAYERSTATE_DASH;
-				}
+				SetMotionPlayer(nCntPlayer, MOTIONTYPE_TENTACLELONG, true, 20);
+
+				// クールダウンを設定
+				pPlayer->nTentacleCooldown = TENTACLE_CT;
 			}
 
 			if (GetJoypadShoulder(nCntPlayer, JOYKEY_LEFTTRIGGER, &nValue) == true
-				&& pPlayer->state != PLAYERSTATE_INK)
+				&& pPlayer->state != PLAYERSTATE_INK && pPlayer->nInkCooldown == 0)
 			{// 墨吐きアクション
 				pPlayer->state = PLAYERSTATE_INK;
+
+				SetMotionPlayer(nCntPlayer, MOTIONTYPE_INK, true, 20);
+
+				// クールダウンを設定
+				pPlayer->nInkCooldown = INK_CT;
 			}
 
-			if(pPlayer->state == PLAYERSTATE_INK)
+			if (pPlayer->state == PLAYERSTATE_INK && pPlayer->bFinishMotion == true)
 			{// 墨吐きモーションが終わったら
 				pPlayer->state = PLAYERSTATE_WAIT;
 			}
-
-#if 0
-			if (GetKeyboardTrigger(DIK_R) == true)
-			{// リザルト画面へ進む
-				if (state == GAMESTATE_NORMAL)
-				{// 通常状態のときだけ
-					SetGameState(GAMESTATE_CLEAR, MAX_COUNT);
-				}
-			}
-#endif
 
 			D3DXVECTOR3 posAway;
 			posAway.x = pPlayer->pos.x + sinf(D3DX_PI + pPlayer->rot.y) * 10000.0f;
@@ -541,7 +628,7 @@ void DrawPlayer(void)
 			// 全モデル(パーツ)の描画
 			for (int nCntModel = 0; nCntModel < pPlayer->nNumModel; nCntModel++)
 			{
-				D3DXMATRIX mtxRotModel, mtxTransModel;		// 計算用マトリックス
+				D3DXMATRIX mtxRotModel, mtxTransModel, mtxScaleModel;		// 計算用マトリックス
 				D3DXMATRIX mtxParent;						// 親のマトリックス
 
 				// パーツのワールドマトリックスの初期化
@@ -550,6 +637,10 @@ void DrawPlayer(void)
 				// パーツの向きを反映
 				D3DXMatrixRotationYawPitchRoll(&mtxRotModel, pPlayer->aModel[nCntModel].rot.y, pPlayer->aModel[nCntModel].rot.x, pPlayer->aModel[nCntModel].rot.z);
 				D3DXMatrixMultiply(&pPlayer->aModel[nCntModel].mtxWorld, &pPlayer->aModel[nCntModel].mtxWorld, &mtxRotModel);
+
+				// 拡大率を反映
+				D3DXMatrixScaling(&mtxScaleModel, pPlayer->aModel[nCntModel].scale.x, pPlayer->aModel[nCntModel].scale.y, pPlayer->aModel[nCntModel].scale.z);
+				D3DXMatrixMultiply(&pPlayer->aModel[nCntModel].mtxWorld, &pPlayer->aModel[nCntModel].mtxWorld, &mtxScaleModel);
 
 				// パーツの位置を反映
 				D3DXMatrixTranslation(&mtxTransModel, pPlayer->aModel[nCntModel].pos.x, pPlayer->aModel[nCntModel].pos.y, pPlayer->aModel[nCntModel].pos.z);
@@ -606,6 +697,7 @@ void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	pPlayer[nIdx].posOld = pos;
 	pPlayer[nIdx].rot = rot;
 	pPlayer[nIdx].state = PLAYERSTATE_NORMAL;
+	pPlayer[nIdx].TentacleState = PLTENTACLESTATE_NORMAL;
 	pPlayer[nIdx].nCounterState = 0;
 	pPlayer[nIdx].bJump = true;
 	pPlayer[nIdx].bLand = false;
@@ -614,6 +706,8 @@ void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	pPlayer[nIdx].bUse = true;
 	pPlayer[nIdx].nFood = 0;
 	pPlayer[nIdx].nMaxFood = 1;
+	pPlayer[nIdx].nTentacleCooldown = 0;
+	pPlayer[nIdx].nInkCooldown = 0;
 
 	pPlayer[nIdx].motionType = MOTIONTYPE_NEUTRAL;
 	pPlayer[nIdx].bLoopMotion = pPlayer[nIdx].aMotionInfo[MOTIONTYPE_NEUTRAL].bLoop;
@@ -946,6 +1040,7 @@ void LoadPlayer(void)
 					pPlayer->aModel[nCntParts].nIdxModelParent = nIdxParent;
 					pPlayer->aModel[nCntParts].pos = pos;
 					pPlayer->aModel[nCntParts].rot = rot;
+					pPlayer->aModel[nCntParts].scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 					pPlayer->aModel[nCntParts].posOff = pos;
 					pPlayer->aModel[nCntParts].rotOff = rot;
 				}

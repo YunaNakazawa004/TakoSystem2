@@ -17,17 +17,28 @@
 
 //*****************************************************************************
 // プレイヤーの状態
-//*****************************************************************************4
+//*****************************************************************************
 typedef enum
 {
 	PLAYERSTATE_NORMAL = 0,			// 通常状態
+	PLAYERSTATE_MOVE,				// 移動状態
 	PLAYERSTATE_APPEAR,				// 出現状態
 	PLAYERSTATE_WAIT,				// 待機状態
-	PLAYERSTATE_TENTACLE,			// 触手伸ばし状態
 	PLAYERSTATE_DASH,				// 高速移動状態
 	PLAYERSTATE_INK,				// 墨吐き状態
 	PLAYERSTATE_MAX
 }PLAYERSTATE;
+
+//*****************************************************************************
+// 触手の状態
+//*****************************************************************************
+typedef enum
+{
+	PLTENTACLESTATE_NORMAL = 0,			// 通常状態
+	PLTENTACLESTATE_TENTACLELONG,		// 触手伸ばし状態
+	PLTENTACLESTATE_TENTACLESHORT,		// 触手縮め状態
+	PLTENTACLESTATE_MAX
+}PLTENTACLESTATE;
 
 //*****************************************************************************
 // プレイヤーの構造体
@@ -46,6 +57,7 @@ typedef struct
 	D3DXMATRIX mtxWorld;						// ワールドマトリックス
 
 	PLAYERSTATE state;							// 状態
+	PLTENTACLESTATE TentacleState;				// 触手の状態
 	int nCounterState;							// 状態カウンター
 
 	float fFog;									// フォグの終了位置
@@ -58,6 +70,9 @@ typedef struct
 
 	int nFood;									// 持っているエサの数
 	int nMaxFood;								// 一本の腕に一度に持てるエサの数
+
+	int nTentacleCooldown;						// 触手のクールダウン
+	int nInkCooldown;							// 墨吐きのクールダウン
 
 	Model aModel[MAX_NUMMODEL];					// モデル(パーツ)
 	int nNumModel;								// モデル(パーツ)の総数
