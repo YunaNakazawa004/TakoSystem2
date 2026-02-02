@@ -15,17 +15,18 @@
 //*****************************************************************************
 // ƒ}ƒNƒ’è‹`
 //*****************************************************************************
-#define MOVEMENT				(D3DXVECTOR3(30.0f, 5.0f, 30.0f))		// ˆÚ“®—Ê
+#define MOVEMENT				(D3DXVECTOR3(1.0f, 5.0f, 1.0f))		// ˆÚ“®—Ê
 #define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// Œü‚«ˆÚ“®—Ê
 #define INERTIA_MOVE			(0.2f)									// ˆÚ“®‚ÌŠµ«
 #define DASH_MOVE				(0.04f)									// ‚‘¬ˆÚ“®‚Ì‘¬‚³
+#define DASH_RATE				(0.15f)									// ‚‘¬ˆÚ“®‚Ì‘¬‚³
 #define DASH_REACH				(10.0f)									// ‚‘¬ˆÚ“®‚ÌƒŠ[ƒ`
 #define MAX_MOVE				(10.0f)									// ˆÚ“®‚Ì§ŒÀ
 #define INERTIA_ANGLE			(0.1f)									// Šp“x‚ÌŠµ«
 #define POS_ERROR				(50.0f)									// ˆÊ’u‚ÌŒë·
 #define MOVE_ERROR				(5.0f)									// ˆÚ“®—Ê‚ÌŒë·
-#define FOG_MIN					(20000.0f)								// ƒtƒHƒO‚ÌÅ’á
-#define FOG_MAX					(70000.0f)								// ƒtƒHƒO‚ÌÅ‚
+#define FOG_MIN					(1500.0f)								// ƒtƒHƒO‚ÌÅ’á
+#define FOG_MAX					(7000.0f)								// ƒtƒHƒO‚ÌÅ‚
 #define TENTACLE_RANGE			(DISTANCE * DASH_REACH)					// GŽè‚ÌƒŠ[ƒ`
 #define TENTACLE_CT				(ONE_SECOND * 1 + ONE_SECOND)			// GŽè‚ÌƒN[ƒ‹ƒ_ƒEƒ“
 #define INK_CT					(ONE_SECOND * 5 + ONE_SECOND)			// –n“f‚«‚ÌƒN[ƒ‹ƒ_ƒEƒ“
@@ -224,12 +225,15 @@ void UpdatePlayer(void)
 				// ƒpƒbƒhˆÚ“®
 				if (GetJoypadStick(nCntPlayer, JOYKEY_LEFTSTICK, &nValueH, &nValueV) == true)
 				{// ƒpƒbƒh‚ÌˆÚ“®—Dæ
-					pPlayer->fAngle = pCamera->rot.y + atan2f(-(float)nValueH, -D3DX_PI - (float)nValueV);
+					if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
+					{// GŽè‚ðL‚Î‚µ‚Ä‚¢‚é‚Æ‚«‚ÍŒü‚«‚ð•Ï‚¦‚È‚¢
+						pPlayer->fAngle = pCamera->rot.y + atan2f(-(float)nValueH, -D3DX_PI - (float)nValueV);
+					}
 
 					fAngle = atan2f((float)(nValueH), (float)(nValueV));
 
 					pPlayer->move.x += sinf(fAngle + pCamera->rot.y) * MOVEMENT.x * sinf((D3DX_PI * 0.5f) + pCamera->fAngle);
-					pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * (nValueV / 5050);
+					pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * (nValueV / 30300);
 					pPlayer->move.z += cosf(fAngle + pCamera->rot.y) * MOVEMENT.z * sinf((D3DX_PI * 0.5f) + pCamera->fAngle);
 
 					pPlayer->bMove = true;
@@ -242,7 +246,10 @@ void UpdatePlayer(void)
 						pPlayer[nCntPlayer].move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * MOVEMENT.y;
 						pPlayer[nCntPlayer].move.z += cosf(-D3DX_PI * 0.25f + pCamera->rot.y) * MOVEMENT.z;
 
-						pPlayer[nCntPlayer].fAngle = pCamera->rot.y - (-D3DX_PI * 0.75f);
+						if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
+						{// GŽè‚ðL‚Î‚µ‚Ä‚¢‚é‚Æ‚«‚ÍŒü‚«‚ð•Ï‚¦‚È‚¢
+							pPlayer[nCntPlayer].fAngle = pCamera->rot.y - (-D3DX_PI * 0.75f);
+						}
 					}
 					else if (GetKeyboardPress(DIK_D) == true || GetJoypadPress(nCntPlayer, JOYKEY_RIGHT) == true)
 					{// ‰E‰œ‚ÉˆÚ“®
@@ -250,7 +257,10 @@ void UpdatePlayer(void)
 						pPlayer[nCntPlayer].move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * MOVEMENT.y;
 						pPlayer[nCntPlayer].move.z += cosf(D3DX_PI * 0.25f + pCamera->rot.y) * MOVEMENT.z;
 
-						pPlayer[nCntPlayer].fAngle = pCamera->rot.y - (D3DX_PI * 0.75f);
+						if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
+						{// GŽè‚ðL‚Î‚µ‚Ä‚¢‚é‚Æ‚«‚ÍŒü‚«‚ð•Ï‚¦‚È‚¢
+							pPlayer[nCntPlayer].fAngle = pCamera->rot.y - (D3DX_PI * 0.75f);
+						}
 					}
 					else if (GetKeyboardPress(DIK_W) == true || GetJoypadPress(nCntPlayer, JOYKEY_UP) == true)
 					{// ‰œ‚ÉˆÚ“®
@@ -258,7 +268,10 @@ void UpdatePlayer(void)
 						pPlayer[nCntPlayer].move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * MOVEMENT.y;
 						pPlayer[nCntPlayer].move.z += cosf(D3DX_PI * 0.0f + pCamera->rot.y) * MOVEMENT.z;
 
-						pPlayer[nCntPlayer].fAngle = pCamera->rot.y - D3DX_PI;
+						if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
+						{// GŽè‚ðL‚Î‚µ‚Ä‚¢‚é‚Æ‚«‚ÍŒü‚«‚ð•Ï‚¦‚È‚¢
+							pPlayer[nCntPlayer].fAngle = pCamera->rot.y - D3DX_PI;
+						}
 					}
 
 					pPlayer->bMove = true;
@@ -271,7 +284,10 @@ void UpdatePlayer(void)
 						pPlayer[nCntPlayer].move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * -MOVEMENT.y;
 						pPlayer[nCntPlayer].move.z += cosf(-D3DX_PI * 0.75f + pCamera->rot.y) * MOVEMENT.z;
 
-						pPlayer[nCntPlayer].fAngle = pCamera->rot.y + (D3DX_PI * 0.25f);
+						if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
+						{// GŽè‚ðL‚Î‚µ‚Ä‚¢‚é‚Æ‚«‚ÍŒü‚«‚ð•Ï‚¦‚È‚¢
+							pPlayer[nCntPlayer].fAngle = pCamera->rot.y + (D3DX_PI * 0.25f);
+						}
 					}
 					else if (GetKeyboardPress(DIK_D) == true || GetJoypadPress(nCntPlayer, JOYKEY_RIGHT) == true)
 					{// ‰EŽè‘O‚ÉˆÚ“®
@@ -279,7 +295,10 @@ void UpdatePlayer(void)
 						pPlayer[nCntPlayer].move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * -MOVEMENT.y;
 						pPlayer[nCntPlayer].move.z += cosf(D3DX_PI * 0.75f + pCamera->rot.y) * MOVEMENT.z;
 
-						pPlayer[nCntPlayer].fAngle = pCamera->rot.y + (-D3DX_PI * 0.25f);
+						if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
+						{// GŽè‚ðL‚Î‚µ‚Ä‚¢‚é‚Æ‚«‚ÍŒü‚«‚ð•Ï‚¦‚È‚¢
+							pPlayer[nCntPlayer].fAngle = pCamera->rot.y + (-D3DX_PI * 0.25f);
+						}
 					}
 					else if (GetKeyboardPress(DIK_S) == true || GetJoypadPress(nCntPlayer, JOYKEY_DOWN) == true)
 					{// Žè‘O‚ÉˆÚ“®
@@ -287,7 +306,10 @@ void UpdatePlayer(void)
 						pPlayer[nCntPlayer].move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * -MOVEMENT.y;
 						pPlayer[nCntPlayer].move.z += cosf(D3DX_PI * 1.0f + pCamera->rot.y) * MOVEMENT.z;
 
-						pPlayer[nCntPlayer].fAngle = pCamera->rot.y;
+						if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
+						{// GŽè‚ðL‚Î‚µ‚Ä‚¢‚é‚Æ‚«‚ÍŒü‚«‚ð•Ï‚¦‚È‚¢
+							pPlayer[nCntPlayer].fAngle = pCamera->rot.y;
+						}
 					}
 
 					pPlayer->bMove = true;
@@ -297,7 +319,10 @@ void UpdatePlayer(void)
 					pPlayer[nCntPlayer].move.x += sinf(-D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.x;
 					pPlayer[nCntPlayer].move.z += cosf(-D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.z;
 
-					pPlayer[nCntPlayer].fAngle = pCamera->rot.y + (D3DX_PI * 0.5f);
+					if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
+					{// GŽè‚ðL‚Î‚µ‚Ä‚¢‚é‚Æ‚«‚ÍŒü‚«‚ð•Ï‚¦‚È‚¢
+						pPlayer[nCntPlayer].fAngle = pCamera->rot.y + (D3DX_PI * 0.5f);
+					}
 
 					pPlayer->bMove = true;
 				}
@@ -306,7 +331,10 @@ void UpdatePlayer(void)
 					pPlayer[nCntPlayer].move.x += sinf(D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.x;
 					pPlayer[nCntPlayer].move.z += cosf(D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.z;
 
-					pPlayer[nCntPlayer].fAngle = pCamera->rot.y - (D3DX_PI * 0.5f);
+					if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
+					{// GŽè‚ðL‚Î‚µ‚Ä‚¢‚é‚Æ‚«‚ÍŒü‚«‚ð•Ï‚¦‚È‚¢
+						pPlayer[nCntPlayer].fAngle = pCamera->rot.y - (D3DX_PI * 0.5f);
+					}
 
 					pPlayer->bMove = true;
 				}
@@ -515,7 +543,10 @@ void UpdatePlayer(void)
 			{// GŽèL‚Î‚µƒAƒNƒVƒ‡ƒ“
 				pPlayer->TentacleState = PLTENTACLESTATE_TENTACLELONG;
 
-				pPlayer->vecX = pCamera->posR - pCamera->posV;
+				pPlayer->fAngle = D3DX_PI + pCamera->rot.y;
+				CorrectAngle(&pPlayer->fAngle, pPlayer->fAngle);
+
+				pPlayer->vecX = (pCamera->posR - pCamera->posV) * DASH_RATE;
 				pPlayer->posX = pCamera->posR + pPlayer->vecX * DASH_REACH;
 
 				SetMotionPlayer(nCntPlayer, MOTIONTYPE_TENTACLELONG, true, 20);

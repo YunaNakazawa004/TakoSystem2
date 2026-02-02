@@ -58,8 +58,8 @@ void InitGame(void)
 
 	// プレイヤーの初期化処理
 	InitPlayer();
-	SetPlayer(0, D3DXVECTOR3(0.0f, 10000.0f, 15000.0f), FIRST_POS);
-	SetPlayer(1, D3DXVECTOR3(0.0f, 15000.0f, -15000.0f), FIRST_POS);
+	SetPlayer(0, D3DXVECTOR3(0.0f, 4000.0f, 500.0f), FIRST_POS);
+	SetPlayer(1, D3DXVECTOR3(0.0f, 4000.0f, -500.0f), FIRST_POS);
 
 	// CPUの初期化処理
 	InitComputer();
@@ -72,8 +72,8 @@ void InitGame(void)
 
 	// メッシュシリンダーの初期化処理
 	InitMeshCylinder();
-	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(2000.0f, 17500.0f), D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f), false);
-	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(18050.0f, 17500.0f), D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f), true);
+	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 2.0f), D3DXVECTOR2(400.0f, 2000.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, MESHCYLINDERTYPE_ROCK);
+	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(1500.0f, 2000.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), true, MESHCYLINDERTYPE_SEA);
 
 	// メッシュドームの初期化処理
 	InitMeshDome();
@@ -255,7 +255,7 @@ void DrawGame(void)
 
 	for (int nCntCamera = 0; nCntCamera < GetNumCamera(); nCntCamera++)
 	{
-		SetFog(D3DXCOLOR(0.0f, 0.1f, 0.2f, 1.0f), 10000.0f, pPlayer[nCntCamera].fFog);
+		SetFog(D3DXCOLOR(0.0f, 0.1f, 0.2f, 1.0f), 1000.0f, pPlayer[nCntCamera].fFog);
 	}
 
 	// プレイヤーの描画処理
@@ -265,7 +265,7 @@ void DrawGame(void)
 	DrawComputer();
 
 	// ステージの描画処理
-	DrawStage();
+	//DrawStage();
 
 	// 配置物の描画処理
 	DrawObject();

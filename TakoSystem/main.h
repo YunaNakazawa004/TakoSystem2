@@ -59,9 +59,9 @@
 #define MAX_MOTION			(20)															// ƒ‚[ƒVƒ‡ƒ“‚ÌÅ‘å”
 #define ALLOW_X				(10000000)														// X•ûŒü‚ÌˆÚ“®§ŒÀ
 #define ALLOW_Z				(10000000)														// Z•ûŒü‚ÌˆÚ“®§ŒÀ
-#define OUTCYLINDER_RADIUS	(9000.0f)														// ŠO‘¤‚Ì‰~’Œ‚Ì”¼Œa
-#define INCYLINDER_RADIUS	(2000.0f)														// “à‘¤‚Ì‰~’Œ‚Ì”¼Œa
-#define CYLINDER_HEIGHT		(17500.0f)														// ‰~’Œ‚Ì‚‚³
+#define OUTCYLINDER_RADIUS	(1500.0f)														// ŠO‘¤‚Ì‰~’Œ‚Ì”¼Œa
+#define INCYLINDER_RADIUS	(400.0f)														// “à‘¤‚Ì‰~’Œ‚Ì”¼Œa
+#define CYLINDER_HEIGHT		(2000.0f)														// ‰~’Œ‚Ì‚‚³
 
 //*****************************************************************************
 // ‰æ–Ê(ƒ‚[ƒh)‚ÌŽí—Þ
