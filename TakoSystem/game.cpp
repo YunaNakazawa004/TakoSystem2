@@ -23,6 +23,7 @@
 
 #include "crosshair.h"	// クロスヘア
 #include "time.h"
+#include "ui_gaugeicon.h"
 
 #include "effect_3d.h"
 #include "pause.h"
@@ -98,7 +99,8 @@ void InitGame(void)
 	// クロスヘアの初期化処理
 	InitCrossHair();
 
-	
+	// UIゲージアイコンの初期化処理
+	InitUiGaugeIcon();
 
 	// 時間の初期化処理
 	InitTime();
@@ -156,7 +158,8 @@ void UninitGame(void)
 	// クロスヘアの終了処理
 	UninitCrossHair();
 
-	
+	// UIゲージアイコンの終了処理
+	UninitUiGaugeIcon();
 	
 	// 時間の終了処理
 	UninitTime();
@@ -234,6 +237,8 @@ void UpdateGame(void)
 		// クロスヘアの更新処理
 		UpdateCrossHair();
 
+		// UIゲージアイコンの更新処理
+		UpdateUiGaugeIcon();
 	
 		// 時間の更新処理
 		UpdateTime();
@@ -292,7 +297,8 @@ void DrawGame(void)
 	// クロスヘアの描画処理
 	DrawCrossHair();
 
-	
+	// UIゲージアイコンの描画処理
+	DrawUiGaugeIcon();
 	
 	// 時間の描画処理
 	DrawTime();
