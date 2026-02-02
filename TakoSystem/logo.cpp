@@ -8,10 +8,8 @@
 #include "title.h"
 #include "input.h"
 #include "sound.h"
-#include "light.h"
 #include "fade.h"
 #include "camera.h"
-#include "game.h"
 
 // マクロ定義
 #define	MAX_LOGO	(2)	// ロゴで表示するテクスチャの最大数
@@ -35,14 +33,6 @@ void InitLogo(void)
 	g_LogoDeley = 0.0f;	// ロゴの値を初期化
 	g_LogoSizeMove = 0.0f;
 	g_LogoOut = 0.0f;
-
-	// ライトの設定
-	SetLightColor(0, D3DXCOLOR(0.8f, 0.9f, 1.0f, 1.0f));
-	SetLightColor(1, D3DXCOLOR(0.5f, 0.6f, 0.8f, 0.7f));
-	SetLightColor(2, D3DXCOLOR(0.3f, 0.3f, 0.5f, 0.3f));
-
-	// カメラの数の設定
-	SetNumCamera(1);
 
 	// デバイスの取得
 	pDevice = GetDevice();
@@ -177,7 +167,6 @@ void UpdateLogo(void)
 			pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f - g_LogoOut);
 			pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f - g_LogoOut);
 			pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f - g_LogoOut);
-
 		}
 
 		pVtx += 4;		// 頂点データのポインタを4つ分進める
