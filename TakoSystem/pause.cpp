@@ -10,7 +10,7 @@
 #include "sound.h"
 
 //グローバル変数宣言
-LPDIRECT3DTEXTURE9 g_apTexturePause[3] = {};
+LPDIRECT3DTEXTURE9 g_apTexturePause[MAX_PAUSE] = {};
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffPause = NULL;
 bool g_bPauseMenu = true;
 PAUSE_MENU g_pauseMenu;			//ポーズメニュー
@@ -155,6 +155,7 @@ void UpdatePause(void)
 		case PAUSE_MENU_CONTINUE:
 			SetEnablePause(false);
 			g_pauseMenu = PAUSE_MENU_CONTINUE;
+			PlaySound(SOUND_SE_DECISION);
 			break;
 
 		case PAUSE_MENU_RETRY:
