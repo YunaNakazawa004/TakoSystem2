@@ -19,7 +19,7 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define MOVEMENT				(D3DXVECTOR3(1.0f, 1.0f, 1.0f))			// 移動量
+#define MOVEMENT				(D3DXVECTOR3(0.5f, 0.5f, 0.5f))			// 移動量
 #define TENTACLE_MOVEMENT		(D3DXVECTOR3(5.0f, 3.0f, 5.0f))			// 触手移動の移動量
 #define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// 向き移動量
 #define INERTIA_MOVE			(0.2f)									// 移動の慣性
@@ -217,8 +217,7 @@ void InitComputer(void)
 	}
 
 	// ランダムな位置に設定
-	SetRandomComputer(5);
-	//SetComputer(D3DXVECTOR3(0.0f, 10000.0f, 4000.0f), FIRST_POS);
+	SetRandomComputer(ALL_OCTO - GetNumCamera());
 
 	// ノードの設置
 	CreateOuterNodes3D();

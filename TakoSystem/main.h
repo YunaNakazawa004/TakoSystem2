@@ -37,6 +37,7 @@
 #define FVF_VERTEX_3D_MALTI	(D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX2)		// 3Dフォーマット(マルチテクスチャver)
 #define MAX_PLAYER			(2)																// プレイ人数
 #define MAX_COMPUTER		(10)															// CPUの数
+#define ALL_OCTO			(7)																// ステージに出るタコの数
 #define ONE_GAME			(120)															// 1ゲームの制限時間
 #define ONE_SECOND			(60)															// 1秒
 #define WHITE_VTX			(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f))								// 頂点カラーが白

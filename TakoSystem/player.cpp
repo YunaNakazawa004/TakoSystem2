@@ -19,6 +19,7 @@
 //*****************************************************************************
 #define MOVEMENT				(D3DXVECTOR3(1.0f, 1.0f, 1.0f))			// 移動量
 #define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// 向き移動量
+#define SEA_GRAVITY				(-0.1f)									// 重力
 #define INERTIA_MOVE			(0.2f)									// 移動の慣性
 #define DASH_MOVE				(0.04f)									// 高速移動の速さ
 #define DASH_RATE				(0.15f)									// 高速移動の速さ
@@ -490,6 +491,9 @@ void UpdatePlayer(void)
 			{// 最小Z
 				pPlayer->move.z = -MAX_MOVE;
 			}
+
+			// 重力
+			pPlayer->move.y += SEA_GRAVITY;
 
 			if (pPlayer->state != PLAYERSTATE_APPEAR && pPlayer->state != PLAYERSTATE_DASH)
 			{// 出現状態以外
