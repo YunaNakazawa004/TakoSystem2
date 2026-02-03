@@ -7,7 +7,7 @@
 #include "input.h"
 #include "fade.h"
 #include "game.h"
-
+#include "sound.h"
 
 //ÉOÉçÅ[ÉoÉãïœêîêÈåæ
 LPDIRECT3DTEXTURE9 g_apTexturePause[3] = {};
@@ -129,15 +129,18 @@ void UpdatePause(void)
 		GetJoypadTrigger(0, JOYKEY_UP) == true)
 	{
 		g_nSelect--;
+		PlaySound(SOUND_SE_CURSORMOVE);
 		if (g_nSelect < PAUSE_MENU_CONTINUE)
 		{
 			g_nSelect = PAUSE_MENU_QUIT;
+
 		}
 	}
 	else if (GetKeyboardTrigger(DIK_S) || 
 		GetJoypadTrigger(0, JOYKEY_DOWN) == true)
 	{
 		g_nSelect++;
+		PlaySound(SOUND_SE_CURSORMOVE);
 		if (g_nSelect >= PAUSE_MENU_MAX)
 		{
 			g_nSelect = PAUSE_MENU_CONTINUE;
@@ -157,11 +160,13 @@ void UpdatePause(void)
 		case PAUSE_MENU_RETRY:
 			g_pauseMenu = PAUSE_MENU_RETRY;
 			SetFade(MODE_GAME);
+			PlaySound(SOUND_SE_DECISION);
 			break;
 
 		case PAUSE_MENU_QUIT:
 			g_pauseMenu = PAUSE_MENU_QUIT;
 			SetFade(MODE_TITLE);
+			PlaySound(SOUND_SE_DECISION);
 			break;
 
 		}

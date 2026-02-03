@@ -45,6 +45,9 @@ SOUNDINFO g_aSoundInfo[SOUND_MAX] =
 	{"data/SE/applause.wav",0},				//勝利音
 	{"data/SE/countdown.wav",0},			//カウントダウン音
 	{"data/SE/timeup.wav",0},				//タイムアップ音
+	{"data/SE/boot.wav",0},					//起動音
+	{"data/SE/cursormove.wav",0},			//カーソル移動音
+	{"data/SE/decision.wav",0},				//決定音
 };
 
 //=============================================================================
