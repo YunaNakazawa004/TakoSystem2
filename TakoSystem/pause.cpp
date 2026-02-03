@@ -264,7 +264,6 @@ void UpdatePause(void)
 				}
 				else
 				{ // サイズが元に戻ったら
-
 					g_aPause[nCntPause + MAX_PAUSE_OBJ].bSelect = true;
 					g_aPause[nCntPause + MAX_PAUSE_OBJ].bDisp = true;
 				}
@@ -295,17 +294,17 @@ void UpdatePause(void)
 		{ // 割合で元に戻していく
 
 			g_aPause[nCntPause].sizeBig -= {g_aPause[nCntPause].size.x * 0.37f,
-				g_aPause[nCntPause].size.y * 0.37f,
-				0.0f};
+											g_aPause[nCntPause].size.y * 0.37f,
+											0.0f};
 		}
-		else if (g_aPause[nCntPause + MAX_PAUSE_OBJ * 2].bSelect == false)
-		{ // sizeBigをsizeと同じ値にする
-
+		else
+		{ // サイズを合わせる
 			g_aPause[nCntPause].sizeBig = g_aPause[nCntPause].size;
 		}
 
 		if (g_aPause[nCntPause].bSelect == true)
 		{// 選択されている場合
+
 			// 頂点カラーの設定
 			pVtx[0].col = WHITE_VTX;
 			pVtx[1].col = WHITE_VTX;
@@ -314,6 +313,7 @@ void UpdatePause(void)
 		}
 		else
 		{// 選択されていない場合
+
 			// 頂点カラーの設定
 			pVtx[0].col = GRAY_VTX;
 			pVtx[1].col = GRAY_VTX;
