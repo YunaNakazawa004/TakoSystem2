@@ -6,6 +6,7 @@
 //=============================================================================
 #include "main.h"
 #include "time.h"
+#include "input.h"
 #include "player.h"
 #include "pause.h"
 #include "fade.h"
@@ -183,6 +184,14 @@ void UpdateTime(void)
 			PlaySound(SOUND_SE_TIMEUP);	// カウントダウン
 		}
 	}
+
+#ifdef _DEBUG	// デバッグの時のみ使用可能
+
+	// デバッグ時間短縮
+	if (GetKeyboardTrigger(DIK_O) || GetJoypadTrigger(0, JOYKEY_BACK)) AddTime(-150);
+
+#endif
+
 }
 
 // タイムの描画処理

@@ -14,6 +14,7 @@
 #include "meshring.h"
 
 #include "player.h"
+#include "sound.h"
 #include "computer.h"
 #include "pot.h"
 #include "object.h"
@@ -124,6 +125,9 @@ void InitGame(void)
 	// ポーズの初期化処理
 	InitPause();
 
+	// サウンドの再生
+	PlaySound(SOUND_BGM_GAME);
+
 	g_bPause = false;	// ポーズ解除
 }
 
@@ -132,6 +136,8 @@ void InitGame(void)
 //===================================================================
 void UninitGame(void)
 {
+	// サウンドの停止
+	StopSound();
 
 	// プレイヤーの終了処理
 	UninitPlayer();
@@ -212,6 +218,7 @@ void UpdateGame(void)
 	{// フェードが何もしていない状態のみ発動
 		if (GetKeyboardTrigger(DIK_P) || GetJoypadTrigger(0, JOYKEY_START) == true)
 		{// ポーズの確認
+			ResetPause();
 			g_bPause = g_bPause ? false : true;
 		}
 	}
