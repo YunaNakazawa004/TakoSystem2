@@ -6,8 +6,9 @@
 //==================================================================================
 #include "main.h"			// メインヘッダー
 
-
 #include "debugproc.h"
+
+#include "camera.h"
 
 #include "ui_gaugeicon.h"	// UIゲージアイコンヘッダー
 
@@ -90,12 +91,8 @@ UiGaugeIcon_info g_aUiGaugeIconInfo[] =
 	{0, 0, JOYKEY_LEFTTRIGGER,   D3DXVECTOR3(68.0f, 644.0f, 0.0f), 60.11f, 60.11f, D3DXCOLOR(0.5f,0.5f,0.5f,1.0f), UIGAUGEICON_STATE_RECAST, UIGAUGEICON_TIME_INKSPIT},
 	{1, 0, JOYKEY_RIGHTTRIGGER,  D3DXVECTOR3(200.0f, 644.0f, 0.0f), 60.11f, 60.11f, D3DXCOLOR(0.5f,0.5f,0.5f,1.0f), UIGAUGEICON_STATE_RECAST, UIGAUGEICON_TIME_TENTACLE},
 
-#if MAX_PLAYER == 2
-
 	{ 1, 1, JOYKEY_RIGHTTRIGGER, D3DXVECTOR3(1212.0f, 644.0f, 0.0f), 60.11f, 60.11f, D3DXCOLOR(0.5f,0.5f,0.5f,1.0f), UIGAUGEICON_STATE_RECAST, UIGAUGEICON_TIME_TENTACLE},
 	{ 0, 1, JOYKEY_LEFTTRIGGER,  D3DXVECTOR3(1080.0f, 644.0f, 0.0f), 60.11f, 60.11f, D3DXCOLOR(0.5f,0.5f,0.5f,1.0f), UIGAUGEICON_STATE_RECAST, UIGAUGEICON_TIME_INKSPIT},
-
-#endif
 };
 
 //========================================================================
@@ -183,12 +180,16 @@ void InitUiGaugeIcon(void)
 	// 設定処理
 	for (int nCntSetGaugeIcon = 0; nCntSetGaugeIcon < sizeof g_aUiGaugeIconInfo / sizeof g_aUiGaugeIconInfo[0]; nCntSetGaugeIcon++)
 	{
-		// ゲージアイコンの設定
-		SetUiGaugeIcon(g_aUiGaugeIconInfo[nCntSetGaugeIcon].nIdxTexture,
-					   g_aUiGaugeIconInfo[nCntSetGaugeIcon].nUser, g_aUiGaugeIconInfo[nCntSetGaugeIcon].input,
-					   g_aUiGaugeIconInfo[nCntSetGaugeIcon].pos, g_aUiGaugeIconInfo[nCntSetGaugeIcon].col,
-					   g_aUiGaugeIconInfo[nCntSetGaugeIcon].fSizeWidth, g_aUiGaugeIconInfo[nCntSetGaugeIcon].fSizeHeight,
-					   g_aUiGaugeIconInfo[nCntSetGaugeIcon].state, g_aUiGaugeIconInfo[nCntSetGaugeIcon].nCounterState);
+		if (g_aUiGaugeIconInfo[nCntSetGaugeIcon].nUser < GetNumCamera())
+		{// 対象がカメラの数より小さい場合
+
+			// ゲージアイコンの設定
+			SetUiGaugeIcon(g_aUiGaugeIconInfo[nCntSetGaugeIcon].nIdxTexture,													// インデックステクスチャ
+						   g_aUiGaugeIconInfo[nCntSetGaugeIcon].nUser, g_aUiGaugeIconInfo[nCntSetGaugeIcon].input,				// 対象, 入力キー
+						   g_aUiGaugeIconInfo[nCntSetGaugeIcon].pos, g_aUiGaugeIconInfo[nCntSetGaugeIcon].col,					// 位置, 色
+						   g_aUiGaugeIconInfo[nCntSetGaugeIcon].fSizeWidth, g_aUiGaugeIconInfo[nCntSetGaugeIcon].fSizeHeight,	// 幅, 高さ
+						   g_aUiGaugeIconInfo[nCntSetGaugeIcon].state, g_aUiGaugeIconInfo[nCntSetGaugeIcon].nCounterState);		// 開始状態, 持続時間
+		}
 	}
 }
 
