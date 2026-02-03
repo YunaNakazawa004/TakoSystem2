@@ -17,17 +17,6 @@
 #define RIGHT_SENTER		(D3DXVECTOR3(960.0f, 360.0f, 0.0f))		// 右半分の中心
 
 //*****************************************************************************
-// クロスヘア構造体を定義
-//*****************************************************************************
-typedef struct
-{
-	D3DXVECTOR3 pos;				// 位置
-	CROSSHAIRSTATE state;			// 状態
-	int nCounterState;				// 状態管理カウンター
-	bool bDisp;						// 表示するかどうか
-}CrossHair;
-
-//*****************************************************************************
 // グローバル変数
 //*****************************************************************************
 LPDIRECT3DTEXTURE9 g_apTextureCrossHair[CROSSHAIRSTATE_MAX] = {};		// テクスチャへのポインタ
@@ -197,4 +186,12 @@ void SetCrossHair(int nIdx, CROSSHAIRSTATE state)
 		g_aCrossHair[nIdx].nCounterState = 0;
 		g_aCrossHair[nIdx].bDisp = true;
 	}
+}
+
+//=============================================================================
+// クロスヘアの取得
+//=============================================================================
+CrossHair* GetCrossHair(void)
+{
+	return &g_aCrossHair[0];
 }

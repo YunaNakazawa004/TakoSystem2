@@ -26,6 +26,9 @@ typedef enum
 	SOUND_SE_WIN,						//勝利音
 	SOUND_SE_COUNTDOWN,					//カウントダウン音
 	SOUND_SE_TIMEUP,					//タイムアップ音
+	SOUND_SE_BOOT,						//起動音
+	SOUND_SE_CURSORMOVE,				//カーソル移動音（ポーズメニューや人数選択時など）
+	SOUND_SE_DECISION,					//決定音
 	SOUND_MAX,
 } SOUND_LABEL;
 

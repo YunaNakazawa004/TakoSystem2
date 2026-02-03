@@ -7,10 +7,10 @@
 #include "input.h"
 #include "fade.h"
 #include "game.h"
-
+#include "sound.h"
 
 //グローバル変数宣言
-LPDIRECT3DTEXTURE9 g_apTexturePause[3] = {};
+LPDIRECT3DTEXTURE9 g_apTexturePause[MAX_PAUSE] = {};
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffPause = NULL;
 bool g_bPauseMenu = true;
 PAUSE_MENU g_pauseMenu;			//ポーズメニュー
@@ -129,15 +129,18 @@ void UpdatePause(void)
 		GetJoypadTrigger(0, JOYKEY_UP) == true)
 	{
 		g_nSelect--;
+		PlaySound(SOUND_SE_CURSORMOVE);
 		if (g_nSelect < PAUSE_MENU_CONTINUE)
 		{
 			g_nSelect = PAUSE_MENU_QUIT;
+
 		}
 	}
 	else if (GetKeyboardTrigger(DIK_S) || 
 		GetJoypadTrigger(0, JOYKEY_DOWN) == true)
 	{
 		g_nSelect++;
+		PlaySound(SOUND_SE_CURSORMOVE);
 		if (g_nSelect >= PAUSE_MENU_MAX)
 		{
 			g_nSelect = PAUSE_MENU_CONTINUE;
@@ -147,6 +150,7 @@ void UpdatePause(void)
 	if (GetKeyboardTrigger(DIK_RETURN)||
 		GetJoypadTrigger(0, JOYKEY_A) == true)
 	{
+		PlaySound(SOUND_SE_DECISION);
 		switch (g_nSelect)
 		{
 		case PAUSE_MENU_CONTINUE:

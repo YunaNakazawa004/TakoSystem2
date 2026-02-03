@@ -45,7 +45,7 @@ void UninitMeshCylinder(void);
 void UpdateMeshCylinder(void);
 void DrawMeshCylinder(void);
 int SetMeshCylinder(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVECTOR2 size, D3DXCOLOR col, bool bInside, MESHCYLINDERTYPE type);
-void CollisionMeshCylinder(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, float fRadius, float fHeight, bool binsec);
+bool CollisionMeshCylinder(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, float fRadius, float fHeight, bool binsec);
 MeshCylinder* GetMeshCylinder(void);
 
 #endif
