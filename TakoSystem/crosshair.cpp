@@ -62,7 +62,7 @@ void InitCrossHair(void)
 	}
 
 	// クロスヘア情報の初期化
-	for (int nCntCrossHair = 0; nCntCrossHair < GetNumCamera(); nCntCrossHair++)
+	for (int nCntCrossHair = 0; nCntCrossHair < MAX_PLAYER; nCntCrossHair++)
 	{
 		g_aCrossHair[nCntCrossHair].state = CROSSHAIRSTATE_NONE;
 		g_aCrossHair[nCntCrossHair].nCounterState = 0;
@@ -72,6 +72,7 @@ void InitCrossHair(void)
 	if (GetNumCamera() == 1)
 	{// 1人プレイ
 		g_aCrossHair[0].pos = CENTER;
+		g_aCrossHair[1].bDisp = false;
 	}
 	else if (GetNumCamera() == 2)
 	{// 2人プレイ
@@ -80,7 +81,7 @@ void InitCrossHair(void)
 	}
 
 	// 頂点バッファの生成
-	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * MAX_VERTEX * GetNumCamera(),
+	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * MAX_VERTEX * MAX_PLAYER,
 		D3DUSAGE_WRITEONLY,
 		FVF_VERTEX_2D,
 		D3DPOOL_MANAGED,
@@ -164,7 +165,7 @@ void DrawCrossHair(void)
 	// デバイスの取得
 	pDevice = GetDevice();
 
-	for (int nCntCrossHair = 0; nCntCrossHair < MAX_PLAYER; nCntCrossHair++)
+	for (int nCntCrossHair = 0; nCntCrossHair < GetNumCamera(); nCntCrossHair++)
 	{
 		if (g_aCrossHair[nCntCrossHair].bDisp == true)
 		{
