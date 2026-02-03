@@ -303,7 +303,7 @@ void UpdatePause(void)
 				g_aPause[nCntPause].size.y * 0.37f,
 				0.0f};
 		}
-		else if (g_aPause[nCntPause + MAX_PAUSE_OBJ].bSelect == false)
+		else if (g_aPause[nCntPause + MAX_PAUSE_OBJ * 2].bSelect == false)
 		{ // sizeBig‚ðsize‚Æ“¯‚¶’l‚É‚·‚é
 
 			g_aPause[nCntPause].sizeBig = g_aPause[nCntPause].size;
