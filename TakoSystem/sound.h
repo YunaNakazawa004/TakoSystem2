@@ -15,7 +15,7 @@ typedef enum
 	SOUND_BGM_TUTORIAL,					//チュートリアルBGM
 	SOUND_BGM_GAME,						//ゲームBGM
 	SOUND_BGM_RESULT,					//リザルトBGM
-	SOUND_BGMRANKING,					//ランキングBGM
+	SOUND_BGM_RANKING,					//ランキングBGM
 	SOUND_SE_SWIM,						//泳ぐ音
 	SOUND_SE_TENTACLE_STRETCH,			//触手を伸ばす音
 	SOUND_SE_TENTACLE_RETRACT,			//触手を引っ込める音

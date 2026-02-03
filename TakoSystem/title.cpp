@@ -15,7 +15,7 @@
 
 // マクロ定義
 #define	MAX_TITLE	(5)	// タイトルで表示するテクスチャの最大数
-#define	RANKING_DELEY	(720)	// ランキング移行に掛かる時間
+#define	RANKING_DELEY	(1200)	// ランキング移行に掛かる時間
 #define	CLEAR_DELEY	(60)	// 消滅にかかる時間
 #define	TITLE_DELEY_MAX	(500.0f)	// タイトルの最大数
 
@@ -197,12 +197,14 @@ void UpdateTitle(void)
 		&& g_PlayerSelect > 1)
 	{
 		g_PlayerSelect--;
+		g_PressEnterDeley %= 100;	// ランキング移行までの時間を短縮
 	}
 	else if ((GetKeyboardTrigger(DIK_D) || GetJoypadTrigger(0, JOYKEY_RIGHT) ||
 		GetJoypadStick(0, JOYKEY_LEFTSTICK_RIGHT, NULL, NULL) == true)
 		&& g_PlayerSelect < MAX_PLAYER)
 	{
 		g_PlayerSelect++;
+		g_PressEnterDeley %= 100;	// ランキング移行までの時間を短縮
 	}
 
 	VERTEX_2D* pVtx;	// 頂点情報へのポインタ
@@ -265,7 +267,7 @@ void UpdateTitle(void)
 		SetFade(MODE_TUTORIAL);
 	}
 	else if (pFade == FADE_NONE && g_PressEnterDeley > RANKING_DELEY)
-	{
+	{// 時間経過でランキングへ移行
 		SetFade(MODE_LOGO);
 	}
 
