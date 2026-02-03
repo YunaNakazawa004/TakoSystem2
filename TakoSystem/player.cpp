@@ -187,6 +187,7 @@ void UpdatePlayer(void)
 		if (pPlayer->bUse == true)
 		{
 			pPlayer->posOld = pPlayer->pos;
+			pPlayer->posX = pPlayer->pos + (pCamera->posR - pCamera->posV);
 
 			switch (pPlayer->state)
 			{
@@ -408,7 +409,6 @@ void UpdatePlayer(void)
 					pPlayer->vecX.z < MOVE_ERROR && pPlayer->vecX.z > -MOVE_ERROR)
 				{// 止まった
 					pPlayer->vecX = FIRST_POS;
-					pPlayer->posX = FIRST_POS;
 
 					if (pPlayer->motionType == MOTIONTYPE_DASH)
 					{// 高速移動モーションしていたら
@@ -547,8 +547,18 @@ void UpdatePlayer(void)
 				pPlayer->fAngle = D3DX_PI + pCamera->rot.y;
 				CorrectAngle(&pPlayer->fAngle, pPlayer->fAngle);
 
+				D3DXVECTOR3 dir, rot;
+				dir = pPlayer->posX - pPlayer->pos;
+				D3DXVec3Normalize(&dir, &dir);
+
+				//rot.y = D3DX_PI + atan2f(dir.x, dir.z);
+				rot.x = (dir.y / 0.95f) * 1.2f;
+				//rot.z = 0.0f;
+
+				pPlayer->rot.x = rot.x;
+				CorrectAngle(&pPlayer->rot.x, pPlayer->rot.x);
+
 				pPlayer->vecX = (pCamera->posR - pCamera->posV) * DASH_RATE;
-				pPlayer->posX = pCamera->posR + pPlayer->vecX * DASH_REACH;
 
 				SetMotionPlayer(nCntPlayer, MOTIONTYPE_TENTACLELONG, true, 20);
 
@@ -624,9 +634,9 @@ void UpdatePlayer(void)
 			}
 
 #endif
+			}
 		}
 	}
-}
 
 //=============================================================================
 // プレイヤーの描画処理
@@ -635,12 +645,13 @@ void DrawPlayer(void)
 {
 	// ローカル変数宣言
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();			// デバイスへのポインタ
-	D3DXMATRIX mtxRot, mtxTrans;		// 計算用マトリックス
+	D3DXMATRIX mtxRot, mtxTrans, mtxView;		// 計算用マトリックス
 	D3DMATERIAL9 matDef;				// 現在のマテリアル保存用
 	D3DXMATERIAL* pMat;					// マテリアルデータへのポインタ
 	Player* pPlayer = GetPlayer();
+	Camera* pCamera = GetCamera();
 
-	for (int nCntPlayer = 0; nCntPlayer < MAX_PLAYER; nCntPlayer++, pPlayer++)
+	for (int nCntPlayer = 0; nCntPlayer < MAX_PLAYER; nCntPlayer++, pPlayer++, pCamera++)
 	{
 		if (pPlayer->bUse == true)
 		{// 使用しているとき
@@ -650,6 +661,39 @@ void DrawPlayer(void)
 			// 向きを反映
 			D3DXMatrixRotationYawPitchRoll(&mtxRot, pPlayer->rot.y, pPlayer->rot.x, pPlayer->rot.z);
 			D3DXMatrixMultiply(&pPlayer->mtxWorld, &pPlayer->mtxWorld, &mtxRot);
+
+			//D3DXVECTOR3 rotX, rotY, rotZ;
+			//rotZ = pPlayer->posX - pPlayer->pos;
+			//D3DXVec3Normalize(&rotZ, &rotZ);
+
+			//rotX = D3DXVECTOR3((rotZ.y * pCamera->vecU.z) - (rotZ.z * pCamera->vecU.y),
+			//	(rotZ.z * pCamera->vecU.x) - (rotZ.x * pCamera->vecU.z),
+			//	(rotZ.x * pCamera->vecU.y) - (rotZ.y * pCamera->vecU.x));
+			//D3DXVec3Normalize(&rotX, &rotX);
+
+			//rotY = D3DXVECTOR3((rotX.y * rotZ.z) - (rotX.z * rotZ.y),
+			//	(rotX.z * rotZ.x) - (rotX.x * rotZ.z),
+			//	(rotX.x * rotZ.y) - (rotX.y * rotZ.x));
+			//D3DXVec3Normalize(&rotY, &rotY);
+
+			//// ビューマトリックスを取得
+			//pDevice->GetTransform(D3DTS_VIEW, &mtxView);
+			//pPlayer->mtxWorld._11 = rotX.x;
+			//pPlayer->mtxWorld._12 = rotY.x;
+			//pPlayer->mtxWorld._13 = rotZ.x;
+			//pPlayer->mtxWorld._14 = pPlayer->pos.x;
+			//pPlayer->mtxWorld._21 = rotX.y;
+			//pPlayer->mtxWorld._22 = rotY.y;
+			//pPlayer->mtxWorld._23 = rotZ.y;
+			//pPlayer->mtxWorld._24 = pPlayer->pos.y;
+			//pPlayer->mtxWorld._31 = rotX.z;
+			//pPlayer->mtxWorld._32 = rotY.z;
+			//pPlayer->mtxWorld._33 = rotZ.z;
+			//pPlayer->mtxWorld._34 = pPlayer->pos.z;
+			//pPlayer->mtxWorld._41 = 0.0f;
+			//pPlayer->mtxWorld._42 = 0.0f;
+			//pPlayer->mtxWorld._43 = 0.0f;
+			//pPlayer->mtxWorld._44 = 1.0f;
 
 			// 位置を反映
 			D3DXMatrixTranslation(&mtxTrans, pPlayer->pos.x, pPlayer->pos.y, pPlayer->pos.z);
