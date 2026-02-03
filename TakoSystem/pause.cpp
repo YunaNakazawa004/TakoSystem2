@@ -113,11 +113,6 @@ void InitPause(void)
 	LPDIRECT3DDEVICE9 pDevice;			//デバイスへのポインタ
 	D3DXVECTOR3 Pos[MAX_PAUSE] = {};
 
-
-	Pos[0] = { 320.0f, 200.0f, 0.0f };
-	Pos[1] = { 1000.0f, 360.0f, 0.0f };
-	Pos[2] = { 370.0f, 560.0f, 0.0f };
-
 	//デバイスの取得
 	pDevice = GetDevice();
 
@@ -371,6 +366,97 @@ void DrawPause(void)
 void SetPause(PAUSE_MENU pause)
 {
 	g_nSelect = pause;
+}
+
+//=============================================================================
+// ポーズメニューの設定
+//=============================================================================
+void ResetPause(void)
+{
+	g_nSelect = 0;
+
+	g_aPause[0] =
+	{ // POS,SIZE,ファイル名
+
+		{ 320.0f, 200.0f, 0.0f },
+		{ 400.0f, 200.0f, 0.0f },
+		{ 400.0f, 200.0f, 0.0f },
+		"data\\TEXTURE\\pause_ink.png",
+		false,
+		true
+	};
+	g_aPause[1] =
+	{ // POS,SIZE,ファイル名
+		 { 1000.0f, 360.0f, 0.0f },
+		{ 470.0f, 230.0f, 0.0f },
+		{ 470.0f, 230.0f, 0.0f },
+		"data\\TEXTURE\\pause_ink2.png",
+		false,
+		true
+	};
+	g_aPause[2] =
+	{ // POS,SIZE,ファイル名
+		 { 370.0f, 560.0f, 0.0f },
+		{ 400.0f, 190.0f, 0.0f },
+		{ 400.0f, 190.0f, 0.0f },
+		"data\\TEXTURE\\pause_ink3.png",
+		false,
+		true
+	};
+	g_aPause[3] =
+	{ // POS,SIZE,ファイル名
+		{ 320.0f, 200.0f, 0.0f },
+		{ 320.0f, 170.0f, 0.0f },
+		{ 320.0f, 170.0f, 0.0f },
+		"data\\TEXTURE\\Continue_ink000.png",
+		false,
+		false
+	};
+	g_aPause[4] =
+	{ // POS,SIZE,ファイル名
+		{ 1000.0f, 360.0f, 0.0f },
+		{ 320.0f, 170.0f, 0.0f },
+		{ 320.0f, 170.0f, 0.0f },
+		"data\\TEXTURE\\Retry_ink000.png",
+		false,
+		false
+	};
+	g_aPause[5] =
+	{ // POS,SIZE,ファイル名
+		{ 370.0f, 560.0f, 0.0f},
+		{ 345.0f, 184.0f, 0.0f },
+		{ 345.0f, 184.0f, 0.0f },
+		"data\\TEXTURE\\Quit_ink000.png",
+		false,
+		false
+	};
+	g_aPause[6] =
+	{ // POS,SIZE,ファイル名
+		{ 320.0f, 200.0f, 0.0f },
+		{ 320.0f, 170.0f, 0.0f },
+		{ 320.0f, 170.0f, 0.0f },
+		"data\\TEXTURE\\Continue001.png",
+		false,
+		false
+	};
+	g_aPause[7] =
+	{ // POS,SIZE,ファイル名
+		{ 1000.0f, 360.0f, 0.0f },
+		{ 320.0f, 170.0f, 0.0f },
+		{ 320.0f, 170.0f, 0.0f },
+		"data\\TEXTURE\\Retry001.png",
+		false,
+		false
+	};
+	g_aPause[8] =
+	{ // POS,SIZE,ファイル名
+		{ 370.0f, 560.0f, 0.0f},
+		{ 345.0f, 184.0f, 0.0f },
+		{ 345.0f, 184.0f, 0.0f },
+		"data\\TEXTURE\\Quit001.png",
+		false,
+		false
+	};
 }
 
 //=============================================================================

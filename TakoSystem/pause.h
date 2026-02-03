@@ -24,5 +24,7 @@ void InitPause(void);
 void UninitPause(void);
 void UpdatePause(void);
 void DrawPause(void);
+void SetPause(PAUSE_MENU pause);
+void ResetPause(void);
 
 #endif

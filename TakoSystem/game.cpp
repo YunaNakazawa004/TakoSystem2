@@ -218,6 +218,7 @@ void UpdateGame(void)
 	{// フェードが何もしていない状態のみ発動
 		if (GetKeyboardTrigger(DIK_P) || GetJoypadTrigger(0, JOYKEY_START) == true)
 		{// ポーズの確認
+			ResetPause();
 			g_bPause = g_bPause ? false : true;
 		}
 	}
