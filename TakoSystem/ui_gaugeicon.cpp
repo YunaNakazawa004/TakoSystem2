@@ -80,8 +80,8 @@ UiGaugeIcon g_aUiGaugeIcon[MAX_SET_UIGAUGEICON];						// UIゲージアイコンの情報
 // テクスチャファイル情報
 const char* c_apFilenameUiGameIcon[] =
 {
-	"data/TEXTURE/Octopus_inkgage.png",				// [0]墨吐きゲージ
-	"data/TEXTURE/Octopus_tentaclegage.png",		// [1]触手ゲージ
+	"data/TEXTURE/Octopus_inkgage00.png",				// [0]墨吐きゲージ
+	"data/TEXTURE/Octopus_tentaclegage00.png",		// [1]触手ゲージ
 };
 
 // UIゲージアイコンの配置情報
