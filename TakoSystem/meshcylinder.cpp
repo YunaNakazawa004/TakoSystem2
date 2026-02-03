@@ -322,9 +322,10 @@ int SetMeshCylinder(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVEC
 //=============================================================================
 // メッシュシリンダーの当たり判定
 //=============================================================================
-void CollisionMeshCylinder(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, float fRadius, float fHeight, bool binsec)
+bool CollisionMeshCylinder(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, float fRadius, float fHeight, bool binsec)
 {
 	MeshCylinder* pMeshC = GetMeshCylinder();
+	bool bColl = false;
 
 	for (int nCntMeshC = 0; nCntMeshC < MAX_MESHCYLINDER; nCntMeshC++, pMeshC++)
 	{
@@ -477,6 +478,8 @@ void CollisionMeshCylinder(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3*
 				if ((pMeshC->bInside == true && fPosLine < 0.0f && (fPosOldLine >= 0.0f || fPosOldLine >= -10.0f)) ||
 					(pMeshC->bInside == false && fPosLine > 0.0f && (fPosOldLine <= 0.0f || fPosOldLine <= 10.0f)))
 				{// 交差した
+					bColl = true;
+
 					if (binsec == true)
 					{// 交点出す用
 						insec.x = start.x + (vecLine.x * (fRate));
@@ -520,6 +523,8 @@ void CollisionMeshCylinder(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3*
 			}
 		}
 	}
+
+	return bColl;
 }
 
 //=============================================================================

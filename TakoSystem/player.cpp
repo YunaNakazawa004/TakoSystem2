@@ -8,6 +8,7 @@
 #include "meshcylinder.h"
 #include "esa.h"
 #include "particle_3d.h"
+#include "crosshair.h"
 #include "camera.h"
 #include "input.h"
 //#include "sound.h"
@@ -16,7 +17,7 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define MOVEMENT				(D3DXVECTOR3(1.0f, 5.0f, 1.0f))		// 移動量
+#define MOVEMENT				(D3DXVECTOR3(1.0f, 5.0f, 1.0f))			// 移動量
 #define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// 向き移動量
 #define INERTIA_MOVE			(0.2f)									// 移動の慣性
 #define DASH_MOVE				(0.04f)									// 高速移動の速さ
@@ -28,11 +29,12 @@
 #define MOVE_ERROR				(5.0f)									// 移動量の誤差
 #define FOG_MIN					(1500.0f)								// フォグの最低
 #define FOG_MAX					(7000.0f)								// フォグの最高
-#define TENTACLE_RANGE			(DISTANCE * DASH_REACH)					// 触手のリーチ
+#define TENTACLE_RANGE			(DISTANCE * DASH_REACH)					// 触手の長さ(見た目)
+#define TENTACLE_REACH			(1000.0f)								// 触手のリーチ(実際)
 #define TENTACLE_CT				(ONE_SECOND * 1 + ONE_SECOND)			// 触手のクールダウン
 #define INK_CT					(ONE_SECOND * 5 + ONE_SECOND)			// 墨吐きのクールダウン
 #define PLAYER_TENTACLE			(8)										// プレイヤーの足の数
-#define PLAYER_RADIUS			(100.0f)								// 半径
+#define PLAYER_RADIUS			(50.0f)									// 半径
 #define PLAYER_HEIGHT			(100.0f)								// 高さ
 #define PLAYER_FILE				"data\\motion_octo_1.txt"				// プレイヤーのデータファイル
 
@@ -356,13 +358,16 @@ void UpdatePlayer(void)
 			case PLTENTACLESTATE_TENTACLELONG:		// 触手伸ばし状態
 				if (pPlayer->bFinishMotion == true)
 				{// 触手が伸ばし終わったら
-					//if ()
-					//{// 壁との当たり判定
-					//	pPlayer->state = PLAYERSTATE_DASH;
-					//	pPlayer->TentacleState = PLTENTACLESTATE_TENTACLESHORT;
-					//	SetMotionPlayer(nCntPlayer, MOTIONTYPE_DASH, true, 20);
-					//}
-					//else
+					CrossHair* pCrossHair = GetCrossHair();
+					pCrossHair = &pCrossHair[nCntPlayer];
+
+					if (pCrossHair->state == CROSSHAIRSTATE_REACH)
+					{// 壁との当たり判定
+						pPlayer->state = PLAYERSTATE_DASH;
+						pPlayer->TentacleState = PLTENTACLESTATE_TENTACLESHORT;
+						SetMotionPlayer(nCntPlayer, MOTIONTYPE_DASH, true, 20);
+					}
+					else
 					{// 触手を伸ばす
 						if (pPlayer->aModel[2].scale.y < TENTACLE_RANGE * 0.1f)
 						{// リーチより短い
@@ -370,13 +375,9 @@ void UpdatePlayer(void)
 						}
 						else
 						{// リーチの長さになった
-							// 当たり判定つけるまで
-							pPlayer->state = PLAYERSTATE_DASH;
-							SetMotionPlayer(nCntPlayer, MOTIONTYPE_DASH, true, 20);
-
 							pPlayer->TentacleState = PLTENTACLESTATE_TENTACLESHORT;
 
-							//SetMotionPlayer(nCntPlayer, MOTIONTYPE_TENTACLESHORT, true, 20);
+							SetMotionPlayer(nCntPlayer, MOTIONTYPE_TENTACLESHORT, true, 20);
 						}
 					}
 				}
@@ -415,11 +416,13 @@ void UpdatePlayer(void)
 						if (pPlayer->bMove == true)
 						{// 移動してる
 							pPlayer->state = PLAYERSTATE_MOVE;
+							pPlayer->rot.x = 0.0f;
 							SetMotionPlayer(nCntPlayer, MOTIONTYPE_MOVE, true, 20);
 						}
 						else
 						{// 移動してない
 							pPlayer->state = PLAYERSTATE_WAIT;
+							pPlayer->rot.x = 0.0f;
 							SetMotionPlayer(nCntPlayer, MOTIONTYPE_NEUTRAL, true, 20);
 						}
 					}
@@ -437,6 +440,8 @@ void UpdatePlayer(void)
 			{// 待機モーション
 				SetMotionPlayer(nCntPlayer, MOTIONTYPE_NEUTRAL, true, 20);
 			}
+
+			PrintDebugProc("プレイヤーのpos ( %f %f %f )\n", pPlayer->pos.x, pPlayer->pos.y, pPlayer->pos.z);
 
 #ifdef _DEBUG
 			if (GetKeyboardTrigger(DIK_BACKSPACE) == true || GetJoypadTrigger(nCntPlayer, JOYKEY_LEFT_THUMB) == true)
@@ -538,6 +543,23 @@ void UpdatePlayer(void)
 				CorrectAngle(&pPlayer->rot.y, pPlayer->rot.y);
 			}
 
+			D3DXVECTOR3 dist;
+			dist = pPlayer->posX - pPlayer->pos;
+			D3DXVec3Normalize(&dist, &dist);
+			dist *= TENTACLE_REACH;
+			dist += pPlayer->pos;
+
+			if (CollisionMeshCylinder(&dist, &pPlayer->pos, &pPlayer->move,
+				0.0f, 0.0f, true) == true)
+			{// 壁に当たった・オブジェクトに当たった・エサに当たった
+				// クロスヘアの設定
+				SetCrossHair(nCntPlayer, CROSSHAIRSTATE_REACH);
+			}
+			else
+			{// 何にも当たっていない
+				SetCrossHair(nCntPlayer, CROSSHAIRSTATE_NONE);
+			}
+
 			if (GetJoypadShoulder(nCntPlayer, JOYKEY_RIGHTTRIGGER, &nValue) == true
 				&& pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG && pPlayer->state != PLAYERSTATE_DASH &&
 				pPlayer->nTentacleCooldown == 0)
@@ -634,9 +656,9 @@ void UpdatePlayer(void)
 			}
 
 #endif
-			}
 		}
 	}
+}
 
 //=============================================================================
 // プレイヤーの描画処理
