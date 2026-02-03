@@ -150,24 +150,22 @@ void UpdatePause(void)
 	if (GetKeyboardTrigger(DIK_RETURN)||
 		GetJoypadTrigger(0, JOYKEY_A) == true)
 	{
+		PlaySound(SOUND_SE_DECISION);
 		switch (g_nSelect)
 		{
 		case PAUSE_MENU_CONTINUE:
 			SetEnablePause(false);
 			g_pauseMenu = PAUSE_MENU_CONTINUE;
-			PlaySound(SOUND_SE_DECISION);
 			break;
 
 		case PAUSE_MENU_RETRY:
 			g_pauseMenu = PAUSE_MENU_RETRY;
 			SetFade(MODE_GAME);
-			PlaySound(SOUND_SE_DECISION);
 			break;
 
 		case PAUSE_MENU_QUIT:
 			g_pauseMenu = PAUSE_MENU_QUIT;
 			SetFade(MODE_TITLE);
-			PlaySound(SOUND_SE_DECISION);
 			break;
 
 		}
