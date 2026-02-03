@@ -49,7 +49,8 @@ typedef struct
 	D3DXVECTOR3 posOld;							// 前回の位置
 	D3DXVECTOR3 move;							// 移動量
 	D3DXVECTOR3 rot;							// 向き
-	float fAngle;								// 向きの最終地点
+	float fAngleX;								// X向きの最終地点
+	float fAngleY;								// Y向きの最終地点
 	float fRadius;								// 半径
 	float fHeight;								// 高さ
 	D3DXVECTOR3 posX;							// リーチの位置(クロスヘアの位置)
@@ -67,6 +68,7 @@ typedef struct
 	bool bMove;									// 動いているかどうか
 	bool bAct;									// アクション中かどうか
 	bool bUse;									// 使用しているかどうか
+	bool bBlind;								// 視界が悪いかどうか
 
 	int nFood;									// 持っているエサの数
 	int nMaxFood;								// 一本の腕に一度に持てるエサの数

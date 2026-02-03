@@ -1,4 +1,5 @@
 //=============================================================================
+//=============================================================================
 // 
 // CPUヘッダー [computer.h]
 // Author : 中澤優奈
@@ -35,6 +36,17 @@ typedef enum {
 } CPUSTATE;
 
 //*****************************************************************************
+// 触手の状態
+//*****************************************************************************
+typedef enum
+{
+	CPUTENTACLESTATE_NORMAL = 0,		// 通常状態
+	CPUTENTACLESTATE_TENTACLELONG,		// 触手伸ばし状態
+	CPUTENTACLESTATE_TENTACLESHORT,		// 触手縮め状態
+	CPUTENTACLESTATE_MAX
+}CPUTENTACLESTATE;
+
+//*****************************************************************************
 // CPUの物理情報
 //*****************************************************************************
 typedef struct
@@ -58,6 +70,7 @@ typedef struct
 	int nIdx;					// タコのID
 	CPUSTATE state;				// 現在の状態
 	int nCounterState;			// 状態カウンター
+	CPUTENTACLESTATE TentState;	// 触手の状態
 	Physics phys;				// 物理情報
 	bool bUse;					// 使用しているかどうか
 
@@ -141,7 +154,6 @@ void DrawComputer(void);
 void MoveToFood(Computer* pComputer);
 void AttackEnemy(Computer* pComputer);
 void Escape(Computer* pComputer);
-void HideBehindPillar(Computer* pComputer);
 void InkAttack(Computer* pComputer);
 void Explore(Computer* pComputer);
 void GoToPot(Computer* pComputer);

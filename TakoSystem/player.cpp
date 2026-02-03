@@ -17,7 +17,7 @@
 //*****************************************************************************
 // ƒ}ƒNƒ’è‹`
 //*****************************************************************************
-#define MOVEMENT				(D3DXVECTOR3(1.0f, 5.0f, 1.0f))			// ˆÚ“®—Ê
+#define MOVEMENT				(D3DXVECTOR3(1.0f, 1.0f, 1.0f))			// ˆÚ“®—Ê
 #define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// Œü‚«ˆÚ“®—Ê
 #define INERTIA_MOVE			(0.2f)									// ˆÚ“®‚ÌŠµ«
 #define DASH_MOVE				(0.04f)									// ‚‘¬ˆÚ“®‚Ì‘¬‚³
@@ -69,7 +69,8 @@ void InitPlayer(void)
 		pPlayer->state = PLAYERSTATE_APPEAR;
 		pPlayer->TentacleState = PLTENTACLESTATE_NORMAL;
 		pPlayer->nCounterState = 0;
-		pPlayer->fAngle = 0.0f;
+		pPlayer->fAngleX = 0.0f;
+		pPlayer->fAngleY = 0.0f;
 		pPlayer->fFog = FOG_MIN;
 		pPlayer->fRadius = PLAYER_RADIUS;
 		pPlayer->fHeight = PLAYER_HEIGHT;
@@ -78,6 +79,7 @@ void InitPlayer(void)
 		pPlayer->bMove = false;
 		pPlayer->bAct = false;
 		pPlayer->bUse = false;
+		pPlayer->bBlind = false;
 		pPlayer->nFood = 0;
 		pPlayer->nMaxFood = 0;
 		pPlayer->nTentacleCooldown = 0;
@@ -231,7 +233,7 @@ void UpdatePlayer(void)
 				{// ƒpƒbƒh‚ÌˆÚ“®—Dæ
 					if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
 					{// GŽè‚ðL‚Î‚µ‚Ä‚¢‚é‚Æ‚«‚ÍŒü‚«‚ð•Ï‚¦‚È‚¢
-						pPlayer->fAngle = pCamera->rot.y + atan2f(-(float)nValueH, -D3DX_PI - (float)nValueV);
+						pPlayer->fAngleY = pCamera->rot.y + atan2f(-(float)nValueH, -D3DX_PI - (float)nValueV);
 					}
 
 					fAngle = atan2f((float)(nValueH), (float)(nValueV));
@@ -252,7 +254,7 @@ void UpdatePlayer(void)
 
 						if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
 						{// GŽè‚ðL‚Î‚µ‚Ä‚¢‚é‚Æ‚«‚ÍŒü‚«‚ð•Ï‚¦‚È‚¢
-							pPlayer[nCntPlayer].fAngle = pCamera->rot.y - (-D3DX_PI * 0.75f);
+							pPlayer[nCntPlayer].fAngleY = pCamera->rot.y - (-D3DX_PI * 0.75f);
 						}
 					}
 					else if (GetKeyboardPress(DIK_D) == true || GetJoypadPress(nCntPlayer, JOYKEY_RIGHT) == true)
@@ -263,7 +265,7 @@ void UpdatePlayer(void)
 
 						if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
 						{// GŽè‚ðL‚Î‚µ‚Ä‚¢‚é‚Æ‚«‚ÍŒü‚«‚ð•Ï‚¦‚È‚¢
-							pPlayer[nCntPlayer].fAngle = pCamera->rot.y - (D3DX_PI * 0.75f);
+							pPlayer[nCntPlayer].fAngleY = pCamera->rot.y - (D3DX_PI * 0.75f);
 						}
 					}
 					else if (GetKeyboardPress(DIK_W) == true || GetJoypadPress(nCntPlayer, JOYKEY_UP) == true)
@@ -274,7 +276,7 @@ void UpdatePlayer(void)
 
 						if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
 						{// GŽè‚ðL‚Î‚µ‚Ä‚¢‚é‚Æ‚«‚ÍŒü‚«‚ð•Ï‚¦‚È‚¢
-							pPlayer[nCntPlayer].fAngle = pCamera->rot.y - D3DX_PI;
+							pPlayer[nCntPlayer].fAngleY = pCamera->rot.y - D3DX_PI;
 						}
 					}
 
@@ -290,7 +292,7 @@ void UpdatePlayer(void)
 
 						if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
 						{// GŽè‚ðL‚Î‚µ‚Ä‚¢‚é‚Æ‚«‚ÍŒü‚«‚ð•Ï‚¦‚È‚¢
-							pPlayer[nCntPlayer].fAngle = pCamera->rot.y + (D3DX_PI * 0.25f);
+							pPlayer[nCntPlayer].fAngleY = pCamera->rot.y + (D3DX_PI * 0.25f);
 						}
 					}
 					else if (GetKeyboardPress(DIK_D) == true || GetJoypadPress(nCntPlayer, JOYKEY_RIGHT) == true)
@@ -301,7 +303,7 @@ void UpdatePlayer(void)
 
 						if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
 						{// GŽè‚ðL‚Î‚µ‚Ä‚¢‚é‚Æ‚«‚ÍŒü‚«‚ð•Ï‚¦‚È‚¢
-							pPlayer[nCntPlayer].fAngle = pCamera->rot.y + (-D3DX_PI * 0.25f);
+							pPlayer[nCntPlayer].fAngleY = pCamera->rot.y + (-D3DX_PI * 0.25f);
 						}
 					}
 					else if (GetKeyboardPress(DIK_S) == true || GetJoypadPress(nCntPlayer, JOYKEY_DOWN) == true)
@@ -312,7 +314,7 @@ void UpdatePlayer(void)
 
 						if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
 						{// GŽè‚ðL‚Î‚µ‚Ä‚¢‚é‚Æ‚«‚ÍŒü‚«‚ð•Ï‚¦‚È‚¢
-							pPlayer[nCntPlayer].fAngle = pCamera->rot.y;
+							pPlayer[nCntPlayer].fAngleY = pCamera->rot.y;
 						}
 					}
 
@@ -325,7 +327,7 @@ void UpdatePlayer(void)
 
 					if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
 					{// GŽè‚ðL‚Î‚µ‚Ä‚¢‚é‚Æ‚«‚ÍŒü‚«‚ð•Ï‚¦‚È‚¢
-						pPlayer[nCntPlayer].fAngle = pCamera->rot.y + (D3DX_PI * 0.5f);
+						pPlayer[nCntPlayer].fAngleY = pCamera->rot.y + (D3DX_PI * 0.5f);
 					}
 
 					pPlayer->bMove = true;
@@ -337,7 +339,7 @@ void UpdatePlayer(void)
 
 					if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
 					{// GŽè‚ðL‚Î‚µ‚Ä‚¢‚é‚Æ‚«‚ÍŒü‚«‚ð•Ï‚¦‚È‚¢
-						pPlayer[nCntPlayer].fAngle = pCamera->rot.y - (D3DX_PI * 0.5f);
+						pPlayer[nCntPlayer].fAngleY = pCamera->rot.y - (D3DX_PI * 0.5f);
 					}
 
 					pPlayer->bMove = true;
@@ -393,6 +395,11 @@ void UpdatePlayer(void)
 				{// Œ³‚Ì’·‚³‚É–ß‚·
 					pPlayer->aModel[2].scale.y = 1.0f;
 					pPlayer->TentacleState = PLTENTACLESTATE_NORMAL;
+					
+					if (pPlayer->motionType != MOTIONTYPE_DASH)
+					{// ‚‘¬ˆÚ“®‚µ‚Ä‚¢‚È‚¢‚Æ‚«
+						pPlayer->fAngleX = 0.0f;
+					}
 				}
 
 				break;
@@ -416,13 +423,13 @@ void UpdatePlayer(void)
 						if (pPlayer->bMove == true)
 						{// ˆÚ“®‚µ‚Ä‚é
 							pPlayer->state = PLAYERSTATE_MOVE;
-							pPlayer->rot.x = 0.0f;
+							pPlayer->fAngleX = 0.0f;
 							SetMotionPlayer(nCntPlayer, MOTIONTYPE_MOVE, true, 20);
 						}
 						else
 						{// ˆÚ“®‚µ‚Ä‚È‚¢
 							pPlayer->state = PLAYERSTATE_WAIT;
-							pPlayer->rot.x = 0.0f;
+							pPlayer->fAngleX = 0.0f;
 							SetMotionPlayer(nCntPlayer, MOTIONTYPE_NEUTRAL, true, 20);
 						}
 					}
@@ -450,7 +457,7 @@ void UpdatePlayer(void)
 				pPlayer->posOld = START_POS;
 				pPlayer->move = FIRST_POS;
 				pPlayer->rot = FIRST_POS;
-				pPlayer->fAngle = 0.0f;
+				pPlayer->fAngleY = 0.0f;
 				pPlayer->state = PLAYERSTATE_WAIT;
 			}
 #endif
@@ -530,17 +537,28 @@ void UpdatePlayer(void)
 				pPlayer->fFog = FOG_MAX;
 			}
 
-			fmoveAngle = pPlayer->fAngle - pPlayer->rot.y;
+			fmoveAngle = pPlayer->fAngleY - pPlayer->rot.y;
 
 			// Œü‚«‚ð’²®
-			CorrectAngle(&pPlayer->fAngle, fmoveAngle);
+			CorrectAngle(&pPlayer->fAngleY, fmoveAngle);
 
-			if (pPlayer->rot.y != pPlayer->fAngle)
+			if (pPlayer->rot.y != pPlayer->fAngleY)
 			{// –Ú•W’n“_‚É‚Â‚­‚Ü‚ÅŠµ«‚ÅŠp“x‚ð‘«‚·
-				pPlayer->rot.y += (pPlayer->fAngle - pPlayer->rot.y) * INERTIA_ANGLE;
+				pPlayer->rot.y += (pPlayer->fAngleY - pPlayer->rot.y) * INERTIA_ANGLE;
 
 				// Œü‚«‚ð’²®
 				CorrectAngle(&pPlayer->rot.y, pPlayer->rot.y);
+			}
+
+			// Œü‚«‚ð’²®
+			CorrectAngle(&pPlayer->fAngleX, pPlayer->fAngleX - pPlayer->rot.x);
+
+			if (pPlayer->rot.x != pPlayer->fAngleX)
+			{// –Ú•W’n“_‚É‚Â‚­‚Ü‚ÅŠµ«‚ÅŠp“x‚ð‘«‚·
+				pPlayer->rot.x += (pPlayer->fAngleX - pPlayer->rot.x) * INERTIA_ANGLE;
+
+				// Œü‚«‚ð’²®
+				CorrectAngle(&pPlayer->rot.x, pPlayer->rot.x);
 			}
 
 			D3DXVECTOR3 dist;
@@ -566,8 +584,8 @@ void UpdatePlayer(void)
 			{// GŽèL‚Î‚µƒAƒNƒVƒ‡ƒ“
 				pPlayer->TentacleState = PLTENTACLESTATE_TENTACLELONG;
 
-				pPlayer->fAngle = D3DX_PI + pCamera->rot.y;
-				CorrectAngle(&pPlayer->fAngle, pPlayer->fAngle);
+				pPlayer->fAngleY = D3DX_PI + pCamera->rot.y;
+				CorrectAngle(&pPlayer->fAngleY, pPlayer->fAngleY);
 
 				D3DXVECTOR3 dir, rot;
 				dir = pPlayer->posX - pPlayer->pos;
@@ -577,8 +595,10 @@ void UpdatePlayer(void)
 				rot.x = (dir.y / 0.95f) * 1.2f;
 				//rot.z = 0.0f;
 
-				pPlayer->rot.x = rot.x;
-				CorrectAngle(&pPlayer->rot.x, pPlayer->rot.x);
+				pPlayer->fAngleX = rot.x;
+				//pPlayer->rot.y = rot.y;
+				CorrectAngle(&pPlayer->fAngleX, pPlayer->fAngleX);
+				//CorrectAngle(&pPlayer->rot.y, pPlayer->rot.y);
 
 				pPlayer->vecX = (pCamera->posR - pCamera->posV) * DASH_RATE;
 
@@ -806,6 +826,7 @@ void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	pPlayer[nIdx].bAct = false;
 	pPlayer[nIdx].bMove = false;
 	pPlayer[nIdx].bUse = true;
+	pPlayer[nIdx].bBlind = false;
 	pPlayer[nIdx].nFood = 0;
 	pPlayer[nIdx].nMaxFood = 1;
 	pPlayer[nIdx].nTentacleCooldown = 0;

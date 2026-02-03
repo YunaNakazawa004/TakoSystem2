@@ -86,9 +86,9 @@ void UpdateCamera(void)
 		CorrectAngle(&pPlayer->rot.y, ((pPlayer->rot.y - D3DX_PI) - pCamera->rot.y));
 
 		// 目的の注視点を設定
-		pCamera->posRDest.x = pPlayer->pos.x + sinf(D3DX_PI + pPlayer->fAngle) * pCamera->fRDistance;
+		pCamera->posRDest.x = pPlayer->pos.x + sinf(D3DX_PI + pPlayer->fAngleY) * pCamera->fRDistance;
 		pCamera->posRDest.y = pPlayer->pos.y + HEIGHT;
-		pCamera->posRDest.z = pPlayer->pos.z + cosf(D3DX_PI + pPlayer->fAngle) * pCamera->fRDistance;
+		pCamera->posRDest.z = pPlayer->pos.z + cosf(D3DX_PI + pPlayer->fAngleY) * pCamera->fRDistance;
 
 		// 目的の視点を設定
 		pCamera->posVDest.x = pCamera->posRDest.x + sinf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance * sinf((D3DX_PI * 0.5f) - pCamera->fAngle);
@@ -358,6 +358,19 @@ void SetNumCamera(int nNum)
 		g_aCamera[1].viewport.MinZ = 0.0f;
 		g_aCamera[1].viewport.MaxZ = 1.0f;
 	}
+}
+
+//=============================================================================
+// カメラの位置設定
+//=============================================================================
+void SetCameraPos(int nIdx, D3DXVECTOR3 posV, D3DXVECTOR3 posR)
+{
+	Camera* pCamera = GetCamera();
+	
+	pCamera[nIdx].posV = posV;
+	pCamera[nIdx].posVDest = posV;
+	pCamera[nIdx].posR = posR;
+	pCamera[nIdx].posRDest = posR;
 }
 
 //=============================================================================

@@ -5,11 +5,13 @@
 // 
 //=============================================================================
 #include "computer.h"
+#include "player.h"
 #include "esa.h"
 #include "pot.h"
 #include "time.h"
 #include "meshcylinder.h"
 #include "effect_3d.h"
+#include "particle_3d.h"
 #include "camera.h"
 #include "input.h"
 #include "debugproc.h"
@@ -17,8 +19,8 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define MOVEMENT				(D3DXVECTOR3(30.0f, 5.0f, 30.0f))		// 移動量
-#define TENTACLE_MOVEMENT		(D3DXVECTOR3(40.0f, 7.0f, 40.0f))		// 触手移動の移動量
+#define MOVEMENT				(D3DXVECTOR3(1.0f, 1.0f, 1.0f))			// 移動量
+#define TENTACLE_MOVEMENT		(D3DXVECTOR3(5.0f, 3.0f, 5.0f))			// 触手移動の移動量
 #define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// 向き移動量
 #define INERTIA_MOVE			(0.2f)									// 移動の慣性
 #define DASH_MOVE				(0.01f)									// 高速移動の速さ
@@ -26,16 +28,17 @@
 #define MAX_MOVE				(10.0f)									// 移動の制限
 #define INERTIA_ANGLE			(0.1f)									// 角度の慣性
 #define POS_ERROR				(10.0f)									// 位置の誤差
-#define TENTACLE_RANGE			(DISTANCE * DASH_REACH)					// 触手のリーチ
+#define TENTACLE_RANGE			(DISTANCE * DASH_REACH)					// 触手の長さ(見た目)
+#define TENTACLE_REACH			(1000.0f)								// 触手のリーチ(実際)
 #define CPU_TENTACLE			(8)										// 足の数
 
-#define FAR_DISTANCE			(6000.0f)								// 遠すぎる
+#define FAR_DISTANCE			(1100.0f)								// 遠すぎる
 #define DISTANCE_SCORE			(0.001f)								// 距離スコアの減衰
-#define NEAR_WALL_DISTANCE		(1500.0f)								// 壁際の距離
-#define NEAR_PILLAR_DISTANCE	(2000.0f)								// 柱に近いかの距離
+#define NEAR_WALL_DISTANCE		(200.0f)								// 壁際の距離
+#define NEAR_PILLAR_DISTANCE	(200.0f)								// 柱に近いかの距離
 
 #define ESA_DOT_SCORE			(3.0f)									// エサの進行方向スコア
-#define ESA_ENEMY_DISTANCE		(2500.0f)								// 近い敵との距離
+#define ESA_ENEMY_DISTANCE		(300.0f)								// 近い敵との距離
 #define ESA_ENEMY_DIST_SCORE	(4.0f)									// 近い敵のスコア
 #define ESA_PILLAR_SCORE		(2.0f)									// 柱のスコア
 #define ESA_WATER_SCORE			(1.0f)									// 浮いているエサのスコア
@@ -47,9 +50,9 @@
 #define ENEMY_BLIND_SCORE		(3.0f)									// 敵の視界が悪いスコア
 #define	ENEMY_TENTACLE_SCORE	(2.0f)									// 敵の触手がクールダウン中のスコア
 #define ENEMY_COUNT_SCORE		(5.0f)									// 敵が複数いるときのスコア
-#define ENEMY_COUNT_DIST		(3000.0f)								// 敵が複数いるときの距離
+#define ENEMY_COUNT_DIST		(300.0f)								// 敵が複数いるときの距離
 
-#define ESCAPE_ENEMY_DIST		(8000.0f)								// 遠すぎる敵とは判定しない
+#define ESCAPE_ENEMY_DIST		(1100.0f)								// 遠すぎる敵とは判定しない
 #define ESCAPE_DOT				(-0.3f)									// 逃げるかの角度
 #define	ESCAPE_DOT_SCORE		(6.0f)									// 追われているときのスコア
 #define ESCAPE_ENEMY_MOVE		(5.0f)									// 敵の速度が速いときのスコア
@@ -66,15 +69,15 @@
 #define INK_ESA_COUNT			(0.2f)									// 自分のエサが多い
 #define INK_PILLAR_SCORE		(3.0f)									// 柱が近いスコア
 
-#define POT_DISTANCE			(3000.0f)								// タコつぼが遠すぎる
+#define POT_DISTANCE			(1100.0f)								// タコつぼが遠すぎる
 #define POT_ESA_SCORE			(0.4f)									// 自分のエサが多い
-#define POT_ENEMY_DISTANCE		(3000.0f)								// 敵との距離
+#define POT_ENEMY_DISTANCE		(1100.0f)								// 敵との距離
 #define POT_ENEMY_DIST_SCORE	(3.0f)									// 敵との距離が遠いスコア
 #define POT_PHASE_1				(30)									// タコつぼ優先になる時間第一段階
 #define POT_PHASE_2				(10)									// タコつぼ優先になる時間第二段階
 #define POT_PHASE_1_SCORE		(10.0f)									// 第一段階のスコア
 #define POT_PHASE_2_SCORE		(20.0f)									// 第二段階のスコア
-#define POT_CLOSE_DISTANCE		(800.0f)								// タコつぼと近い
+#define POT_CLOSE_DISTANCE		(300.0f)								// タコつぼと近い
 
 #define EXPLORE_ESA				(3)										// エサを探す
 #define EXPLORE_LITTLE_ESA		(6)										// 少しエサを探す
@@ -85,8 +88,9 @@
 #define NODE_COUNT				(16)									// ノードの円分割
 #define NODE_HEIGHT				(3)										// ノードの縦分割
 
-#define INK_COOLDOWN			(300)									// 墨吐きクールダウン
-#define TENTACLE_COOLDOWN		(60)									// 触手移動クールダウン
+#define TENTACLE_CT				(ONE_SECOND * 1 + ONE_SECOND)			// 触手のクールダウン
+#define INK_CT					(ONE_SECOND * 5 + ONE_SECOND)			// 墨吐きのクールダウン
+#define CAMERA_HEIGHT			(100.0f)								// 仮想カメラの高さ
 #define CPU_THINK				(5)										// 思考間隔
 #define CPU_WIDTH				(5.0f)									// 幅
 #define CPU_HEIGHT				(10.0f)									// 高さ
@@ -211,7 +215,7 @@ void InitComputer(void)
 	}
 
 	// ランダムな位置に設定
-	SetRandomComputer(10);
+	SetRandomComputer(5);
 	//SetComputer(D3DXVECTOR3(0.0f, 10000.0f, 4000.0f), FIRST_POS);
 
 	// ノードの設置
@@ -336,6 +340,16 @@ void UpdateComputer(void)
 
 			pComputer->phys.posOld = pComputer->phys.pos;
 
+			if (pComputer->nInkCooldown > 0)
+			{//	墨吐きクールダウン
+				pComputer->nInkCooldown--;
+			}
+
+			if (pComputer->nTentacleCooldown > 0)
+			{// 触手クールダウン
+				pComputer->nTentacleCooldown--;
+			}
+
 			if (D3DXVec3Length(&pComputer->phys.move) > 0.1f)
 			{// 方向ベクトル
 				D3DXVec3Normalize(&pComputer->phys.dir, &pComputer->phys.move);
@@ -393,12 +407,10 @@ void UpdateComputer(void)
 
 				InkAttack(pComputer);
 
-				break;
-
-			case CPUSTATE_HIDE:					// 柱の裏に隠れる
-				PrintDebugProc("CPUの状態 : [ CPUSTATE_HIDE ]\n");
-
-				HideBehindPillar(pComputer);
+				if (pComputer->bFinishMotion == true)
+				{// モーション終了
+					SetMotionComputer(nCntComputer, MOTIONTYPE_MOVE, true, 20);
+				}
 
 				break;
 
@@ -444,6 +456,47 @@ void UpdateComputer(void)
 				}
 
 				FinalCollect(pComputer);
+
+				break;
+			}
+
+			switch (pComputer->TentState)
+			{
+			case CPUTENTACLESTATE_NORMAL:			// 通常状態
+				pComputer->aModel[2].scale.y = 1.0f;
+
+				break;
+
+			case CPUTENTACLESTATE_TENTACLELONG:		// 触手伸ばし状態
+				if (pComputer->bFinishMotion == true)
+				{// 触手が伸ばし終わったら
+					// 触手を伸ばす
+					if (pComputer->aModel[2].scale.y < TENTACLE_RANGE * 0.1f)
+					{// リーチより短い
+						pComputer->aModel[2].scale.y += 5.0f;
+					}
+					else
+					{// リーチの長さになった
+						pComputer->TentState = CPUTENTACLESTATE_TENTACLESHORT;
+
+						SetMotionComputer(nCntComputer, MOTIONTYPE_TENTACLESHORT, true, 20);
+					}
+				}
+
+				break;
+
+			case CPUTENTACLESTATE_TENTACLESHORT:		// 触手縮め状態
+				if (pComputer->aModel[2].scale.y > 1.0f)
+				{// 触手を短くする
+					pComputer->aModel[2].scale.y += (1.0f - pComputer->aModel[2].scale.y) * 0.5f;
+				}
+				else
+				{// 元の長さに戻す
+					pComputer->aModel[2].scale.y = 1.0f;
+					pComputer->TentState = CPUTENTACLESTATE_NORMAL;
+
+					SetMotionComputer(nCntComputer, MOTIONTYPE_MOVE, true, 20);
+				}
 
 				break;
 			}
@@ -513,13 +566,14 @@ void UpdateComputer(void)
 				CorrectAngle(&pComputer->phys.rot.y, pComputer->phys.rot.y);
 			}
 
-			//SetEffect3D(70, pComputer->phys.pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0.0f, 30.0f, -0.1f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+			SetEffect3D(70, pComputer->phys.pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0.0f, 30.0f, -0.1f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), EFFECTTYPE_NORMAL);
 
 			//PrintDebugProc("ENEMY : pos ( %f %f %f )\n",
 			//	pComputer->phys.pos.x, pComputer->phys.pos.y, pComputer->phys.pos.z);
 			//PrintDebugProc("ENEMY : move ( %f %f %f )\n",
 			//	pComputer->phys.move.x, pComputer->phys.move.y, pComputer->phys.move.z);
 			PrintDebugProc("ENEMY : nFood ( %d )\n", pComputer->nFoodCount);
+			PrintDebugProc("ENEMY : TargetPot ( %d )\n", pComputer->nTargetPotIdx);
 			//PrintDebugProc("ENEMY : ノード ( %f %f %f )\n",
 			//	pComputer->extarget.x, pComputer->extarget.y, pComputer->extarget.z);
 
@@ -577,7 +631,7 @@ void DrawComputer(void)
 			// 全モデル(パーツ)の描画
 			for (int nCntModel = 0; nCntModel < pComputer->nNumModel; nCntModel++)
 			{
-				D3DXMATRIX mtxRotModel, mtxTransModel;		// 計算用マトリックス
+				D3DXMATRIX mtxRotModel, mtxTransModel, mtxScaleModel;		// 計算用マトリックス
 				D3DXMATRIX mtxParent;						// 親のマトリックス
 
 				// パーツのワールドマトリックスの初期化
@@ -586,6 +640,10 @@ void DrawComputer(void)
 				// パーツの向きを反映
 				D3DXMatrixRotationYawPitchRoll(&mtxRotModel, pComputer->aModel[nCntModel].rot.y, pComputer->aModel[nCntModel].rot.x, pComputer->aModel[nCntModel].rot.z);
 				D3DXMatrixMultiply(&pComputer->aModel[nCntModel].mtxWorld, &pComputer->aModel[nCntModel].mtxWorld, &mtxRotModel);
+
+				// 拡大率を反映
+				D3DXMatrixScaling(&mtxScaleModel, pComputer->aModel[nCntModel].scale.x, pComputer->aModel[nCntModel].scale.y, pComputer->aModel[nCntModel].scale.z);
+				D3DXMatrixMultiply(&pComputer->aModel[nCntModel].mtxWorld, &pComputer->aModel[nCntModel].mtxWorld, &mtxScaleModel);
 
 				// パーツの位置を反映
 				D3DXMatrixTranslation(&mtxTransModel, pComputer->aModel[nCntModel].pos.x, pComputer->aModel[nCntModel].pos.y, pComputer->aModel[nCntModel].pos.z);
@@ -706,26 +764,6 @@ void Escape(Computer* pComputer)
 	pComputer->phys.move.x += dir.x * MOVEMENT.x;
 	pComputer->phys.move.y += dir.y * MOVEMENT.y;
 	pComputer->phys.move.z += dir.z * MOVEMENT.z;
-
-	if (IsNearPillar(pComputer->phys.pos))
-	{// 柱が近いなら隠れる状態へ
-		pComputer->state = CPUSTATE_HIDE;
-	}
-}
-
-//=============================================================================
-// 柱に隠れる
-//=============================================================================
-void HideBehindPillar(Computer* pComputer)
-{
-	//D3DXVECTOR3 safePos = GetOppositeSideOfPillar(pComputer->phys.pos);
-	//D3DXVECTOR3 dir = safePos - pComputer->phys.pos;
-	//D3DXVec3Normalize(&dir, &dir);
-
-	//// 慣性移動
-	//pComputer->phys.move.x += dir.x * MOVEMENT.x;
-	//pComputer->phys.move.y += dir.y * MOVEMENT.y;
-	//pComputer->phys.move.z += dir.z * MOVEMENT.z;
 }
 
 //=============================================================================
@@ -739,9 +777,14 @@ void InkAttack(Computer* pComputer)
 	}
 
 	// 墨を吐く処理
-	//EmitInk(pComputer); 
+	SetParticle3D(14, 30, pComputer->phys.pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pComputer->phys.rot.x, pComputer->phys.rot.y - D3DX_PI, pComputer->phys.rot.z), 4.0f, 200, 8.0f, 0.06f, EFFECTTYPE_OCTOINK);
+	SetParticle3D(14, 30, pComputer->phys.pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pComputer->phys.rot.x, pComputer->phys.rot.y - D3DX_PI, pComputer->phys.rot.z), 4.0f, 200, 8.0f, 0.06f, EFFECTTYPE_OCTOINK);
+	SetParticle3D(14, 30, pComputer->phys.pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pComputer->phys.rot.x, pComputer->phys.rot.y - D3DX_PI, pComputer->phys.rot.z), 4.0f, 200, 8.0f, 0.06f, EFFECTTYPE_OCTOINK);
 
-	pComputer->nInkCooldown = INK_COOLDOWN;
+	// 墨吐きモーション
+	SetMotionComputer(pComputer->nIdx, MOTIONTYPE_INK, true, 20);
+
+	pComputer->nInkCooldown = INK_CT;
 
 	// 墨を吐いた後は逃げる or 攻撃に戻る
 	pComputer->state = (pComputer->fEscapeScore > pComputer->fAttackScore) ? CPUSTATE_ESCAPE : CPUSTATE_ATTACK;
@@ -797,7 +840,7 @@ void GoToPot(Computer* pComputer)
 	// 触手移動
 	float dist = D3DXVec3Length(&posDiff);
 
-	if (dist < TENTACLE_RANGE)
+	if (dist < TENTACLE_REACH)
 	{// 近いなら触手移動
 		FindTentacleTarget(pComputer);
 		UseTentacle(pComputer);
@@ -859,7 +902,7 @@ void StealFood(Computer* pComputer)
 	D3DXVECTOR3 posDiff = pPot->pos - pComputer->phys.pos;
 	float dist = D3DXVec3Length(&posDiff);
 
-	if (dist < TENTACLE_RANGE)
+	if (dist < TENTACLE_REACH)
 	{
 		pComputer->nFoodCount += pPot->nFood;
 		pPot->nFood = 0;
@@ -906,7 +949,7 @@ void FinalCollect(Computer* pComputer)
 	D3DXVECTOR3 posDiff = pPot->pos - pComputer->phys.pos;
 	float dist = D3DXVec3Length(&posDiff);
 
-	if (dist < TENTACLE_RANGE)
+	if (dist < TENTACLE_REACH)
 	{// 触手で高速移動も積極的に使う
 		FindTentacleTarget(pComputer);
 		UseTentacle(pComputer);
@@ -963,17 +1006,24 @@ D3DXVECTOR3 GetEnemyPosition(Computer* pComputer)
 
 	int nIdx = pComputer->nTargetEnemyIdx;
 	Computer* computer = GetComputer();
+	Player* pPlayer = GetPlayer();
 
 	// 範囲外チェック
+	if (nIdx >= 100)
+	{// プレイヤーがターゲット
+		return pPlayer[nIdx - 100].pos;
+	}
+
 	if (nIdx >= MAX_COMPUTER || computer[nIdx].bUse == false)
 	{// ターゲットをリセット
 		pComputer->nTargetEnemyIdx = -1;
 
 		return pComputer->phys.pos;
 	}
-
-	// エサの座標を返す
-	return computer[nIdx].phys.pos;
+	else
+	{// 敵の座標を返す
+		return computer[nIdx].phys.pos;
+	}
 }
 
 //=============================================================================
@@ -1009,12 +1059,39 @@ D3DXVECTOR3 GetNearestEnemy(Computer* pComputer)
 		}
 	}
 
+	Player* pPlayer = GetPlayer();
+
+	for (int nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++, pPlayer++)
+	{
+		D3DXVECTOR3 toPlayer = pPlayer->pos - pComputer->phys.pos;
+
+		float dist = D3DXVec3Length(&toPlayer);
+
+		if (dist > ESCAPE_ENEMY_DIST)
+		{// 遠すぎる敵は無視
+			continue;
+		}
+
+		if (fBestDist > dist)
+		{// より近い
+			fBestDist = dist;
+			nBestCount = nCntPlayer + 100;
+		}
+	}
+
 	if (nBestCount == -1)
 	{// 誰も近くない
 		return pComputer->phys.pos;
 	}
 
-	return pEnemy[nBestCount].phys.pos;
+	if (nBestCount >= 100)
+	{// プレイヤーが近い
+		return pPlayer[nBestCount - 100].pos;
+	}
+	else
+	{// CPU
+		return pEnemy[nBestCount].phys.pos;
+	}
 }
 
 //=============================================================================
@@ -1176,6 +1253,71 @@ void CalcAttackScore(Computer* pComputer)
 		}
 	}
 
+	Player* pPlayer = GetPlayer();
+
+	for (int nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++, pPlayer++)
+	{
+		D3DXVECTOR3 toPlayer = pPlayer->pos - pComputer->phys.pos;
+		float dist = D3DXVec3Length(&toPlayer);
+		D3DXVec3Normalize(&pComputer->phys.dir, &toPlayer);
+
+		if (dist > FAR_DISTANCE)
+		{// 遠すぎる敵は無視
+			continue;
+		}
+
+		float score = 0.0f;
+
+		// 距離が近いほど高スコア
+		score += (FAR_DISTANCE - dist) * DISTANCE_SCORE;
+
+		// 敵がエサを多く持っている
+		score += pPlayer->nFood * 0.5f;
+
+		// 敵が自分の進行方向にいるか（内積）
+		D3DXVECTOR3 dirNorm, toPlayerNorm;
+		D3DXVec3Normalize(&dirNorm, &pComputer->phys.dir);
+		D3DXVec3Normalize(&toPlayerNorm, &toPlayer);
+
+		float fDot = D3DXVec3Dot(&dirNorm, &toPlayerNorm);
+
+		if (fDot > 0.5f)
+		{ // 慣性で追いやすい
+			score += ENEMY_DOT_SCORE;
+		}
+
+		if (IsNearWall(pPlayer->pos) == false)
+		{// 敵が壁から離れている
+			score += ENEMY_FAR_WALL_SCORE;
+		}
+
+		if (IsBehindPillar(pComputer->phys.pos, pPlayer->pos) == false)
+		{// 敵が柱の裏側にいない
+			score += ENEMY_PILLAR_SCORE;
+		}
+
+		if (pPlayer->bBlind)
+		{// 敵が墨で視界が悪い
+			score += ENEMY_BLIND_SCORE;
+		}
+
+		if (pPlayer->nTentacleCooldown > 0)
+		{// 敵の触手がクールダウン中
+			score += ENEMY_TENTACLE_SCORE;
+		}
+
+		if (CountEnemiesNear(pComputer->nIdx, pComputer->phys.pos, ENEMY_COUNT_DIST) >= 2)
+		{// 敵が複数近くにいるなら危険
+			score -= ENEMY_COUNT_SCORE;
+		}
+
+		if (score > bestScore)
+		{// 最もスコアが高い敵を選ぶ
+			bestScore = score;
+			pComputer->nTargetEnemyIdx = nCntPlayer + 100;
+		}
+	}
+
 	pComputer->fAttackScore = bestScore;
 }
 
@@ -1261,6 +1403,73 @@ void CalcEscapeScore(Computer* pComputer)
 		}
 	}
 
+	Player* pPlayer = GetPlayer();
+
+	for (int nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++, pPlayer++)
+	{
+		D3DXVECTOR3 toPlayer = pPlayer->pos - pComputer->phys.pos;
+
+		float dist = D3DXVec3Length(&toPlayer);
+
+		if (dist > ESCAPE_ENEMY_DIST)
+		{// 遠すぎる敵は無視
+			continue;
+		}
+
+		float score = 0.0f;
+
+		// 敵が近いほど逃げるべき
+		score += (ESCAPE_ENEMY_DIST - dist) * DISTANCE_SCORE;
+
+		// 敵が後方にいる（内積が負）
+		D3DXVECTOR3 dirNorm, toPlayerNorm;
+		D3DXVec3Normalize(&dirNorm, &pComputer->phys.dir);
+		D3DXVec3Normalize(&toPlayerNorm, &toPlayer);
+
+		float fDot = D3DXVec3Dot(&dirNorm, &toPlayerNorm);
+
+		if (fDot < ESCAPE_DOT)
+		{// 後ろから追われている
+			score += ESCAPE_DOT_SCORE;
+		}
+
+		float mySpeed = D3DXVec3Length(&pComputer->phys.move);
+		float PlayerSpeed = D3DXVec3Length(&pPlayer->move);
+
+		if (PlayerSpeed > mySpeed)
+		{// 敵の速度が自分より速い
+			score += ESCAPE_ENEMY_MOVE;
+		}
+
+		if (CountEnemiesNear(pComputer->nIdx, pComputer->phys.pos, ENEMY_COUNT_DIST) >= 2)
+		{// 敵が複数近くにいる
+			score += ESCAPE_ENEMY_SCORE;
+		}
+
+		// 自分のエサが多い
+		score += pComputer->nFoodCount * ESCAPE_ESA_COUNT;
+
+		if (IsNearPillar(pComputer->phys.pos) == true)
+		{// 柱が近い
+			score += ESCAPE_PILLAR_SCORE;
+		}
+
+		if (pPlayer->nTentacleCooldown == 0)
+		{// 敵の触手がクールダウンしていない
+			score += ESCAPE_TENTACLE_SCORE;
+		}
+
+		if (pPlayer->nInkCooldown < ESCAPE_INK_COUNT)
+		{// 敵が墨を吐いた直後
+			score += ESCAPE_INK_SCORE;
+		}
+
+		if (score > bestScore)
+		{// 最も危険な敵のスコアを採用
+			bestScore = score;
+		}
+	}
+
 	pComputer->fEscapeScore = bestScore;
 }
 
@@ -1326,6 +1535,67 @@ void CalcInkScore(Computer* pComputer)
 
 		// 敵がエサを多く持っている
 		score += pEnemy->nFoodCount * INK_ENEMY_ESA_COUNT;
+
+		if (CountEnemiesNear(pComputer->nIdx, pComputer->phys.pos, ENEMY_COUNT_DIST) >= 2)
+		{// 敵が複数近くにいる
+			score += INK_ENEMY_COUNT_SCORE;
+		}
+
+		// 自分のエサが多い
+		score += pComputer->nFoodCount * INK_ESA_COUNT;
+
+		if (IsNearPillar(pComputer->phys.pos) == true)
+		{// 柱が近い
+			score += INK_PILLAR_SCORE;
+		}
+
+		if (score > bestScore)
+		{// 最も墨が有効な敵を採用
+			bestScore = score;
+		}
+	}
+
+	Player* pPlayer = GetPlayer();
+
+	for (int nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++, pPlayer++)
+	{
+		D3DXVECTOR3 toPlayer = pPlayer->pos - pComputer->phys.pos;
+
+		float dist = D3DXVec3Length(&toPlayer);
+
+		if (dist > FAR_DISTANCE)
+		{// 遠すぎる敵は無視
+			continue;
+		}
+
+		float score = 0.0f;
+
+		// 敵が近いほど墨が有効
+		score += (FAR_DISTANCE - dist) * DISTANCE_SCORE;
+
+		// 敵が後方にいる
+		D3DXVECTOR3 dirNorm, toPlayerNorm;
+		D3DXVec3Normalize(&dirNorm, &pComputer->phys.dir);
+		D3DXVec3Normalize(&toPlayerNorm, &toPlayer);
+
+		float fDot = D3DXVec3Dot(&dirNorm, &toPlayerNorm);
+
+		if (fDot < ESCAPE_DOT)
+		{// 後ろから追われている
+			score += ESCAPE_DOT_SCORE;
+		}
+
+		// 敵が自分より速い（追いつかれる）
+		float mySpeed = D3DXVec3Length(&pComputer->phys.move);
+		float PlayerSpeed = D3DXVec3Length(&pPlayer->move);
+
+		if (PlayerSpeed > mySpeed)
+		{// 敵の速度が自分より速い
+			score += INK_ENEMY_MOVE;
+		}
+
+		// 敵がエサを多く持っている
+		score += pPlayer->nFood * INK_ENEMY_ESA_COUNT;
 
 		if (CountEnemiesNear(pComputer->nIdx, pComputer->phys.pos, ENEMY_COUNT_DIST) >= 2)
 		{// 敵が複数近くにいる
@@ -1429,6 +1699,20 @@ bool IsEnemyNear(int nIdx, D3DXVECTOR3 pos, float fRange)
 		}
 	}
 
+	Player* pPlayer = GetPlayer();
+
+	for (int nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++, pPlayer++)
+	{
+		D3DXVECTOR3 posDiff = pPlayer->pos - pos;
+
+		float dist = D3DXVec3Length(&posDiff);
+
+		if (dist < fRange)
+		{// 近い
+			return true;
+		}
+	}
+
 	return false;
 }
 
@@ -1494,6 +1778,20 @@ int CountEnemiesNear(int nIdx, D3DXVECTOR3 pos, float range)
 		}
 	}
 
+	Player* pPlayer = GetPlayer();
+
+	for (int nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++, pPlayer++)
+	{
+		D3DXVECTOR3 posDiff = pPlayer->pos - pos;
+
+		float dist = D3DXVec3Length(&posDiff);
+
+		if (dist < range)
+		{// 近い
+			nCount++;
+		}
+	}
+
 	return nCount;
 }
 
@@ -1515,7 +1813,7 @@ void FindTentacleTarget(Computer* pComputer)
 	float bestScore = -99999.0f;
 	D3DXVECTOR3 bestPoint(0, 0, 0);
 
-	// 360度にレイを飛ばす（例：16方向）
+	// 360度にレイを飛ばす
 	for (int nCntRay = 0; nCntRay < RAY_COUNT; nCntRay++)
 	{
 		float angle = (D3DX_PI * 2 / RAY_COUNT) * nCntRay;
@@ -1545,6 +1843,11 @@ void FindTentacleTarget(Computer* pComputer)
 			dist = distInner;
 		}
 
+		if (dist > TENTACLE_REACH)
+		{// リーチの範囲外
+			continue;
+		}
+
 		// ヒット位置
 		D3DXVECTOR3 hitPoint = pComputer->phys.pos + dir * dist;
 
@@ -1554,7 +1857,7 @@ void FindTentacleTarget(Computer* pComputer)
 
 		float score = D3DXVec3Dot(&dirNorm, &dir);
 
-		if (dist < 1500.0f)
+		if (dist < 200.0f)
 		{// 距離が近すぎると触手が短くなるので少し減点
 			score -= 1.0f;
 		}
@@ -1655,7 +1958,7 @@ bool ShouldUseTentacle(Computer* pComputer)
 		return false;
 	}
 
-	if (D3DXVec3Length(&pComputer->phys.move) < 20.0f)
+	if (D3DXVec3Length(&pComputer->phys.move) < 5.0f)
 	{// 速度が遅いときは使う（加速目的）
 		return true;
 	}
@@ -1702,9 +2005,10 @@ void UseTentacle(Computer* pComputer)
 	pComputer->phys.dir = dir;
 
 	// 触手クールダウン
-	pComputer->nTentacleCooldown = TENTACLE_COOLDOWN;
+	pComputer->nTentacleCooldown = TENTACLE_CT;
 
 	// 触手モーション開始
+	SetMotionComputer(pComputer->nIdx, MOTIONTYPE_TENTACLELONG, true, 20);
 }
 
 //=============================================================================
