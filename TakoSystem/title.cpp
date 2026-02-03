@@ -12,6 +12,7 @@
 #include "fade.h"
 #include "camera.h"
 #include "game.h"
+#include "object.h"
 
 // マクロ定義
 #define	MAX_TITLE	(5)	// タイトルで表示するテクスチャの最大数
@@ -34,6 +35,9 @@ void InitTitle(void)
 
 	g_TitleDeley = 0.0f;	// ディレイの値を初期化
 	g_PressEnterDeley = 0;
+
+	// 配置物の初期化処理
+	InitObject("objpos.txt");
 
 	// ライトの設定
 	SetLightColor(0, D3DXCOLOR(0.8f, 0.9f, 1.0f, 1.0f));
@@ -162,6 +166,9 @@ void UninitTitle(void)
 	// サウンドの停止
 	StopSound();
 
+	// 配置物の終了処理
+	UninitObject();
+
 	// テクスチャの破棄
 	for (int nCntTitle = 0; nCntTitle < MAX_TITLE; nCntTitle++)
 	{// タイトルの数だけ確認する
@@ -287,6 +294,9 @@ void UpdateTitle(void)
 void DrawTitle(void)
 {
 	LPDIRECT3DDEVICE9 pDevice;	// デバイスへのポインタ
+
+	// 配置物の描画処理
+	DrawObject();
 
 	// デバイスの取得
 	pDevice = GetDevice();
