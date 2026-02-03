@@ -71,13 +71,14 @@
 
 #define POT_DISTANCE			(1100.0f)								// タコつぼが遠すぎる
 #define POT_ESA_SCORE			(0.4f)									// 自分のエサが多い
+#define POT_NO_ESA_SCORE		(5.0f)									// エサを持っていない
 #define POT_ENEMY_DISTANCE		(1100.0f)								// 敵との距離
 #define POT_ENEMY_DIST_SCORE	(3.0f)									// 敵との距離が遠いスコア
 #define POT_PHASE_1				(30)									// タコつぼ優先になる時間第一段階
 #define POT_PHASE_2				(10)									// タコつぼ優先になる時間第二段階
 #define POT_PHASE_1_SCORE		(10.0f)									// 第一段階のスコア
 #define POT_PHASE_2_SCORE		(20.0f)									// 第二段階のスコア
-#define POT_CLOSE_DISTANCE		(300.0f)								// タコつぼと近い
+#define POT_CLOSE_DISTANCE		(100.0f)								// タコつぼと近い
 
 #define EXPLORE_ESA				(3)										// エサを探す
 #define EXPLORE_LITTLE_ESA		(6)										// 少しエサを探す
@@ -151,6 +152,7 @@ void InitComputer(void)
 		pComputer->nTentacleCooldown = 0;
 		pComputer->nInkCooldown = 0;
 		pComputer->nThinkCooldown = 0;
+		pComputer->nExploreCooldown = 0;
 
 		pComputer->bBlinded = false;
 		pComputer->nBlindCounter = 0;
@@ -330,7 +332,7 @@ void UpdateComputer(void)
 					exploreThreshold = EXPLORE_THRESHOLD;
 				}
 
-				if (best < EXPLORE_THRESHOLD)
+				if (best < exploreThreshold)
 				{// 閾値以下なら探索
 					pComputer->state = CPUSTATE_EXPLORE;
 				}
@@ -574,6 +576,7 @@ void UpdateComputer(void)
 			//	pComputer->phys.move.x, pComputer->phys.move.y, pComputer->phys.move.z);
 			PrintDebugProc("ENEMY : nFood ( %d )\n", pComputer->nFoodCount);
 			PrintDebugProc("ENEMY : TargetPot ( %d )\n", pComputer->nTargetPotIdx);
+			PrintDebugProc("ENEMY : TargetEnemy ( %d )\n", pComputer->nTargetEnemyIdx);
 			//PrintDebugProc("ENEMY : ノード ( %f %f %f )\n",
 			//	pComputer->extarget.x, pComputer->extarget.y, pComputer->extarget.z);
 
@@ -797,13 +800,13 @@ void Explore(Computer* pComputer)
 {
 	D3DXVECTOR3 posDiff = pComputer->extarget - pComputer->phys.pos;
 	float fDist = D3DXVec3Length(&posDiff);
-	static int nCounterThink = 0;
-	nCounterThink++;
 
-	if (nCounterThink % (ONE_SECOND * 5) == 0)
+	if (pComputer->nExploreCooldown % (ONE_SECOND * 3) == 0)
 	{// 5秒に1回設定
 		pComputer->extarget = GetRandomExplorePoint();
 	}
+
+	pComputer->nExploreCooldown++;
 
 	D3DXVECTOR3 dir = pComputer->extarget - pComputer->phys.pos;
 	D3DXVec3Normalize(&dir, &dir);
@@ -842,7 +845,7 @@ void GoToPot(Computer* pComputer)
 
 	if (dist < TENTACLE_REACH)
 	{// 近いなら触手移動
-		FindTentacleTarget(pComputer);
+		pComputer->targetWall = pPot[pComputer->nTargetPotIdx].pos;
 		UseTentacle(pComputer);
 	}
 
@@ -1038,6 +1041,11 @@ D3DXVECTOR3 GetNearestEnemy(Computer* pComputer)
 	// 最も危険な敵を探す
 	for (int nCntEnemy = 0; nCntEnemy < MAX_COMPUTER; nCntEnemy++, pEnemy++)
 	{
+		if (pEnemy->bUse == false)
+		{// 使用していない
+			continue;
+		}
+
 		if (pEnemy->nIdx == pComputer->nIdx)
 		{// 自分自身は無視
 			continue;
@@ -1111,7 +1119,7 @@ void CalcFoodScore(Computer* pComputer)
 		for (int nCntEsa = 0; nCntEsa < MAX_SET_ESA; nCntEsa++, pEsa++)
 		{
 			if (pEsa->bUse == false)
-			{// 使用していないならスキップ
+			{// 使用していない
 				continue;
 			}
 
@@ -1187,6 +1195,11 @@ void CalcAttackScore(Computer* pComputer)
 	{
 		Computer* pEnemy = &g_aComputer[nCntEnemy];
 
+		if (pEnemy->bUse == false)
+		{// 使用していない
+			continue;
+		}
+
 		if (pEnemy->nIdx == pComputer->nIdx)
 		{// 自分自身は無視
 			continue;
@@ -1208,6 +1221,9 @@ void CalcAttackScore(Computer* pComputer)
 
 		// 敵がエサを多く持っている
 		score += pEnemy->nFoodCount * 0.5f;
+
+		// 自分がエサを多く持っている
+		score -= pComputer->nFoodCount * 0.3f;
 
 		// 敵が自分の進行方向にいるか（内積）
 		D3DXVECTOR3 dirNorm, toEnemyNorm;
@@ -1274,6 +1290,9 @@ void CalcAttackScore(Computer* pComputer)
 		// 敵がエサを多く持っている
 		score += pPlayer->nFood * 0.5f;
 
+		// 自分がエサを多く持っている
+		score -= pComputer->nFoodCount * 0.3f;
+
 		// 敵が自分の進行方向にいるか（内積）
 		D3DXVECTOR3 dirNorm, toPlayerNorm;
 		D3DXVec3Normalize(&dirNorm, &pComputer->phys.dir);
@@ -1334,6 +1353,11 @@ void CalcEscapeScore(Computer* pComputer)
 	for (int nCntEnemy = 0; nCntEnemy < MAX_COMPUTER; nCntEnemy++)
 	{
 		Computer* pEnemy = &g_aComputer[nCntEnemy];
+
+		if (pEnemy->bUse == false)
+		{// 使用していない
+			continue;
+		}
 
 		if (pEnemy->nIdx == pComputer->nIdx)
 		{// 自分自身は無視
@@ -1493,6 +1517,11 @@ void CalcInkScore(Computer* pComputer)
 	{
 		Computer* pEnemy = &g_aComputer[nCntEnemy];
 
+		if (pEnemy->bUse == false)
+		{// 使用していない
+			continue;
+		}
+
 		if (pEnemy->nIdx == pComputer->nIdx)
 		{// 自分自身は無視
 			continue;
@@ -1634,6 +1663,11 @@ void CalcPotScore(Computer* pComputer)
 		Pot* pPot = GetPot();
 		pPot = &pPot[nCntPot];
 
+		if (pPot->bUse == false)
+		{// 使用していない
+			continue;
+		}
+
 		D3DXVECTOR3 toPot = pPot->pos - pComputer->phys.pos;
 
 		float dist = D3DXVec3Length(&toPot);
@@ -1647,6 +1681,12 @@ void CalcPotScore(Computer* pComputer)
 
 		// 自分のエサを隠したい
 		score += pComputer->nFoodCount * POT_ESA_SCORE;
+
+
+		if (pComputer->nFoodCount == 0)
+		{// エサを持っていない
+			score -= POT_NO_ESA_SCORE;
+		}
 
 		// タコつぼが近い
 		score += (POT_DISTANCE - dist) * DISTANCE_SCORE;
@@ -1684,6 +1724,11 @@ bool IsEnemyNear(int nIdx, D3DXVECTOR3 pos, float fRange)
 {
 	for (int nCntEnemy = 0; nCntEnemy < MAX_COMPUTER; nCntEnemy++)
 	{
+		if (g_aComputer[nCntEnemy].bUse == false)
+		{// 使用していない
+			continue;
+		}
+
 		if (nCntEnemy == nIdx)
 		{// 自分とは判定しない
 			continue;
@@ -1763,6 +1808,11 @@ int CountEnemiesNear(int nIdx, D3DXVECTOR3 pos, float range)
 
 	for (int nCntEnemy = 0; nCntEnemy < MAX_COMPUTER; nCntEnemy++)
 	{
+		if (g_aComputer[nCntEnemy].bUse == false)
+		{// 使用していない
+			continue;
+		}
+
 		if (nCntEnemy == nIdx)
 		{// 自分とは判定しない
 			continue;
@@ -1992,6 +2042,8 @@ void UseTentacle(Computer* pComputer)
 		return;
 	}
 
+	PrintDebugProc("\n					触手移動中\n\n");
+
 	// 方向ベクトルを正規化
 	D3DXVECTOR3 dir;
 	D3DXVec3Normalize(&dir, &toWall);
@@ -2007,8 +2059,12 @@ void UseTentacle(Computer* pComputer)
 	// 触手クールダウン
 	pComputer->nTentacleCooldown = TENTACLE_CT;
 
+	// ターゲットをなくす
+	pComputer->targetWall = pComputer->phys.pos;
+
 	// 触手モーション開始
 	SetMotionComputer(pComputer->nIdx, MOTIONTYPE_TENTACLELONG, true, 20);
+	pComputer->TentState = CPUTENTACLESTATE_TENTACLELONG;
 }
 
 //=============================================================================

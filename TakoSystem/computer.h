@@ -93,7 +93,8 @@ typedef struct
 	// クールダウン
 	int nTentacleCooldown;		// 触手のクールダウン
 	int nInkCooldown;			// 墨吐きのクールダウン
-	int nThinkCooldown;			// AIの思考間隔（例：5フレームに1回判断）
+	int nThinkCooldown;			// AIの思考間隔
+	int nExploreCooldown;		// 探索位置更新間隔
 
 	// 墨吐き
 	bool bBlinded;				// 視界が悪化しているかどうか
