@@ -69,7 +69,7 @@ void InitGame(void)
 	InitComputer();
 
 	// ステージの初期化処理
-	InitStage();
+	//InitStage();
 
 	// 配置物の初期化処理
 	InitObject("objpos.txt");
@@ -90,13 +90,13 @@ void InitGame(void)
 		
 	// 3Dエフェクトの初期化処理
 	InitEffect3D();
-	
+
 	// 3Dパーティクルの初期化処理
 	InitParticle3D();
 
 	// 生き物の初期化処理
 	InitFishes();
-
+	
 	// タコつぼの初期化処理
 	InitPot();
 
@@ -132,6 +132,7 @@ void InitGame(void)
 //===================================================================
 void UninitGame(void)
 {
+
 	// プレイヤーの終了処理
 	UninitPlayer();
 
@@ -139,7 +140,7 @@ void UninitGame(void)
 	UninitComputer();
 
 	// ステージの終了処理
-	UninitStage();
+	//UninitStage();
 
 	// 配置物の終了処理
 	UninitObject();
@@ -195,6 +196,8 @@ void UninitGame(void)
 
 	// フェードの終了処理
 	//UninitFade();
+
+
 }
 
 //===================================================================
@@ -220,6 +223,7 @@ void UpdateGame(void)
 	}
 	else
 	{
+
 		// プレイヤーの更新処理
 		UpdatePlayer();
 
@@ -227,7 +231,7 @@ void UpdateGame(void)
 		UpdateComputer();
 
 		// ステージの更新処理
-		UpdateStage();
+		//UpdateStage();
 
 		// 配置物の更新処理
 		UpdateObject();
@@ -249,7 +253,7 @@ void UpdateGame(void)
 
 		// 3Dパーティクルの更新処理
 		UpdateParticle3D();
-	
+
 		// 生き物の更新処理
 		UpdateFishes();
 
@@ -264,7 +268,7 @@ void UpdateGame(void)
 
 		// UIゲージアイコンの更新処理
 		UpdateUiGaugeIcon();
-	
+
 		// エサUIの更新処理
 		//UpdateUiEsa();
 
@@ -273,7 +277,9 @@ void UpdateGame(void)
 
 		// マップの更新処理
 		UpdateMap();
+
 	}
+
 }
 
 //===================================================================
@@ -315,7 +321,7 @@ void DrawGame(void)
 
 	// 3Dエフェクトの描画処理
 	DrawEffect3D();
-	
+
 	// 3Dパーティクルの描画処理
 	DrawParticle3D();
 
@@ -333,7 +339,7 @@ void DrawGame(void)
 
 	// UIゲージアイコンの描画処理
 	DrawUiGaugeIcon();
-	
+
 	// エサUIの描画処理
 	//DrawUiEsa();
 

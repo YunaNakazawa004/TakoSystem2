@@ -63,16 +63,16 @@ void InitResult(void)
 	pVtx[3].pos = D3DXVECTOR3(1280.0f, 720.0f, 0.0f);
 
 	// rhwの設定
-	pVtx[0].rhw = 1.0f;	// 値は1.0fで固定
-	pVtx[1].rhw = 1.0f;
-	pVtx[2].rhw = 1.0f;
-	pVtx[3].rhw = 1.0f;
+	pVtx[0].rhw = DEFAULT_RHW;	// 値は1.0fで固定
+	pVtx[1].rhw = DEFAULT_RHW;
+	pVtx[2].rhw = DEFAULT_RHW;
+	pVtx[3].rhw = DEFAULT_RHW;
 
 	// 頂点カラーの設定
-	pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);	// 0~255の値を設定
-	pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	pVtx[0].col = WHITE_VTX;	// 0~255の値を設定
+	pVtx[1].col = WHITE_VTX;
+	pVtx[2].col = WHITE_VTX;
+	pVtx[3].col = WHITE_VTX;
 
 	// UV座標設定
 	pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
