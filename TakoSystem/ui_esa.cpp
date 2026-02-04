@@ -72,7 +72,7 @@ const char* c_apFilenameUiEsa[] =	// 最終的にMAX_MODEL_ESAと同じ値にする
 UiEsaParent_info g_aUiEsaParentInfo[] =
 {// {プレイ人数, 位置, 改行数, 余白, エサの大きさ(幅), エサの大きさ(高さ)}
 
-	{1,D3DXVECTOR3(640.0f,360.0f,0.0f), 5, D3DXVECTOR2(10.0f, 0.0f), 25.0f, 25.0f},	// 1人プレイ時：1P設定情報
+	{1,D3DXVECTOR3(975.0f,291.0f,0.0f), 5, D3DXVECTOR2(10.0f, 0.0f), 25.0f, 25.0f},	// 1人プレイ時：1P設定情報
 
 	{2,D3DXVECTOR3(640.0f,360.0f,0.0f), 5, D3DXVECTOR2(10.0f, 0.0f), 30.0f, 30.0f},	// 2人プレイ時：1P設定情報	
 	{2,D3DXVECTOR3(640.0f,360.0f,0.0f), 5, D3DXVECTOR2(10.0f, 0.0f), 30.0f, 30.0f},	// 2人プレイ時：2P設定情報	
@@ -233,24 +233,7 @@ void UpdateUiEsa(void)
 		SetSubUiEsa(0);
 	}
 
-#if 1	// デバッグ：親情報
 
-	if (GetKeyboardPress(DIK_I)) g_aUiEsaParent[1].pos.y -= 1.0f;
-	if (GetKeyboardPress(DIK_K)) g_aUiEsaParent[1].pos.y += 1.0f;
-	if (GetKeyboardPress(DIK_J)) g_aUiEsaParent[1].pos.x -= 1.0f;
-	if (GetKeyboardPress(DIK_L)) g_aUiEsaParent[1].pos.x += 1.0f;
-
-	PrintDebugProc("\nUIESA[1]_POS %f %f %f", g_aUiEsaParent[0].pos.x, g_aUiEsaParent[0].pos.y, g_aUiEsaParent[0].pos.z);
-	
-	for (int nCntUiEsa = 0; nCntUiEsa < MAX_SET_ESA; nCntUiEsa++)
-	{
-		if (g_aUiEsaParent[nCntUiEsa].bUse == true)
-		{
-			PrintDebugProc("\nUIESA(PALENT)[%d]_TOTAL %d",nCntUiEsa, g_aUiEsaParent[nCntUiEsa].nNumEsa);
-
-		}
-	}
-#endif
 
 	for (int nCntParent = 0; nCntParent < MAX_PLAYER; nCntParent++)
 	{
@@ -259,6 +242,19 @@ void UpdateUiEsa(void)
 
 			continue;		// 処理の始めに戻る
 		}
+
+#if 0	// デバッグ：親情報
+
+		if (GetKeyboardPress(DIK_I)) g_aUiEsaParent[nCntParent].pos.y -= 1.0f;
+		if (GetKeyboardPress(DIK_K)) g_aUiEsaParent[nCntParent].pos.y += 1.0f;
+		if (GetKeyboardPress(DIK_J)) g_aUiEsaParent[nCntParent].pos.x -= 1.0f;
+		if (GetKeyboardPress(DIK_L)) g_aUiEsaParent[nCntParent].pos.x += 1.0f;
+
+		PrintDebugProc("\nUIESA[1]_POS %f %f %f", g_aUiEsaParent[nCntParent].pos.x, g_aUiEsaParent[nCntParent].pos.y, g_aUiEsaParent[nCntParent].pos.z);
+	
+		//PrintDebugProc("\nUIESA(PALENT)[%d]_TOTAL %d", nCntUiEsa, g_aUiEsaParent[nCntUiEsa].nNumEsa);
+
+#endif
 
 		for (int nCntChild = 0; nCntChild < MAX_SET_ESA; nCntChild++)
 		{

@@ -1221,7 +1221,7 @@ void CalcFoodScore(Computer* pComputer)
 				score -= ESA_PILLAR_SCORE;
 			}
 
-			if (pEsa->esaType == ESATYPE_LAND)
+			if (pEsa->esaType == ESA_ACTTYPE_LAND)
 			{// Ž~‚Ü‚Á‚Ä‚¢‚é
 				score += ESA_WATER_SCORE;
 			}
