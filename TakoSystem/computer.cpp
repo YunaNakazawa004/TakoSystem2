@@ -1150,6 +1150,7 @@ D3DXVECTOR3 GetNearestEnemy(Computer* pComputer)
 
 	if (nBestCount >= 100)
 	{// ƒvƒŒƒCƒ„[‚ª‹ß‚¢
+		pPlayer = GetPlayer();
 		pPlayer = &pPlayer[nBestCount - 100];
 
 		return pPlayer->pos;
@@ -1221,7 +1222,7 @@ void CalcFoodScore(Computer* pComputer)
 				score -= ESA_PILLAR_SCORE;
 			}
 
-			if (pEsa->esaType == ESATYPE_LAND)
+			if (pEsa->esaType == ESA_ACTTYPE_LAND)
 			{// Ž~‚Ü‚Á‚Ä‚¢‚é
 				score += ESA_WATER_SCORE;
 			}
