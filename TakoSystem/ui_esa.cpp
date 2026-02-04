@@ -74,8 +74,8 @@ UiEsaParent_info g_aUiEsaParentInfo[] =
 
 	{1,D3DXVECTOR3(975.0f,291.0f,0.0f), 5, D3DXVECTOR2(10.0f, 0.0f), 25.0f, 25.0f},	// 1人プレイ時：1P設定情報
 
-	{2,D3DXVECTOR3(640.0f,360.0f,0.0f), 5, D3DXVECTOR2(10.0f, 0.0f), 30.0f, 30.0f},	// 2人プレイ時：1P設定情報	
-	{2,D3DXVECTOR3(640.0f,360.0f,0.0f), 5, D3DXVECTOR2(10.0f, 0.0f), 30.0f, 30.0f},	// 2人プレイ時：2P設定情報	
+	{2,D3DXVECTOR3(60.0f,18.0f,0.0f), 7, D3DXVECTOR2(10.0f, 0.0f), 25.0f, 30.0f},	// 2人プレイ時：1P設定情報	
+	{2,D3DXVECTOR3(820.0f,18.0f,0.0f), 7, D3DXVECTOR2(10.0f, 0.0f), 25.0f, 30.0f},	// 2人プレイ時：2P設定情報	
 };
 
 //========================================================================
@@ -227,13 +227,27 @@ void UpdateUiEsa(void)
 	if (GetKeyboardTrigger(DIK_RSHIFT))
 	{
 		SetAddUiEsa(0, nSetRand);
+		SetAddUiEsa(1, nSetRand);
 	}
 	if (GetKeyboardTrigger(DIK_LSHIFT))
 	{
 		SetSubUiEsa(0);
+		SetSubUiEsa(1);
 	}
 
+#if 1	// デバッグ：親情報
 
+		if (GetKeyboardPress(DIK_I)) g_aUiEsaParent[0].pos.y -= 1.0f;
+		if (GetKeyboardPress(DIK_K)) g_aUiEsaParent[0].pos.y += 1.0f;
+		if (GetKeyboardPress(DIK_J)) g_aUiEsaParent[0].pos.x -= 1.0f;
+		if (GetKeyboardPress(DIK_L)) g_aUiEsaParent[0].pos.x += 1.0f;
+
+
+		PrintDebugProc("\nUIESA[0]_POS %f %f %f", g_aUiEsaParent[0].pos.x, g_aUiEsaParent[0].pos.y, g_aUiEsaParent[0].pos.z);
+	
+		//PrintDebugProc("\nUIESA(PALENT)[%d]_TOTAL %d", nCntUiEsa, g_aUiEsaParent[nCntUiEsa].nNumEsa);
+
+#endif
 
 	for (int nCntParent = 0; nCntParent < MAX_PLAYER; nCntParent++)
 	{
@@ -243,18 +257,7 @@ void UpdateUiEsa(void)
 			continue;		// 処理の始めに戻る
 		}
 
-#if 0	// デバッグ：親情報
 
-		if (GetKeyboardPress(DIK_I)) g_aUiEsaParent[nCntParent].pos.y -= 1.0f;
-		if (GetKeyboardPress(DIK_K)) g_aUiEsaParent[nCntParent].pos.y += 1.0f;
-		if (GetKeyboardPress(DIK_J)) g_aUiEsaParent[nCntParent].pos.x -= 1.0f;
-		if (GetKeyboardPress(DIK_L)) g_aUiEsaParent[nCntParent].pos.x += 1.0f;
-
-		PrintDebugProc("\nUIESA[1]_POS %f %f %f", g_aUiEsaParent[nCntParent].pos.x, g_aUiEsaParent[nCntParent].pos.y, g_aUiEsaParent[nCntParent].pos.z);
-	
-		//PrintDebugProc("\nUIESA(PALENT)[%d]_TOTAL %d", nCntUiEsa, g_aUiEsaParent[nCntUiEsa].nNumEsa);
-
-#endif
 
 		for (int nCntChild = 0; nCntChild < MAX_SET_ESA; nCntChild++)
 		{
