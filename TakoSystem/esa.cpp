@@ -44,10 +44,11 @@ Esa g_aEsa[MAX_SET_ESA];				// エサの情報
 
 // モデルファイル情報
 EsaModel_info g_aEsaModelInfo[] =
-{// {ファイル名, 当たり判定の大きさ, 獲得スコア}
+{// {ファイル名, モデルの移動(回転)速度, 当たり判定の大きさ, 獲得スコア}
 
-	{"data/MODEL/testmodel/car000.x",		10.0f,	10},	// [0]車
-	{"data/MODEL/testmodel/skitree000.x",	10.0f,	10},	// [1]四角形
+	{"data/MODEL/testmodel/car000.x",		0.001f,	10.0f,	10},	// [0]車
+	{"data/MODEL/testmodel/skitree000.x",	0.001f,	10.0f,	10},	// [1]四角形
+	{"data/MODEL/testmodel/skitree000.x",	0.001f,	10.0f,	10},	// [2]四角形
 };
 
 int g_nNumEsatype;						// エサの種類の総数
@@ -56,8 +57,8 @@ int g_nNumEsatype;						// エサの種類の総数
 Esa_info g_aEsaInfo[] =
 {// {モデル種類, エサの挙動, 位置, 角度}
 
-	{0, ESATYPE_SWIM, D3DXVECTOR3( 50.0f, 10070.0f,10000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
-	{1, ESATYPE_SWIM, D3DXVECTOR3(-50.0f, 10070.0f, 5000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
+	{0, ESA_ACTTYPE_SWIM, D3DXVECTOR3( 50.0f, 10070.0f,10000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
+	{1, ESA_ACTTYPE_SWIM, D3DXVECTOR3(-50.0f, 10070.0f, 5000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
 };
 
 //========================================================================
@@ -72,7 +73,7 @@ void InitEsa(void)
 		g_aEsa[nCntEsa].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 位置を初期化
 		g_aEsa[nCntEsa].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 角度を初期化
 		g_aEsa[nCntEsa].fMoveAngle = 0.0f;						// 移動角度を初期化
-		g_aEsa[nCntEsa].esaType = ESATYPE_LAND;					// エサの挙動をLANDに設定
+		g_aEsa[nCntEsa].esaType = ESA_ACTTYPE_LAND;					// エサの挙動をLANDに設定
 		g_aEsa[nCntEsa].fNumBehavior = 0.0f;					// 挙動の値を初期化
 		g_aEsa[nCntEsa].bHave = false;							// 所持されてない状態に設定
 		g_aEsa[nCntEsa].bDisp = false;							// 表示していない状態に設定
@@ -227,7 +228,7 @@ void DrawEsa(void)
 //========================================================================
 // エサの設定処理
 //========================================================================
-void SetEsa(int nEsaType, ESATYPE esaType, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
+void SetEsa(int nEsaType, ESA_ACTTYPE esaType, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 {
 	// 設定したいモデルがない場合
 	if (g_aIdxEsaModel[nEsaType] == -1) return;	// 処理を抜ける
@@ -322,7 +323,7 @@ void BehaviorEsa(Esa* pEsa)
 {
 	switch (pEsa->esaType)
 	{
-	case ESATYPE_LAND:	// 着地状態
+	case ESA_ACTTYPE_LAND:	// 着地状態
 
 		pEsa->fNumBehavior = ESA_CALC_REVROT(pEsa->fNumBehavior + ESA_LANDING_MOVESPEED);	// 挙動の値(回転角度)を加算
 
@@ -331,7 +332,7 @@ void BehaviorEsa(Esa* pEsa)
 
 		break;
 
-	case ESATYPE_SWIM:	// 浮遊状態
+	case ESA_ACTTYPE_SWIM:	// 浮遊状態
 
 		pEsa->fNumBehavior = ESA_CALC_REVROT(pEsa->fNumBehavior + ESA_BUOYANCY_MOVESPEED);	// 挙動の値(移動角度)を加算
 
@@ -355,7 +356,7 @@ void MoveEsa(Esa* pEsa)
 
 	// ====================================================
 
-	if (pEsa->esaType == ESATYPE_SWIM)
+	if (pEsa->esaType == ESA_ACTTYPE_SWIM)
 	{// 浮いている場合
 
 		fDistRadius = sqrtf(pEsa->pos.x * pEsa->pos.x + pEsa->pos.z * pEsa->pos.z);	// 中心からの距離を求める
