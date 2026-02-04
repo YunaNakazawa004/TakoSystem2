@@ -17,12 +17,13 @@
 // マクロ定義 
 //=======================================
 
-#define	MAX_MAP			(2)						// マップで表示するテクスチャの最大数
-#define	MAP_USE_NUM		(4)						// マップで使用するオブジェクト数
+#define	MAX_MAP			(4)						// マップで表示するテクスチャの最大数
+#define	MAP_USE_NUM		(6)						// マップで使用するオブジェクト数
 #define	PIN_USE_NUM		(2)						// マップで使用するピン数
 #define MAP_SIZE		(100)					// マップサイズ
 #define MAP_SIZE_INSIDE (INCYLINDER_RADIUS/OUTCYLINDER_RADIUS)
 #define MAP_PIN_SIZE	(10)					// ピンサイズ
+#define NUM_PIN_SIZE	(8)						// 番号サイズ
 #define MAP_CALC_SIZEARRAY(aArray)	(sizeof aArray / sizeof(aArray[0]))	// サイズ比較
 
 //=======================================
@@ -37,33 +38,52 @@ LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffMap = NULL;	// 頂点バッファへのポインタ
 MapTextureInfo g_aMapTexInfo[] =
 { // [テクスチャの線の太さ分の調整,ファイルネーム,テクスチャ番号]
 
-	//map
-	{10,"data\\TEXTURE\\maptest000.png",0},
+	// map
+	{10,"data\\TEXTURE\\maptest000.png",0,{0.0f,0.0f}},
 
-	//pin
-	{0,"data\\TEXTURE\\playerpin.png",1},
+	// pin
+	{0,"data\\TEXTURE\\mappin000.png",1,{0.0f,0.0f}},
+
+	// numpin
+	{0,"data\\TEXTURE\\numpin000.png",2,{0.0f,-17.0f}},
+
+	{0,"data\\TEXTURE\\numpin001.png",3,{0.0f,-17.0f}},
 };
 
 // マップの情報 -------------------------
 
 Map g_aMap[] =
-{ // [位置,サイズ,テクスチャ割り当て番号]
+{ // [位置,サイズ,色,テクスチャ割り当て番号]
 
 	{{SCREEN_WIDTH - MAP_SIZE - 50,MAP_SIZE + 50,0.0f},
 	{MAP_SIZE,MAP_SIZE,0.0f},
+	{{1.0f,1.0f,1.0f,1.0f}},
 	g_aMapTexInfo[0].TexIdx},
 
 	{{SCREEN_WIDTH - MAP_SIZE - 50,MAP_SIZE + 50,0.0f},
 	{MAP_SIZE * MAP_SIZE_INSIDE,MAP_SIZE * MAP_SIZE_INSIDE,0.0f},
+	{{1.0f,1.0f,1.0f,1.0f}},
 	g_aMapTexInfo[0].TexIdx},
 
 	{{SCREEN_WIDTH - MAP_SIZE - 50,MAP_SIZE + 50,0.0f},
 	{MAP_PIN_SIZE,MAP_PIN_SIZE,0.0f},
+	{{1.0f,0.0f,0.0f,1.0f}},
 	g_aMapTexInfo[1].TexIdx},
 
 	{{SCREEN_WIDTH - MAP_SIZE - 50,MAP_SIZE + 50,0.0f},
 	{MAP_PIN_SIZE,MAP_PIN_SIZE,0.0f},
+	{{1.0f,1.0f,0.0f,1.0f}},
 	g_aMapTexInfo[1].TexIdx},
+
+	{{SCREEN_WIDTH - NUM_PIN_SIZE - 50,NUM_PIN_SIZE + 50,0.0f},
+	{NUM_PIN_SIZE,NUM_PIN_SIZE,0.0f},
+	{{1.0f,0.0f,0.0f,1.0f}},
+	g_aMapTexInfo[2].TexIdx},
+
+	{{SCREEN_WIDTH - NUM_PIN_SIZE - 50,NUM_PIN_SIZE + 50,0.0f},
+	{NUM_PIN_SIZE,NUM_PIN_SIZE,0.0f},
+	{{1.0f,1.0f,0.0f,1.0f}},
+	g_aMapTexInfo[3].TexIdx},
 };
 
 
@@ -138,10 +158,10 @@ void InitMap(void)
 		pVtx[3].rhw = 1.0f;
 
 		// 頂点カラーの設定
-		pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);	// 0~255の値を設定
-		pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-		pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-		pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+		pVtx[0].col = pMap->col;	// 0~255の値を設定
+		pVtx[1].col = pMap->col;
+		pVtx[2].col = pMap->col;
+		pVtx[3].col = pMap->col;
 
 		// テクスチャ座標の設定
 		pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
@@ -204,14 +224,19 @@ void UpdateMap(void)
 
 	for (int nCntMap = 2, nCntPlayer = 0; nCntMap < MAP_USE_NUM; nCntMap++, nCntPlayer++)
 	{
+		if (nCntPlayer >= PIN_USE_NUM)
+		{
+			nCntPlayer = 0;
+		}
+
 		posRate[nCntPlayer] = { pPlayer[nCntPlayer].pos.x / MapMax.x ,pPlayer[nCntPlayer].pos.y,pPlayer[nCntPlayer].pos.z / MapMax.z };
 
 		PrintDebugProc("\nプレイヤーの位置 : [ %f : %f : %f ]\n", posRate[nCntPlayer].x, posRate[nCntPlayer].y, posRate[nCntPlayer].z);
 
-		pVtx[0].pos = D3DXVECTOR3(pMap[nCntMap].pos.x - ((posRate[nCntPlayer].x * MapMax.x) * (MAP_SIZE / MapMax.z)) - pMap[nCntMap].size.x, pMap[nCntMap].pos.y + ((posRate[nCntPlayer].z * MapMax.z) * (MAP_SIZE / MapMax.z)) - pMap[nCntMap].size.y - (pMap[nCntMap].size.y / 2), 0.0f);	// 右回りで設定する
-		pVtx[1].pos = D3DXVECTOR3(pMap[nCntMap].pos.x - ((posRate[nCntPlayer].x * MapMax.x) * (MAP_SIZE / MapMax.x)) + pMap[nCntMap].size.x, pMap[nCntMap].pos.y + ((posRate[nCntPlayer].z * MapMax.z) * (MAP_SIZE / MapMax.z)) - pMap[nCntMap].size.y - (pMap[nCntMap].size.y / 2), 0.0f);	// 2Dの場合Zの値は0にする
-		pVtx[2].pos = D3DXVECTOR3(pMap[nCntMap].pos.x - ((posRate[nCntPlayer].x * MapMax.x) * (MAP_SIZE / MapMax.x)) - pMap[nCntMap].size.x, pMap[nCntMap].pos.y + ((posRate[nCntPlayer].z * MapMax.z) * (MAP_SIZE / MapMax.z)) + pMap[nCntMap].size.y - (pMap[nCntMap].size.y / 2), 0.0f);
-		pVtx[3].pos = D3DXVECTOR3(pMap[nCntMap].pos.x - ((posRate[nCntPlayer].x * MapMax.x) * (MAP_SIZE / MapMax.x)) + pMap[nCntMap].size.x, pMap[nCntMap].pos.y + ((posRate[nCntPlayer].z * MapMax.z) * (MAP_SIZE / MapMax.z)) + pMap[nCntMap].size.y - (pMap[nCntMap].size.y / 2), 0.0f);
+		pVtx[0].pos = D3DXVECTOR3(pMap[nCntMap].pos.x - ((posRate[nCntPlayer].x * MapMax.x) * (MAP_SIZE / MapMax.z)) - pMap[nCntMap].size.x + g_aMapTexInfo[pMap[nCntMap].TexIdx].shiftpos.x, pMap[nCntMap].pos.y + ((posRate[nCntPlayer].z * MapMax.z) * (MAP_SIZE / MapMax.z)) - pMap[nCntMap].size.y - (pMap[nCntMap].size.y / 2) + g_aMapTexInfo[pMap[nCntMap].TexIdx].shiftpos.y, 0.0f);	// 右回りで設定する
+		pVtx[1].pos = D3DXVECTOR3(pMap[nCntMap].pos.x - ((posRate[nCntPlayer].x * MapMax.x) * (MAP_SIZE / MapMax.x)) + pMap[nCntMap].size.x + g_aMapTexInfo[pMap[nCntMap].TexIdx].shiftpos.x, pMap[nCntMap].pos.y + ((posRate[nCntPlayer].z * MapMax.z) * (MAP_SIZE / MapMax.z)) - pMap[nCntMap].size.y - (pMap[nCntMap].size.y / 2) + g_aMapTexInfo[pMap[nCntMap].TexIdx].shiftpos.y, 0.0f);	// 2Dの場合Zの値は0にする
+		pVtx[2].pos = D3DXVECTOR3(pMap[nCntMap].pos.x - ((posRate[nCntPlayer].x * MapMax.x) * (MAP_SIZE / MapMax.x)) - pMap[nCntMap].size.x + g_aMapTexInfo[pMap[nCntMap].TexIdx].shiftpos.x, pMap[nCntMap].pos.y + ((posRate[nCntPlayer].z * MapMax.z) * (MAP_SIZE / MapMax.z)) + pMap[nCntMap].size.y - (pMap[nCntMap].size.y / 2) + g_aMapTexInfo[pMap[nCntMap].TexIdx].shiftpos.y, 0.0f);
+		pVtx[3].pos = D3DXVECTOR3(pMap[nCntMap].pos.x - ((posRate[nCntPlayer].x * MapMax.x) * (MAP_SIZE / MapMax.x)) + pMap[nCntMap].size.x + g_aMapTexInfo[pMap[nCntMap].TexIdx].shiftpos.x, pMap[nCntMap].pos.y + ((posRate[nCntPlayer].z * MapMax.z) * (MAP_SIZE / MapMax.z)) + pMap[nCntMap].size.y - (pMap[nCntMap].size.y / 2) + g_aMapTexInfo[pMap[nCntMap].TexIdx].shiftpos.y, 0.0f);
 
 		pVtx += 4;		// 頂点データのポインタを4つ分進める
 	}

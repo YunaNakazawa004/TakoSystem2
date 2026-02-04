@@ -17,7 +17,8 @@ typedef struct
 {
 	D3DXVECTOR3 pos;				// 位置
 	D3DXVECTOR3 size;				// サイズ
-	int TexIdx;						//テクスチャ番号
+	D3DXCOLOR col;					// 色
+	int TexIdx;						// テクスチャ番号
 
 }Map;
 
@@ -27,7 +28,8 @@ typedef struct
 {
 	float Dif_Texture_Line;			// テクスチャの線の太さ分の差異
 	char Model_FileName[256];		// モデルのファイルネーム
-	int TexIdx;						//テクスチャ番号
+	int TexIdx;						// テクスチャ番号
+	D3DXVECTOR2 shiftpos;			// ずらしたい距離
 
 }MapTextureInfo;
 
