@@ -1,6 +1,6 @@
 //=========================================
 // 
-// 地面のヘッダー
+// 水面のヘッダー
 // Author : Mutsuki Uemura
 // 
 //=========================================
@@ -9,7 +9,7 @@
 
 #define MAX_WATERSURF	(256)
 
-//地面の構造体
+// 水面の構造体
 typedef struct
 {
 	D3DXVECTOR3 pos;			// 位置
@@ -21,7 +21,7 @@ typedef struct
 	bool bUp;					// 上昇か
 }WaterSurf;
 
-//プロトタイプ宣言
+// プロトタイプ宣言
 void InitWaterSurf(void);
 void UninitWaterSurf(void);
 void UpdateWaterSurf(void);
