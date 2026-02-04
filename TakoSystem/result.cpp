@@ -171,20 +171,6 @@ void UpdateResult(void)
 	//	}
 	//}
 
-	if ((GetKeyboardTrigger(DIK_RETURN) == true || 
-		GetJoypadTrigger(0, JOYKEY_START) == true || 
-		GetJoypadTrigger(0, JOYKEY_A) == true) &&
-		pFade == FADE_NONE && 
-		g_aResult.nAddLife == 0 && g_aResult.nAddTime == 0)
-	{// 決定キー（ENTERキー）が押された
-		
-		//// ランキングにスコアを入れる
-		//SetRanking(GetScore());
-
-		// モード設定
-		SetFade(MODE_RANKING);
-	}
-
 	//if ((GetKeyboardTrigger(DIK_RETURN) == true ||
 	//	GetJoypadTrigger(JOYKEY_START) == true ||
 	//	GetJoypadTrigger(JOYKEY_A_BUTTON) == true))
@@ -204,6 +190,46 @@ void UpdateResult(void)
 	//	} while(g_aResult.nAddLife != 0 || g_aResult.nAddTime != 0);
 	//	PlaySound(SOUND_LABEL_SE_SCORE);	// 再生したいサウンドを指定
 	//}
+
+	if ((GetKeyboardTrigger(DIK_RETURN) == true || 
+		GetJoypadTrigger(0, JOYKEY_START) == true || 
+		GetJoypadTrigger(0, JOYKEY_A) == true) &&
+		pFade == FADE_NONE && 
+		g_aResult.nAddLife == 0 && g_aResult.nAddTime == 0)
+	{// 決定キー（ENTERキー）が押された
+		
+		//// ランキングにスコアを入れる
+		//SetRanking(GetScore());
+
+		// モード設定
+		SetFade(MODE_RANKING);
+	}
+
+#if 0
+
+	VERTEX_2D* pVtx;	// 頂点情報へのポインタ
+
+	// 頂点バッファをロックし、頂点情報へのポインタを取得
+	g_pVtxBuffResult->Lock(0, 0, (void**)&pVtx, 0);
+
+	for (int nCntResult = 0; nCntResult < MAX_RESULT; nCntResult++)
+	{
+		// 頂点座標の設定
+		if (nCntResult == 3)
+		{// 背景
+			pVtx[0].pos = D3DXVECTOR3(800.0f, 100.0f, 0.0f);	// 右回りで設定する
+			pVtx[1].pos = D3DXVECTOR3(1200.0f, 100.0f, 0.0f);	// 2Dの場合Zの値は0にする
+			pVtx[2].pos = D3DXVECTOR3(800.0f, 500.0f, 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(1200.0f, 500.0f, 0.0f);
+		}
+		pVtx += 4;		// 頂点データのポインタを4つ分進める
+	}
+
+	// 頂点バッファをアンロックする
+	g_pVtxBuffResult->Unlock();
+
+#endif
+
 }
 
 // リザルトの描画処理
