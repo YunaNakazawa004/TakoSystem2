@@ -21,6 +21,7 @@
 #include "stage.h"
 #include "esa.h"		// エサ
 #include "fishes.h"
+#include "watersurf.h"
 
 #include "crosshair.h"	// クロスヘア
 #include "time.h"
@@ -104,6 +105,9 @@ void InitGame(void)
 	// エサの初期化処理
 	InitEsa();
 
+	// 水面の初期化処理
+	InitWaterSurf();
+
 	// クロスヘアの初期化処理
 	InitCrossHair();
 
@@ -177,6 +181,9 @@ void UninitGame(void)
 
 	// エサの終了処理
 	UninitEsa();
+
+	// 水面の終了処理
+	UninitWaterSurf();
 
 	// クロスヘアの終了処理
 	UninitCrossHair();
@@ -270,6 +277,9 @@ void UpdateGame(void)
 		// エサの更新処理
 		UpdateEsa();
 
+		// 水面の更新処理
+		UpdateWaterSurf();
+
 		// クロスヘアの更新処理
 		UpdateCrossHair();
 
@@ -340,6 +350,9 @@ void DrawGame(void)
 
 	// エサの描画処理
 	DrawEsa();
+
+	// 水面の描画処理
+	DrawWaterSurf();
 
 	// クロスヘアの描画処理
 	DrawCrossHair();
