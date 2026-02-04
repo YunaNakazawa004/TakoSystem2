@@ -1128,7 +1128,9 @@ D3DXVECTOR3 GetNearestEnemy(Computer* pComputer)
 
 	if (nBestCount >= 100)
 	{// ƒvƒŒƒCƒ„[‚ª‹ß‚¢
-		return pPlayer[nBestCount - 100].pos;
+		pPlayer = &pPlayer[nBestCount - 100];
+
+		return pPlayer->pos;
 	}
 
 	// CPU
