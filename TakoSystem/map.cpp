@@ -72,7 +72,7 @@ Map g_aMap[] =
 
 	{{SCREEN_WIDTH - MAP_SIZE - 50,MAP_SIZE + 50,0.0f},
 	{MAP_PIN_SIZE,MAP_PIN_SIZE,0.0f},
-	{{1.0f,1.0f,0.0f,1.0f}},
+	{{0.0f,0.0f,1.0f,1.0f}},
 	g_aMapTexInfo[1].TexIdx},
 
 	{{SCREEN_WIDTH - NUM_PIN_SIZE - 50,NUM_PIN_SIZE + 50,0.0f},
