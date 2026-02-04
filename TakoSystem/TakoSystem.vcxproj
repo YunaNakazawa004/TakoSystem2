@@ -181,6 +181,7 @@
     <ClCompile Include="tutorial.cpp" />
     <ClCompile Include="ui_esa.cpp" />
     <ClCompile Include="ui_gaugeicon.cpp" />
+    <ClCompile Include="watetrsurf.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
@@ -216,6 +217,7 @@
     <ClInclude Include="tutorial.h" />
     <ClInclude Include="ui_esa.h" />
     <ClInclude Include="ui_gaugeicon.h" />
+    <ClInclude Include="watersurf.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
