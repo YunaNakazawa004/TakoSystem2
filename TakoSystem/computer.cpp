@@ -20,7 +20,7 @@
 // マクロ定義
 //*****************************************************************************
 #define MOVEMENT				(D3DXVECTOR3(0.5f, 0.5f, 0.5f))			// 移動量
-#define TENTACLE_MOVEMENT		(D3DXVECTOR3(5.0f, 3.0f, 5.0f))			// 触手移動の移動量
+#define TENTACLE_MOVEMENT		(D3DXVECTOR3(40.0f, 40.0f, 40.0f))		// 触手移動の移動量
 #define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// 向き移動量
 #define INERTIA_MOVE			(0.2f)									// 移動の慣性
 #define DASH_MOVE				(0.01f)									// 高速移動の速さ
@@ -28,17 +28,17 @@
 #define MAX_MOVE				(10.0f)									// 移動の制限
 #define INERTIA_ANGLE			(0.1f)									// 角度の慣性
 #define POS_ERROR				(10.0f)									// 位置の誤差
-#define TENTACLE_RANGE			(DISTANCE * DASH_REACH)					// 触手の長さ(見た目)
+#define TENTACLE_RANGE			(1000.0f)								// 触手の長さ(見た目)
 #define TENTACLE_REACH			(1000.0f)								// 触手のリーチ(実際)
 #define CPU_TENTACLE			(8)										// 足の数
 
-#define FAR_DISTANCE			(1100.0f)								// 遠すぎる
-#define DISTANCE_SCORE			(0.001f)								// 距離スコアの減衰
+#define FAR_DISTANCE			(500.0f)								// 遠すぎる
+#define DISTANCE_SCORE			(0.01f)									// 距離スコアの減衰
 #define NEAR_WALL_DISTANCE		(200.0f)								// 壁際の距離
 #define NEAR_PILLAR_DISTANCE	(200.0f)								// 柱に近いかの距離
 
 #define ESA_DOT_SCORE			(3.0f)									// エサの進行方向スコア
-#define ESA_ENEMY_DISTANCE		(300.0f)								// 近い敵との距離
+#define ESA_ENEMY_DISTANCE		(200.0f)								// 近い敵との距離
 #define ESA_ENEMY_DIST_SCORE	(4.0f)									// 近い敵のスコア
 #define ESA_PILLAR_SCORE		(2.0f)									// 柱のスコア
 #define ESA_WATER_SCORE			(1.0f)									// 浮いているエサのスコア
@@ -50,9 +50,9 @@
 #define ENEMY_BLIND_SCORE		(3.0f)									// 敵の視界が悪いスコア
 #define	ENEMY_TENTACLE_SCORE	(2.0f)									// 敵の触手がクールダウン中のスコア
 #define ENEMY_COUNT_SCORE		(5.0f)									// 敵が複数いるときのスコア
-#define ENEMY_COUNT_DIST		(300.0f)								// 敵が複数いるときの距離
+#define ENEMY_COUNT_DIST		(200.0f)								// 敵が複数いるときの距離
 
-#define ESCAPE_ENEMY_DIST		(1100.0f)								// 遠すぎる敵とは判定しない
+#define ESCAPE_ENEMY_DIST		(500.0f)								// 遠すぎる敵とは判定しない
 #define ESCAPE_DOT				(-0.3f)									// 逃げるかの角度
 #define	ESCAPE_DOT_SCORE		(6.0f)									// 追われているときのスコア
 #define ESCAPE_ENEMY_MOVE		(5.0f)									// 敵の速度が速いときのスコア
@@ -69,15 +69,15 @@
 #define INK_ESA_COUNT			(0.2f)									// 自分のエサが多い
 #define INK_PILLAR_SCORE		(3.0f)									// 柱が近いスコア
 
-#define POT_DISTANCE			(1100.0f)								// タコつぼが遠すぎる
+#define POT_DISTANCE			(1000.0f)								// タコつぼが遠すぎる
 #define POT_ESA_SCORE			(0.4f)									// 自分のエサが多い
 #define POT_NO_ESA_SCORE		(5.0f)									// エサを持っていない
-#define POT_ENEMY_DISTANCE		(1100.0f)								// 敵との距離
+#define POT_ENEMY_DISTANCE		(500.0f)								// 敵との距離
 #define POT_ENEMY_DIST_SCORE	(3.0f)									// 敵との距離が遠いスコア
 #define POT_PHASE_1				(30)									// タコつぼ優先になる時間第一段階
 #define POT_PHASE_2				(10)									// タコつぼ優先になる時間第二段階
-#define POT_PHASE_1_SCORE		(10.0f)									// 第一段階のスコア
-#define POT_PHASE_2_SCORE		(20.0f)									// 第二段階のスコア
+#define POT_PHASE_1_SCORE		(5.0f)									// 第一段階のスコア
+#define POT_PHASE_2_SCORE		(5.0f)									// 第二段階のスコア
 #define POT_CLOSE_DISTANCE		(100.0f)								// タコつぼと近い
 
 #define EXPLORE_ESA				(3)										// エサを探す
@@ -85,7 +85,7 @@
 #define EXPLORE_THRESHOLD		(3.0f)									// 探索するための閾値
 #define EXPLORE_LIT_THRESHOLD	(4.0f)									// 少し探索するための閾値
 
-#define RAY_COUNT				(16)									// レイキャストを伸ばす方向
+#define RAY_COUNT				(40)									// レイキャストを伸ばす方向
 #define NODE_COUNT				(16)									// ノードの円分割
 #define NODE_HEIGHT				(3)										// ノードの縦分割
 
@@ -93,8 +93,9 @@
 #define INK_CT					(ONE_SECOND * 5 + ONE_SECOND)			// 墨吐きのクールダウン
 #define CAMERA_HEIGHT			(100.0f)								// 仮想カメラの高さ
 #define CPU_THINK				(5)										// 思考間隔
-#define CPU_WIDTH				(5.0f)									// 幅
-#define CPU_HEIGHT				(10.0f)									// 高さ
+#define CPU_WIDTH				(50.0f)									// 幅
+#define CPU_HEIGHT				(100.0f)								// 高さ
+#define TENTACLE_RADIUS			(100.0f)								// 触手の当たり判定
 #define CPU_FILE				"data\\motion_octo_1.txt"				// CPUのデータファイル
 
 //*****************************************************************************
@@ -131,7 +132,8 @@ void InitComputer(void)
 		pComputer->phys.move = FIRST_POS;
 		pComputer->phys.rot = FIRST_POS;
 		pComputer->phys.dir = FIRST_POS;
-		pComputer->phys.fAngle = 0.0f;
+		pComputer->phys.fAngleY = 0.0f;
+		pComputer->phys.fAngleX = 0.0f;
 		pComputer->phys.fRadius = CPU_WIDTH;
 		pComputer->phys.fHeight = CPU_HEIGHT;
 		pComputer->bUse = false;
@@ -337,7 +339,7 @@ void UpdateComputer(void)
 				}
 			}
 
-			PrintDebugProc("ENEMY : [ %d ]\n", nCntComputer);
+			PrintDebugProc("ENEMY : [ %d ]\n", pComputer->nIdx);
 
 			pComputer->phys.posOld = pComputer->phys.pos;
 
@@ -354,6 +356,10 @@ void UpdateComputer(void)
 			if (D3DXVec3Length(&pComputer->phys.move) > 0.1f)
 			{// 方向ベクトル
 				D3DXVec3Normalize(&pComputer->phys.dir, &pComputer->phys.move);
+			}
+			else
+			{// 止まってるときは向き基準
+				D3DXVec3Normalize(&pComputer->phys.dir, &pComputer->phys.rot);
 			}
 
 			switch (pComputer->state)
@@ -380,24 +386,12 @@ void UpdateComputer(void)
 			case CPUSTATE_ESCAPE:				// 回避
 				PrintDebugProc("CPUの状態 : [ CPUSTATE_ESCAPE ]\n");
 
-				if (ShouldUseTentacle(pComputer) == true)
-				{// 触手移動
-					FindTentacleTarget(pComputer);
-					UseTentacle(pComputer);
-				}
-
 				Escape(pComputer);
 
 				break;
 
 			case CPUSTATE_ATTACK:				// 敵を追う
 				PrintDebugProc("CPUの状態 : [ CPUSTATE_ATTACK ]\n");
-
-				if (ShouldUseTentacle(pComputer) == true)
-				{// 触手移動
-					FindTentacleTarget(pComputer);
-					UseTentacle(pComputer);
-				}
 
 				AttackEnemy(pComputer);
 
@@ -407,6 +401,8 @@ void UpdateComputer(void)
 				PrintDebugProc("CPUの状態 : [ CPUSTATE_INK_ATTACK ]\n");
 
 				InkAttack(pComputer);
+
+				pComputer->TentState = CPUTENTACLESTATE_NORMAL;
 
 				if (pComputer->bFinishMotion == true)
 				{// モーション終了
@@ -422,12 +418,6 @@ void UpdateComputer(void)
 
 			case CPUSTATE_GO_TO_POT:			// タコつぼへ向かう
 				PrintDebugProc("CPUの状態 : [ CPUSTATE_GO_TO_POT ]\n");
-
-				if (ShouldUseTentacle(pComputer) == true)
-				{// 触手移動
-					FindTentacleTarget(pComputer);
-					UseTentacle(pComputer);
-				}
 
 				GoToPot(pComputer);
 
@@ -450,12 +440,6 @@ void UpdateComputer(void)
 			case CPUSTATE_FINAL_COLLECT:		// 終盤の回収行動
 				PrintDebugProc("CPUの状態 : [ CPUSTATE_FINAL_COLLECT ]\n");
 
-				if (ShouldUseTentacle(pComputer) == true)
-				{// 触手移動
-					FindTentacleTarget(pComputer);
-					UseTentacle(pComputer);
-				}
-
 				FinalCollect(pComputer);
 
 				break;
@@ -469,18 +453,36 @@ void UpdateComputer(void)
 				break;
 
 			case CPUTENTACLESTATE_TENTACLELONG:		// 触手伸ばし状態
-				if (pComputer->bFinishMotion == true)
-				{// 触手が伸ばし終わったら
-					// 触手を伸ばす
-					if (pComputer->aModel[2].scale.y < TENTACLE_RANGE * 0.1f)
-					{// リーチより短い
-						pComputer->aModel[2].scale.y += 5.0f;
-					}
-					else
-					{// リーチの長さになった
-						pComputer->TentState = CPUTENTACLESTATE_TENTACLESHORT;
+				if (pComputer->motionType == MOTIONTYPE_INK || pComputer->motionTypeBlend == MOTIONTYPE_INK)
+				{// モーションキャンセル
+					pComputer->TentState = CPUTENTACLESTATE_NORMAL;
+				}
+				else
+				{// キャンセルしない
+					if (pComputer->bFinishMotion == true)
+					{// 触手が伸ばし終わったら
+						D3DXVECTOR3 tentaclePos = D3DXVECTOR3(pComputer->aModel[4].mtxWorld._41, pComputer->aModel[4].mtxWorld._42, pComputer->aModel[4].mtxWorld._43);
 
-						SetMotionComputer(nCntComputer, MOTIONTYPE_TENTACLESHORT, true, 20);
+						if (CollisionMeshCylinder(&tentaclePos, &pComputer->phys.pos, &pComputer->phys.move,
+							TENTACLE_RADIUS, TENTACLE_RADIUS, true) == true ||
+							tentaclePos.y < 0.0f)
+						{// 壁との当たり判定
+							pComputer->TentState = CPUTENTACLESTATE_TENTACLESHORT;
+							SetMotionComputer(nCntComputer, MOTIONTYPE_DASH, true, 20);
+						}
+						else
+						{// 触手を伸ばす
+							if (pComputer->aModel[2].scale.y < TENTACLE_RANGE * 0.1f)
+							{// リーチより短い
+								pComputer->aModel[2].scale.y += 5.0f;
+							}
+							else
+							{// リーチの長さになった
+								pComputer->TentState = CPUTENTACLESTATE_TENTACLESHORT;
+
+								SetMotionComputer(nCntComputer, MOTIONTYPE_TENTACLESHORT, true, 20);
+							}
+						}
 					}
 				}
 
@@ -554,20 +556,39 @@ void UpdateComputer(void)
 				pComputer->phys.pos.y = 0.0f;
 			}
 
-			fmoveAngle = pComputer->phys.fAngle - pComputer->phys.rot.y;
+			if (pComputer->phys.pos.y > CYLINDER_HEIGHT)
+			{// 上
+				pComputer->phys.pos.y = CYLINDER_HEIGHT;
+			}
+
+			pComputer->phys.fAngleY = D3DX_PI + atan2f(pComputer->phys.dir.x, pComputer->phys.dir.z);
+			pComputer->phys.fAngleX = (pComputer->phys.dir.y / 0.95f) * 1.2f;
+
+			fmoveAngle = pComputer->phys.fAngleY - pComputer->phys.rot.y;
 
 			// 向きを調整
-			CorrectAngle(&pComputer->phys.fAngle, fmoveAngle);
+			CorrectAngle(&pComputer->phys.fAngleY, fmoveAngle);
 
-			if (pComputer->phys.rot.y != pComputer->phys.fAngle)
+			if (pComputer->phys.rot.y != pComputer->phys.fAngleY)
 			{// 目標地点につくまで慣性で角度を足す
-				pComputer->phys.rot.y += (pComputer->phys.fAngle - pComputer->phys.rot.y) * INERTIA_ANGLE;
+				pComputer->phys.rot.y += (pComputer->phys.fAngleY - pComputer->phys.rot.y) * INERTIA_ANGLE;
 
 				// 向きを調整
 				CorrectAngle(&pComputer->phys.rot.y, pComputer->phys.rot.y);
 			}
 
-			SetEffect3D(70, pComputer->phys.pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0.0f, 30.0f, -0.1f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), EFFECTTYPE_NORMAL);
+			// 向きを調整
+			CorrectAngle(&pComputer->phys.fAngleX, pComputer->phys.fAngleX - pComputer->phys.rot.x);
+
+			if (pComputer->phys.rot.x != pComputer->phys.fAngleX)
+			{// 目標地点につくまで慣性で角度を足す
+				pComputer->phys.rot.x += (pComputer->phys.fAngleX - pComputer->phys.rot.x) * INERTIA_ANGLE;
+
+				// 向きを調整
+				CorrectAngle(&pComputer->phys.rot.x, pComputer->phys.rot.x);
+			}
+
+			//SetEffect3D(70, pComputer->phys.pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0.0f, 30.0f, -0.1f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), EFFECTTYPE_NORMAL);
 
 			//PrintDebugProc("ENEMY : pos ( %f %f %f )\n",
 			//	pComputer->phys.pos.x, pComputer->phys.pos.y, pComputer->phys.pos.z);
@@ -592,7 +613,7 @@ void UpdateComputer(void)
 			CollisionMeshCylinder(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, false);
 
 			// モーションの更新処理
-			UpdateMotionComputer();
+			UpdateMotionComputer(nCntComputer);
 		}
 	}
 }
@@ -746,9 +767,9 @@ void AttackEnemy(Computer* pComputer)
 
 	D3DXVECTOR3 posDiff = target - pComputer->phys.pos;
 
-	// 触手射程内なら掴みに行く
-	if (D3DXVec3Length(&posDiff) < pCamera->fDistance * DASH_REACH) {
-		FindTentacleTarget(pComputer);
+	if (D3DXVec3Length(&posDiff) < TENTACLE_REACH)
+	{// 触手射程内なら掴みに行く
+		pComputer->targetWall = target;
 		UseTentacle(pComputer);
 	}
 }
@@ -762,10 +783,16 @@ void Escape(Computer* pComputer)
 	D3DXVECTOR3 dir = pComputer->phys.pos - enemyPos; // 敵と逆方向
 	D3DXVec3Normalize(&dir, &dir);
 
-	// 慣性移動
+	// 慣性移動4
 	pComputer->phys.move.x += dir.x * MOVEMENT.x;
 	pComputer->phys.move.y += dir.y * MOVEMENT.y;
 	pComputer->phys.move.z += dir.z * MOVEMENT.z;
+
+	if (ShouldUseTentacle(pComputer) == true)
+	{// 触手も使う
+		FindTentacleTarget(pComputer);
+		UseTentacle(pComputer);
+	}
 }
 
 //=============================================================================
@@ -785,6 +812,7 @@ void InkAttack(Computer* pComputer)
 
 	// 墨吐きモーション
 	SetMotionComputer(pComputer->nIdx, MOTIONTYPE_INK, true, 20);
+	pComputer->TentState = CPUTENTACLESTATE_NORMAL;
 
 	pComputer->nInkCooldown = INK_CT;
 
@@ -854,7 +882,14 @@ void GoToPot(Computer* pComputer)
 
 		if (pPot->nFood == 0)
 		{// 何も入ってない
-			pComputer->state = CPUSTATE_HIDE_FOOD;
+			if (GetTime() < POT_PHASE_1)
+			{// ラスト
+				pComputer->state = CPUSTATE_EXPLORE;
+			}
+			else
+			{// 通常時
+				pComputer->state = CPUSTATE_HIDE_FOOD;
+			}
 		}
 		else
 		{// 何か入っている
@@ -953,7 +988,7 @@ void FinalCollect(Computer* pComputer)
 
 	if (dist < TENTACLE_REACH)
 	{// 触手で高速移動も積極的に使う
-		FindTentacleTarget(pComputer);
+		pComputer->targetWall = pPot[pComputer->nTargetPotIdx].pos;
 		UseTentacle(pComputer);
 	}
 
@@ -1045,7 +1080,7 @@ D3DXVECTOR3 GetNearestEnemy(Computer* pComputer)
 			continue;
 		}
 
-		if (pEnemy->nIdx == pComputer->nIdx)
+		if (nCntEnemy == pComputer->nIdx)
 		{// 自分自身は無視
 			continue;
 		}
@@ -1095,10 +1130,13 @@ D3DXVECTOR3 GetNearestEnemy(Computer* pComputer)
 	{// プレイヤーが近い
 		return pPlayer[nBestCount - 100].pos;
 	}
-	else
-	{// CPU
-		return pEnemy[nBestCount].phys.pos;
-	}
+
+	// CPU
+	pEnemy = &pEnemy[nBestCount];
+	PrintDebugProc("誰から逃げてるか ( %d )\n", nBestCount);
+
+	return pEnemy->phys.pos;
+
 }
 
 //=============================================================================
@@ -1221,6 +1259,11 @@ void CalcAttackScore(Computer* pComputer)
 		// 敵がエサを多く持っている
 		score += pEnemy->nFoodCount * 0.5f;
 
+		if (pEnemy->nFoodCount == 0)
+		{// 敵がエサを持っていない
+			score -= 10.0f;
+		}
+
 		// 自分がエサを多く持っている
 		score -= pComputer->nFoodCount * 0.3f;
 
@@ -1288,6 +1331,11 @@ void CalcAttackScore(Computer* pComputer)
 
 		// 敵がエサを多く持っている
 		score += pPlayer->nFood * 0.5f;
+
+		if (pPlayer->nFood == 0)
+		{// 敵がエサを持っていない
+			score -= 10.0f;
+		}
 
 		// 自分がエサを多く持っている
 		score -= pComputer->nFoodCount * 0.3f;
@@ -1358,7 +1406,7 @@ void CalcEscapeScore(Computer* pComputer)
 			continue;
 		}
 
-		if (pEnemy->nIdx == pComputer->nIdx)
+		if (nCntEnemy == pComputer->nIdx)
 		{// 自分自身は無視
 			continue;
 		}
@@ -1653,7 +1701,7 @@ void CalcInkScore(Computer* pComputer)
 void CalcPotScore(Computer* pComputer)
 {
 	pComputer->fPotScore = 0.0f;
-	pComputer->nTargetPotIdx = -1;
+	//pComputer->nTargetPotIdx = -1;
 
 	float bestScore = -9999.0f;
 
@@ -1671,7 +1719,8 @@ void CalcPotScore(Computer* pComputer)
 
 		float dist = D3DXVec3Length(&toPot);
 
-		if (dist > POT_DISTANCE || dist < POT_CLOSE_DISTANCE * 0.1f || pPot->bUse == false)
+		if (dist > POT_DISTANCE || dist < POT_CLOSE_DISTANCE * 0.1f ||
+			pPot->bUse == false || pComputer->nTargetPotIdx == nCntPot)
 		{// 遠い/近いタコつぼは無視
 			continue;
 		}
@@ -1680,7 +1729,6 @@ void CalcPotScore(Computer* pComputer)
 
 		// 自分のエサを隠したい
 		score += pComputer->nFoodCount * POT_ESA_SCORE;
-
 
 		if (pComputer->nFoodCount == 0)
 		{// エサを持っていない
@@ -2017,11 +2065,6 @@ bool ShouldUseTentacle(Computer* pComputer)
 		return true;
 	}
 
-	if (pComputer->state == CPUSTATE_GO_TO_POT)
-	{// タコつぼが遠いとき
-		return true;
-	}
-
 	return false;
 }
 
@@ -2047,13 +2090,15 @@ void UseTentacle(Computer* pComputer)
 	D3DXVECTOR3 dir;
 	D3DXVec3Normalize(&dir, &toWall);
 
-	// 触手による強制加速
-	pComputer->phys.move.x += dir.x * TENTACLE_MOVEMENT.x;
-	pComputer->phys.move.y += dir.y * TENTACLE_MOVEMENT.y;
-	pComputer->phys.move.z += dir.z * TENTACLE_MOVEMENT.z;
-
 	// キャラの向きを触手方向へ合わせる
 	pComputer->phys.dir = dir;
+
+	dir *= TENTACLE_MOVEMENT.x;
+
+	// 触手による強制加速
+	pComputer->phys.move.x += dir.x;
+	pComputer->phys.move.y += dir.y;
+	pComputer->phys.move.z += dir.z;
 
 	// 触手クールダウン
 	pComputer->nTentacleCooldown = TENTACLE_CT;
@@ -2156,6 +2201,7 @@ void SetComputer(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	{
 		if (pComputer->bUse == false)
 		{// 使用していない
+			pComputer->nIdx = nCntComputer;
 			pComputer->state = CPUSTATE_APPEAR;
 			pComputer->nCounterState = 0;
 			pComputer->phys.pos = pos;
@@ -2163,7 +2209,8 @@ void SetComputer(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 			pComputer->phys.move = FIRST_POS;
 			pComputer->phys.rot = rot;
 			pComputer->phys.dir = FIRST_POS;
-			pComputer->phys.fAngle = 0.0f;
+			pComputer->phys.fAngleY = 0.0f;
+			pComputer->phys.fAngleX = 0.0f;
 			pComputer->phys.fRadius = CPU_WIDTH;
 			pComputer->phys.fHeight = CPU_HEIGHT;
 			pComputer->bUse = true;
@@ -2548,6 +2595,7 @@ void LoadComputer(void)
 					pComputer->aModel[nCntParts].nIdxModelParent = nIdxParent;
 					pComputer->aModel[nCntParts].pos = pos;
 					pComputer->aModel[nCntParts].rot = rot;
+					pComputer->aModel[nCntParts].scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 					pComputer->aModel[nCntParts].posOff = pos;
 					pComputer->aModel[nCntParts].rotOff = rot;
 				}
@@ -2734,321 +2782,319 @@ void LoadComputer(void)
 //=============================================================================
 // CPUモーションの更新処理
 //=============================================================================
-void UpdateMotionComputer(void)
+void UpdateMotionComputer(int nIdx)
 {
 	int nNextKey;
 	Computer* pComputer = GetComputer();
+	pComputer = &pComputer[nIdx];
 
-	for (int nCntComputer = 0; nCntComputer < MAX_COMPUTER; nCntComputer++, pComputer++)
+	// 全モデル(パーツ)の更新
+	for (int nCntModel = 0; nCntModel < pComputer->nNumModel; nCntModel++)
 	{
-		// 全モデル(パーツ)の更新
-		for (int nCntModel = 0; nCntModel < pComputer->nNumModel; nCntModel++)
-		{
+		// ローカル変数宣言
+		KEY* pKey;
+		KEY* pKeyNext;
+		Model* pModel;
+		D3DXVECTOR3 posCurrent, rotCurrent;
+		D3DXVECTOR3 posDest, rotDest;
+		float fDiffKey, fRateKey;
+
+		// 1フレームあたりに動く割合
+		fRateKey = ((float)pComputer->nCounterMotion / (float)pComputer->aMotionInfo[pComputer->motionType].aKeyInfo[pComputer->nKey].nFrame);
+
+		// 次のキー
+		if (pComputer->bLoopMotion == true)
+		{// ループモーション
+			nNextKey = (pComputer->nKey + 1) % (pComputer->aMotionInfo[pComputer->motionType].nNumKey);
+		}
+		else
+		{// ループしないモーション
+			nNextKey = pComputer->nKey + 1;
+
+			if (nNextKey > pComputer->aMotionInfo[pComputer->motionType].nNumKey - 1)
+			{// キーの総数を超えた
+				nNextKey = pComputer->aMotionInfo[pComputer->motionType].nNumKey - 1;
+			}
+		}
+
+		// 現在のキーのポインタ
+		pKey = &pComputer->aMotionInfo[pComputer->motionType].aKeyInfo[pComputer->nKey].aKey[nCntModel];
+
+		// 次のキーのポインタ
+		pKeyNext = &pComputer->aMotionInfo[pComputer->motionType].aKeyInfo[nNextKey].aKey[nCntModel];
+
+		// モデルのポインタ
+		pModel = &pComputer->aModel[nCntModel];
+
+		if (pComputer->bBlendMotion == true)
+		{// ブレンドあり
 			// ローカル変数宣言
-			KEY* pKey;
-			KEY* pKeyNext;
-			Model* pModel;
-			D3DXVECTOR3 posCurrent, rotCurrent;
-			D3DXVECTOR3 posDest, rotDest;
-			float fDiffKey, fRateKey;
+			KEY* pKeyBlend;
+			KEY* pKeyNextBlend;
+			D3DXVECTOR3 posBlend, rotBlend;
+			float fDiffKeyBlend, fDiffBlend, fRateKeyBlend, fRateBlend;
+			int nNextKeyBlend;
 
 			// 1フレームあたりに動く割合
-			fRateKey = ((float)pComputer->nCounterMotion / (float)pComputer->aMotionInfo[pComputer->motionType].aKeyInfo[pComputer->nKey].nFrame);
+			fRateKeyBlend = ((float)pComputer->nCounterMotionBlend / (float)pComputer->aMotionInfo[pComputer->motionTypeBlend].aKeyInfo[pComputer->nKeyBlend].nFrame);
+
+			// ブレンドの相対値
+			fRateBlend = (float)pComputer->nCounterBlend / (float)pComputer->nFrameBlend;
 
 			// 次のキー
-			if (pComputer->bLoopMotion == true)
+			if (pComputer->bLoopMotionBlend == true)
 			{// ループモーション
-				nNextKey = (pComputer->nKey + 1) % (pComputer->aMotionInfo[pComputer->motionType].nNumKey);
+				nNextKeyBlend = (pComputer->nKeyBlend + 1) % (pComputer->aMotionInfo[pComputer->motionTypeBlend].nNumKey);
 			}
 			else
 			{// ループしないモーション
-				nNextKey = pComputer->nKey + 1;
+				nNextKeyBlend = pComputer->nKeyBlend + 1;
 
-				if (nNextKey > pComputer->aMotionInfo[pComputer->motionType].nNumKey - 1)
+				if (nNextKeyBlend > pComputer->aMotionInfo[pComputer->motionTypeBlend].nNumKey - 1)
 				{// キーの総数を超えた
-					nNextKey = pComputer->aMotionInfo[pComputer->motionType].nNumKey - 1;
+					nNextKeyBlend = pComputer->aMotionInfo[pComputer->motionTypeBlend].nNumKey - 1;
 				}
 			}
 
 			// 現在のキーのポインタ
-			pKey = &pComputer->aMotionInfo[pComputer->motionType].aKeyInfo[pComputer->nKey].aKey[nCntModel];
+			pKeyBlend = &pComputer->aMotionInfo[pComputer->motionTypeBlend].aKeyInfo[pComputer->nKeyBlend].aKey[nCntModel];
 
 			// 次のキーのポインタ
-			pKeyNext = &pComputer->aMotionInfo[pComputer->motionType].aKeyInfo[nNextKey].aKey[nCntModel];
+			pKeyNextBlend = &pComputer->aMotionInfo[pComputer->motionTypeBlend].aKeyInfo[nNextKeyBlend].aKey[nCntModel];
 
-			// モデルのポインタ
-			pModel = &pComputer->aModel[nCntModel];
+			// キー情報から位置・向きを算出
+			// 位置X
+			fDiffKey = pKeyNext->fPosX - pKey->fPosX;					// 現在のモーション
+			posCurrent.x = pKey->fPosX + (fDiffKey * fRateKey);
+			fDiffKeyBlend = pKeyNextBlend->fPosX - pKeyBlend->fPosX;	// ブレンドモーション
+			posBlend.x = pKeyBlend->fPosX + (fDiffKeyBlend * fRateKeyBlend);
+			fDiffBlend = posBlend.x - posCurrent.x;						// 差分
+			posDest.x = posCurrent.x + (fDiffBlend * fRateBlend);		// 求める値
 
-			if (pComputer->bBlendMotion == true)
-			{// ブレンドあり
-				// ローカル変数宣言
-				KEY* pKeyBlend;
-				KEY* pKeyNextBlend;
-				D3DXVECTOR3 posBlend, rotBlend;
-				float fDiffKeyBlend, fDiffBlend, fRateKeyBlend, fRateBlend;
-				int nNextKeyBlend;
+			// 位置Y
+			fDiffKey = pKeyNext->fPosY - pKey->fPosY;					// 現在のモーション
+			posCurrent.y = pKey->fPosY + (fDiffKey * fRateKey);
+			fDiffKeyBlend = pKeyNextBlend->fPosY - pKeyBlend->fPosY;	// ブレンドモーション
+			posBlend.y = pKeyBlend->fPosY + (fDiffKeyBlend * fRateKeyBlend);
+			fDiffBlend = posBlend.y - posCurrent.y;						// 差分
+			posDest.y = posCurrent.y + (fDiffBlend * fRateBlend);		// 求める値
 
-				// 1フレームあたりに動く割合
-				fRateKeyBlend = ((float)pComputer->nCounterMotionBlend / (float)pComputer->aMotionInfo[pComputer->motionTypeBlend].aKeyInfo[pComputer->nKeyBlend].nFrame);
+			// 位置Z
+			fDiffKey = pKeyNext->fPosZ - pKey->fPosZ;					// 現在のモーション
+			posCurrent.z = pKey->fPosZ + (fDiffKey * fRateKey);
+			fDiffKeyBlend = pKeyNextBlend->fPosZ - pKeyBlend->fPosZ;	// ブレンドモーション
+			posBlend.z = pKeyBlend->fPosZ + (fDiffKeyBlend * fRateKeyBlend);
+			fDiffBlend = posBlend.z - posCurrent.z;						// 差分
+			posDest.z = posCurrent.z + (fDiffBlend * fRateBlend);		// 求める値
 
-				// ブレンドの相対値
-				fRateBlend = (float)pComputer->nCounterBlend / (float)pComputer->nFrameBlend;
+			// 向きX
+			fDiffKey = pKeyNext->fRotX - pKey->fRotX;					// 現在のモーション
+			rotCurrent.x = pKey->fRotX + (fDiffKey * fRateKey);
+			fDiffKeyBlend = pKeyNextBlend->fRotX - pKeyBlend->fRotX;	// ブレンドモーション
+			rotBlend.x = pKeyBlend->fRotX + (fDiffKeyBlend * fRateKeyBlend);
+			fDiffBlend = rotBlend.x - rotCurrent.x;						// 差分
+			rotDest.x = rotCurrent.x + (fDiffBlend * fRateBlend);		// 求める値
 
-				// 次のキー
-				if (pComputer->bLoopMotionBlend == true)
-				{// ループモーション
-					nNextKeyBlend = (pComputer->nKeyBlend + 1) % (pComputer->aMotionInfo[pComputer->motionTypeBlend].nNumKey);
-				}
-				else
-				{// ループしないモーション
-					nNextKeyBlend = pComputer->nKeyBlend + 1;
-
-					if (nNextKeyBlend > pComputer->aMotionInfo[pComputer->motionTypeBlend].nNumKey - 1)
-					{// キーの総数を超えた
-						nNextKeyBlend = pComputer->aMotionInfo[pComputer->motionTypeBlend].nNumKey - 1;
-					}
-				}
-
-				// 現在のキーのポインタ
-				pKeyBlend = &pComputer->aMotionInfo[pComputer->motionTypeBlend].aKeyInfo[pComputer->nKeyBlend].aKey[nCntModel];
-
-				// 次のキーのポインタ
-				pKeyNextBlend = &pComputer->aMotionInfo[pComputer->motionTypeBlend].aKeyInfo[nNextKeyBlend].aKey[nCntModel];
-
-				// キー情報から位置・向きを算出
-				// 位置X
-				fDiffKey = pKeyNext->fPosX - pKey->fPosX;					// 現在のモーション
-				posCurrent.x = pKey->fPosX + (fDiffKey * fRateKey);
-				fDiffKeyBlend = pKeyNextBlend->fPosX - pKeyBlend->fPosX;	// ブレンドモーション
-				posBlend.x = pKeyBlend->fPosX + (fDiffKeyBlend * fRateKeyBlend);
-				fDiffBlend = posBlend.x - posCurrent.x;						// 差分
-				posDest.x = posCurrent.x + (fDiffBlend * fRateBlend);		// 求める値
-
-				// 位置Y
-				fDiffKey = pKeyNext->fPosY - pKey->fPosY;					// 現在のモーション
-				posCurrent.y = pKey->fPosY + (fDiffKey * fRateKey);
-				fDiffKeyBlend = pKeyNextBlend->fPosY - pKeyBlend->fPosY;	// ブレンドモーション
-				posBlend.y = pKeyBlend->fPosY + (fDiffKeyBlend * fRateKeyBlend);
-				fDiffBlend = posBlend.y - posCurrent.y;						// 差分
-				posDest.y = posCurrent.y + (fDiffBlend * fRateBlend);		// 求める値
-
-				// 位置Z
-				fDiffKey = pKeyNext->fPosZ - pKey->fPosZ;					// 現在のモーション
-				posCurrent.z = pKey->fPosZ + (fDiffKey * fRateKey);
-				fDiffKeyBlend = pKeyNextBlend->fPosZ - pKeyBlend->fPosZ;	// ブレンドモーション
-				posBlend.z = pKeyBlend->fPosZ + (fDiffKeyBlend * fRateKeyBlend);
-				fDiffBlend = posBlend.z - posCurrent.z;						// 差分
-				posDest.z = posCurrent.z + (fDiffBlend * fRateBlend);		// 求める値
-
-				// 向きX
-				fDiffKey = pKeyNext->fRotX - pKey->fRotX;					// 現在のモーション
-				rotCurrent.x = pKey->fRotX + (fDiffKey * fRateKey);
-				fDiffKeyBlend = pKeyNextBlend->fRotX - pKeyBlend->fRotX;	// ブレンドモーション
-				rotBlend.x = pKeyBlend->fRotX + (fDiffKeyBlend * fRateKeyBlend);
-				fDiffBlend = rotBlend.x - rotCurrent.x;						// 差分
-				rotDest.x = rotCurrent.x + (fDiffBlend * fRateBlend);		// 求める値
-
-				// 向きを調整
-				if (rotDest.x > D3DX_PI)
-				{
-					rotDest.x -= D3DX_PI * 2;
-				}
-				else if (rotDest.x < -D3DX_PI)
-				{
-					rotDest.x += D3DX_PI * 2;
-				}
-
-				// 向きY
-				fDiffKey = pKeyNext->fRotY - pKey->fRotY;					// 現在のモーション
-				rotCurrent.y = pKey->fRotY + (fDiffKey * fRateKey);
-				fDiffKeyBlend = pKeyNextBlend->fRotY - pKeyBlend->fRotY;	// ブレンドモーション
-				rotBlend.y = pKeyBlend->fRotY + (fDiffKeyBlend * fRateKeyBlend);
-				fDiffBlend = rotBlend.y - rotCurrent.y;						// 差分
-				rotDest.y = rotCurrent.y + (fDiffBlend * fRateBlend);		// 求める値
-
-				// 向きを調整
-				if (rotDest.y > D3DX_PI)
-				{
-					rotDest.y -= D3DX_PI * 2;
-				}
-				else if (rotDest.y < -D3DX_PI)
-				{
-					rotDest.y += D3DX_PI * 2;
-				}
-
-				// 向きZ
-				fDiffKey = pKeyNext->fRotZ - pKey->fRotZ;					// 現在のモーション
-				rotCurrent.z = pKey->fRotZ + (fDiffKey * fRateKey);
-				fDiffKeyBlend = pKeyNextBlend->fRotZ - pKeyBlend->fRotZ;	// ブレンドモーション
-				rotBlend.z = pKeyBlend->fRotZ + (fDiffKeyBlend * fRateKeyBlend);
-				fDiffBlend = rotBlend.z - rotCurrent.z;						// 差分
-				rotDest.z = rotCurrent.z + (fDiffBlend * fRateBlend);		// 求める値
-
-				// 向きを調整
-				if (rotDest.z > D3DX_PI)
-				{
-					rotDest.z -= D3DX_PI * 2;
-				}
-				else if (rotDest.z < -D3DX_PI)
-				{
-					rotDest.z += D3DX_PI * 2;
-				}
+			// 向きを調整
+			if (rotDest.x > D3DX_PI)
+			{
+				rotDest.x -= D3DX_PI * 2;
 			}
-			else
-			{// ブレンドなし
-				// キー情報から位置・向きを算出
-				// 位置X
-				fDiffKey = pKeyNext->fPosX - pKey->fPosX;
-				posDest.x = pKey->fPosX + (fDiffKey * fRateKey);
-
-				// 位置Y
-				fDiffKey = pKeyNext->fPosY - pKey->fPosY;
-				posDest.y = pKey->fPosY + (fDiffKey * fRateKey);
-
-				// 位置Z
-				fDiffKey = pKeyNext->fPosZ - pKey->fPosZ;
-				posDest.z = pKey->fPosZ + (fDiffKey * fRateKey);
-
-				// 向きX
-				fDiffKey = pKeyNext->fRotX - pKey->fRotX;
-				rotDest.x = pKey->fRotX + (fDiffKey * fRateKey);
-
-				// 向きを調整
-				if (rotDest.x > D3DX_PI)
-				{
-					rotDest.x -= D3DX_PI * 2;
-				}
-				else if (rotDest.x < -D3DX_PI)
-				{
-					rotDest.x += D3DX_PI * 2;
-				}
-
-				// 向きY
-				fDiffKey = pKeyNext->fRotY - pKey->fRotY;
-				rotDest.y = pKey->fRotY + (fDiffKey * fRateKey);
-
-				// 向きを調整
-				if (rotDest.y > D3DX_PI)
-				{
-					rotDest.y -= D3DX_PI * 2;
-				}
-				else if (rotDest.y < -D3DX_PI)
-				{
-					rotDest.y += D3DX_PI * 2;
-				}
-
-				// 向きZ
-				fDiffKey = pKeyNext->fRotZ - pKey->fRotZ;
-				rotDest.z = pKey->fRotZ + (fDiffKey * fRateKey);
-
-				// 向きを調整
-				if (rotDest.z > D3DX_PI)
-				{
-					rotDest.z -= D3DX_PI * 2;
-				}
-				else if (rotDest.z < -D3DX_PI)
-				{
-					rotDest.z += D3DX_PI * 2;
-				}
+			else if (rotDest.x < -D3DX_PI)
+			{
+				rotDest.x += D3DX_PI * 2;
 			}
 
-			// パーツの位置・向きを設定
-			pModel->pos = posDest + pComputer->aModel[nCntModel].posOff;
-			pModel->rot = rotDest + pComputer->aModel[nCntModel].rotOff;
-		}
+			// 向きY
+			fDiffKey = pKeyNext->fRotY - pKey->fRotY;					// 現在のモーション
+			rotCurrent.y = pKey->fRotY + (fDiffKey * fRateKey);
+			fDiffKeyBlend = pKeyNextBlend->fRotY - pKeyBlend->fRotY;	// ブレンドモーション
+			rotBlend.y = pKeyBlend->fRotY + (fDiffKeyBlend * fRateKeyBlend);
+			fDiffBlend = rotBlend.y - rotCurrent.y;						// 差分
+			rotDest.y = rotCurrent.y + (fDiffBlend * fRateBlend);		// 求める値
 
-		if (pComputer->bBlendMotion == true)
-		{// ブレンドあり
-			pComputer->nCounterMotion++;
-
-			if (pComputer->nCounterMotion >= pComputer->aMotionInfo[pComputer->motionType].aKeyInfo[pComputer->nKey].nFrame)
-			{// 再生フレーム数に達したら現在のキーを1つ進める
-				pComputer->nCounterMotion = 0;	// カウンターを戻す
-
-				// ループかどうか
-				if (pComputer->bLoopMotion == true)
-				{// ループモーション
-					pComputer->nKey = (pComputer->nKey + 1) % (pComputer->aMotionInfo[pComputer->motionType].nNumKey);
-				}
-				else
-				{// ループしないモーション
-					pComputer->nKey++;
-
-					if (pComputer->nKey >= pComputer->aMotionInfo[pComputer->motionType].nNumKey - 1)
-					{// キーの総数を超えた
-						pComputer->nKey = pComputer->aMotionInfo[pComputer->motionType].nNumKey - 1;
-
-						pComputer->bFinishMotion = true;
-					}
-				}
+			// 向きを調整
+			if (rotDest.y > D3DX_PI)
+			{
+				rotDest.y -= D3DX_PI * 2;
+			}
+			else if (rotDest.y < -D3DX_PI)
+			{
+				rotDest.y += D3DX_PI * 2;
 			}
 
-			pComputer->nCounterMotionBlend++;
+			// 向きZ
+			fDiffKey = pKeyNext->fRotZ - pKey->fRotZ;					// 現在のモーション
+			rotCurrent.z = pKey->fRotZ + (fDiffKey * fRateKey);
+			fDiffKeyBlend = pKeyNextBlend->fRotZ - pKeyBlend->fRotZ;	// ブレンドモーション
+			rotBlend.z = pKeyBlend->fRotZ + (fDiffKeyBlend * fRateKeyBlend);
+			fDiffBlend = rotBlend.z - rotCurrent.z;						// 差分
+			rotDest.z = rotCurrent.z + (fDiffBlend * fRateBlend);		// 求める値
 
-			if (pComputer->nCounterMotionBlend >= pComputer->aMotionInfo[pComputer->motionTypeBlend].aKeyInfo[pComputer->nKeyBlend].nFrame)
-			{// 再生フレーム数に達したら現在のキーを1つ進める
-				pComputer->nCounterMotionBlend = 0;	// カウンターを戻す
-
-				// ループかどうか
-				if (pComputer->bLoopMotionBlend == true)
-				{// ループモーション
-					pComputer->nKeyBlend = (pComputer->nKeyBlend + 1) % (pComputer->aMotionInfo[pComputer->motionTypeBlend].nNumKey);
-				}
-				else
-				{// ループしないモーション
-					pComputer->nKeyBlend++;
-
-					if (pComputer->nKeyBlend >= pComputer->aMotionInfo[pComputer->motionTypeBlend].nNumKey - 1)
-					{// キーの総数を超えた
-						pComputer->nKeyBlend = pComputer->aMotionInfo[pComputer->motionTypeBlend].nNumKey - 1;
-
-						pComputer->bFinishMotion = true;
-					}
-				}
+			// 向きを調整
+			if (rotDest.z > D3DX_PI)
+			{
+				rotDest.z -= D3DX_PI * 2;
 			}
-
-			pComputer->nCounterBlend++;
-
-			if (pComputer->nCounterBlend >= pComputer->nFrameBlend)
-			{// ブレンドフレームに到達
-				// ブレンドモーションを現在のモーションに設定
-				pComputer->motionType = pComputer->motionTypeBlend;
-				pComputer->bLoopMotion = pComputer->bLoopMotionBlend;
-				pComputer->nNumKey = pComputer->nNumKeyBlend;
-				pComputer->nKey = pComputer->nKeyBlend;
-				pComputer->nCounterMotion = pComputer->nCounterMotionBlend;
-				//pComputer->bFinishMotion = true;
-
-				pComputer->nKeyBlend = 0;
-				pComputer->nCounterMotionBlend = 0;
-				pComputer->bBlendMotion = false;
-				pComputer->nCounterBlend = 0;
-				pComputer->nFrameBlend = 0;
+			else if (rotDest.z < -D3DX_PI)
+			{
+				rotDest.z += D3DX_PI * 2;
 			}
 		}
 		else
 		{// ブレンドなし
-			pComputer->nCounterMotion++;
+			// キー情報から位置・向きを算出
+			// 位置X
+			fDiffKey = pKeyNext->fPosX - pKey->fPosX;
+			posDest.x = pKey->fPosX + (fDiffKey * fRateKey);
 
-			if (pComputer->nCounterMotion >= pComputer->aMotionInfo[pComputer->motionType].aKeyInfo[pComputer->nKey].nFrame)
-			{// 再生フレーム数に達したら現在のキーを1つ進める
-				pComputer->nCounterMotion = 0;	// カウンターを戻す
+			// 位置Y
+			fDiffKey = pKeyNext->fPosY - pKey->fPosY;
+			posDest.y = pKey->fPosY + (fDiffKey * fRateKey);
 
-				// ループかどうか
-				if (pComputer->bLoopMotion == true)
-				{// ループモーション
-					pComputer->nKey = (pComputer->nKey + 1) % (pComputer->aMotionInfo[pComputer->motionType].nNumKey);
+			// 位置Z
+			fDiffKey = pKeyNext->fPosZ - pKey->fPosZ;
+			posDest.z = pKey->fPosZ + (fDiffKey * fRateKey);
+
+			// 向きX
+			fDiffKey = pKeyNext->fRotX - pKey->fRotX;
+			rotDest.x = pKey->fRotX + (fDiffKey * fRateKey);
+
+			// 向きを調整
+			if (rotDest.x > D3DX_PI)
+			{
+				rotDest.x -= D3DX_PI * 2;
+			}
+			else if (rotDest.x < -D3DX_PI)
+			{
+				rotDest.x += D3DX_PI * 2;
+			}
+
+			// 向きY
+			fDiffKey = pKeyNext->fRotY - pKey->fRotY;
+			rotDest.y = pKey->fRotY + (fDiffKey * fRateKey);
+
+			// 向きを調整
+			if (rotDest.y > D3DX_PI)
+			{
+				rotDest.y -= D3DX_PI * 2;
+			}
+			else if (rotDest.y < -D3DX_PI)
+			{
+				rotDest.y += D3DX_PI * 2;
+			}
+
+			// 向きZ
+			fDiffKey = pKeyNext->fRotZ - pKey->fRotZ;
+			rotDest.z = pKey->fRotZ + (fDiffKey * fRateKey);
+
+			// 向きを調整
+			if (rotDest.z > D3DX_PI)
+			{
+				rotDest.z -= D3DX_PI * 2;
+			}
+			else if (rotDest.z < -D3DX_PI)
+			{
+				rotDest.z += D3DX_PI * 2;
+			}
+		}
+
+		// パーツの位置・向きを設定
+		pModel->pos = posDest + pComputer->aModel[nCntModel].posOff;
+		pModel->rot = rotDest + pComputer->aModel[nCntModel].rotOff;
+	}
+
+	if (pComputer->bBlendMotion == true)
+	{// ブレンドあり
+		pComputer->nCounterMotion++;
+
+		if (pComputer->nCounterMotion >= pComputer->aMotionInfo[pComputer->motionType].aKeyInfo[pComputer->nKey].nFrame)
+		{// 再生フレーム数に達したら現在のキーを1つ進める
+			pComputer->nCounterMotion = 0;	// カウンターを戻す
+
+			// ループかどうか
+			if (pComputer->bLoopMotion == true)
+			{// ループモーション
+				pComputer->nKey = (pComputer->nKey + 1) % (pComputer->aMotionInfo[pComputer->motionType].nNumKey);
+			}
+			else
+			{// ループしないモーション
+				pComputer->nKey++;
+
+				if (pComputer->nKey >= pComputer->aMotionInfo[pComputer->motionType].nNumKey - 1)
+				{// キーの総数を超えた
+					pComputer->nKey = pComputer->aMotionInfo[pComputer->motionType].nNumKey - 1;
+
+					pComputer->bFinishMotion = true;
 				}
-				else
-				{// ループしないモーション
-					pComputer->nKey++;
+			}
+		}
 
-					if (pComputer->nKey >= pComputer->aMotionInfo[pComputer->motionType].nNumKey - 1)
-					{// キーの総数を超えた
-						pComputer->nKey = pComputer->aMotionInfo[pComputer->motionType].nNumKey - 1;
+		pComputer->nCounterMotionBlend++;
 
-						pComputer->bFinishMotion = true;
-					}
+		if (pComputer->nCounterMotionBlend >= pComputer->aMotionInfo[pComputer->motionTypeBlend].aKeyInfo[pComputer->nKeyBlend].nFrame)
+		{// 再生フレーム数に達したら現在のキーを1つ進める
+			pComputer->nCounterMotionBlend = 0;	// カウンターを戻す
+
+			// ループかどうか
+			if (pComputer->bLoopMotionBlend == true)
+			{// ループモーション
+				pComputer->nKeyBlend = (pComputer->nKeyBlend + 1) % (pComputer->aMotionInfo[pComputer->motionTypeBlend].nNumKey);
+			}
+			else
+			{// ループしないモーション
+				pComputer->nKeyBlend++;
+
+				if (pComputer->nKeyBlend >= pComputer->aMotionInfo[pComputer->motionTypeBlend].nNumKey - 1)
+				{// キーの総数を超えた
+					pComputer->nKeyBlend = pComputer->aMotionInfo[pComputer->motionTypeBlend].nNumKey - 1;
+
+					pComputer->bFinishMotion = true;
+				}
+			}
+		}
+
+		pComputer->nCounterBlend++;
+
+		if (pComputer->nCounterBlend >= pComputer->nFrameBlend)
+		{// ブレンドフレームに到達
+			// ブレンドモーションを現在のモーションに設定
+			pComputer->motionType = pComputer->motionTypeBlend;
+			pComputer->bLoopMotion = pComputer->bLoopMotionBlend;
+			pComputer->nNumKey = pComputer->nNumKeyBlend;
+			pComputer->nKey = pComputer->nKeyBlend;
+			pComputer->nCounterMotion = pComputer->nCounterMotionBlend;
+			//pComputer->bFinishMotion = true;
+
+			pComputer->nKeyBlend = 0;
+			pComputer->nCounterMotionBlend = 0;
+			pComputer->bBlendMotion = false;
+			pComputer->nCounterBlend = 0;
+			pComputer->nFrameBlend = 0;
+		}
+	}
+	else
+	{// ブレンドなし
+		pComputer->nCounterMotion++;
+
+		if (pComputer->nCounterMotion >= pComputer->aMotionInfo[pComputer->motionType].aKeyInfo[pComputer->nKey].nFrame)
+		{// 再生フレーム数に達したら現在のキーを1つ進める
+			pComputer->nCounterMotion = 0;	// カウンターを戻す
+
+			// ループかどうか
+			if (pComputer->bLoopMotion == true)
+			{// ループモーション
+				pComputer->nKey = (pComputer->nKey + 1) % (pComputer->aMotionInfo[pComputer->motionType].nNumKey);
+			}
+			else
+			{// ループしないモーション
+				pComputer->nKey++;
+
+				if (pComputer->nKey >= pComputer->aMotionInfo[pComputer->motionType].nNumKey - 1)
+				{// キーの総数を超えた
+					pComputer->nKey = pComputer->aMotionInfo[pComputer->motionType].nNumKey - 1;
+
+					pComputer->bFinishMotion = true;
 				}
 			}
 		}

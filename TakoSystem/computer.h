@@ -56,7 +56,8 @@ typedef struct
 	D3DXVECTOR3 move;				// 移動量
 	D3DXVECTOR3 rot;				// 向き
 	D3DXVECTOR3 dir;				// 向いている方向
-	float fAngle;					// 向きの最終地点
+	float fAngleY;					// Y向きの最終地点
+	float fAngleX;					// X向きの最終地点
 	float fRadius;					// 半径
 	float fHeight;					// 高さ
 	D3DXMATRIX mtxWorld;			// ワールドマトリックス
@@ -198,7 +199,7 @@ void SetRandomComputer(int nAmount);
 Computer* GetComputer(void);
 
 // モーション
-void UpdateMotionComputer(void);
+void UpdateMotionComputer(int nIdx);
 void SetMotionComputer(int nIdx, MOTIONTYPE motionType, bool bBlendMotion, int nFrameBlend);
 
 #endif
