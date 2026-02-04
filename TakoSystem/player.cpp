@@ -9,6 +9,7 @@
 #include "esa.h"
 #include "particle_3d.h"
 #include "crosshair.h"
+#include "watersurf.h"
 #include "camera.h"
 #include "input.h"
 //#include "sound.h"
@@ -540,6 +541,11 @@ void UpdatePlayer(void)
 			if (pPlayer->pos.y < 0.0f)
 			{// ’ê
 				pPlayer->pos.y = 0.0f;
+			}
+
+			if (pPlayer->pos.y > *GetWaterSurf_Height() - (PLAYER_HEIGHT * 0.5f))
+			{// ã									  
+				pPlayer->pos.y = *GetWaterSurf_Height() - (PLAYER_HEIGHT * 0.5f);
 			}
 
 			//PrintDebugProc("fAngle : %f", pCamera->fAngle);

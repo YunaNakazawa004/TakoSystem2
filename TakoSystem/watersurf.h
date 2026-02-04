@@ -27,5 +27,6 @@ void UninitWaterSurf(void);
 void UpdateWaterSurf(void);
 void DrawWaterSurf(void);
 void SetWaterSurf(D3DXVECTOR3 pos, D3DXVECTOR3 rot);
+float* GetWaterSurf_Height(void);
 
 #endif
