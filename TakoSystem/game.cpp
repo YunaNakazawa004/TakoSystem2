@@ -64,8 +64,8 @@ void InitGame(void)
 
 	// プレイヤーの初期化処理
 	InitPlayer();
-	SetPlayer(0, D3DXVECTOR3(0.0f, 4000.0f, 500.0f), FIRST_POS);
-	SetPlayer(1, D3DXVECTOR3(0.0f, 4000.0f, -500.0f), FIRST_POS);
+	SetPlayer(0, D3DXVECTOR3(0.0f, 1500.0f, 500.0f), FIRST_POS);
+	SetPlayer(1, D3DXVECTOR3(0.0f, 1500.0f, -500.0f), FIRST_POS);
 
 	// CPUの初期化処理
 	InitComputer();
@@ -78,8 +78,8 @@ void InitGame(void)
 
 	// メッシュシリンダーの初期化処理
 	InitMeshCylinder();
-	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 2.0f), D3DXVECTOR2(400.0f, 2000.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, MESHCYLINDERTYPE_ROCK);
-	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(1500.0f, 2000.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), true, MESHCYLINDERTYPE_SEA);
+	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 2.0f), D3DXVECTOR2(INCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, MESHCYLINDERTYPE_ROCK);
+	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(OUTCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), true, MESHCYLINDERTYPE_SEA);
 
 	// メッシュドームの初期化処理
 	InitMeshDome();
