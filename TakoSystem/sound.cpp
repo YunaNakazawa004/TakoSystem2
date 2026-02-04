@@ -48,6 +48,7 @@ SOUNDINFO g_aSoundInfo[SOUND_MAX] =
 	{"data/SE/boot.wav",0},					//起動音
 	{"data/SE/cursormove.wav",0},			//カーソル移動音
 	{"data/SE/decision.wav",0},				//決定音
+	{"data/SE/warning.wav",0},				//警告音
 };
 
 //=============================================================================

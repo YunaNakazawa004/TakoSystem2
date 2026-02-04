@@ -14,8 +14,7 @@
 
 // マクロ定義
 #define TEXT_NAME	"data/RANKING/RankingData.bin"	// 相対パスのテキスト名
-#define	RANKING_DELEY	(480)	// タイトル移行に掛かる時間
-#define	MAX_RANKING	(2)	// ランキングの最大数
+#define	MAX_RANKING	(7)	// ランキングの最大数
 
 // グローバル変数
 LPDIRECT3DTEXTURE9 g_pTextureRanking[MAX_RANKING] = {};	// テクスチャへのポインタ
@@ -23,7 +22,6 @@ LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffRanking = NULL;	// 頂点バッファへのポインタ
 
 Ranking g_aRanking[MAX_RANK];	// ランキング情報
 int g_nRankingUpdate = -1;		// 更新ランクNo.
-int g_nRankingDeley;			// ランキング表示時間
 
 // ランキングの初期化処理
 void InitRanking(void)
@@ -38,8 +36,6 @@ void InitRanking(void)
 
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();	// デバイスへのポインタ
 
-	g_nRankingDeley = 0;	// 表示時間の初期化
-
 	// テクスチャの読み込み
 	D3DXCreateTextureFromFile(pDevice,
 		"data/TEXTURE/In_the_sea.png",
@@ -48,6 +44,26 @@ void InitRanking(void)
 	D3DXCreateTextureFromFile(pDevice,
 		"data/TEXTURE/RANKING.png",
 		&g_pTextureRanking[1]);
+
+	D3DXCreateTextureFromFile(pDevice,
+		"data/TEXTURE/rank000.png",
+		&g_pTextureRanking[2]);
+
+	D3DXCreateTextureFromFile(pDevice,
+		"data/TEXTURE/rank000.png",
+		&g_pTextureRanking[3]);
+
+	D3DXCreateTextureFromFile(pDevice,
+		"data/TEXTURE/rank000.png",
+		&g_pTextureRanking[4]);
+
+	D3DXCreateTextureFromFile(pDevice,
+		"data/TEXTURE/rank000.png",
+		&g_pTextureRanking[5]);
+
+	D3DXCreateTextureFromFile(pDevice,
+		"data/TEXTURE/rank000.png",
+		&g_pTextureRanking[6]);
 
 	// 頂点バッファの生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4 * MAX_RANKING,
@@ -72,12 +88,26 @@ void InitRanking(void)
 			pVtx[2].pos = D3DXVECTOR3(0.0f, 720.0f, 0.0f);
 			pVtx[3].pos = D3DXVECTOR3(1280.0f, 720.0f, 0.0f);
 		}
-		else
+		else if (nCntRanking == 1)
 		{// RESULTロゴ
 			pVtx[0].pos = D3DXVECTOR3(460.0f, 0.0f, 0.0f);	// 右回りで設定する
 			pVtx[1].pos = D3DXVECTOR3(820.0f, 0.0f, 0.0f);	// 2Dの場合Zの値は0にする
 			pVtx[2].pos = D3DXVECTOR3(460.0f, 180.0f, 0.0f);
 			pVtx[3].pos = D3DXVECTOR3(820.0f, 180.0f, 0.0f);
+		}
+		else if (nCntRanking == 2)
+		{// 1位
+			pVtx[0].pos = D3DXVECTOR3(80.0f, 600.0f, 0.0f);	// 右回りで設定する
+			pVtx[1].pos = D3DXVECTOR3(280.0f, 600.0f, 0.0f);	// 2Dの場合Zの値は0にする
+			pVtx[2].pos = D3DXVECTOR3(80.0f, 700.0f, 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(280.0f, 700.0f, 0.0f);
+		}
+		else
+		{// 2位以降
+			pVtx[0].pos = D3DXVECTOR3(680.0f, 225.0f + ((nCntRanking - 3.0f) * 125.0f), 0.0f);	// 右回りで設定する
+			pVtx[1].pos = D3DXVECTOR3(880.0f, 225.0f + ((nCntRanking - 3.0f) * 125.0f), 0.0f);	// 2Dの場合Zの値は0にする
+			pVtx[2].pos = D3DXVECTOR3(680.0f, 325.0f + ((nCntRanking - 3.0f) * 125.0f), 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(880.0f, 325.0f + ((nCntRanking - 3.0f) * 125.0f), 0.0f);
 		}
 
 		// rhwの設定
@@ -93,10 +123,20 @@ void InitRanking(void)
 		pVtx[3].col = WHITE_VTX;
 
 		// UV座標設定
-		pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
-		pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
-		pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
-		pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
+		if (nCntRanking < 2)
+		{// 順位以外
+			pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
+			pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
+			pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
+			pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
+		}
+		else
+		{// 1位以降
+			pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f + ((nCntRanking - 2.0f) * 0.2f));
+			pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f + ((nCntRanking - 2.0f) * 0.2f));
+			pVtx[2].tex = D3DXVECTOR2(0.0f, 0.2f + ((nCntRanking - 2.0f) * 0.2f));
+			pVtx[3].tex = D3DXVECTOR2(1.0f, 0.2f + ((nCntRanking - 2.0f) * 0.2f));
+		}
 
 		pVtx += 4;		// 頂点データのポインタを4つ分進める
 	}
@@ -141,8 +181,6 @@ void UpdateRanking(void)
 	// フェード情報の取得
 	FADE pFade = GetFade();
 
-	g_nRankingDeley++;
-
 	//// ランキング点滅
 	//if (g_nRankingUpdate != -1)
 	//{// ランキングが更新された
@@ -153,8 +191,7 @@ void UpdateRanking(void)
 	if ((GetKeyboardTrigger(DIK_RETURN) == true ||
 		GetJoypadTrigger(0, JOYKEY_START) == true ||
 		GetJoypadTrigger(0, JOYKEY_A) == true)
-		&& pFade == FADE_NONE ||
-		g_nRankingDeley > RANKING_DELEY && pFade == FADE_NONE)
+		&& pFade == FADE_NONE)
 	{// 決定キー（ENTERキー）が押された
 		//if (g_nRankingDeley < TITLE_DELEY)
 		//{// クリックで反応
