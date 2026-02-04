@@ -16,7 +16,7 @@
 
 // マクロ定義
 #define	MAX_TITLE	(5)	// タイトルで表示するテクスチャの最大数
-#define	RANKING_DELEY	(1200)	// ランキング移行に掛かる時間
+#define	RANKING_DELEY	(900)	// ランキング移行に掛かる時間
 #define	CLEAR_DELEY	(60)	// 消滅にかかる時間
 #define	TITLE_DELEY_MAX	(500.0f)	// タイトルの最大数
 
@@ -46,6 +46,8 @@ void InitTitle(void)
 
 	// カメラの数の設定
 	SetNumCamera(1);
+
+	SetCameraPos(0, D3DXVECTOR3(750.0f, 50.0f, 750.0f), D3DXVECTOR3(750.0f, 50.0f, 750.0f));
 
 	// デバイスの取得
 	pDevice = GetDevice();
