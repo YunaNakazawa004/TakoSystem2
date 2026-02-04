@@ -239,6 +239,7 @@ void UpdateUiGaugeIcon(void)
 	if (GetKeyboardPress(DIK_U)) g_aUiGaugeIcon[2].fSizeLength += 1.0f;
 	if (GetKeyboardPress(DIK_M)) g_aUiGaugeIcon[2].fSizeLength -= 1.0f;
 #endif
+
 	for (int nCntUiGaugeIcon = 0; nCntUiGaugeIcon < MAX_SET_UIGAUGEICON; nCntUiGaugeIcon++)
 	{
 		if (g_aUiGaugeIcon[nCntUiGaugeIcon].bUse == true)
