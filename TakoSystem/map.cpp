@@ -120,7 +120,7 @@ void InitMap(void)
 			{ SCREEN_WIDTH - MAP_SIZE - 50,MAP_SIZE + 50,0.0f };
 		}
 		pMap[2].bUse = true;
-		pMap[4].bUse = true;
+		pMap[2+ PIN_USE_NUM].bUse = true;
 	}
 	else
 	{
