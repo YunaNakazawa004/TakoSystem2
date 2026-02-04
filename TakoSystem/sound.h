@@ -15,7 +15,7 @@ typedef enum
 	SOUND_BGM_TUTORIAL,					//チュートリアルBGM
 	SOUND_BGM_GAME,						//ゲームBGM
 	SOUND_BGM_RESULT,					//リザルトBGM
-	SOUND_BGMRANKING,					//ランキングBGM
+	SOUND_BGM_RANKING,					//ランキングBGM
 	SOUND_SE_SWIM,						//泳ぐ音
 	SOUND_SE_TENTACLE_STRETCH,			//触手を伸ばす音
 	SOUND_SE_TENTACLE_RETRACT,			//触手を引っ込める音
@@ -26,6 +26,10 @@ typedef enum
 	SOUND_SE_WIN,						//勝利音
 	SOUND_SE_COUNTDOWN,					//カウントダウン音
 	SOUND_SE_TIMEUP,					//タイムアップ音
+	SOUND_SE_BOOT,						//起動音
+	SOUND_SE_CURSORMOVE,				//カーソル移動音（ポーズメニューや人数選択時など）
+	SOUND_SE_DECISION,					//決定音
+	SOUND_SE_WARNING,					//警告音（渦潮発生時など）
 	SOUND_MAX,
 } SOUND_LABEL;
 

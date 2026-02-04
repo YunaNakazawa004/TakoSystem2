@@ -14,9 +14,6 @@
 
 #define PINCH_TIME	(20)		// 制限時間がピンチ
 
-#define DEFAULT_COLOR	D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f)	// 通常のタイマーカラー
-#define PINCH_COLOR	D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f)		// 時間切れ目前のタイマーカラー
-
 // プロトタイプ宣言
 void InitTime(void);
 void UninitTime(void);

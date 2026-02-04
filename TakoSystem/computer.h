@@ -1,4 +1,5 @@
 //=============================================================================
+//=============================================================================
 // 
 // CPUヘッダー [computer.h]
 // Author : 中澤優奈
@@ -35,6 +36,17 @@ typedef enum {
 } CPUSTATE;
 
 //*****************************************************************************
+// 触手の状態
+//*****************************************************************************
+typedef enum
+{
+	CPUTENTACLESTATE_NORMAL = 0,		// 通常状態
+	CPUTENTACLESTATE_TENTACLELONG,		// 触手伸ばし状態
+	CPUTENTACLESTATE_TENTACLESHORT,		// 触手縮め状態
+	CPUTENTACLESTATE_MAX
+}CPUTENTACLESTATE;
+
+//*****************************************************************************
 // CPUの物理情報
 //*****************************************************************************
 typedef struct
@@ -44,7 +56,8 @@ typedef struct
 	D3DXVECTOR3 move;				// 移動量
 	D3DXVECTOR3 rot;				// 向き
 	D3DXVECTOR3 dir;				// 向いている方向
-	float fAngle;					// 向きの最終地点
+	float fAngleY;					// Y向きの最終地点
+	float fAngleX;					// X向きの最終地点
 	float fRadius;					// 半径
 	float fHeight;					// 高さ
 	D3DXMATRIX mtxWorld;			// ワールドマトリックス
@@ -58,6 +71,7 @@ typedef struct
 	int nIdx;					// タコのID
 	CPUSTATE state;				// 現在の状態
 	int nCounterState;			// 状態カウンター
+	CPUTENTACLESTATE TentState;	// 触手の状態
 	Physics phys;				// 物理情報
 	bool bUse;					// 使用しているかどうか
 
@@ -80,7 +94,8 @@ typedef struct
 	// クールダウン
 	int nTentacleCooldown;		// 触手のクールダウン
 	int nInkCooldown;			// 墨吐きのクールダウン
-	int nThinkCooldown;			// AIの思考間隔（例：5フレームに1回判断）
+	int nThinkCooldown;			// AIの思考間隔
+	int nExploreCooldown;		// 探索位置更新間隔
 
 	// 墨吐き
 	bool bBlinded;				// 視界が悪化しているかどうか
@@ -141,7 +156,6 @@ void DrawComputer(void);
 void MoveToFood(Computer* pComputer);
 void AttackEnemy(Computer* pComputer);
 void Escape(Computer* pComputer);
-void HideBehindPillar(Computer* pComputer);
 void InkAttack(Computer* pComputer);
 void Explore(Computer* pComputer);
 void GoToPot(Computer* pComputer);
@@ -185,7 +199,7 @@ void SetRandomComputer(int nAmount);
 Computer* GetComputer(void);
 
 // モーション
-void UpdateMotionComputer(void);
+void UpdateMotionComputer(int nIdx);
 void SetMotionComputer(int nIdx, MOTIONTYPE motionType, bool bBlendMotion, int nFrameBlend);
 
 #endif

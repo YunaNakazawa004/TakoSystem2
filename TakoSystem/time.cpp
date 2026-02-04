@@ -6,6 +6,7 @@
 //=============================================================================
 #include "main.h"
 #include "time.h"
+#include "input.h"
 #include "player.h"
 #include "pause.h"
 #include "fade.h"
@@ -112,16 +113,16 @@ void InitTime(void)
 			pVtx[3].pos.z = 0.0f;
 		}
 		// rhwの設定
-		pVtx[0].rhw = 1.0f;	// 値は1.0fで固定
-		pVtx[1].rhw = 1.0f;
-		pVtx[2].rhw = 1.0f;
-		pVtx[3].rhw = 1.0f;
+		pVtx[0].rhw = DEFAULT_RHW;	// 値は1.0fで固定
+		pVtx[1].rhw = DEFAULT_RHW;
+		pVtx[2].rhw = DEFAULT_RHW;
+		pVtx[3].rhw = DEFAULT_RHW;
 
 		// 頂点カラーの設定
-		pVtx[0].col = DEFAULT_COLOR;
-		pVtx[1].col = DEFAULT_COLOR;
-		pVtx[2].col = DEFAULT_COLOR;
-		pVtx[3].col = DEFAULT_COLOR;
+		pVtx[0].col = WHITE_VTX;
+		pVtx[1].col = WHITE_VTX;
+		pVtx[2].col = WHITE_VTX;
+		pVtx[3].col = WHITE_VTX;
 
 		// UV座標設定
 		pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
@@ -183,6 +184,14 @@ void UpdateTime(void)
 			PlaySound(SOUND_SE_TIMEUP);	// カウントダウン
 		}
 	}
+
+#ifdef _DEBUG	// デバッグの時のみ使用可能
+
+	// デバッグ時間短縮
+	if (GetKeyboardTrigger(DIK_O) || GetJoypadTrigger(0, JOYKEY_BACK)) AddTime(-150);
+
+#endif
+
 }
 
 // タイムの描画処理
@@ -302,17 +311,17 @@ void AddTime(int nValue)
 
 		if (g_nTime > PINCH_TIME)
 		{// 制限時間15秒以上
-			pVtx[0].col = DEFAULT_COLOR;
-			pVtx[1].col = DEFAULT_COLOR;
-			pVtx[2].col = DEFAULT_COLOR;
-			pVtx[3].col = DEFAULT_COLOR;
+			pVtx[0].col = WHITE_VTX;
+			pVtx[1].col = WHITE_VTX;
+			pVtx[2].col = WHITE_VTX;
+			pVtx[3].col = WHITE_VTX;
 		}
 		else
 		{// 制限時間15秒未満
-			pVtx[0].col = PINCH_COLOR;
-			pVtx[1].col = PINCH_COLOR;
-			pVtx[2].col = PINCH_COLOR;
-			pVtx[3].col = PINCH_COLOR;
+			pVtx[0].col = RED_VTX;
+			pVtx[1].col = RED_VTX;
+			pVtx[2].col = RED_VTX;
+			pVtx[3].col = RED_VTX;
 		}
 		pVtx += 4;		// 頂点データのポインタを4つ分進める
 	}

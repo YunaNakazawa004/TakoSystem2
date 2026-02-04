@@ -12,10 +12,11 @@
 #include "fade.h"
 #include "camera.h"
 #include "game.h"
+#include "object.h"
 
 // マクロ定義
 #define	MAX_TITLE	(5)	// タイトルで表示するテクスチャの最大数
-#define	RANKING_DELEY	(720)	// ランキング移行に掛かる時間
+#define	RANKING_DELEY	(900)	// ランキング移行に掛かる時間
 #define	CLEAR_DELEY	(60)	// 消滅にかかる時間
 #define	TITLE_DELEY_MAX	(500.0f)	// タイトルの最大数
 
@@ -35,6 +36,9 @@ void InitTitle(void)
 	g_TitleDeley = 0.0f;	// ディレイの値を初期化
 	g_PressEnterDeley = 0;
 
+	// 配置物の初期化処理
+	InitObject("objpos.txt");
+
 	// ライトの設定
 	SetLightColor(0, D3DXCOLOR(0.8f, 0.9f, 1.0f, 1.0f));
 	SetLightColor(1, D3DXCOLOR(0.5f, 0.6f, 0.8f, 0.7f));
@@ -42,6 +46,8 @@ void InitTitle(void)
 
 	// カメラの数の設定
 	SetNumCamera(1);
+
+	SetCameraPos(0, D3DXVECTOR3(750.0f, 50.0f, 750.0f), D3DXVECTOR3(750.0f, 50.0f, 750.0f));
 
 	// デバイスの取得
 	pDevice = GetDevice();
@@ -120,16 +126,16 @@ void InitTitle(void)
 		}
 
 		// rhwの設定
-		pVtx[0].rhw = 1.0f;	// 値は1.0fで固定
-		pVtx[1].rhw = 1.0f;
-		pVtx[2].rhw = 1.0f;
-		pVtx[3].rhw = 1.0f;
+		pVtx[0].rhw = DEFAULT_RHW;	// 値は1.0fで固定
+		pVtx[1].rhw = DEFAULT_RHW;
+		pVtx[2].rhw = DEFAULT_RHW;
+		pVtx[3].rhw = DEFAULT_RHW;
 
 		// 頂点カラーの設定
-		pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);	// 0~255の値を設定
-		pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-		pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-		pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+		pVtx[0].col = WHITE_VTX;	// 0~255の値を設定
+		pVtx[1].col = WHITE_VTX;
+		pVtx[2].col = WHITE_VTX;
+		pVtx[3].col = WHITE_VTX;
 
 		// UV座標設定
 		if (nCntTitle == 3)
@@ -161,6 +167,9 @@ void UninitTitle(void)
 {
 	// サウンドの停止
 	StopSound();
+
+	// 配置物の終了処理
+	UninitObject();
 
 	// テクスチャの破棄
 	for (int nCntTitle = 0; nCntTitle < MAX_TITLE; nCntTitle++)
@@ -197,12 +206,14 @@ void UpdateTitle(void)
 		&& g_PlayerSelect > 1)
 	{
 		g_PlayerSelect--;
+		g_PressEnterDeley %= 100;	// ランキング移行までの時間を短縮
 	}
 	else if ((GetKeyboardTrigger(DIK_D) || GetJoypadTrigger(0, JOYKEY_RIGHT) ||
 		GetJoypadStick(0, JOYKEY_LEFTSTICK_RIGHT, NULL, NULL) == true)
 		&& g_PlayerSelect < MAX_PLAYER)
 	{
 		g_PlayerSelect++;
+		g_PressEnterDeley %= 100;	// ランキング移行までの時間を短縮
 	}
 
 	VERTEX_2D* pVtx;	// 頂点情報へのポインタ
@@ -265,7 +276,7 @@ void UpdateTitle(void)
 		SetFade(MODE_TUTORIAL);
 	}
 	else if (pFade == FADE_NONE && g_PressEnterDeley > RANKING_DELEY)
-	{
+	{// 時間経過でランキングへ移行
 		SetFade(MODE_LOGO);
 	}
 
@@ -285,6 +296,9 @@ void UpdateTitle(void)
 void DrawTitle(void)
 {
 	LPDIRECT3DDEVICE9 pDevice;	// デバイスへのポインタ
+
+	// 配置物の描画処理
+	DrawObject();
 
 	// デバイスの取得
 	pDevice = GetDevice();

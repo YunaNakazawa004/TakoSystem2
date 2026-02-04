@@ -14,12 +14,14 @@
 #include "meshring.h"
 
 #include "player.h"
+#include "sound.h"
 #include "computer.h"
 #include "pot.h"
 #include "object.h"
 #include "stage.h"
 #include "esa.h"		// エサ
 #include "fishes.h"
+#include "watersurf.h"
 
 #include "crosshair.h"	// クロスヘア
 #include "time.h"
@@ -62,8 +64,8 @@ void InitGame(void)
 
 	// プレイヤーの初期化処理
 	InitPlayer();
-	SetPlayer(0, D3DXVECTOR3(0.0f, 4000.0f, 500.0f), FIRST_POS);
-	SetPlayer(1, D3DXVECTOR3(0.0f, 4000.0f, -500.0f), FIRST_POS);
+	SetPlayer(0, D3DXVECTOR3(0.0f, 1500.0f, 500.0f), FIRST_POS);
+	SetPlayer(1, D3DXVECTOR3(0.0f, 1500.0f, -500.0f), FIRST_POS);
 
 	// CPUの初期化処理
 	InitComputer();
@@ -76,8 +78,8 @@ void InitGame(void)
 
 	// メッシュシリンダーの初期化処理
 	InitMeshCylinder();
-	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 2.0f), D3DXVECTOR2(400.0f, 2000.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, MESHCYLINDERTYPE_ROCK);
-	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(1500.0f, 2000.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), true, MESHCYLINDERTYPE_SEA);
+	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 2.0f), D3DXVECTOR2(INCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, MESHCYLINDERTYPE_ROCK);
+	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(OUTCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), true, MESHCYLINDERTYPE_SEA);
 
 	// メッシュドームの初期化処理
 	InitMeshDome();
@@ -103,6 +105,9 @@ void InitGame(void)
 	// エサの初期化処理
 	InitEsa();
 
+	// 水面の初期化処理
+	InitWaterSurf();
+
 	// クロスヘアの初期化処理
 	InitCrossHair();
 
@@ -124,6 +129,9 @@ void InitGame(void)
 	// ポーズの初期化処理
 	InitPause();
 
+	// サウンドの再生
+	PlaySound(SOUND_BGM_GAME);
+
 	g_bPause = false;	// ポーズ解除
 }
 
@@ -132,6 +140,8 @@ void InitGame(void)
 //===================================================================
 void UninitGame(void)
 {
+	// サウンドの停止
+	StopSound();
 
 	// プレイヤーの終了処理
 	UninitPlayer();
@@ -171,6 +181,9 @@ void UninitGame(void)
 
 	// エサの終了処理
 	UninitEsa();
+
+	// 水面の終了処理
+	UninitWaterSurf();
 
 	// クロスヘアの終了処理
 	UninitCrossHair();
@@ -212,6 +225,7 @@ void UpdateGame(void)
 	{// フェードが何もしていない状態のみ発動
 		if (GetKeyboardTrigger(DIK_P) || GetJoypadTrigger(0, JOYKEY_START) == true)
 		{// ポーズの確認
+			ResetPause();
 			g_bPause = g_bPause ? false : true;
 		}
 	}
@@ -262,6 +276,9 @@ void UpdateGame(void)
 
 		// エサの更新処理
 		UpdateEsa();
+
+		// 水面の更新処理
+		UpdateWaterSurf();
 
 		// クロスヘアの更新処理
 		UpdateCrossHair();
@@ -333,6 +350,9 @@ void DrawGame(void)
 
 	// エサの描画処理
 	DrawEsa();
+
+	// 水面の描画処理
+	DrawWaterSurf();
 
 	// クロスヘアの描画処理
 	DrawCrossHair();

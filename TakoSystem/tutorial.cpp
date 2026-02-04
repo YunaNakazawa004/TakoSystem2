@@ -12,8 +12,11 @@
 #include "fade.h"
 #include "model.h"
 
+// マクロ定義
+#define	MAX_TUTORIAL	(2)	// タイトルで表示するテクスチャの最大数
+
 // グローバル変数
-LPDIRECT3DTEXTURE9 g_pTextureTutorial = NULL;	// テクスチャへのポインタ
+LPDIRECT3DTEXTURE9 g_pTextureTutorial[MAX_TUTORIAL] = {};	// テクスチャへのポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffTutorial = NULL;	// 頂点バッファへのポインタ
 
 // リザルトの初期化処理
@@ -31,11 +34,15 @@ void InitTutorial(void)
 
 	// テクスチャの読み込み
 	D3DXCreateTextureFromFile(pDevice,
+		"data/TEXTURE/In_the_sea.png",
+		&g_pTextureTutorial[0]);
+
+	D3DXCreateTextureFromFile(pDevice,
 		"data/TEXTURE/TUTORIAL.png",
-		&g_pTextureTutorial);
+		&g_pTextureTutorial[1]);
 
 	// 頂点バッファの生成
-	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4,
+	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4 * MAX_TEXTURE,
 		D3DUSAGE_WRITEONLY,
 		FVF_VERTEX_2D,
 		D3DPOOL_MANAGED,
@@ -47,30 +54,44 @@ void InitTutorial(void)
 	// 頂点バッファをロックし、頂点情報へのポインタを取得
 	g_pVtxBuffTutorial->Lock(0, 0, (void**)&pVtx, 0);
 
-	// 頂点座標の設定
-	pVtx[0].pos = D3DXVECTOR3(460.0f, 0.0f, 0.0f);	// 右回りで設定する
-	pVtx[1].pos = D3DXVECTOR3(820.0f, 0.0f, 0.0f);	// 2Dの場合Zの値は0にする
-	pVtx[2].pos = D3DXVECTOR3(460.0f, 180.0f, 0.0f);
-	pVtx[3].pos = D3DXVECTOR3(820.0f, 180.0f, 0.0f);
+	for (int nCntTutorial = 0; nCntTutorial < MAX_TUTORIAL; nCntTutorial++)
+	{
+		// 頂点座標の設定
+		if (nCntTutorial == 0)
+		{// 背景
+			pVtx[0].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 右回りで設定する
+			pVtx[1].pos = D3DXVECTOR3(1280.0f, 0.0f, 0.0f);	// 2Dの場合Zの値は0にする
+			pVtx[2].pos = D3DXVECTOR3(0.0f, 720.0f, 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(1280.0f, 720.0f, 0.0f);
+		}
+		else
+		{// RESULTロゴ
+			pVtx[0].pos = D3DXVECTOR3(460.0f, 0.0f, 0.0f);	// 右回りで設定する
+			pVtx[1].pos = D3DXVECTOR3(820.0f, 0.0f, 0.0f);	// 2Dの場合Zの値は0にする
+			pVtx[2].pos = D3DXVECTOR3(460.0f, 180.0f, 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(820.0f, 180.0f, 0.0f);
+		}
 
-	// rhwの設定
-	pVtx[0].rhw = 1.0f;	// 値は1.0fで固定
-	pVtx[1].rhw = 1.0f;
-	pVtx[2].rhw = 1.0f;
-	pVtx[3].rhw = 1.0f;
+		// rhwの設定
+		pVtx[0].rhw = DEFAULT_RHW;	// 値は1.0fで固定
+		pVtx[1].rhw = DEFAULT_RHW;
+		pVtx[2].rhw = DEFAULT_RHW;
+		pVtx[3].rhw = DEFAULT_RHW;
 
-	// 頂点カラーの設定
-	pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);	// 0~255の値を設定
-	pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+		// 頂点カラーの設定
+		pVtx[0].col = WHITE_VTX;	// 0~255の値を設定
+		pVtx[1].col = WHITE_VTX;
+		pVtx[2].col = WHITE_VTX;
+		pVtx[3].col = WHITE_VTX;
 
-	// UV座標設定
-	pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
-	pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
-	pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
-	pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
+		// UV座標設定
+		pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
+		pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
+		pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
+		pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
 
+		pVtx += 4;		// 頂点データのポインタを4つ分進める
+	}
 	// 頂点バッファをアンロックする
 	g_pVtxBuffTutorial->Unlock();
 
@@ -85,10 +106,13 @@ void UninitTutorial(void)
 	StopSound();
 
 	// テクスチャの破棄
-	if (g_pTextureTutorial != NULL)
-	{
-		g_pTextureTutorial->Release();
-		g_pTextureTutorial = NULL;
+	for (int nCntTutorial = 0; nCntTutorial < MAX_TUTORIAL; nCntTutorial++)
+	{// タイトルの数だけ確認する
+		if (g_pTextureTutorial[nCntTutorial] != NULL)
+		{// テクスチャの破棄
+			g_pTextureTutorial[nCntTutorial]->Release();
+			g_pTextureTutorial[nCntTutorial] = NULL;
+		}
 	}
 
 	// 頂点バッファの破棄
@@ -105,7 +129,7 @@ void UpdateTutorial(void)
 	// フェード情報の取得
 	FADE pFade = GetFade();
 
-	if ((GetKeyboardTrigger(DIK_RETURN) == true || 
+	if ((GetKeyboardTrigger(DIK_RETURN) == true ||
 		GetJoypadTrigger(0, JOYKEY_START) == true ||
 		GetJoypadTrigger(0, JOYKEY_A) == true) && pFade == FADE_NONE)
 	{// 決定キー（ENTERキー）が押された
@@ -128,9 +152,12 @@ void DrawTutorial(void)
 	// 頂点フォーマットの設定
 	pDevice->SetFVF(FVF_VERTEX_2D);
 
-	// テクスチャの設定
-	pDevice->SetTexture(0, g_pTextureTutorial);
+	for (int nCntTutorial = 0; nCntTutorial < MAX_TUTORIAL; nCntTutorial++)
+	{// 敵の最大数まで繰り返す
+		// テクスチャのM
+		pDevice->SetTexture(0, g_pTextureTutorial[nCntTutorial]);
 
-	// ポリゴンの描画
-	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
+		// ポリゴンの描画
+		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, nCntTutorial * 4, 2);
+	}
 }
