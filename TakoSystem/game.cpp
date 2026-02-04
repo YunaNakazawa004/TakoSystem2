@@ -115,7 +115,7 @@ void InitGame(void)
 	InitUiGaugeIcon();
 
 	// エサUIの初期化処理
-	//InitUiEsa();
+	InitUiEsa();
 
 	// 時間の初期化処理
 	InitTime();
@@ -192,7 +192,7 @@ void UninitGame(void)
 	UninitUiGaugeIcon();
 	
 	// エサUIの終了処理
-	//UninitUiEsa();
+	UninitUiEsa();
 
 	// 時間の終了処理
 	UninitTime();
@@ -287,7 +287,7 @@ void UpdateGame(void)
 		UpdateUiGaugeIcon();
 
 		// エサUIの更新処理
-		//UpdateUiEsa();
+		UpdateUiEsa();
 
 		// 時間の更新処理
 		UpdateTime();
@@ -361,7 +361,7 @@ void DrawGame(void)
 	DrawUiGaugeIcon();
 
 	// エサUIの描画処理
-	//DrawUiEsa();
+	DrawUiEsa();
 
 	// 時間の描画処理
 	DrawTime();

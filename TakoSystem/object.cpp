@@ -323,12 +323,9 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 			if ((pPos->x + fRadius > pObject->posOff.x - fLengthX) &&
 				(pPos->x - fRadius < pObject->posOff.x + fLengthX) &&
 				(pObject->posOff.z - fLengthZ - fRadius <= pPos->z) &&
-				(pObject->posOff.z + fLengthZ + fRadius >= pPos->z))
-#if 0
-				&&
+				(pObject->posOff.z + fLengthZ + fRadius >= pPos->z) &&
 				(pObject->posOff.y + g_aObjectModel[pObject->nType].VtxMin.y - fHeight <= pPos->y) &&
 				(pObject->posOff.y + g_aObjectModel[pObject->nType].VtxMax.y >= pPos->y))
-#endif
 			{// Œ»Ý‚ÌˆÊ’u‚ª”z’u•¨‚Ì”ÍˆÍ“à
 				if (((pObject->posOff.x - fLengthX - fRadius == pPosOld->x) &&
 					(pObject->posOff.x + fLengthX + fRadius > pPosOld->x)) ||
@@ -369,7 +366,6 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 					pPos->x = pObject->posOff.x + fLengthX + fRadius;
 					pMove->x = 0.0f;
 				}
-#if 0		// ¡‰ñ‚Í‚È‚µ
 				else if ((pObject->posOff.y + g_aObjectModel[pObject->nType].VtxMin.y - fHeight >= pPosOld->y) &&
 					(pObject->posOff.y + g_aObjectModel[pObject->nType].VtxMin.y - fHeight <= pPos->y))
 				{// ‰º‚©‚ç‚Ì“–‚½‚è”»’è
@@ -384,7 +380,6 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 
 					bLand = true;
 				}
-#endif
 			}
 		}
 	}
