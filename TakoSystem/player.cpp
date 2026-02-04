@@ -30,13 +30,14 @@
 #define MOVE_ERROR				(5.0f)									// 移動量の誤差
 #define FOG_MIN					(1500.0f)								// フォグの最低
 #define FOG_MAX					(7000.0f)								// フォグの最高
-#define TENTACLE_RANGE			(DISTANCE * DASH_REACH)					// 触手の長さ(見た目)
+#define TENTACLE_RANGE			(1000.0f)								// 触手の長さ(見た目)
 #define TENTACLE_REACH			(1000.0f)								// 触手のリーチ(実際)
 #define TENTACLE_CT				(ONE_SECOND * 1 + ONE_SECOND)			// 触手のクールダウン
 #define INK_CT					(ONE_SECOND * 5 + ONE_SECOND)			// 墨吐きのクールダウン
 #define PLAYER_TENTACLE			(8)										// プレイヤーの足の数
 #define PLAYER_RADIUS			(50.0f)									// 半径
 #define PLAYER_HEIGHT			(100.0f)								// 高さ
+#define TENTACLE_RADIUS			(100.0f)								// 触手の当たり判定
 #define PLAYER_FILE				"data\\motion_octo_1.txt"				// プレイヤーのデータファイル
 
 //*****************************************************************************
@@ -359,28 +360,41 @@ void UpdatePlayer(void)
 				break;
 
 			case PLTENTACLESTATE_TENTACLELONG:		// 触手伸ばし状態
-				if (pPlayer->bFinishMotion == true)
-				{// 触手が伸ばし終わったら
-					CrossHair* pCrossHair = GetCrossHair();
-					pCrossHair = &pCrossHair[nCntPlayer];
+				if (pPlayer->motionType == MOTIONTYPE_INK || pPlayer->motionTypeBlend == MOTIONTYPE_INK)
+				{// モーションキャンセル
+					pPlayer->TentacleState = PLTENTACLESTATE_NORMAL;
+				}
+				else
+				{// キャンセルしない
+					if (pPlayer->bFinishMotion == true)
+					{// 触手が伸ばし終わったら
+						CrossHair* pCrossHair = GetCrossHair();
+						pCrossHair = &pCrossHair[nCntPlayer];
 
-					if (pCrossHair->state == CROSSHAIRSTATE_REACH)
-					{// 壁との当たり判定
-						pPlayer->state = PLAYERSTATE_DASH;
-						pPlayer->TentacleState = PLTENTACLESTATE_TENTACLESHORT;
-						SetMotionPlayer(nCntPlayer, MOTIONTYPE_DASH, true, 20);
-					}
-					else
-					{// 触手を伸ばす
-						if (pPlayer->aModel[2].scale.y < TENTACLE_RANGE * 0.1f)
-						{// リーチより短い
-							pPlayer->aModel[2].scale.y += 5.0f;
+						//PrintDebugProc("触手のpos ( %f %f %f )\n", pPlayer->aModel[4].mtxWorld._41, pPlayer->aModel[4].mtxWorld._42, pPlayer->aModel[4].mtxWorld._43);
+						D3DXVECTOR3 tentaclePos = D3DXVECTOR3(pPlayer->aModel[4].mtxWorld._41, pPlayer->aModel[4].mtxWorld._42, pPlayer->aModel[4].mtxWorld._43);
+
+						if (pCrossHair->state == CROSSHAIRSTATE_REACH && 
+							(CollisionMeshCylinder(&tentaclePos, &pPlayer->pos, &pPlayer->move,
+							TENTACLE_RADIUS, TENTACLE_RADIUS, true) == true ||
+							tentaclePos.y < 0.0f))
+						{// 壁との当たり判定
+							pPlayer->state = PLAYERSTATE_DASH;
+							pPlayer->TentacleState = PLTENTACLESTATE_TENTACLESHORT;
+							SetMotionPlayer(nCntPlayer, MOTIONTYPE_DASH, true, 20);
 						}
 						else
-						{// リーチの長さになった
-							pPlayer->TentacleState = PLTENTACLESTATE_TENTACLESHORT;
+						{// 触手を伸ばす
+							if (pPlayer->aModel[2].scale.y < TENTACLE_RANGE * 0.1f)
+							{// リーチより短い
+								pPlayer->aModel[2].scale.y += 5.0f;
+							}
+							else
+							{// リーチの長さになった
+								pPlayer->TentacleState = PLTENTACLESTATE_TENTACLESHORT;
 
-							SetMotionPlayer(nCntPlayer, MOTIONTYPE_TENTACLESHORT, true, 20);
+								SetMotionPlayer(nCntPlayer, MOTIONTYPE_TENTACLESHORT, true, 20);
+							}
 						}
 					}
 				}
@@ -572,7 +586,8 @@ void UpdatePlayer(void)
 			dist += pPlayer->pos;
 
 			if (CollisionMeshCylinder(&dist, &pPlayer->pos, &pPlayer->move,
-				0.0f, 0.0f, true) == true)
+				0.0f, 0.0f, true) == true || 
+				dist.y < 0.0f)
 			{// 壁に当たった・オブジェクトに当たった・エサに当たった
 				// クロスヘアの設定
 				SetCrossHair(nCntPlayer, CROSSHAIRSTATE_REACH);
