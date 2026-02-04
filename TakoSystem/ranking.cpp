@@ -14,7 +14,6 @@
 
 // マクロ定義
 #define TEXT_NAME	"data/RANKING/RankingData.bin"	// 相対パスのテキスト名
-#define	RANKING_DELEY	(480)	// タイトル移行に掛かる時間
 #define	MAX_RANKING	(2)	// ランキングの最大数
 
 // グローバル変数
@@ -153,8 +152,7 @@ void UpdateRanking(void)
 	if ((GetKeyboardTrigger(DIK_RETURN) == true ||
 		GetJoypadTrigger(0, JOYKEY_START) == true ||
 		GetJoypadTrigger(0, JOYKEY_A) == true)
-		&& pFade == FADE_NONE ||
-		g_nRankingDeley > RANKING_DELEY && pFade == FADE_NONE)
+		&& pFade == FADE_NONE)
 	{// 決定キー（ENTERキー）が押された
 		//if (g_nRankingDeley < TITLE_DELEY)
 		//{// クリックで反応
