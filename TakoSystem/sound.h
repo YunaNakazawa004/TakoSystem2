@@ -29,7 +29,7 @@ typedef enum
 	SOUND_SE_BOOT,						//起動音
 	SOUND_SE_CURSORMOVE,				//カーソル移動音（ポーズメニューや人数選択時など）
 	SOUND_SE_DECISION,					//決定音
-	SOUND_SE_WARNING,					//警告音（渦発生時など）
+	SOUND_SE_WARNING,					//警告音（渦潮発生時など）
 	SOUND_MAX,
 } SOUND_LABEL;
 
