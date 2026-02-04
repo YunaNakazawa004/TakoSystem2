@@ -39,7 +39,7 @@ MapTextureInfo g_aMapTexInfo[] =
 { // [テクスチャの線の太さ分の調整,ファイルネーム,テクスチャ番号,ずらしたい距離]
 
 	// map
-	{10,"data\\TEXTURE\\maptest000.png",0,{0.0f,0.0f}},
+	{10,"data\\TEXTURE\\maptest001.png",0,{0.0f,0.0f}},
 
 	// pin
 	{0,"data\\TEXTURE\\mappin000.png",1,{0.0f,0.0f}},
@@ -58,32 +58,38 @@ Map g_aMap[] =
 	{{SCREEN_WIDTH - MAP_SIZE - 50,MAP_SIZE + 50,0.0f},
 	{MAP_SIZE,MAP_SIZE,0.0f},
 	{{1.0f,1.0f,1.0f,1.0f}},
-	g_aMapTexInfo[0].TexIdx},
+	g_aMapTexInfo[0].TexIdx,
+	true},
 
 	{{SCREEN_WIDTH - MAP_SIZE - 50,MAP_SIZE + 50,0.0f},
 	{MAP_SIZE * MAP_SIZE_INSIDE,MAP_SIZE * MAP_SIZE_INSIDE,0.0f},
 	{{1.0f,1.0f,1.0f,1.0f}},
-	g_aMapTexInfo[0].TexIdx},
+	g_aMapTexInfo[0].TexIdx,
+	true},
 
 	{{SCREEN_WIDTH - MAP_SIZE - 50,MAP_SIZE + 50,0.0f},
 	{MAP_PIN_SIZE,MAP_PIN_SIZE,0.0f},
 	{{1.0f,0.0f,0.0f,1.0f}},
-	g_aMapTexInfo[1].TexIdx},
+	g_aMapTexInfo[1].TexIdx,
+	false},
 
 	{{SCREEN_WIDTH - MAP_SIZE - 50,MAP_SIZE + 50,0.0f},
 	{MAP_PIN_SIZE,MAP_PIN_SIZE,0.0f},
-	{{0.0f,0.0f,1.0f,1.0f}},
-	g_aMapTexInfo[1].TexIdx},
+	{{0.3f,0.7f,1.0f,1.0f}},
+	g_aMapTexInfo[1].TexIdx,
+	false},
 
 	{{SCREEN_WIDTH - NUM_PIN_SIZE - 50,NUM_PIN_SIZE + 50,0.0f},
 	{NUM_PIN_SIZE,NUM_PIN_SIZE,0.0f},
 	{{1.0f,0.0f,0.0f,1.0f}},
-	g_aMapTexInfo[2].TexIdx},
+	g_aMapTexInfo[2].TexIdx,
+	false},
 
 	{{SCREEN_WIDTH - NUM_PIN_SIZE - 50,NUM_PIN_SIZE + 50,0.0f},
 	{NUM_PIN_SIZE,NUM_PIN_SIZE,0.0f},
-	{{0.0f,0.0f,1.0f,1.0f}},
-	g_aMapTexInfo[3].TexIdx},
+	{{0.3f,0.7f,1.0f,1.0f}},
+	g_aMapTexInfo[3].TexIdx,
+	false},
 };
 
 
@@ -113,13 +119,17 @@ void InitMap(void)
 			pMap[nCntMap].pos =
 			{ SCREEN_WIDTH - MAP_SIZE - 50,MAP_SIZE + 50,0.0f };
 		}
+		pMap[2].bUse = true;
+		pMap[4].bUse = true;
 	}
 	else
 	{
 		for (int nCntMap = 0; nCntMap < MAP_USE_NUM; nCntMap++)
 		{
 			pMap[nCntMap].pos =
-			{ SCREEN_WIDTH / 2,SCREEN_HEIGHT / 2 - 80,0.0f };
+			{ SCREEN_WIDTH / 2,SCREEN_HEIGHT / 2,0.0f };
+
+			pMap[nCntMap].bUse = true;
 		}
 	}
 
@@ -233,10 +243,17 @@ void UpdateMap(void)
 
 		PrintDebugProc("\nプレイヤーの位置 : [ %f : %f : %f ]\n", posRate[nCntPlayer].x, posRate[nCntPlayer].y, posRate[nCntPlayer].z);
 
-		pVtx[0].pos = D3DXVECTOR3(pMap[nCntMap].pos.x - ((posRate[nCntPlayer].x * MapMax.x) * (MAP_SIZE / MapMax.z)) - pMap[nCntMap].size.x + g_aMapTexInfo[pMap[nCntMap].TexIdx].shiftpos.x, pMap[nCntMap].pos.y + ((posRate[nCntPlayer].z * MapMax.z) * (MAP_SIZE / MapMax.z)) - pMap[nCntMap].size.y - (pMap[nCntMap].size.y / 2) + g_aMapTexInfo[pMap[nCntMap].TexIdx].shiftpos.y, 0.0f);	// 右回りで設定する
-		pVtx[1].pos = D3DXVECTOR3(pMap[nCntMap].pos.x - ((posRate[nCntPlayer].x * MapMax.x) * (MAP_SIZE / MapMax.x)) + pMap[nCntMap].size.x + g_aMapTexInfo[pMap[nCntMap].TexIdx].shiftpos.x, pMap[nCntMap].pos.y + ((posRate[nCntPlayer].z * MapMax.z) * (MAP_SIZE / MapMax.z)) - pMap[nCntMap].size.y - (pMap[nCntMap].size.y / 2) + g_aMapTexInfo[pMap[nCntMap].TexIdx].shiftpos.y, 0.0f);	// 2Dの場合Zの値は0にする
-		pVtx[2].pos = D3DXVECTOR3(pMap[nCntMap].pos.x - ((posRate[nCntPlayer].x * MapMax.x) * (MAP_SIZE / MapMax.x)) - pMap[nCntMap].size.x + g_aMapTexInfo[pMap[nCntMap].TexIdx].shiftpos.x, pMap[nCntMap].pos.y + ((posRate[nCntPlayer].z * MapMax.z) * (MAP_SIZE / MapMax.z)) + pMap[nCntMap].size.y - (pMap[nCntMap].size.y / 2) + g_aMapTexInfo[pMap[nCntMap].TexIdx].shiftpos.y, 0.0f);
-		pVtx[3].pos = D3DXVECTOR3(pMap[nCntMap].pos.x - ((posRate[nCntPlayer].x * MapMax.x) * (MAP_SIZE / MapMax.x)) + pMap[nCntMap].size.x + g_aMapTexInfo[pMap[nCntMap].TexIdx].shiftpos.x, pMap[nCntMap].pos.y + ((posRate[nCntPlayer].z * MapMax.z) * (MAP_SIZE / MapMax.z)) + pMap[nCntMap].size.y - (pMap[nCntMap].size.y / 2) + g_aMapTexInfo[pMap[nCntMap].TexIdx].shiftpos.y, 0.0f);
+		pVtx[0].pos = D3DXVECTOR3(pMap[nCntMap].pos.x - ((posRate[nCntPlayer].x * MapMax.x) * (MAP_SIZE / MapMax.z)) - pMap[nCntMap].size.x + g_aMapTexInfo[pMap[nCntMap].TexIdx].shiftpos.x
+			, pMap[nCntMap].pos.y + ((posRate[nCntPlayer].z * MapMax.z) * (MAP_SIZE / MapMax.z)) - pMap[nCntMap].size.y - (pMap[nCntMap].size.y / 2) + g_aMapTexInfo[pMap[nCntMap].TexIdx].shiftpos.y, 0.0f);	// 右回りで設定する
+
+		pVtx[1].pos = D3DXVECTOR3(pMap[nCntMap].pos.x - ((posRate[nCntPlayer].x * MapMax.x) * (MAP_SIZE / MapMax.x)) + pMap[nCntMap].size.x + g_aMapTexInfo[pMap[nCntMap].TexIdx].shiftpos.x,
+			pMap[nCntMap].pos.y + ((posRate[nCntPlayer].z * MapMax.z) * (MAP_SIZE / MapMax.z)) - pMap[nCntMap].size.y - (pMap[nCntMap].size.y / 2) + g_aMapTexInfo[pMap[nCntMap].TexIdx].shiftpos.y, 0.0f);	// 2Dの場合Zの値は0にする
+
+		pVtx[2].pos = D3DXVECTOR3(pMap[nCntMap].pos.x - ((posRate[nCntPlayer].x * MapMax.x) * (MAP_SIZE / MapMax.x)) - pMap[nCntMap].size.x + g_aMapTexInfo[pMap[nCntMap].TexIdx].shiftpos.x,
+			pMap[nCntMap].pos.y + ((posRate[nCntPlayer].z * MapMax.z) * (MAP_SIZE / MapMax.z)) + pMap[nCntMap].size.y - (pMap[nCntMap].size.y / 2) + g_aMapTexInfo[pMap[nCntMap].TexIdx].shiftpos.y, 0.0f);
+
+		pVtx[3].pos = D3DXVECTOR3(pMap[nCntMap].pos.x - ((posRate[nCntPlayer].x * MapMax.x) * (MAP_SIZE / MapMax.x)) + pMap[nCntMap].size.x + g_aMapTexInfo[pMap[nCntMap].TexIdx].shiftpos.x,
+			pMap[nCntMap].pos.y + ((posRate[nCntPlayer].z * MapMax.z) * (MAP_SIZE / MapMax.z)) + pMap[nCntMap].size.y - (pMap[nCntMap].size.y / 2) + g_aMapTexInfo[pMap[nCntMap].TexIdx].shiftpos.y, 0.0f);
 
 		pVtx += 4;		// 頂点データのポインタを4つ分進める
 	}
@@ -254,15 +271,8 @@ void DrawMap(void)
 	LPDIRECT3DDEVICE9 pDevice;	// デバイスへのポインタ
 	Map* pMap = GetMap();
 
-
 	// デバイスの取得
 	pDevice = GetDevice();
-
-	// 減算合成の設定
-	pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);		// アルファブレンドの設定1
-	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);	// アルファブレンドの設定2
-	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);		// アルファブレンドの設定3
-
 
 
 		// 頂点バッファをデータストリームに設定
@@ -272,19 +282,31 @@ void DrawMap(void)
 	pDevice->SetFVF(FVF_VERTEX_2D);
 
 	for (int nCntMap = 0; nCntMap < MAP_USE_NUM; nCntMap++)
-	{// 敵の最大数まで繰り返す
+	{// OBJの最大数まで繰り返す
 
-		// テクスチャの設定
-		pDevice->SetTexture(0, g_pTextureMap[pMap[nCntMap].TexIdx]);
+		if (pMap[nCntMap].TexIdx == 0)
+		{ // マップなら
 
-		// ポリゴンの描画
-		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, nCntMap * 4, 2);
+			// 減算合成の設定
+			pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);		// アルファブレンドの設定1
+			pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);	// アルファブレンドの設定2
+			pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);		// アルファブレンドの設定3
+		}
+		if (pMap[nCntMap].bUse == true)
+		{ // 使用しているなら
 
+			// テクスチャの設定
+			pDevice->SetTexture(0, g_pTextureMap[pMap[nCntMap].TexIdx]);
+
+			// ポリゴンの描画
+			pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, nCntMap * 4, 2);
+		}
+
+		// ブレンディング(減算合成)を元に戻す 
+		pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);			// アルファブレンドの設定1
+		pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);		// アルファブレンドの設定2
+		pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);	// アルファブレンドの設定3
 	}
-	// ブレンディング(減算合成)を元に戻す 
-	pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);			// アルファブレンドの設定1
-	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);		// アルファブレンドの設定2
-	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);	// アルファブレンドの設定3
 }
 //=============================================================================
 // マップの取得処理
