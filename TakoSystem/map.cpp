@@ -36,7 +36,7 @@ LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffMap = NULL;	// 頂点バッファへのポインタ
 // テクスチャ情報 -----------------------
 
 MapTextureInfo g_aMapTexInfo[] =
-{ // [テクスチャの線の太さ分の調整,ファイルネーム,テクスチャ番号]
+{ // [テクスチャの線の太さ分の調整,ファイルネーム,テクスチャ番号,ずらしたい距離]
 
 	// map
 	{10,"data\\TEXTURE\\maptest000.png",0,{0.0f,0.0f}},
@@ -82,7 +82,7 @@ Map g_aMap[] =
 
 	{{SCREEN_WIDTH - NUM_PIN_SIZE - 50,NUM_PIN_SIZE + 50,0.0f},
 	{NUM_PIN_SIZE,NUM_PIN_SIZE,0.0f},
-	{{1.0f,1.0f,0.0f,1.0f}},
+	{{0.0f,0.0f,1.0f,1.0f}},
 	g_aMapTexInfo[3].TexIdx},
 };
 
