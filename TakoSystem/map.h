@@ -19,6 +19,7 @@ typedef struct
 	D3DXVECTOR3 size;				// サイズ
 	D3DXCOLOR col;					// 色
 	int TexIdx;						// テクスチャ番号
+	bool bUse;						// 使用しているかどうか
 
 }Map;
 
