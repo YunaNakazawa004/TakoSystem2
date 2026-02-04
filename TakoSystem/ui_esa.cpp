@@ -235,12 +235,12 @@ void UpdateUiEsa(void)
 
 #if 1	// デバッグ：親情報
 
-	if (GetKeyboardPress(DIK_I)) g_aUiEsaParent[0].pos.y -= 1.0f;
-	if (GetKeyboardPress(DIK_K)) g_aUiEsaParent[0].pos.y += 1.0f;
-	if (GetKeyboardPress(DIK_J)) g_aUiEsaParent[0].pos.x -= 1.0f;
-	if (GetKeyboardPress(DIK_L)) g_aUiEsaParent[0].pos.x += 1.0f;
+	if (GetKeyboardPress(DIK_I)) g_aUiEsaParent[1].pos.y -= 1.0f;
+	if (GetKeyboardPress(DIK_K)) g_aUiEsaParent[1].pos.y += 1.0f;
+	if (GetKeyboardPress(DIK_J)) g_aUiEsaParent[1].pos.x -= 1.0f;
+	if (GetKeyboardPress(DIK_L)) g_aUiEsaParent[1].pos.x += 1.0f;
 
-	PrintDebugProc("\nUIESA[0]_POS %f %f %f", g_aUiEsaParent[0].pos.x, g_aUiEsaParent[0].pos.y, g_aUiEsaParent[0].pos.z);
+	PrintDebugProc("\nUIESA[1]_POS %f %f %f", g_aUiEsaParent[0].pos.x, g_aUiEsaParent[0].pos.y, g_aUiEsaParent[0].pos.z);
 	
 	for (int nCntUiEsa = 0; nCntUiEsa < MAX_SET_ESA; nCntUiEsa++)
 	{

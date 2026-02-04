@@ -47,7 +47,7 @@ EsaModel_info g_aEsaModelInfo[] =
 {// {ファイル名, モデルの移動(回転)速度, 当たり判定の大きさ, 獲得スコア}
 
 	{"data/MODEL/testmodel/car000.x",		0.001f,	10.0f,	10},	// [0]車
-	{"data/MODEL/testmodel/skitree000.x",	0.001f,	10.0f,	10},	// [1]四角形
+	{"data/MODEL/esa/kani.x",				0.001f,	10.0f,	10},	// [1]四角形
 	{"data/MODEL/testmodel/skitree000.x",	0.001f,	10.0f,	10},	// [2]四角形
 };
 
@@ -57,8 +57,8 @@ int g_nNumEsatype;						// エサの種類の総数
 Esa_info g_aEsaInfo[] =
 {// {モデル種類, エサの挙動, 位置, 角度}
 
-	{0, ESA_ACTTYPE_SWIM, D3DXVECTOR3( 50.0f, 10070.0f,10000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
-	{1, ESA_ACTTYPE_SWIM, D3DXVECTOR3(-50.0f, 10070.0f, 5000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
+	{1, ESA_ACTTYPE_LAND, D3DXVECTOR3(0.0f, 1200.0f, 800.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
+	{1, ESA_ACTTYPE_LAND, D3DXVECTOR3(0.0f, 1200.0f, 1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
 };
 
 //========================================================================
