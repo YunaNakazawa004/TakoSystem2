@@ -61,7 +61,8 @@ void InitTitle(void)
 	// カメラの数の設定
 	SetNumCamera(1);
 
-	SetCameraPos(0, D3DXVECTOR3(50.0f, 1000.0f, 0.0f), D3DXVECTOR3(50.0f, 1080.0f, 0.0f), CAMERATYPE_POINT);
+	// カメラの位置設定
+	SetCameraPos(0, D3DXVECTOR3(0.0f, 800.0f, 0.0f), D3DXVECTOR3(0.0f, 880.0f, 0.0f), CAMERATYPE_POINT);
 
 	// デバイスの取得
 	pDevice = GetDevice();
@@ -242,6 +243,7 @@ void UpdateTitle(void)
 	{
 		g_PlayerSelect--;
 		g_PressEnterDeley %= 100;	// ランキング移行までの時間を短縮
+		PlaySound(SOUND_SE_CURSORMOVE);
 	}
 	else if ((GetKeyboardTrigger(DIK_D) || GetJoypadTrigger(0, JOYKEY_RIGHT) ||
 		GetJoypadStick(0, JOYKEY_LEFTSTICK_RIGHT, NULL, NULL) == true)
@@ -249,6 +251,7 @@ void UpdateTitle(void)
 	{
 		g_PlayerSelect++;
 		g_PressEnterDeley %= 100;	// ランキング移行までの時間を短縮
+		PlaySound(SOUND_SE_CURSORMOVE);
 	}
 
 	VERTEX_2D* pVtx;	// 頂点情報へのポインタ
@@ -307,7 +310,7 @@ void UpdateTitle(void)
 		pFade == FADE_NONE && g_TitleDeley == TITLE_DELEY_MAX)
 	{// 決定キー（ENTERキー）が押された
 		// モード設定
-		//PlaySound(SOUND_LABEL_SE_SCORE);	// 再生したいサウンドを指定
+		PlaySound(SOUND_SE_DECISION);
 		SetFade(MODE_TUTORIAL);
 	}
 	else if (pFade == FADE_NONE && g_PressEnterDeley > RANKING_DELEY)
