@@ -311,7 +311,7 @@ void DrawGame(void)
 
 	for (int nCntCamera = 0; nCntCamera < GetNumCamera(); nCntCamera++)
 	{
-		SetFog(D3DXCOLOR(0.0f, 0.1f, 0.2f, 1.0f), 1000.0f, pPlayer[nCntCamera].fFog, true);
+		SetFog(D3DXCOLOR(0.0f, 0.1f, 0.2f, 1.0f), pPlayer[nCntCamera].fFogStart, pPlayer[nCntCamera].fFogEnd, true);
 	}
 
 	// ƒvƒŒƒCƒ„[‚Ì•`‰æˆ—

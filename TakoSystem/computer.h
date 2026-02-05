@@ -197,6 +197,7 @@ D3DXVECTOR3 GetRandomExplorePoint(void);
 void SetComputer(D3DXVECTOR3 pos, D3DXVECTOR3 rot);
 void SetRandomComputer(int nAmount);
 Computer* GetComputer(void);
+void CollisionInk(int nIdx, bool bCPU, D3DXVECTOR3 pos);
 
 // ÉÇÅ[ÉVÉáÉì
 void UpdateMotionComputer(int nIdx);

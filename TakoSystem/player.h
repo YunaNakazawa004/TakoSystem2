@@ -61,7 +61,8 @@ typedef struct
 	PLTENTACLESTATE TentacleState;				// 触手の状態
 	int nCounterState;							// 状態カウンター
 
-	float fFog;									// フォグの終了位置
+	float fFogStart;							// フォグの開始位置
+	float fFogEnd;								// フォグの終了位置
 
 	bool bJump;									// ジャンプしているかどうか
 	bool bLand;									// 着地しているかどうか

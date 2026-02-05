@@ -71,6 +71,7 @@
 #define INK_ENEMY_COUNT_SCORE	(5.0f)									// 敵が複数いるときのスコア
 #define INK_ESA_COUNT			(0.2f)									// 自分のエサが多い
 #define INK_PILLAR_SCORE		(3.0f)									// 柱が近いスコア
+#define INK_BLIND_DIST			(100.0f)								// 墨にかかる距離
 
 #define POT_DISTANCE			(1000.0f)								// タコつぼが遠すぎる
 #define POT_ESA_SCORE			(0.4f)									// 自分のエサが多い
@@ -352,6 +353,16 @@ void UpdateComputer(void)
 			if (pComputer->nInkCooldown > 0)
 			{//	墨吐きクールダウン
 				pComputer->nInkCooldown--;
+			}
+
+			if (pComputer->nBlindCounter > 0)
+			{//	視界悪化のカウント
+				pComputer->nBlindCounter--;
+			}
+			else if (pComputer->nBlindCounter == 0)
+			{// 視界悪化が回復
+				pComputer->bBlinded = false;
+				pComputer->nBlindCounter = 0;
 			}
 
 			if (pComputer->nTentacleCooldown > 0)
@@ -850,6 +861,9 @@ void InkAttack(Computer* pComputer)
 	SetParticle3D(14, 30, pComputer->phys.pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pComputer->phys.rot.x, pComputer->phys.rot.y - D3DX_PI, pComputer->phys.rot.z), 4.0f, 200, 8.0f, 0.06f, EFFECTTYPE_OCTOINK);
 	SetParticle3D(14, 30, pComputer->phys.pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pComputer->phys.rot.x, pComputer->phys.rot.y - D3DX_PI, pComputer->phys.rot.z), 4.0f, 200, 8.0f, 0.06f, EFFECTTYPE_OCTOINK);
 
+	// 墨の当たり判定
+	CollisionInk(pComputer->nIdx, true, pComputer->phys.pos);
+
 	// 墨吐きモーション
 	SetMotionComputer(pComputer->nIdx, MOTIONTYPE_INK, true, 20);
 	pComputer->TentState = CPUTENTACLESTATE_NORMAL;
@@ -1129,7 +1143,7 @@ D3DXVECTOR3 GetNearestEnemy(Computer* pComputer)
 
 		float dist = D3DXVec3Length(&toEnemy);
 
-		if (dist > ESCAPE_ENEMY_DIST)
+		if (dist > ((pComputer->bBlinded) ? ESCAPE_ENEMY_DIST * 0.5f : ESCAPE_ENEMY_DIST))
 		{// 遠すぎる敵は無視
 			continue;
 		}
@@ -1149,7 +1163,7 @@ D3DXVECTOR3 GetNearestEnemy(Computer* pComputer)
 
 		float dist = D3DXVec3Length(&toPlayer);
 
-		if (dist > ESCAPE_ENEMY_DIST)
+		if (dist > ((pComputer->bBlinded) ? ESCAPE_ENEMY_DIST * 0.5f : ESCAPE_ENEMY_DIST))
 		{// 遠すぎる敵は無視
 			continue;
 		}
@@ -1213,7 +1227,7 @@ void CalcFoodScore(Computer* pComputer)
 
 			float dist = D3DXVec3Length(&toFood);
 
-			if (dist > FAR_DISTANCE)
+			if (dist > ((pComputer->bBlinded) ? FAR_DISTANCE * 0.5f : FAR_DISTANCE))
 			{// 遠すぎるエサは無視
 				continue;
 			}
@@ -1221,7 +1235,7 @@ void CalcFoodScore(Computer* pComputer)
 			float score = 0.0f;
 
 			// 距離が近いほど高スコア
-			score += (FAR_DISTANCE - dist) * DISTANCE_SCORE;
+			score += (((pComputer->bBlinded) ? FAR_DISTANCE * 0.5f : FAR_DISTANCE) - dist) * DISTANCE_SCORE;
 
 			// 進行方向にあるか（dir と toFood の内積）
 			D3DXVECTOR3 dirNorm, toFoodNorm;
@@ -1235,7 +1249,7 @@ void CalcFoodScore(Computer* pComputer)
 				score += ESA_DOT_SCORE;
 			}
 
-			if (IsEnemyNear(pComputer->nIdx, foodPos, ESA_ENEMY_DISTANCE) == false)
+			if (IsEnemyNear(pComputer->nIdx, foodPos, (pComputer->bBlinded) ? ESA_ENEMY_DISTANCE * 0.5f : ESA_ENEMY_DISTANCE) == false)
 			{// 敵が近くにいないか
 				score += ESA_ENEMY_DIST_SCORE;
 			}
@@ -1294,7 +1308,7 @@ void CalcAttackScore(Computer* pComputer)
 		float dist = D3DXVec3Length(&toEnemy);
 		D3DXVec3Normalize(&pComputer->phys.dir, &toEnemy);
 
-		if (dist > FAR_DISTANCE)
+		if (dist > ((pComputer->bBlinded) ? FAR_DISTANCE * 0.5f : FAR_DISTANCE))
 		{// 遠すぎる敵は無視
 			continue;
 		}
@@ -1302,7 +1316,7 @@ void CalcAttackScore(Computer* pComputer)
 		float score = 0.0f;
 
 		// 距離が近いほど高スコア
-		score += (FAR_DISTANCE - dist) * DISTANCE_SCORE;
+		score += (((pComputer->bBlinded) ? FAR_DISTANCE * 0.5f : FAR_DISTANCE) - dist) * DISTANCE_SCORE;
 
 		// 敵がエサを多く持っている
 		score += pEnemy->nFoodCount * 0.5f;
@@ -1347,7 +1361,7 @@ void CalcAttackScore(Computer* pComputer)
 			score += ENEMY_TENTACLE_SCORE;
 		}
 
-		if (CountEnemiesNear(pComputer->nIdx, pComputer->phys.pos, ENEMY_COUNT_DIST) >= 2)
+		if (CountEnemiesNear(pComputer->nIdx, pComputer->phys.pos, (pComputer->bBlinded) ? ENEMY_COUNT_DIST * 0.5f : ENEMY_COUNT_DIST) >= 2)
 		{// 敵が複数近くにいるなら危険
 			score -= ENEMY_COUNT_SCORE;
 		}
@@ -1367,7 +1381,7 @@ void CalcAttackScore(Computer* pComputer)
 		float dist = D3DXVec3Length(&toPlayer);
 		D3DXVec3Normalize(&pComputer->phys.dir, &toPlayer);
 
-		if (dist > FAR_DISTANCE)
+		if (dist > ((pComputer->bBlinded) ? FAR_DISTANCE * 0.5f : FAR_DISTANCE))
 		{// 遠すぎる敵は無視
 			continue;
 		}
@@ -1375,7 +1389,7 @@ void CalcAttackScore(Computer* pComputer)
 		float score = 0.0f;
 
 		// 距離が近いほど高スコア
-		score += (FAR_DISTANCE - dist) * DISTANCE_SCORE;
+		score += (((pComputer->bBlinded) ? FAR_DISTANCE * 0.5f : FAR_DISTANCE) - dist) * DISTANCE_SCORE;
 
 		// 敵がエサを多く持っている
 		score += pPlayer->nFood * 0.5f;
@@ -1420,7 +1434,7 @@ void CalcAttackScore(Computer* pComputer)
 			score += ENEMY_TENTACLE_SCORE;
 		}
 
-		if (CountEnemiesNear(pComputer->nIdx, pComputer->phys.pos, ENEMY_COUNT_DIST) >= 2)
+		if (CountEnemiesNear(pComputer->nIdx, pComputer->phys.pos, (pComputer->bBlinded) ? ENEMY_COUNT_DIST * 0.5f : ENEMY_COUNT_DIST) >= 2)
 		{// 敵が複数近くにいるなら危険
 			score -= ENEMY_COUNT_SCORE;
 		}
@@ -1463,7 +1477,7 @@ void CalcEscapeScore(Computer* pComputer)
 
 		float dist = D3DXVec3Length(&toEnemy);
 
-		if (dist > ESCAPE_ENEMY_DIST)
+		if (dist > ((pComputer->bBlinded) ? ESCAPE_ENEMY_DIST * 0.5f : ESCAPE_ENEMY_DIST))
 		{// 遠すぎる敵は無視
 			continue;
 		}
@@ -1471,7 +1485,7 @@ void CalcEscapeScore(Computer* pComputer)
 		float score = 0.0f;
 
 		// 敵が近いほど逃げるべき
-		score += (ESCAPE_ENEMY_DIST - dist) * DISTANCE_SCORE;
+		score += (((pComputer->bBlinded) ? ESCAPE_ENEMY_DIST * 0.5f : ESCAPE_ENEMY_DIST) - dist) * DISTANCE_SCORE;
 
 		// 敵が後方にいる（内積が負）
 		D3DXVECTOR3 dirNorm, toEnemyNorm;
@@ -1493,7 +1507,7 @@ void CalcEscapeScore(Computer* pComputer)
 			score += ESCAPE_ENEMY_MOVE;
 		}
 
-		if (CountEnemiesNear(pComputer->nIdx, pComputer->phys.pos, ENEMY_COUNT_DIST) >= 2)
+		if (CountEnemiesNear(pComputer->nIdx, pComputer->phys.pos, (pComputer->bBlinded) ? ENEMY_COUNT_DIST * 0.5f : ENEMY_COUNT_DIST) >= 2)
 		{// 敵が複数近くにいる
 			score += ESCAPE_ENEMY_SCORE;
 		}
@@ -1530,7 +1544,7 @@ void CalcEscapeScore(Computer* pComputer)
 
 		float dist = D3DXVec3Length(&toPlayer);
 
-		if (dist > ESCAPE_ENEMY_DIST)
+		if (dist > ((pComputer->bBlinded) ? ESCAPE_ENEMY_DIST * 0.5f : ESCAPE_ENEMY_DIST))
 		{// 遠すぎる敵は無視
 			continue;
 		}
@@ -1538,7 +1552,7 @@ void CalcEscapeScore(Computer* pComputer)
 		float score = 0.0f;
 
 		// 敵が近いほど逃げるべき
-		score += (ESCAPE_ENEMY_DIST - dist) * DISTANCE_SCORE;
+		score += (((pComputer->bBlinded) ? ESCAPE_ENEMY_DIST * 0.5f : ESCAPE_ENEMY_DIST) - dist) * DISTANCE_SCORE;
 
 		// 敵が後方にいる（内積が負）
 		D3DXVECTOR3 dirNorm, toPlayerNorm;
@@ -1560,7 +1574,7 @@ void CalcEscapeScore(Computer* pComputer)
 			score += ESCAPE_ENEMY_MOVE;
 		}
 
-		if (CountEnemiesNear(pComputer->nIdx, pComputer->phys.pos, ENEMY_COUNT_DIST) >= 2)
+		if (CountEnemiesNear(pComputer->nIdx, pComputer->phys.pos, (pComputer->bBlinded) ? ENEMY_COUNT_DIST * 0.5f : ENEMY_COUNT_DIST) >= 2)
 		{// 敵が複数近くにいる
 			score += ESCAPE_ENEMY_SCORE;
 		}
@@ -1626,7 +1640,7 @@ void CalcInkScore(Computer* pComputer)
 
 		float dist = D3DXVec3Length(&toEnemy);
 
-		if (dist > FAR_DISTANCE)
+		if (dist > ((pComputer->bBlinded) ? FAR_DISTANCE * 0.5f : FAR_DISTANCE))
 		{// 遠すぎる敵は無視
 			continue;
 		}
@@ -1634,7 +1648,7 @@ void CalcInkScore(Computer* pComputer)
 		float score = 0.0f;
 
 		// 敵が近いほど墨が有効
-		score += (FAR_DISTANCE - dist) * DISTANCE_SCORE;
+		score += (((pComputer->bBlinded) ? FAR_DISTANCE * 0.5f : FAR_DISTANCE) - dist) * DISTANCE_SCORE;
 
 		// 敵が後方にいる
 		D3DXVECTOR3 dirNorm, toEnemyNorm;
@@ -1660,7 +1674,7 @@ void CalcInkScore(Computer* pComputer)
 		// 敵がエサを多く持っている
 		score += pEnemy->nFoodCount * INK_ENEMY_ESA_COUNT;
 
-		if (CountEnemiesNear(pComputer->nIdx, pComputer->phys.pos, ENEMY_COUNT_DIST) >= 2)
+		if (CountEnemiesNear(pComputer->nIdx, pComputer->phys.pos, (pComputer->bBlinded) ? ENEMY_COUNT_DIST * 0.5f : ENEMY_COUNT_DIST) >= 2)
 		{// 敵が複数近くにいる
 			score += INK_ENEMY_COUNT_SCORE;
 		}
@@ -1687,7 +1701,7 @@ void CalcInkScore(Computer* pComputer)
 
 		float dist = D3DXVec3Length(&toPlayer);
 
-		if (dist > FAR_DISTANCE)
+		if (dist > ((pComputer->bBlinded) ? FAR_DISTANCE * 0.5f : FAR_DISTANCE))
 		{// 遠すぎる敵は無視
 			continue;
 		}
@@ -1695,7 +1709,7 @@ void CalcInkScore(Computer* pComputer)
 		float score = 0.0f;
 
 		// 敵が近いほど墨が有効
-		score += (FAR_DISTANCE - dist) * DISTANCE_SCORE;
+		score += (((pComputer->bBlinded) ? FAR_DISTANCE * 0.5f : FAR_DISTANCE) - dist) * DISTANCE_SCORE;
 
 		// 敵が後方にいる
 		D3DXVECTOR3 dirNorm, toPlayerNorm;
@@ -1721,7 +1735,7 @@ void CalcInkScore(Computer* pComputer)
 		// 敵がエサを多く持っている
 		score += pPlayer->nFood * INK_ENEMY_ESA_COUNT;
 
-		if (CountEnemiesNear(pComputer->nIdx, pComputer->phys.pos, ENEMY_COUNT_DIST) >= 2)
+		if (CountEnemiesNear(pComputer->nIdx, pComputer->phys.pos, (pComputer->bBlinded) ? ENEMY_COUNT_DIST * 0.5f : ENEMY_COUNT_DIST) >= 2)
 		{// 敵が複数近くにいる
 			score += INK_ENEMY_COUNT_SCORE;
 		}
@@ -1768,7 +1782,7 @@ void CalcPotScore(Computer* pComputer)
 
 		float dist = D3DXVec3Length(&toPot);
 
-		if (dist > POT_DISTANCE || dist < POT_CLOSE_DISTANCE * 0.1f ||
+		if (dist > ((pComputer->bBlinded) ? POT_DISTANCE * 0.5f : POT_DISTANCE) || dist < POT_CLOSE_DISTANCE * 0.1f ||
 			pPot->bUse == false || pComputer->nTargetPotIdx == nCntPot)
 		{// 遠い/近いタコつぼは無視
 			continue;
@@ -1785,9 +1799,9 @@ void CalcPotScore(Computer* pComputer)
 		}
 
 		// タコつぼが近い
-		score += (POT_DISTANCE - dist) * DISTANCE_SCORE;
+		score += (((pComputer->bBlinded) ? POT_DISTANCE * 0.5f : POT_DISTANCE) - dist) * DISTANCE_SCORE;
 
-		if (IsEnemyNear(pComputer->nIdx, pPot->pos, POT_ENEMY_DISTANCE) == true)
+		if (IsEnemyNear(pComputer->nIdx, pPot->pos, (pComputer->bBlinded) ? POT_ENEMY_DISTANCE * 0.5f : POT_ENEMY_DISTANCE) == true)
 		{// 敵が近くにいない
 			score += POT_ENEMY_DIST_SCORE;
 		}
@@ -2146,7 +2160,7 @@ void UseTentacle(Computer* pComputer)
 		return;
 	}
 
-	PrintDebugProc("\n					触手移動中\n\n");
+	//PrintDebugProc("\n					触手移動中\n\n");
 
 	// 方向ベクトルを正規化
 	D3DXVECTOR3 dir;
@@ -2344,6 +2358,53 @@ void SetRandomComputer(int nAmount)
 Computer* GetComputer(void)
 {
 	return &g_aComputer[0];
+}
+
+//=============================================================================
+// 墨吐きの当たり判定
+//=============================================================================
+void CollisionInk(int nIdx, bool bCPU, D3DXVECTOR3 pos)
+{
+	for (int nCntEnemy = 0; nCntEnemy < MAX_COMPUTER; nCntEnemy++)
+	{
+		Computer* pEnemy = &g_aComputer[nCntEnemy];
+
+		if (pEnemy->bUse == false)
+		{// 使用していない
+			continue;
+		}
+
+		if (pEnemy->nIdx == nIdx && bCPU == true)
+		{// 自分自身は無視
+			continue;
+		}
+
+		D3DXVECTOR3 dist = pEnemy->phys.pos - pos;
+
+		if (D3DXVec3Length(&dist) < INK_BLIND_DIST)
+		{// 墨の範囲内
+			pEnemy->bBlinded = true;
+			pEnemy->nBlindCounter = ONE_SECOND * 3;
+		}
+	}
+
+	Player* pPlayer = GetPlayer();
+
+	for (int nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++, pPlayer++)
+	{
+		if (nCntPlayer == nIdx && bCPU == false)
+		{// 自分自身は無視
+			continue;
+		}
+
+		D3DXVECTOR3 dist = pPlayer->pos - pos;
+
+		if (D3DXVec3Length(&dist) < INK_BLIND_DIST)
+		{// 墨の範囲内
+			pPlayer->bBlind = true;
+			pPlayer->nBlindCounter = ONE_SECOND * 3;
+		}
+	}
 }
 
 //=============================================================================

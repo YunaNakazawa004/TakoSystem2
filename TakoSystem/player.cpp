@@ -31,8 +31,10 @@
 #define INERTIA_ANGLE			(0.1f)									// 角度の慣性
 #define POS_ERROR				(50.0f)									// 位置の誤差
 #define MOVE_ERROR				(5.0f)									// 移動量の誤差
-#define FOG_MIN					(1500.0f)								// フォグの最低
-#define FOG_MAX					(7000.0f)								// フォグの最高
+#define FOGS_MIN				(500.0f)								// 開始フォグの最低
+#define FOGS_MAX				(1200.0f)								// 開始フォグの最高
+#define FOGE_MIN				(1100.0f)								// 終了フォグの最低
+#define FOGE_MAX				(5000.0f)								// 終了フォグの最高
 #define TENTACLE_RANGE			(1000.0f)								// 触手の長さ(見た目)
 #define TENTACLE_REACH			(1000.0f)								// 触手のリーチ(実際)
 #define TENTACLE_CT				(ONE_SECOND * 1 + ONE_SECOND)			// 触手のクールダウン
@@ -77,7 +79,8 @@ void InitPlayer(void)
 		pPlayer->nCounterState = 0;
 		pPlayer->fAngleX = 0.0f;
 		pPlayer->fAngleY = 0.0f;
-		pPlayer->fFog = FOG_MIN;
+		pPlayer->fFogStart = FOGS_MIN;
+		pPlayer->fFogEnd = FOGE_MIN;
 		pPlayer->fRadius = PLAYER_RADIUS;
 		pPlayer->fHeight = PLAYER_HEIGHT;
 		pPlayer->bJump = false;
@@ -494,6 +497,16 @@ void UpdatePlayer(void)
 				pPlayer->nInkCooldown--;
 			}
 
+			if (pPlayer->nBlindCounter > 0)
+			{// 視界悪化カウント
+				pPlayer->nBlindCounter--;
+			}
+			else if (pPlayer->nBlindCounter == 0)
+			{// 視界悪化が終わる
+				pPlayer->bBlind = false;
+				pPlayer->nBlindCounter = 0;
+			}
+
 			// 移動量制限
 			if (pPlayer->move.x > MAX_MOVE)
 			{// 最大X
@@ -562,16 +575,39 @@ void UpdatePlayer(void)
 
 			//PrintDebugProc("fAngle : %f", pCamera->fAngle);
 
-			pPlayer->fFog = (pPlayer->pos.y * 1.5f * (-pCamera->fAngle * 0.5f)) + FOG_MIN;
+			pPlayer->fFogStart = (pPlayer->pos.y * 3.5f * (-pCamera->fAngle * 0.5f)) + FOGS_MIN;
 
-			if (pPlayer->fFog < FOG_MIN)
+			if (pPlayer->fFogStart < FOGS_MIN)
 			{// フォグの最低値
-				pPlayer->fFog = FOG_MIN;
+				pPlayer->fFogStart = FOGS_MIN;
 			}
-			else if (pPlayer->fFog > FOG_MAX)
+			else if (pPlayer->fFogStart > FOGS_MAX)
 			{// フォグの最高値
-				pPlayer->fFog = FOG_MAX;
+				pPlayer->fFogStart = FOGS_MAX;
 			}
+
+			if (pPlayer->bBlind == true)
+			{// 視界悪化中
+				pPlayer->fFogStart *= 0.5f;
+			}
+
+			pPlayer->fFogEnd = (pPlayer->pos.y * 3.5f * (-pCamera->fAngle * 0.5f)) + FOGE_MIN;
+
+			if (pPlayer->fFogEnd < FOGE_MIN)
+			{// フォグの最低値
+				pPlayer->fFogEnd = FOGE_MIN;
+			}
+			else if (pPlayer->fFogEnd > FOGE_MAX)
+			{// フォグの最高値
+				pPlayer->fFogEnd = FOGE_MAX;
+			}
+
+			if (pPlayer->bBlind == true)
+			{// 視界悪化中
+				pPlayer->fFogEnd *= 0.5f;
+			}
+
+			PrintDebugProc("フォグの値 ( %f %f )\n", pPlayer->fFogStart, pPlayer->fFogEnd);
 
 			fmoveAngle = pPlayer->fAngleY - pPlayer->rot.y;
 
