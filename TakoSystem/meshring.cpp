@@ -105,8 +105,8 @@ void UpdateMeshRing(void)
 		if (g_aMeshRing[nCntMeshRing].bUse == true)
 		{// 使用しているとき
 			// 段々輪を大きく、細く
-			g_aMeshRing[nCntMeshRing].size.x += 2.0f;
-			g_aMeshRing[nCntMeshRing].size.y -= 1.0f;
+			g_aMeshRing[nCntMeshRing].size.x += 0.8f;
+			g_aMeshRing[nCntMeshRing].size.y -= 0.4f;
 
 			// 頂点バッファをロックし、頂点情報へのポインタを取得
 			g_aMeshRing[nCntMeshRing].pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);

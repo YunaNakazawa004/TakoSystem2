@@ -10,6 +10,7 @@
 #include "pot.h"
 #include "time.h"
 #include "meshcylinder.h"
+#include "meshring.h"
 #include "effect_3d.h"
 #include "particle_3d.h"
 #include "watersurf.h"
@@ -94,6 +95,7 @@
 #define TENTACLE_CT				(ONE_SECOND * 1 + ONE_SECOND)			// 触手のクールダウン
 #define INK_CT					(ONE_SECOND * 5 + ONE_SECOND)			// 墨吐きのクールダウン
 #define CAMERA_HEIGHT			(100.0f)								// 仮想カメラの高さ
+#define RIPPLE_COUNT			(20)									// 水面に波紋が出る間隔
 #define CPU_THINK				(5)										// 思考間隔
 #define CPU_WIDTH				(50.0f)									// 幅
 #define CPU_HEIGHT				(100.0f)								// 高さ
@@ -343,6 +345,8 @@ void UpdateComputer(void)
 
 			PrintDebugProc("ENEMY : [ %d ]\n", pComputer->nIdx);
 
+			static int nCounter = 0;
+
 			pComputer->phys.posOld = pComputer->phys.pos;
 
 			if (pComputer->nInkCooldown > 0)
@@ -581,6 +585,12 @@ void UpdateComputer(void)
 			if (pComputer->phys.pos.y > *GetWaterSurf_Height() - CPU_HEIGHT)
 			{// 上											  
 				pComputer->phys.pos.y = *GetWaterSurf_Height() - CPU_HEIGHT;
+
+				if (nCounter % RIPPLE_COUNT == 0)
+				{// 定期的に波紋
+					SetMeshRing(D3DXVECTOR3(pComputer->phys.pos.x + (rand() % 6 - 3), *GetWaterSurf_Height(), pComputer->phys.pos.z + (rand() % 6 - 3)), FIRST_POS,
+						D3DXVECTOR2(24.0f, 1.0f), D3DXVECTOR2(10.0f, 7.0f), D3DXCOLOR(WHITE_VTX.r, WHITE_VTX.g, WHITE_VTX.b, 0.5f));
+				}
 			}
 
 			pComputer->phys.fAngleY = D3DX_PI + atan2f(pComputer->phys.dir.x, pComputer->phys.dir.z);
@@ -638,6 +648,8 @@ void UpdateComputer(void)
 
 			// 当たり判定
 			CollisionMeshCylinder(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, false);
+
+			nCounter++;
 
 			// モーションの更新処理
 			UpdateMotionComputer(nCntComputer);

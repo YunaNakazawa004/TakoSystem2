@@ -123,6 +123,6 @@ MODE GetMode(void);
 void onWireFrame(void);
 void offWireFrame(void);
 void CorrectAngle(float* fAngle, float fAngleCmp);
-void SetFog(D3DXCOLOR col, float fFogStart, float fFogEnd);
+void SetFog(D3DXCOLOR col, float fFogStart, float fFogEnd, bool bUse);
 
 #endif
