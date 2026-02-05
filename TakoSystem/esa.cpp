@@ -13,6 +13,9 @@
 
 #include "effect_3d.h"
 
+#include "meshcylinder.h"
+#include "watersurf.h"
+
 // マクロ定義 ==================================================
 
 // 設定値 ===================
@@ -47,8 +50,8 @@ EsaModel_info g_aEsaModelInfo[] =
 {// {ファイル名, モデルの移動(回転)速度, 当たり判定の大きさ, 獲得スコア}
 
 	{"data/MODEL/testmodel/car000.x",		0.001f,	10.0f,	10},	// [0]車
-	{"data/MODEL/esa/kani.x",				0.001f,	10.0f,	10},	// [1]四角形
-	{"data/MODEL/testmodel/skitree000.x",	0.001f,	10.0f,	10},	// [2]四角形
+	{"data/MODEL/esa/kani.x",				0.003f,	10.0f,	10},	// [1]四角形
+	{"data/MODEL/testmodel/skitree000.x",	0.005f,	10.0f,	10},	// [2]四角形
 };
 
 int g_nNumEsatype;						// エサの種類の総数
@@ -57,9 +60,11 @@ int g_nNumEsatype;						// エサの種類の総数
 Esa_info g_aEsaInfo[] =
 {// {モデル種類, エサの挙動, 位置, 角度}
 
-	{1, ESA_ACTTYPE_LAND, D3DXVECTOR3(0.0f, 1200.0f, 800.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
-	{1, ESA_ACTTYPE_LAND, D3DXVECTOR3(0.0f, 1200.0f, 1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
+	{0, ESA_ACTTYPE_SWIM, D3DXVECTOR3(0.0f, 1200.0f, 800.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
+	{1, ESA_ACTTYPE_SWIM, D3DXVECTOR3(0.0f, 1200.0f, 1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
 };
+
+float g_fOldWaterSurfHeightEsa;	// 前の海面の高さ
 
 //========================================================================
 // エサの初期化処理
@@ -73,7 +78,7 @@ void InitEsa(void)
 		g_aEsa[nCntEsa].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 位置を初期化
 		g_aEsa[nCntEsa].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 角度を初期化
 		g_aEsa[nCntEsa].fMoveAngle = 0.0f;						// 移動角度を初期化
-		g_aEsa[nCntEsa].esaType = ESA_ACTTYPE_LAND;					// エサの挙動をLANDに設定
+		g_aEsa[nCntEsa].esaType = ESA_ACTTYPE_LAND;				// エサの挙動をLANDに設定
 		g_aEsa[nCntEsa].fNumBehavior = 0.0f;					// 挙動の値を初期化
 		g_aEsa[nCntEsa].bHave = false;							// 所持されてない状態に設定
 		g_aEsa[nCntEsa].bDisp = false;							// 表示していない状態に設定
@@ -84,6 +89,8 @@ void InitEsa(void)
 
 	g_nNumEsatype = 0;									// エサの種類の総数を初期化
 
+	g_fOldWaterSurfHeightEsa = CYLINDER_HEIGHT;			// 前の海面の高さを初期化
+
 	// モデル読み込み
 	for (int nCntEsaModel = 0; nCntEsaModel < ESA_CALC_SIZEARRAY(g_aEsaModelInfo); nCntEsaModel++)
 	{// 用意したファイルの数だけ繰り返す
@@ -92,13 +99,36 @@ void InitEsa(void)
 		g_aIdxEsaModel[nCntEsaModel] = SetModelEsa(g_aEsaModelInfo[nCntEsaModel], &g_aEsaModel[0], ESA_CALC_SIZEARRAY(g_aEsaModel));
 	}
 
-	// エサの配置
+// エサの配置
+#if 0	// Infoの設定
+
 	for (int nCntEsa = 0; nCntEsa < ESA_CALC_SIZEARRAY(g_aEsaInfo); nCntEsa++)
 	{// 配置する数だけ繰り返す
 
 		// エサの設定処理
 		SetEsa(g_aEsaInfo[nCntEsa].nidxType, g_aEsaInfo[nCntEsa].esaType, g_aEsaInfo[nCntEsa].pos, g_aEsaInfo[nCntEsa].rot);
 	}
+
+#else	// ランダム設定
+
+	for (int nCntEsa = 0; nCntEsa < 20; nCntEsa++)
+	{// 配置する数だけ繰り返す
+
+		int nSetType = rand() % ESATYPE_MAX;											// ランダムで種類を設定
+		float fRandRadius = rand() % (int)OUTCYLINDER_RADIUS + (int)INCYLINDER_RADIUS;	// 中心からの距離を設定
+		float fRandAngle = (float)(rand() % 629 - 314) / 1000.0f;						// 角度を設定
+		float fRandHeight = rand() % (int)CYLINDER_HEIGHT;								// 高さを設定
+
+		// 位置を設定
+		D3DXVECTOR3 setPos = D3DXVECTOR3(sinf(fRandAngle) * fRandRadius,
+										 fRandHeight,
+										 cosf(fRandAngle) * fRandRadius);
+
+		// エサの設定処理
+		SetEsa(nSetType, ESA_ACTTYPE_SWIM, setPos, D3DXVECTOR3(0.0f,0.0f,0.0f));
+	}
+
+#endif
 }
 
 //========================================================================
@@ -142,6 +172,12 @@ void UninitEsa(void)
 //========================================================================
 void UpdateEsa(void)
 {
+	// 変数宣言 ===========================================
+	
+	float* pWaterSurfHeight = GetWaterSurf_Height();	// 現在の海面の高さを獲得
+
+	// ====================================================
+	
 	for (int nCntEsa = 0; nCntEsa < MAX_SET_ESA; nCntEsa++)
 	{
 		if (g_aEsa[nCntEsa].bUse == true)
@@ -155,10 +191,14 @@ void UpdateEsa(void)
 
 
 			SetEffect3D(70, g_aEsa[nCntEsa].pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0.0f, 30.0f, -0.1f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f),EFFECTTYPE_NORMAL);
+
+			//PrintDebugProc("ESA[%d]_ANGLE %f\n", nCntEsa, g_aEsa[nCntEsa].fMoveAngle);
+			//PrintDebugProc("ESA[%d]_LENGTH %f\n", nCntEsa, g_aEsa[nCntEsa].fNumBehavior);
 		}
 	}
 
-
+	// 海面の位置を更新
+	g_fOldWaterSurfHeightEsa = *pWaterSurfHeight;
 }
 
 //========================================================================
@@ -302,6 +342,8 @@ int SetModelEsa(EsaModel_info infoEsaModel, EsaModel* pEsaModel, int nMaxSizeNum
 				}
 			}
 
+			pEsaModel->fSpeed = infoEsaModel.fSpeed;			// 移動速度を設定
+
 			pEsaModel->fHitRadius = infoEsaModel.fHitRadius;	// 当たり判定の大きさを設定
 
 			pEsaModel->bUse = true;								// 使用している状態に設定
@@ -354,21 +396,43 @@ void MoveEsa(Esa* pEsa)
 	float fNomRadius;	// 正規化した距離(半径)
 	float fNowAngle;	// 現在の角度
 
+	float *pWaterSurf = GetWaterSurf_Height();
+
 	// ====================================================
 
 	if (pEsa->esaType == ESA_ACTTYPE_SWIM)
 	{// 浮いている場合
 
 		fDistRadius = sqrtf(pEsa->pos.x * pEsa->pos.x + pEsa->pos.z * pEsa->pos.z);	// 中心からの距離を求める
-		fNomRadius = fDistRadius / 18050.0f;										// MAXとの正規化した値を求める
+		fNomRadius = fDistRadius / OUTCYLINDER_RADIUS;								// MAXとの正規化した値を求める
 		fNowAngle = (float)atan2(pEsa->pos.x, pEsa->pos.z);							// 中心からの角度を求める
 
 		// 角度を更新
-		fNowAngle += ESA_SWIM_SPEED / fNomRadius;									// 移動量(角度)を正規化した距離の長さにする
-		
+		if (pEsa->nIdxModel == -1)
+		{
+			fNowAngle += ESA_SWIM_SPEED / fNomRadius;									// 移動量(角度)を正規化した距離の長さにする
+		}
+		else
+		{
+			fNowAngle += g_aEsaModel[pEsa->nIdxModel].fSpeed / fNomRadius;				// 移動量(角度)を正規化した距離の長さにする
+		}
+
 		// 位置を設定
 		pEsa->pos.x = sinf(ESA_CALC_REVROT(fNowAngle)) * fDistRadius;
 		pEsa->pos.z = cosf(ESA_CALC_REVROT(fNowAngle)) * fDistRadius;
+
+		float fD = (g_fOldWaterSurfHeightEsa - *pWaterSurf) + 80.0f;
+
+		// 海面を超えないよう調整
+		if (pEsa->pos.y >= *pWaterSurf - fD)
+		{// 更新後の海面+aよりエサが高い位置にいる場合
+
+			pEsa->pos.y -= (g_fOldWaterSurfHeightEsa - *pWaterSurf) + 30.0f;
+		}
+		else if (pEsa->pos.y >= *pWaterSurf)
+		{
+			pEsa->pos.y = *pWaterSurf - 60.0f;
+		}
 	}
 }
 
@@ -402,10 +466,10 @@ bool CollisionEsa(int* pIdx, bool bCollision, D3DXVECTOR3 *pos, float fHitRadius
 			// 角度を求める
 			fRot = atan2f(fDistX * fDistX, fDistZ * fDistX);
 
-			PrintDebugProc("ESA_COLLISION_DISTX %f\n", fDistX);
-			PrintDebugProc("ESA_COLLISION_DISTZ %f\n", fDistZ);
-			PrintDebugProc("ESA_COLLISION_DIST  %f\n", fDistLength);
-			PrintDebugProc("ESA_COLLISION_ROT  %f\n", fRot);
+			//PrintDebugProc("ESA_COLLISION_DISTX %f\n", fDistX);
+			//PrintDebugProc("ESA_COLLISION_DISTZ %f\n", fDistZ);
+			//PrintDebugProc("ESA_COLLISION_DIST  %f\n", fDistLength);
+			//PrintDebugProc("ESA_COLLISION_ROT  %f\n", fRot);
 
 			// 判定
 			if (fDistLength < g_aEsaModel[g_aIdxEsaModel[g_aEsa[nCntEsa].nIdxModel]].fHitRadius + fHitRadius)

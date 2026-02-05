@@ -235,7 +235,7 @@ void UpdateUiEsa(void)
 		SetSubUiEsa(1);
 	}
 
-#if 1	// デバッグ：親情報
+#if 0	// デバッグ：親情報
 
 		if (GetKeyboardPress(DIK_I)) g_aUiEsaParent[0].pos.y -= 1.0f;
 		if (GetKeyboardPress(DIK_K)) g_aUiEsaParent[0].pos.y += 1.0f;
@@ -256,8 +256,6 @@ void UpdateUiEsa(void)
 
 			continue;		// 処理の始めに戻る
 		}
-
-
 
 		for (int nCntChild = 0; nCntChild < MAX_SET_ESA; nCntChild++)
 		{
