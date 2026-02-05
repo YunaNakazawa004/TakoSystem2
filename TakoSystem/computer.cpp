@@ -10,6 +10,7 @@
 #include "pot.h"
 #include "time.h"
 #include "meshcylinder.h"
+#include "meshring.h"
 #include "effect_3d.h"
 #include "particle_3d.h"
 #include "watersurf.h"
@@ -94,6 +95,7 @@
 #define TENTACLE_CT				(ONE_SECOND * 1 + ONE_SECOND)			// 触手のクールダウン
 #define INK_CT					(ONE_SECOND * 5 + ONE_SECOND)			// 墨吐きのクールダウン
 #define CAMERA_HEIGHT			(100.0f)								// 仮想カメラの高さ
+#define RIPPLE_COUNT			(20)									// 水面に波紋が出る間隔
 #define CPU_THINK				(5)										// 思考間隔
 #define CPU_WIDTH				(50.0f)									// 幅
 #define CPU_HEIGHT				(100.0f)								// 高さ
@@ -343,6 +345,8 @@ void UpdateComputer(void)
 
 			PrintDebugProc("ENEMY : [ %d ]\n", pComputer->nIdx);
 
+			static int nCounter = 0;
+
 			pComputer->phys.posOld = pComputer->phys.pos;
 
 			if (pComputer->nInkCooldown > 0)
@@ -497,7 +501,7 @@ void UpdateComputer(void)
 				break;
 			}
 
-			PrintDebugProc("触手の長さ %f\n", pComputer->aModel[2].scale.y);
+			//PrintDebugProc("触手の長さ %f\n", pComputer->aModel[2].scale.y);
 
 			// 移動量制限
 			if (pComputer->phys.move.x > MAX_MOVE)
@@ -581,6 +585,12 @@ void UpdateComputer(void)
 			if (pComputer->phys.pos.y > *GetWaterSurf_Height() - CPU_HEIGHT)
 			{// 上											  
 				pComputer->phys.pos.y = *GetWaterSurf_Height() - CPU_HEIGHT;
+
+				if (nCounter % RIPPLE_COUNT == 0)
+				{// 定期的に波紋
+					SetMeshRing(D3DXVECTOR3(pComputer->phys.pos.x + (rand() % 6 - 3), *GetWaterSurf_Height(), pComputer->phys.pos.z + (rand() % 6 - 3)), FIRST_POS,
+						D3DXVECTOR2(24.0f, 1.0f), D3DXVECTOR2(10.0f, 7.0f), D3DXCOLOR(WHITE_VTX.r, WHITE_VTX.g, WHITE_VTX.b, 0.5f));
+				}
 			}
 
 			pComputer->phys.fAngleY = D3DX_PI + atan2f(pComputer->phys.dir.x, pComputer->phys.dir.z);
@@ -610,6 +620,11 @@ void UpdateComputer(void)
 				CorrectAngle(&pComputer->phys.rot.x, pComputer->phys.rot.x);
 			}
 
+			if (GetTime() % (ONE_SECOND * 10) == 0 && GetTime() != ONE_GAME)
+			{// 持てるエサの最大値が増える
+				pComputer->nMaxFood++;
+			}
+
 			//SetEffect3D(70, pComputer->phys.pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0.0f, 30.0f, -0.1f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), EFFECTTYPE_NORMAL);
 
 			//PrintDebugProc("ENEMY : pos ( %f %f %f )\n",
@@ -617,8 +632,8 @@ void UpdateComputer(void)
 			//PrintDebugProc("ENEMY : move ( %f %f %f )\n",
 			//	pComputer->phys.move.x, pComputer->phys.move.y, pComputer->phys.move.z);
 			PrintDebugProc("ENEMY : nFood ( %d )\n", pComputer->nFoodCount);
-			PrintDebugProc("ENEMY : TargetPot ( %d )\n", pComputer->nTargetPotIdx);
-			PrintDebugProc("ENEMY : TargetEnemy ( %d )\n", pComputer->nTargetEnemyIdx);
+			//PrintDebugProc("ENEMY : TargetPot ( %d )\n", pComputer->nTargetPotIdx);
+			//PrintDebugProc("ENEMY : TargetEnemy ( %d )\n", pComputer->nTargetEnemyIdx);
 			//PrintDebugProc("ENEMY : ノード ( %f %f %f )\n",
 			//	pComputer->extarget.x, pComputer->extarget.y, pComputer->extarget.z);
 
@@ -633,6 +648,8 @@ void UpdateComputer(void)
 
 			// 当たり判定
 			CollisionMeshCylinder(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, false);
+
+			nCounter++;
 
 			// モーションの更新処理
 			UpdateMotionComputer(nCntComputer);
@@ -757,7 +774,8 @@ void MoveToFood(Computer* pComputer)
 
 	int nIdx = -1;
 
-	if (CollisionEsa(&nIdx, false, &pComputer->phys.pos, pComputer->phys.fRadius) == true)
+	if (CollisionEsa(&nIdx, false, &pComputer->phys.pos, pComputer->phys.fRadius) == true &&
+		pComputer->nFoodCount < pComputer->nMaxFood * CPU_TENTACLE)
 	{// エサと接触した
 		Esa* pEsa = GetEsa();
 		pEsa[nIdx].bUse = false;
@@ -1158,7 +1176,7 @@ D3DXVECTOR3 GetNearestEnemy(Computer* pComputer)
 
 	// CPU
 	pEnemy = &pEnemy[nBestCount];
-	PrintDebugProc("誰から逃げてるか ( %d )\n", nBestCount);
+	//PrintDebugProc("誰から逃げてるか ( %d )\n", nBestCount);
 
 	return pEnemy->phys.pos;
 
@@ -1170,6 +1188,11 @@ D3DXVECTOR3 GetNearestEnemy(Computer* pComputer)
 void CalcFoodScore(Computer* pComputer)
 {
 	Esa* pEsa = GetEsa();
+
+	if (pComputer->nFoodCount >= pComputer->nMaxFood * CPU_TENTACLE)
+	{// もう持てない
+		return;
+	}
 
 	if (pComputer->nTargetFoodIdx == -1)
 	{// 何もターゲットしていない

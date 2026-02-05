@@ -655,10 +655,10 @@ void CorrectAngle(float* fAngle, float fAngleCmp)
 //=============================================================================
 // フォグの設定
 //=============================================================================
-void SetFog(D3DXCOLOR col, float fFogStart, float fFogEnd)
+void SetFog(D3DXCOLOR col, float fFogStart, float fFogEnd, bool bUse)
 {
 	// フォグを有効にする
-	g_pD3DDevice->SetRenderState(D3DRS_FOGENABLE, TRUE);
+	g_pD3DDevice->SetRenderState(D3DRS_FOGENABLE, bUse);
 
 	// フォグカラー設定
 	g_pD3DDevice->SetRenderState(D3DRS_FOGCOLOR, col);
