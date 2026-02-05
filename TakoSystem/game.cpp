@@ -61,6 +61,8 @@ void InitGame(void)
 
 	// カメラの初期化処理
 	SetNumCamera(GetPlayerSelect());
+	SetCameraPos(0, FIRST_POS, FIRST_POS, CAMERATYPE_PLAYER);
+	SetCameraPos(1, FIRST_POS, FIRST_POS, CAMERATYPE_PLAYER);
 
 	// プレイヤーの初期化処理
 	InitPlayer();
