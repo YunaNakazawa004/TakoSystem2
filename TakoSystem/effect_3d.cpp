@@ -9,6 +9,8 @@
 // エフェクト
 #include "effect_3d.h"	// エフェクトヘッダー
 
+#include "input.h"
+
 // マクロ定義 ==================================================
 
 #define MAX_SET_EFFECT3D		(20000)							// エフェクトの最大数
@@ -51,6 +53,8 @@ LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffEffect3D = NULL;		// 頂点バッファ
 
 Effect3D g_aEffect3D[MAX_SET_EFFECT3D];					// エフェクトの情報
 
+bool g_bDispEffect3D = true;							// 3Dエフェクトの表示状態
+
 //======================================================================== 
 // 3Dエフェクトの初期化処理
 //========================================================================
@@ -87,6 +91,8 @@ void InitEffect3D(void)
 
 		g_aEffect3D[nCntEffect].effecttype = EFFECTTYPE_NORMAL;				// エフェクトタイプを初期化
 	}
+
+	g_bDispEffect3D = true;	// 表示状態に設定
 
 	// 頂点バッファの生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * 4 * MAX_SET_EFFECT3D,
@@ -168,6 +174,12 @@ void UpdateEffect3D(void)
 
 	// =========================================================
 
+	// 3Dエフェクトの表示切り替え
+	if (GetKeyboardTrigger(DIK_F2) || GetJoypadTrigger(0,JOYKEY_LEFT_SHOULDER))
+	{
+		g_bDispEffect3D = (g_bDispEffect3D == true) ? false : true;
+	}
+
 	for (nCntEffect = 0; nCntEffect < MAX_SET_EFFECT3D; nCntEffect++)
 	{
 		if (g_aEffect3D[nCntEffect].bUse == true)
@@ -235,6 +247,12 @@ void DrawEffect3D(void)
 	D3DXMATRIX mtxView;		// ビューマトリックス所得用
 
 	// =========================================================
+
+	if (g_bDispEffect3D == false)
+	{// 表示しない状態の場合
+
+		return;	// 描画を行わない
+	}
 
 	// ライティングを無効化（影の影響を受けない）
 	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);

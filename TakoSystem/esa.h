@@ -107,18 +107,26 @@ typedef struct
 
 // プロトタイプ宣言 ============================================
 
+// 基本処理
+
 void InitEsa(void);			// エサの初期化処理
 void UninitEsa(void);		// エサの終了処理
 void UpdateEsa(void);		// エサの更新処理
 void DrawEsa(void);			// エサの描画処理
 
+// 設定処理
+
 int SetModelEsa				// エサのモデル読み込み処理
 (EsaModel_info infoEsaModel,			// エサモデルの設定情報 
  EsaModel *pEsaModel, int nMaxSizeNum);	// 読み込んだエサの格納場所, エサの格納場所の数
 
-void SetEsa					// エサの設定処理
-(int nEsaType, ESA_ACTTYPE esaType,			// 設定するエサのタイプ, エサの挙動
- D3DXVECTOR3 pos, D3DXVECTOR3 rot);		// 位置, 角度			
+int SetEsa					// エサの設定処理
+(int nEsaType, ESA_ACTTYPE esaType,		// 設定するエサのタイプ, エサの挙動
+ D3DXVECTOR3 pos, D3DXVECTOR3 rot);		// 位置, 角度
+
+void Setaaa();
+
+// 更新処理
 
 void BehaviorEsa			// エサの挙動の処理
 (Esa *pEsa);							// 処理するエサのポインタ
@@ -126,9 +134,13 @@ void BehaviorEsa			// エサの挙動の処理
 void MoveEsa				// エサの移動処理
 (Esa *pEsa);							// 処理するエサのポインタ
 
+// 判定処理
+
 bool CollisionEsa			// エサの当たり判定処理
 (int* pIdx,	bool bCollision,			// 判定したエサのインデックス, ぶつかりの判定をするか 
  D3DXVECTOR3 *pos, float fHitRadius);	// 位置, 大きさ 
+
+// 値を返す処理
 
 Esa *GetEsa(void);			// エサの情報を返す処理
 
