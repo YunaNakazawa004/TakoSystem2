@@ -53,7 +53,7 @@ void InitTitle(void)
 	// カメラの数の設定
 	SetNumCamera(1);
 
-	SetCameraPos(0, D3DXVECTOR3(750.0f, 250.0f, 750.0f), D3DXVECTOR3(250.0f, 230.0f, 250.0f));
+	SetCameraPos(0, D3DXVECTOR3(750.0f, 250.0f, 750.0f), D3DXVECTOR3(250.0f, 230.0f, 250.0f), CAMERATYPE_POINT);
 
 	// デバイスの取得
 	pDevice = GetDevice();
