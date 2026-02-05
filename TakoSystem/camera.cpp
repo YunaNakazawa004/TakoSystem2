@@ -17,6 +17,7 @@
 #define HEIGHT					(100.0f)								// 視点の高さ
 #define MOVEMENT				(D3DXVECTOR3(5.0f, 5.0f, 5.0f))			// 移動量
 #define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// 向き移動量
+#define AUTO_ROT				(D3DXVECTOR3(0.005f, 0.005f, 0.005f))	// 自動回転移動量
 #define INERTIA_POSR			(0.6f)									// 注視点の慣性
 #define INERTIA_POSV			(0.6f)									// 視点の慣性
 #define MAX_Y					(300.0f)								// 上の制限
@@ -294,6 +295,14 @@ void UpdateCamera(void)
 			break;
 
 		case CAMERATYPE_POINT:
+			pCamera->rot.y += -AUTO_ROT.y;
+
+			// カメラ向きを調整
+			CorrectAngle(&pCamera->rot.y, pCamera->rot.y);
+
+			pCamera->posV.x = pCamera->posR.x + sinf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance;
+			pCamera->posV.z = pCamera->posR.z + cosf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance;
+
 			break;
 		}
 	}
