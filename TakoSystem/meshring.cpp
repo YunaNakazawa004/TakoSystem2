@@ -208,7 +208,7 @@ void SetMeshRing(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVECTOR
 		if (g_aMeshRing[nCntMeshRing].bUse == false)
 		{// Žg—p‚µ‚Ä‚¢‚È‚¢
 			g_aMeshRing[nCntMeshRing].pos.x = pos.x;
-			g_aMeshRing[nCntMeshRing].pos.y = 0.0f;
+			g_aMeshRing[nCntMeshRing].pos.y = pos.y;
 			g_aMeshRing[nCntMeshRing].pos.z = pos.z;
 			g_aMeshRing[nCntMeshRing].rot = rot;
 			g_aMeshRing[nCntMeshRing].block = block;

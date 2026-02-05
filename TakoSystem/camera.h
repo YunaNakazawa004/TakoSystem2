@@ -16,6 +16,16 @@
 #define DISTANCE				(300.0f)								// 視点と注視点間の距離
 
 //*****************************************************************************
+// カメラの種類
+//*****************************************************************************
+typedef enum
+{
+	CAMERATYPE_PLAYER = 0,			// プレイヤー追従
+	CAMERATYPE_POINT,				// 定点カメラ
+	CAMERATYPE_MAX
+}CAMERATYPE;
+
+//*****************************************************************************
 // カメラ構造体の定義
 //*****************************************************************************
 typedef struct
@@ -32,6 +42,7 @@ typedef struct
 	D3DXMATRIX mtxProjection;		// プロジェクションマトリックス(モニターのサイズ)
 	D3DXMATRIX mtxView;				// ビューマトリックス(カメラの画面のサイズ)
 	D3DVIEWPORT9 viewport;			// ビューポート
+	CAMERATYPE type;				// 種類
 }Camera;
 
 //*****************************************************************************
@@ -42,7 +53,7 @@ void UninitCamera(void);
 void UpdateCamera(void);
 void SetCamera(int nIdx);
 void SetNumCamera(int nNum);
-void SetCameraPos(int nIdx, D3DXVECTOR3 posV, D3DXVECTOR3 posR);
+void SetCameraPos(int nIdx, D3DXVECTOR3 posV, D3DXVECTOR3 posR, CAMERATYPE type);
 Camera* GetCamera(void);
 int GetNumCamera(void);
 

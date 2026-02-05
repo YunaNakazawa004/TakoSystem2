@@ -6,13 +6,15 @@
 //=============================================================================
 #include "player.h"
 #include "meshcylinder.h"
+#include "meshring.h"
 #include "esa.h"
 #include "particle_3d.h"
 #include "crosshair.h"
 #include "watersurf.h"
 #include "camera.h"
 #include "input.h"
-//#include "sound.h"
+#include "time.h"
+#include "sound.h"
 #include "debugproc.h"
 
 //*****************************************************************************
@@ -375,10 +377,10 @@ void UpdatePlayer(void)
 						//PrintDebugProc("触手のpos ( %f %f %f )\n", pPlayer->aModel[4].mtxWorld._41, pPlayer->aModel[4].mtxWorld._42, pPlayer->aModel[4].mtxWorld._43);
 						D3DXVECTOR3 tentaclePos = D3DXVECTOR3(pPlayer->aModel[4].mtxWorld._41, pPlayer->aModel[4].mtxWorld._42, pPlayer->aModel[4].mtxWorld._43);
 
-						if (pCrossHair->state == CROSSHAIRSTATE_REACH && 
+						if (pCrossHair->state == CROSSHAIRSTATE_REACH &&
 							(CollisionMeshCylinder(&tentaclePos, &pPlayer->pos, &pPlayer->move,
-							TENTACLE_RADIUS, TENTACLE_RADIUS, true) == true ||
-							tentaclePos.y < 0.0f))
+								TENTACLE_RADIUS, TENTACLE_RADIUS, true) == true ||
+								tentaclePos.y < 0.0f))
 						{// 壁との当たり判定
 							pPlayer->state = PLAYERSTATE_DASH;
 							pPlayer->TentacleState = PLTENTACLESTATE_TENTACLESHORT;
@@ -411,7 +413,7 @@ void UpdatePlayer(void)
 				{// 元の長さに戻す
 					pPlayer->aModel[2].scale.y = 1.0f;
 					pPlayer->TentacleState = PLTENTACLESTATE_NORMAL;
-					
+
 					if (pPlayer->motionType != MOTIONTYPE_DASH)
 					{// 高速移動していないとき
 						pPlayer->fAngleX = 0.0f;
@@ -546,6 +548,9 @@ void UpdatePlayer(void)
 			if (pPlayer->pos.y > *GetWaterSurf_Height() - (PLAYER_HEIGHT * 0.5f))
 			{// 上									  
 				pPlayer->pos.y = *GetWaterSurf_Height() - (PLAYER_HEIGHT * 0.5f);
+
+				SetMeshRing(D3DXVECTOR3(pPlayer->pos.x, *GetWaterSurf_Height(), pPlayer->pos.z), FIRST_POS,
+					D3DXVECTOR2(24.0f, 1.0f), D3DXVECTOR2(25.0f, 30.0f), D3DXCOLOR(WHITE_VTX.r, WHITE_VTX.g, WHITE_VTX.b, 0.5f));
 			}
 
 			//PrintDebugProc("fAngle : %f", pCamera->fAngle);
@@ -585,6 +590,11 @@ void UpdatePlayer(void)
 				CorrectAngle(&pPlayer->rot.x, pPlayer->rot.x);
 			}
 
+			if (GetTime() % (ONE_SECOND * 10) == 0 && GetTime() != ONE_GAME)
+			{// 持てるエサの最大値が増える
+				pPlayer->nMaxFood++;
+			}
+
 			D3DXVECTOR3 dist;
 			dist = pPlayer->posX - pPlayer->pos;
 			D3DXVec3Normalize(&dist, &dist);
@@ -592,7 +602,7 @@ void UpdatePlayer(void)
 			dist += pPlayer->pos;
 
 			if (CollisionMeshCylinder(&dist, &pPlayer->pos, &pPlayer->move,
-				0.0f, 0.0f, true) == true || 
+				0.0f, 0.0f, true) == true ||
 				dist.y < 0.0f)
 			{// 壁に当たった・オブジェクトに当たった・エサに当たった
 				// クロスヘアの設定

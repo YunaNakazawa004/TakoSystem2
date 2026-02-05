@@ -38,7 +38,7 @@
 #define MAX_PLAYER			(2)																// プレイ人数
 #define MAX_COMPUTER		(10)															// CPUの数
 #define ALL_OCTO			(7)																// ステージに出るタコの数
-#define ONE_GAME			(120)															// 1ゲームの制限時間
+#define ONE_GAME			(150)															// 1ゲームの制限時間
 #define ONE_SECOND			(60)															// 1秒
 #define WHITE_VTX			(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f))								// 頂点カラーが白
 #define RED_VTX				(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f))								// 頂点カラーが赤

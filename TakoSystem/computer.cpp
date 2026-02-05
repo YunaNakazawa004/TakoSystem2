@@ -497,7 +497,7 @@ void UpdateComputer(void)
 				break;
 			}
 
-			PrintDebugProc("触手の長さ %f\n", pComputer->aModel[2].scale.y);
+			//PrintDebugProc("触手の長さ %f\n", pComputer->aModel[2].scale.y);
 
 			// 移動量制限
 			if (pComputer->phys.move.x > MAX_MOVE)
@@ -610,6 +610,11 @@ void UpdateComputer(void)
 				CorrectAngle(&pComputer->phys.rot.x, pComputer->phys.rot.x);
 			}
 
+			if (GetTime() % (ONE_SECOND * 10) == 0 && GetTime() != ONE_GAME)
+			{// 持てるエサの最大値が増える
+				pComputer->nMaxFood++;
+			}
+
 			//SetEffect3D(70, pComputer->phys.pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0.0f, 30.0f, -0.1f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), EFFECTTYPE_NORMAL);
 
 			//PrintDebugProc("ENEMY : pos ( %f %f %f )\n",
@@ -617,8 +622,8 @@ void UpdateComputer(void)
 			//PrintDebugProc("ENEMY : move ( %f %f %f )\n",
 			//	pComputer->phys.move.x, pComputer->phys.move.y, pComputer->phys.move.z);
 			PrintDebugProc("ENEMY : nFood ( %d )\n", pComputer->nFoodCount);
-			PrintDebugProc("ENEMY : TargetPot ( %d )\n", pComputer->nTargetPotIdx);
-			PrintDebugProc("ENEMY : TargetEnemy ( %d )\n", pComputer->nTargetEnemyIdx);
+			//PrintDebugProc("ENEMY : TargetPot ( %d )\n", pComputer->nTargetPotIdx);
+			//PrintDebugProc("ENEMY : TargetEnemy ( %d )\n", pComputer->nTargetEnemyIdx);
 			//PrintDebugProc("ENEMY : ノード ( %f %f %f )\n",
 			//	pComputer->extarget.x, pComputer->extarget.y, pComputer->extarget.z);
 
@@ -757,7 +762,8 @@ void MoveToFood(Computer* pComputer)
 
 	int nIdx = -1;
 
-	if (CollisionEsa(&nIdx, false, &pComputer->phys.pos, pComputer->phys.fRadius) == true)
+	if (CollisionEsa(&nIdx, false, &pComputer->phys.pos, pComputer->phys.fRadius) == true &&
+		pComputer->nFoodCount < pComputer->nMaxFood * CPU_TENTACLE)
 	{// エサと接触した
 		Esa* pEsa = GetEsa();
 		pEsa[nIdx].bUse = false;
@@ -1158,7 +1164,7 @@ D3DXVECTOR3 GetNearestEnemy(Computer* pComputer)
 
 	// CPU
 	pEnemy = &pEnemy[nBestCount];
-	PrintDebugProc("誰から逃げてるか ( %d )\n", nBestCount);
+	//PrintDebugProc("誰から逃げてるか ( %d )\n", nBestCount);
 
 	return pEnemy->phys.pos;
 
@@ -1170,6 +1176,11 @@ D3DXVECTOR3 GetNearestEnemy(Computer* pComputer)
 void CalcFoodScore(Computer* pComputer)
 {
 	Esa* pEsa = GetEsa();
+
+	if (pComputer->nFoodCount >= pComputer->nMaxFood * CPU_TENTACLE)
+	{// もう持てない
+		return;
+	}
 
 	if (pComputer->nTargetFoodIdx == -1)
 	{// 何もターゲットしていない
