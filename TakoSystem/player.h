@@ -68,7 +68,9 @@ typedef struct
 	bool bMove;									// 動いているかどうか
 	bool bAct;									// アクション中かどうか
 	bool bUse;									// 使用しているかどうか
+
 	bool bBlind;								// 視界が悪いかどうか
+	int nBlindCounter;							// 視界が悪いのを制御するカウンター
 
 	int nFood;									// 持っているエサの数
 	int nMaxFood;								// 一本の腕に一度に持てるエサの数

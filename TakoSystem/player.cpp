@@ -6,12 +6,15 @@
 //=============================================================================
 #include "player.h"
 #include "meshcylinder.h"
+#include "meshring.h"
 #include "esa.h"
 #include "particle_3d.h"
 #include "crosshair.h"
+#include "watersurf.h"
 #include "camera.h"
 #include "input.h"
-//#include "sound.h"
+#include "time.h"
+#include "sound.h"
 #include "debugproc.h"
 
 //*****************************************************************************
@@ -34,6 +37,7 @@
 #define TENTACLE_REACH			(1000.0f)								// 触手のリーチ(実際)
 #define TENTACLE_CT				(ONE_SECOND * 1 + ONE_SECOND)			// 触手のクールダウン
 #define INK_CT					(ONE_SECOND * 5 + ONE_SECOND)			// 墨吐きのクールダウン
+#define RIPPLE_COUNT			(20)									// 水面に波紋が出る間隔
 #define PLAYER_TENTACLE			(8)										// プレイヤーの足の数
 #define PLAYER_RADIUS			(50.0f)									// 半径
 #define PLAYER_HEIGHT			(100.0f)								// 高さ
@@ -82,6 +86,7 @@ void InitPlayer(void)
 		pPlayer->bAct = false;
 		pPlayer->bUse = false;
 		pPlayer->bBlind = false;
+		pPlayer->nBlindCounter = 0;
 		pPlayer->nFood = 0;
 		pPlayer->nMaxFood = 0;
 		pPlayer->nTentacleCooldown = 0;
@@ -192,6 +197,8 @@ void UpdatePlayer(void)
 	{
 		if (pPlayer->bUse == true)
 		{
+			static int nCounter = 0;		// 色々なものに使えるカウンター
+
 			pPlayer->posOld = pPlayer->pos;
 			pPlayer->posX = pPlayer->pos + (pCamera->posR - pCamera->posV);
 
@@ -374,10 +381,10 @@ void UpdatePlayer(void)
 						//PrintDebugProc("触手のpos ( %f %f %f )\n", pPlayer->aModel[4].mtxWorld._41, pPlayer->aModel[4].mtxWorld._42, pPlayer->aModel[4].mtxWorld._43);
 						D3DXVECTOR3 tentaclePos = D3DXVECTOR3(pPlayer->aModel[4].mtxWorld._41, pPlayer->aModel[4].mtxWorld._42, pPlayer->aModel[4].mtxWorld._43);
 
-						if (pCrossHair->state == CROSSHAIRSTATE_REACH && 
+						if (pCrossHair->state == CROSSHAIRSTATE_REACH &&
 							(CollisionMeshCylinder(&tentaclePos, &pPlayer->pos, &pPlayer->move,
-							TENTACLE_RADIUS, TENTACLE_RADIUS, true) == true ||
-							tentaclePos.y < 0.0f))
+								TENTACLE_RADIUS, TENTACLE_RADIUS, true) == true ||
+								tentaclePos.y < 0.0f))
 						{// 壁との当たり判定
 							pPlayer->state = PLAYERSTATE_DASH;
 							pPlayer->TentacleState = PLTENTACLESTATE_TENTACLESHORT;
@@ -410,7 +417,7 @@ void UpdatePlayer(void)
 				{// 元の長さに戻す
 					pPlayer->aModel[2].scale.y = 1.0f;
 					pPlayer->TentacleState = PLTENTACLESTATE_NORMAL;
-					
+
 					if (pPlayer->motionType != MOTIONTYPE_DASH)
 					{// 高速移動していないとき
 						pPlayer->fAngleX = 0.0f;
@@ -542,6 +549,17 @@ void UpdatePlayer(void)
 				pPlayer->pos.y = 0.0f;
 			}
 
+			if (pPlayer->pos.y > *GetWaterSurf_Height() - (PLAYER_HEIGHT * 0.5f))
+			{// 上									  
+				pPlayer->pos.y = *GetWaterSurf_Height() - (PLAYER_HEIGHT * 0.5f);
+
+				if (nCounter % RIPPLE_COUNT == 0)
+				{// 定期的に波紋
+					SetMeshRing(D3DXVECTOR3(pPlayer->pos.x + (rand() % 6 - 3), *GetWaterSurf_Height(), pPlayer->pos.z + (rand() % 6 - 3)), FIRST_POS,
+						D3DXVECTOR2(24.0f, 1.0f), D3DXVECTOR2(10.0f, 7.0f), D3DXCOLOR(WHITE_VTX.r, WHITE_VTX.g, WHITE_VTX.b, 0.5f));
+				}
+			}
+
 			//PrintDebugProc("fAngle : %f", pCamera->fAngle);
 
 			pPlayer->fFog = (pPlayer->pos.y * 1.5f * (-pCamera->fAngle * 0.5f)) + FOG_MIN;
@@ -579,6 +597,11 @@ void UpdatePlayer(void)
 				CorrectAngle(&pPlayer->rot.x, pPlayer->rot.x);
 			}
 
+			if (GetTime() % (ONE_SECOND * 10) == 0 && GetTime() != ONE_GAME)
+			{// 持てるエサの最大値が増える
+				pPlayer->nMaxFood++;
+			}
+
 			D3DXVECTOR3 dist;
 			dist = pPlayer->posX - pPlayer->pos;
 			D3DXVec3Normalize(&dist, &dist);
@@ -586,7 +609,7 @@ void UpdatePlayer(void)
 			dist += pPlayer->pos;
 
 			if (CollisionMeshCylinder(&dist, &pPlayer->pos, &pPlayer->move,
-				0.0f, 0.0f, true) == true || 
+				0.0f, 0.0f, true) == true ||
 				dist.y < 0.0f)
 			{// 壁に当たった・オブジェクトに当たった・エサに当たった
 				// クロスヘアの設定
@@ -669,6 +692,8 @@ void UpdatePlayer(void)
 					pPlayer->nFood++;
 				}
 			}
+
+			nCounter++;
 
 			// モーションの更新処理
 			UpdateMotionPlayer();
@@ -846,6 +871,7 @@ void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	pPlayer[nIdx].bMove = false;
 	pPlayer[nIdx].bUse = true;
 	pPlayer[nIdx].bBlind = false;
+	pPlayer[nIdx].nBlindCounter = 0;
 	pPlayer[nIdx].nFood = 0;
 	pPlayer[nIdx].nMaxFood = 1;
 	pPlayer[nIdx].nTentacleCooldown = 0;
