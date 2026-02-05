@@ -49,7 +49,7 @@ Esa g_aEsa[MAX_SET_ESA];				// エサの情報
 EsaModel_info g_aEsaModelInfo[] =
 {// {ファイル名, モデルの移動(回転)速度, 当たり判定の大きさ, 獲得スコア}
 
-	{"data/MODEL/testmodel/car000.x",		0.001f,	10.0f,	10},	// [0]車
+	{"data/MODEL/esa/shell000.x",		0.001f,	10.0f,	10},	// [0]車
 	{"data/MODEL/esa/kani.x",				0.003f,	10.0f,	10},	// [1]四角形
 	{"data/MODEL/testmodel/skitree000.x",	0.005f,	10.0f,	10},	// [2]四角形
 };
@@ -268,10 +268,10 @@ void DrawEsa(void)
 //========================================================================
 // エサの設定処理
 //========================================================================
-void SetEsa(int nEsaType, ESA_ACTTYPE esaType, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
+int SetEsa(int nEsaType, ESA_ACTTYPE esaType, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 {
 	// 設定したいモデルがない場合
-	if (g_aIdxEsaModel[nEsaType] == -1) return;	// 処理を抜ける
+	if (g_aIdxEsaModel[nEsaType] == -1) return -1;	// 処理を抜ける
 
 	for (int nCntEsa = 0; nCntEsa < MAX_SET_ESA; nCntEsa++)
 	{
@@ -287,9 +287,11 @@ void SetEsa(int nEsaType, ESA_ACTTYPE esaType, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 			g_aEsa[nCntEsa].bDisp = true;							// 表示している状態に設定
 			g_aEsa[nCntEsa].bUse = true;							// 使用している状態に設定
 
-			break;	// for文を抜ける
+			return nCntEsa;	// 設定した場所を返す
 		}
 	}
+
+	return -1;				// 設定してない事を返す
 }
 
 //========================================================================
