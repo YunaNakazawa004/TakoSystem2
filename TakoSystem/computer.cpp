@@ -71,7 +71,7 @@
 #define INK_ENEMY_COUNT_SCORE	(5.0f)									// 敵が複数いるときのスコア
 #define INK_ESA_COUNT			(0.2f)									// 自分のエサが多い
 #define INK_PILLAR_SCORE		(3.0f)									// 柱が近いスコア
-#define INK_BLIND_DIST			(100.0f)								// 墨にかかる距離
+#define INK_BLIND_DIST			(500.0f)								// 墨にかかる距離
 
 #define POT_DISTANCE			(1000.0f)								// タコつぼが遠すぎる
 #define POT_ESA_SCORE			(0.4f)									// 自分のエサが多い

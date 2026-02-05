@@ -5,6 +5,7 @@
 // 
 //=============================================================================
 #include "player.h"
+#include "computer.h"
 #include "meshcylinder.h"
 #include "meshring.h"
 #include "esa.h"
@@ -33,8 +34,8 @@
 #define MOVE_ERROR				(5.0f)									// 移動量の誤差
 #define FOGS_MIN				(500.0f)								// 開始フォグの最低
 #define FOGS_MAX				(1200.0f)								// 開始フォグの最高
-#define FOGE_MIN				(1100.0f)								// 終了フォグの最低
-#define FOGE_MAX				(5000.0f)								// 終了フォグの最高
+#define FOGE_MIN				(1000.0f)								// 終了フォグの最低
+#define FOGE_MAX				(3000.0f)								// 終了フォグの最高
 #define TENTACLE_RANGE			(1000.0f)								// 触手の長さ(見た目)
 #define TENTACLE_REACH			(1000.0f)								// 触手のリーチ(実際)
 #define TENTACLE_CT				(ONE_SECOND * 1 + ONE_SECOND)			// 触手のクールダウン
@@ -79,8 +80,8 @@ void InitPlayer(void)
 		pPlayer->nCounterState = 0;
 		pPlayer->fAngleX = 0.0f;
 		pPlayer->fAngleY = 0.0f;
-		pPlayer->fFogStart = FOGS_MIN;
-		pPlayer->fFogEnd = FOGE_MIN;
+		pPlayer->fFogStart = (pPlayer->pos.y * 0.4f) + FOGS_MIN;
+		pPlayer->fFogEnd = (pPlayer->pos.y * 1.1f) + FOGE_MIN;
 		pPlayer->fRadius = PLAYER_RADIUS;
 		pPlayer->fHeight = PLAYER_HEIGHT;
 		pPlayer->bJump = false;
@@ -191,16 +192,16 @@ void UpdatePlayer(void)
 {
 	Camera* pCamera = GetCamera();
 	Player* pPlayer = GetPlayer();
-	int nValueH, nValueV;
-	int nValue;
-	float fmoveAngle = 0.0f;
-	float fAngle;
 
 	for (int nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++, pPlayer++, pCamera++)
 	{
 		if (pPlayer->bUse == true)
 		{
 			static int nCounter = 0;		// 色々なものに使えるカウンター
+			int nValueH, nValueV;
+			int nValue;
+			float fmoveAngle = 0.0f;
+			float fAngle;
 
 			pPlayer->posOld = pPlayer->pos;
 			pPlayer->posX = pPlayer->pos + (pCamera->posR - pCamera->posV);
@@ -575,7 +576,7 @@ void UpdatePlayer(void)
 
 			//PrintDebugProc("fAngle : %f", pCamera->fAngle);
 
-			pPlayer->fFogStart = (pPlayer->pos.y * 3.5f * (-pCamera->fAngle * 0.5f)) + FOGS_MIN;
+			pPlayer->fFogStart = (pPlayer->pos.y * 0.4f + (-pCamera->fAngle * 0.2f)) + FOGS_MIN;
 
 			if (pPlayer->fFogStart < FOGS_MIN)
 			{// フォグの最低値
@@ -586,12 +587,7 @@ void UpdatePlayer(void)
 				pPlayer->fFogStart = FOGS_MAX;
 			}
 
-			if (pPlayer->bBlind == true)
-			{// 視界悪化中
-				pPlayer->fFogStart *= 0.5f;
-			}
-
-			pPlayer->fFogEnd = (pPlayer->pos.y * 3.5f * (-pCamera->fAngle * 0.5f)) + FOGE_MIN;
+			pPlayer->fFogEnd = (pPlayer->pos.y * 1.1f + (-pCamera->fAngle * 0.2f)) + FOGE_MIN;
 
 			if (pPlayer->fFogEnd < FOGE_MIN)
 			{// フォグの最低値
@@ -604,10 +600,9 @@ void UpdatePlayer(void)
 
 			if (pPlayer->bBlind == true)
 			{// 視界悪化中
+				pPlayer->fFogStart *= 0.5f;
 				pPlayer->fFogEnd *= 0.5f;
 			}
-
-			PrintDebugProc("フォグの値 ( %f %f )\n", pPlayer->fFogStart, pPlayer->fFogEnd);
 
 			fmoveAngle = pPlayer->fAngleY - pPlayer->rot.y;
 
@@ -696,6 +691,8 @@ void UpdatePlayer(void)
 				SetParticle3D(14, 30, pPlayer->pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pPlayer->rot.x, pPlayer->rot.y - D3DX_PI, pPlayer->rot.z), 4.0f, 200, 8.0f, 0.06f, EFFECTTYPE_OCTOINK);
 				SetParticle3D(14, 30, pPlayer->pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pPlayer->rot.x, pPlayer->rot.y - D3DX_PI, pPlayer->rot.z), 4.0f, 200, 8.0f, 0.06f, EFFECTTYPE_OCTOINK);
 				SetParticle3D(14, 30, pPlayer->pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pPlayer->rot.x, pPlayer->rot.y - D3DX_PI, pPlayer->rot.z), 4.0f, 200, 8.0f, 0.06f, EFFECTTYPE_OCTOINK);
+
+				CollisionInk(nCntPlayer, false, pPlayer->pos);
 
 				// クールダウンを設定
 				pPlayer->nInkCooldown = INK_CT;
@@ -901,6 +898,8 @@ void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	pPlayer[nIdx].state = PLAYERSTATE_NORMAL;
 	pPlayer[nIdx].TentacleState = PLTENTACLESTATE_NORMAL;
 	pPlayer[nIdx].nCounterState = 0;
+	pPlayer[nIdx].fFogStart = (pPlayer[nIdx].pos.y * 0.4f) + FOGS_MIN;
+	pPlayer[nIdx].fFogEnd = (pPlayer[nIdx].pos.y * 1.1f) + FOGE_MIN;
 	pPlayer[nIdx].bJump = true;
 	pPlayer[nIdx].bLand = false;
 	pPlayer[nIdx].bAct = false;

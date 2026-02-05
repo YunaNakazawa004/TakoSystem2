@@ -480,6 +480,8 @@ void Draw(void)
 
 		for (int nCntCamera = 0; nCntCamera < GetNumCamera(); nCntCamera++)
 		{
+			Player* pPlayer = GetPlayer();
+
 			// ƒJƒƒ‰‚Ì•`‰æˆ—
 			SetCamera(nCntCamera);
 
@@ -494,6 +496,8 @@ void Draw(void)
 				break;
 
 			case MODE_GAME:				// ƒQ[ƒ€‰æ–Ê
+				SetFog(D3DXCOLOR(0.0f, 0.1f, 0.2f, 1.0f), pPlayer[nCntCamera].fFogStart, pPlayer[nCntCamera].fFogEnd, true);
+
 				DrawGame();
 				break;
 
