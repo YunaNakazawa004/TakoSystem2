@@ -13,6 +13,7 @@
 #include "camera.h"
 #include "game.h"
 #include "object.h"
+#include "meshcylinder.h"
 
 // マクロ定義
 #define	MAX_TITLE	(5)	// タイトルで表示するテクスチャの最大数
@@ -39,6 +40,11 @@ void InitTitle(void)
 	// 配置物の初期化処理
 	InitObject("objpos.txt");
 
+	// メッシュシリンダーの初期化処理
+	InitMeshCylinder();
+	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 2.0f), D3DXVECTOR2(INCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, MESHCYLINDERTYPE_ROCK);
+	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(OUTCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), true, MESHCYLINDERTYPE_SEA);
+
 	// ライトの設定
 	SetLightColor(0, D3DXCOLOR(0.8f, 0.9f, 1.0f, 1.0f));
 	SetLightColor(1, D3DXCOLOR(0.5f, 0.6f, 0.8f, 0.7f));
@@ -47,7 +53,7 @@ void InitTitle(void)
 	// カメラの数の設定
 	SetNumCamera(1);
 
-	SetCameraPos(0, D3DXVECTOR3(750.0f, 50.0f, 750.0f), D3DXVECTOR3(750.0f, 50.0f, 750.0f));
+	SetCameraPos(0, D3DXVECTOR3(750.0f, 250.0f, 750.0f), D3DXVECTOR3(250.0f, 230.0f, 250.0f));
 
 	// デバイスの取得
 	pDevice = GetDevice();
@@ -171,6 +177,9 @@ void UninitTitle(void)
 	// 配置物の終了処理
 	UninitObject();
 
+	// メッシュシリンダーの終了処理
+	UninitMeshCylinder();
+
 	// テクスチャの破棄
 	for (int nCntTitle = 0; nCntTitle < MAX_TITLE; nCntTitle++)
 	{// タイトルの数だけ確認する
@@ -192,6 +201,12 @@ void UninitTitle(void)
 // タイトルの更新処理
 void UpdateTitle(void)
 {
+	// 配置物の更新処理
+	UpdateObject();
+
+	// メッシュシリンダーの更新処理
+	UpdateMeshCylinder();
+
 	// フェード情報の取得
 	FADE pFade = GetFade();
 
@@ -297,8 +312,13 @@ void DrawTitle(void)
 {
 	LPDIRECT3DDEVICE9 pDevice;	// デバイスへのポインタ
 
+	//SetCamera(0);
+
 	// 配置物の描画処理
 	DrawObject();
+
+	// メッシュシリンダーの描画処理
+	DrawMeshCylinder();
 
 	// デバイスの取得
 	pDevice = GetDevice();
