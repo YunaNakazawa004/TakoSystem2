@@ -19,7 +19,7 @@
 
 // マクロ定義
 #define	MAX_TITLE	(5)	// タイトルで表示するテクスチャの最大数
-#define	RANKING_DELEY	(900)	// ランキング移行に掛かる時間
+#define	RANKING_DELEY	(1500)	// ランキング移行に掛かる時間
 #define	CLEAR_DELEY	(60)	// 消滅にかかる時間
 #define	TITLE_DELEY_MAX	(500.0f)	// タイトルの最大数
 
@@ -35,6 +35,8 @@ int g_PlayerSelect = 1;	// プレイヤーの人数
 void InitTitle(void)
 {
 	LPDIRECT3DDEVICE9 pDevice;	// デバイスへのポインタ
+
+	int nCamera, nVecR;
 
 	g_TitleDeley = 0.0f;	// ディレイの値を初期化
 	g_PressEnterDeley = 0;
@@ -61,8 +63,16 @@ void InitTitle(void)
 	// カメラの数の設定
 	SetNumCamera(1);
 
+	// 乱数の種を設定
+	srand((unsigned int)time(0));
+
+	nCamera = rand() % 6;	// カメラの位置設定
+	nVecR = rand() % 5;		// カメラの角度設定
+
 	// カメラの位置設定
-	SetCameraPos(0, D3DXVECTOR3(0.0f, 800.0f, 0.0f), D3DXVECTOR3(0.0f, 880.0f, 0.0f), CAMERATYPE_POINT);
+	SetCameraPos(0, D3DXVECTOR3(0.0f, ((float)nCamera * 100.0f) + 600.0f, 0.0f), 
+		D3DXVECTOR3(0.0f, (((float)nCamera * 100.0f) + 600.0f) + (((float)nVecR * 50.0f) - 100.0f), 0.0f),
+		CAMERATYPE_POINT);
 
 	// デバイスの取得
 	pDevice = GetDevice();
