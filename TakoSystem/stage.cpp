@@ -238,32 +238,3 @@ void CollisionStage(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove,
 		}
 	}
 }
-
-//=============================================================================
-// 中心を軸にした海流の移動処理
-//=============================================================================
-void MoveOceanCurrents(D3DXVECTOR3* pPos)
-{
-	// 変数宣言 ===========================================
-
-	float fDistRadius;	// 中心からの距離(半径)
-	float fNomRadius;	// 正規化した距離(半径)
-	float fNowAngle;	// 現在の角度
-
-	// ====================================================
-
-	fDistRadius = sqrtf(pPos->x * pPos->x + pPos->z * pPos->z);		// 中心からの距離を求める
-	fNomRadius = fDistRadius / MAX_ARIA_STAGE;						// posが中心からどれだけ離れているかを求める
-	fNowAngle = (float)atan2(pPos->x, pPos->z);						// 中心からの角度を求める
-
-	// 角度を更新
-	fNowAngle += STAGE_OCEANCURRENTS_NOM / fNomRadius;				// 移動量(角度)を正規化した距離の長さにする
-
-	// 角度が超えた場合、角度を範囲内に修正
-	if		(fNowAngle < -D3DX_PI) fNowAngle = fNowAngle + D3DX_PI * 2;
-	else if (fNowAngle >  D3DX_PI) fNowAngle = fNowAngle - D3DX_PI * 2;
-	
-	// 位置を設定
-	pPos->x = sinf(fNowAngle) * fDistRadius;
-	pPos->z = cosf(fNowAngle) * fDistRadius;
-}

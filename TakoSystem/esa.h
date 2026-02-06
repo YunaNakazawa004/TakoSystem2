@@ -49,6 +49,7 @@ typedef struct
 	int nidxType;			// エサの種類
 
 	ESA_ACTTYPE esaType;	// エサの挙動
+	int nBehavior;			// 挙動の値
 
 	D3DXVECTOR3 pos;		// 位置
 	D3DXVECTOR3 rot;		// 角度
@@ -68,9 +69,9 @@ typedef struct
 	float fMoveAngle;		// 移動角度
 
 	ESA_ACTTYPE esaType;	// エサの挙動
-	float fNumBehavior;		// 挙動の値
+	int nNumBehavior;		// 挙動の値
 
-	bool bHave;				// 所持され状態(持っているか)
+	//bool bHave;				// 所持され状態(持っているか)
 	bool bDisp;				// 表示状態
 	bool bUse;				// 使用状態
 
@@ -121,10 +122,13 @@ int SetModelEsa				// エサのモデル読み込み処理
  EsaModel *pEsaModel, int nMaxSizeNum);	// 読み込んだエサの格納場所, エサの格納場所の数
 
 int SetEsa					// エサの設定処理
-(int nEsaType, ESA_ACTTYPE esaType,		// 設定するエサのタイプ, エサの挙動
+(int nEsaType,							// 設定するエサのタイプ, 
+ ESA_ACTTYPE esaType, int nBehavior,	// エサの挙動, 挙動の値
  D3DXVECTOR3 pos, D3DXVECTOR3 rot);		// 位置, 角度
 
-void Setaaa();
+void ChangeEsaState			// エサの状態切り替え処理
+(int nIdxEsa,							// エサのインテックス
+ ESA_ACTTYPE changeState, int nValue);	// 切り替える挙動, 挙動の値
 
 // 更新処理
 

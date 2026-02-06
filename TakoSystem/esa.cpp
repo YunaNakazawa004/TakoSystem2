@@ -15,6 +15,10 @@
 
 #include "meshcylinder.h"
 #include "watersurf.h"
+#include "player.h"
+#include "pot.h"
+
+#include "oceancurrents.h"
 
 // マクロ定義 ==================================================
 
@@ -30,6 +34,8 @@
 
 #define ESA_SWIM_SPEED			(0.001f)			// 浮いている時の移動(回転)速度
 
+#define ESA_HOMING_SPEED		(0.01f)
+
 // 計算用 ===================
 
 #define ESA_CALC_SIZEARRAY(aArray)	(sizeof aArray / sizeof(aArray[0]))	// 配列の大きさを求める
@@ -37,6 +43,9 @@
 #define ESA_CALC_REVROT(rot)		(((rot) < -D3DX_PI) ? (rot) + D3DX_PI * 2 :  /* rotの値が-PIを超えた場合、超えた-PI分を戻す */ \
 									 ((rot) >  D3DX_PI) ? (rot) - D3DX_PI * 2 :  /* rotの値が+PIを超えた場合、超えた+PI分を戻す */ \
 									 (rot))										 /* そのまま */
+
+#define ESA_CHANGE_FLOAT(num)		((float)((num) / 100.0f))	// floatの値に変換
+#define ESA_CHANGE_INT(num)			((int)  ((num) * 100))		// intの値に変換
 
 // グローバル宣言 ==============================================
 
@@ -49,22 +58,20 @@ Esa g_aEsa[MAX_SET_ESA];				// エサの情報
 EsaModel_info g_aEsaModelInfo[] =
 {// {ファイル名, モデルの移動(回転)速度, 当たり判定の大きさ, 獲得スコア}
 
-	{"data/MODEL/esa/shell000.x",		0.001f,	10.0f,	10},	// [0]車
-	{"data/MODEL/esa/kani.x",				0.003f,	10.0f,	10},	// [1]四角形
-	{"data/MODEL/testmodel/skitree000.x",	0.005f,	10.0f,	10},	// [2]四角形
+	{"data/MODEL/esa/shell000.x",		0.0001f,	10.0f,	10},	// [0]車
+	{"data/MODEL/esa/kani.x",			0.0003f,	10.0f,	10},	// [1]四角形
+	{"data/MODEL/esa/shrimp.x",			0.005f,	10.0f,	10},	// [2]四角形
 };
 
 int g_nNumEsatype;						// エサの種類の総数
 
 // エサの配置情報
 Esa_info g_aEsaInfo[] =
-{// {モデル種類, エサの挙動, 位置, 角度}
+{// {モデル種類, エサの挙動, 挙動の値, 位置, 角度}
 
-	{0, ESA_ACTTYPE_SWIM, D3DXVECTOR3(0.0f, 1200.0f, 800.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
-	{1, ESA_ACTTYPE_SWIM, D3DXVECTOR3(0.0f, 1200.0f, 1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
+	{0, ESA_ACTTYPE_SWIM, 0, D3DXVECTOR3(0.0f, 1200.0f, 800.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
+	{1, ESA_ACTTYPE_GOTO_PLAYER, 0, D3DXVECTOR3(0.0f, 1200.0f, 1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
 };
-
-float g_fOldWaterSurfHeightEsa;	// 前の海面の高さ
 
 //========================================================================
 // エサの初期化処理
@@ -79,8 +86,7 @@ void InitEsa(void)
 		g_aEsa[nCntEsa].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 角度を初期化
 		g_aEsa[nCntEsa].fMoveAngle = 0.0f;						// 移動角度を初期化
 		g_aEsa[nCntEsa].esaType = ESA_ACTTYPE_LAND;				// エサの挙動をLANDに設定
-		g_aEsa[nCntEsa].fNumBehavior = 0.0f;					// 挙動の値を初期化
-		g_aEsa[nCntEsa].bHave = false;							// 所持されてない状態に設定
+		g_aEsa[nCntEsa].nNumBehavior = 0;						// 挙動の値を初期化
 		g_aEsa[nCntEsa].bDisp = false;							// 表示していない状態に設定
 		g_aEsa[nCntEsa].bUse = false;							// 使用していない状態に設定
 	}
@@ -88,8 +94,6 @@ void InitEsa(void)
 	memset(g_aIdxEsaModel,-1,sizeof g_aIdxEsaModel);	// モデルのインデックスを初期化
 
 	g_nNumEsatype = 0;									// エサの種類の総数を初期化
-
-	g_fOldWaterSurfHeightEsa = CYLINDER_HEIGHT;			// 前の海面の高さを初期化
 
 	// モデル読み込み
 	for (int nCntEsaModel = 0; nCntEsaModel < ESA_CALC_SIZEARRAY(g_aEsaModelInfo); nCntEsaModel++)
@@ -106,7 +110,9 @@ void InitEsa(void)
 	{// 配置する数だけ繰り返す
 
 		// エサの設定処理
-		SetEsa(g_aEsaInfo[nCntEsa].nidxType, g_aEsaInfo[nCntEsa].esaType, g_aEsaInfo[nCntEsa].pos, g_aEsaInfo[nCntEsa].rot);
+		SetEsa(g_aEsaInfo[nCntEsa].nidxType,
+			   g_aEsaInfo[nCntEsa].esaType, g_aEsaInfo[nCntEsa].nBehavior,
+			   g_aEsaInfo[nCntEsa].pos, g_aEsaInfo[nCntEsa].rot);
 	}
 
 #else	// ランダム設定
@@ -125,7 +131,7 @@ void InitEsa(void)
 										 cosf(fRandAngle) * fRandRadius);
 
 		// エサの設定処理
-		SetEsa(nSetType, ESA_ACTTYPE_SWIM, setPos, D3DXVECTOR3(0.0f,0.0f,0.0f));
+		SetEsa(nSetType, ESA_ACTTYPE_SWIM, 0, setPos, D3DXVECTOR3(0.0f,0.0f,0.0f));
 	}
 
 #endif
@@ -186,19 +192,27 @@ void UpdateEsa(void)
 			// エサの挙動処理
 			BehaviorEsa(&g_aEsa[nCntEsa]);
 
+
 			// エサの移動処理
 			MoveEsa(&g_aEsa[nCntEsa]);
 
+			MoveOceanCurrents(&g_aEsa[nCntEsa].pos);
+
+			// 海面を超えないよう修正
+			if (g_aEsa[nCntEsa].pos.y > *pWaterSurfHeight - g_aEsaModel[g_aEsa[nCntEsa].nIdxModel].fHitRadius)
+			{// 
+
+				g_aEsa[nCntEsa].pos.y = *pWaterSurfHeight - g_aEsaModel[g_aEsa[nCntEsa].nIdxModel].fHitRadius;
+			}
 
 			SetEffect3D(70, g_aEsa[nCntEsa].pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0.0f, 30.0f, -0.1f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f),EFFECTTYPE_NORMAL);
 
-			//PrintDebugProc("ESA[%d]_ANGLE %f\n", nCntEsa, g_aEsa[nCntEsa].fMoveAngle);
-			//PrintDebugProc("ESA[%d]_LENGTH %f\n", nCntEsa, g_aEsa[nCntEsa].fNumBehavior);
+#if 0
+			PrintDebugProc("\nESA[%d]_POS %s", nCntEsa, (g_aEsa[nCntEsa].bUse == true ? "true":"false"));
+			PrintDebugProc("\nESA[%d]_POS %f %f %f", nCntEsa, g_aEsa[nCntEsa].pos.x, g_aEsa[nCntEsa].pos.y, g_aEsa[nCntEsa].pos.z);
+#endif
 		}
 	}
-
-	// 海面の位置を更新
-	g_fOldWaterSurfHeightEsa = *pWaterSurfHeight;
 }
 
 //========================================================================
@@ -268,7 +282,7 @@ void DrawEsa(void)
 //========================================================================
 // エサの設定処理
 //========================================================================
-int SetEsa(int nEsaType, ESA_ACTTYPE esaType, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
+int SetEsa(int nEsaType, ESA_ACTTYPE esaType, int nBehavior, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 {
 	// 設定したいモデルがない場合
 	if (g_aIdxEsaModel[nEsaType] == -1) return -1;	// 処理を抜ける
@@ -283,7 +297,7 @@ int SetEsa(int nEsaType, ESA_ACTTYPE esaType, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 			g_aEsa[nCntEsa].rot = rot;								// 角度を設定
 			g_aEsa[nCntEsa].fMoveAngle = 0.0f;						// 移動角度を初期化
 			g_aEsa[nCntEsa].esaType = esaType;						// エサの挙動を設定
-			g_aEsa[nCntEsa].fNumBehavior = 0.0f;					// 挙動の値を初期化
+			g_aEsa[nCntEsa].nNumBehavior = 0;						// 挙動の値を初期化
 			g_aEsa[nCntEsa].bDisp = true;							// 表示している状態に設定
 			g_aEsa[nCntEsa].bUse = true;							// 使用している状態に設定
 
@@ -361,27 +375,69 @@ int SetModelEsa(EsaModel_info infoEsaModel, EsaModel* pEsaModel, int nMaxSizeNum
 }
 
 //========================================================================
+// エサの状態切り替え処理
+//========================================================================
+void ChangeEsaState(int nIdxEsa, ESA_ACTTYPE changeState, int nValue)
+{
+	if (g_aEsa[nIdxEsa].bUse == true)
+	{// 使用されている場合
+
+		g_aEsa[nIdxEsa].esaType = changeState;	// 挙動の状態を設定
+		g_aEsa[nIdxEsa].nNumBehavior = nValue;	// 挙動の値を設定
+	}
+}
+
+//========================================================================
 // エサの挙動の処理
 //========================================================================
 void BehaviorEsa(Esa* pEsa)
 {
+	// 変数宣言 ===========================================
+
+	float fChangeBehavior = ESA_CHANGE_FLOAT(pEsa->nNumBehavior);	// 挙動の値(float)
+
+	// ====================================================
+
 	switch (pEsa->esaType)
 	{
-	case ESA_ACTTYPE_LAND:	// 着地状態
+	case ESA_ACTTYPE_NONE:			// 何もしない
 
-		pEsa->fNumBehavior = ESA_CALC_REVROT(pEsa->fNumBehavior + ESA_LANDING_MOVESPEED);	// 挙動の値(回転角度)を加算
-
-		// エサの角度を更新
-		pEsa->rot.z = sinf(pEsa->fNumBehavior) * ESA_LANDING_MOVEVALUE;
 
 		break;
 
-	case ESA_ACTTYPE_SWIM:	// 浮遊状態
+	case ESA_ACTTYPE_LAND:			// 着地状態
 
-		pEsa->fNumBehavior = ESA_CALC_REVROT(pEsa->fNumBehavior + ESA_BUOYANCY_MOVESPEED);	// 挙動の値(移動角度)を加算
+		fChangeBehavior = ESA_CALC_REVROT(fChangeBehavior + ESA_LANDING_MOVESPEED);		// 挙動の値(回転角度)を加算
+
+		// エサの角度を更新
+		pEsa->rot.z = sinf(fChangeBehavior) * ESA_LANDING_MOVEVALUE;
+
+		// 挙動の値をIntの値に変換
+		pEsa->nNumBehavior = ESA_CHANGE_INT(fChangeBehavior);
+
+		break;
+
+	case ESA_ACTTYPE_SWIM:			// 浮遊状態
+
+		fChangeBehavior = ESA_CALC_REVROT(fChangeBehavior + ESA_BUOYANCY_MOVESPEED);	// 挙動の値(移動角度)を加算
 
 		// エサの位置を更新
-		pEsa->pos.y += sinf(pEsa->fNumBehavior) * ESA_BUOYANCY_MOVEVALUE;
+		pEsa->pos.y += sinf(fChangeBehavior) * ESA_BUOYANCY_MOVEVALUE;
+
+		// 挙動の値をIntの値に変換
+		pEsa->nNumBehavior = ESA_CHANGE_INT(fChangeBehavior);
+
+		break;
+
+	case ESA_ACTTYPE_GOTO_PLAYER:	// プレイヤーに向かう
+
+		// 当たり判定より大きい判定でプレイヤーがその中に入ったら
+
+		break;
+
+	case ESA_ACTTYPE_GOTO_POT:		// ポットに向かう
+
+
 
 		break;
 	}
@@ -394,48 +450,81 @@ void MoveEsa(Esa* pEsa)
 {
 	// 変数宣言 ===========================================
 
-	float fDistRadius;	// 中心からの距離(半径)
-	float fNomRadius;	// 正規化した距離(半径)
-	float fNowAngle;	// 現在の角度
+	float fWidth,fHeight, fDipth;	// 幅, 高さ, 奥行きがどれぐらいの幅なのか
+	float fDistRadius;				// 中心からの距離(半径)
+	float fNomRadius;				// 正規化した距離(半径)
+	float fToTagetAngle = 0.0f;		// 対象との角度
 
-	float *pWaterSurf = GetWaterSurf_Height();
+	float *pWaterSurf = GetWaterSurf_Height();	// 海面の高さの情報
+
+	Player* pPlayer = GetPlayer();				// プレイヤーの情報
+
+	D3DXVECTOR3 tmpPos = pEsa->pos;				// エサの更新前の位置
 
 	// ====================================================
 
-	if (pEsa->esaType == ESA_ACTTYPE_SWIM)
-	{// 浮いている場合
-
+	switch (pEsa->esaType)
+	{
+	case ESA_ACTTYPE_SWIM:			// 浮いている場合
+#if 1
 		fDistRadius = sqrtf(pEsa->pos.x * pEsa->pos.x + pEsa->pos.z * pEsa->pos.z);	// 中心からの距離を求める
 		fNomRadius = fDistRadius / OUTCYLINDER_RADIUS;								// MAXとの正規化した値を求める
-		fNowAngle = (float)atan2(pEsa->pos.x, pEsa->pos.z);							// 中心からの角度を求める
+		fToTagetAngle = (float)atan2(pEsa->pos.x, pEsa->pos.z);						// 中心からの角度を求める
 
 		// 角度を更新
 		if (pEsa->nIdxModel == -1)
 		{
-			fNowAngle += ESA_SWIM_SPEED / fNomRadius;									// 移動量(角度)を正規化した距離の長さにする
+			fToTagetAngle += ESA_SWIM_SPEED / fNomRadius;									// 移動量(角度)を正規化した距離の長さにする
 		}
 		else
 		{
-			fNowAngle += g_aEsaModel[pEsa->nIdxModel].fSpeed / fNomRadius;				// 移動量(角度)を正規化した距離の長さにする
+			fToTagetAngle += g_aEsaModel[pEsa->nIdxModel].fSpeed / fNomRadius;				// 移動量(角度)を正規化した距離の長さにする
 		}
+		
+		// 位置を更新
+		pEsa->pos.x = sinf(ESA_CALC_REVROT(fToTagetAngle)) * fDistRadius;
+		pEsa->pos.z = cosf(ESA_CALC_REVROT(fToTagetAngle)) * fDistRadius;
+#endif
+		break;
 
-		// 位置を設定
-		pEsa->pos.x = sinf(ESA_CALC_REVROT(fNowAngle)) * fDistRadius;
-		pEsa->pos.z = cosf(ESA_CALC_REVROT(fNowAngle)) * fDistRadius;
+	case ESA_ACTTYPE_GOTO_PLAYER:	// プレイヤーに向かう
 
-		float fD = (g_fOldWaterSurfHeightEsa - *pWaterSurf) + 80.0f;
+		// 距離を求める
+		fWidth  = pPlayer[pEsa->nNumBehavior].pos.x - pEsa->pos.x;	// 幅の値を求める
+		fHeight = pPlayer[pEsa->nNumBehavior].pos.y - pEsa->pos.y;	// 高さの値を求める
+		fDipth  = pPlayer[pEsa->nNumBehavior].pos.z - pEsa->pos.z;	// 奥行きの値を求める
+		//fDistRadius = sqrtf(fWidth * fWidth + fDipth * fDipth);		// プレイヤーとの離れ具合を求める
 
-		// 海面を超えないよう調整
-		if (pEsa->pos.y >= *pWaterSurf - fD)
-		{// 更新後の海面+aよりエサが高い位置にいる場合
+		// 角度を求める
+		fToTagetAngle = atan2f(fWidth * fWidth, fDipth * fDipth);	// プレイヤーとの角度を求める
 
-			pEsa->pos.y -= (g_fOldWaterSurfHeightEsa - *pWaterSurf) + 30.0f;
-		}
-		else if (pEsa->pos.y >= *pWaterSurf)
-		{
-			pEsa->pos.y = *pWaterSurf - 60.0f;
-		}
+		// 位置を更新
+		//pEsa->pos.x += sinf(ESA_CALC_REVROT(fToTagetAngle)) * 0.9f;
+		//pEsa->pos.z += cosf(ESA_CALC_REVROT(fToTagetAngle)) * 0.9f;
+		pEsa->pos.x += fWidth * ESA_HOMING_SPEED;
+		pEsa->pos.y += fHeight * ESA_HOMING_SPEED;
+		pEsa->pos.z += fDipth * ESA_HOMING_SPEED;
+
+		PrintDebugProc("\nESA_ROT %f", fToTagetAngle);
+
+		break;
+
+	case ESA_ACTTYPE_GOTO_POT:		// ポットに向かう
+
+		// ポットの位置にホーミング
+		pEsa->pos.x += pPlayer[pEsa->nNumBehavior].pos.x - pEsa->pos.x * ESA_HOMING_SPEED;
+		pEsa->pos.y += pPlayer[pEsa->nNumBehavior].pos.y - pEsa->pos.y * ESA_HOMING_SPEED;
+		pEsa->pos.z += pPlayer[pEsa->nNumBehavior].pos.z - pEsa->pos.z * ESA_HOMING_SPEED;
+
+		break;
 	}
+
+	fWidth = tmpPos.x - pEsa->pos.x;
+	fDipth = tmpPos.z - pEsa->pos.z;
+
+	fToTagetAngle = atan2f(fWidth, fDipth);
+
+	pEsa->rot.y = fToTagetAngle;
 }
 
 //========================================================================
