@@ -39,9 +39,6 @@ void InitTitle(void)
 	g_TitleDeley = 0.0f;	// ディレイの値を初期化
 	g_PressEnterDeley = 0;
 
-	// 配置物の初期化処理
-	InitObject("objpos.txt");
-
 	// メッシュシリンダーの初期化処理
 	InitMeshCylinder();
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 2.0f), D3DXVECTOR2(INCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, MESHCYLINDERTYPE_ROCK);
@@ -71,6 +68,9 @@ void InitTitle(void)
 	SetCameraPos(0, D3DXVECTOR3(0.0f, ((float)nCamera * 100.0f) + 600.0f, 0.0f), 
 		D3DXVECTOR3(0.0f, (((float)nCamera * 100.0f) + 600.0f) + (((float)nVecR * 50.0f) - 100.0f), 0.0f),
 		CAMERATYPE_POINT);
+
+	// 配置物の初期化処理
+	InitObject("data\\objpos001.txt");
 
 	// デバイスの取得
 	pDevice = GetDevice();

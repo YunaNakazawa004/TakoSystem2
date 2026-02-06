@@ -187,7 +187,7 @@ void UpdatePot(void)
 	{
 		if (g_aPot[nCntPot].bUse == true)
 		{
-			PrintDebugProc("[ %d ]\n入ってるエサの数 %d\n", nCntPot, g_aPot[nCntPot].nFood);
+			//PrintDebugProc("[ %d ]\n入ってるエサの数 %d\n", nCntPot, g_aPot[nCntPot].nFood);
 		}
 	}
 }
