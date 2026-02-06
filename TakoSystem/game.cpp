@@ -76,9 +76,6 @@ void InitGame(void)
 	// ステージの初期化処理
 	//InitStage();
 
-	// 配置物の初期化処理
-	InitObject("objpos.txt");
-
 	// メッシュシリンダーの初期化処理
 	InitMeshCylinder();
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 2.0f), D3DXVECTOR2(INCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, MESHCYLINDERTYPE_ROCK);
@@ -110,6 +107,9 @@ void InitGame(void)
 
 	// 水面の初期化処理
 	InitWaterSurf();
+
+	// 配置物の初期化処理
+	InitObject("data\\objpos001.txt");
 
 	// クロスヘアの初期化処理
 	InitCrossHair();
@@ -315,14 +315,6 @@ void UpdateGame(void)
 //===================================================================
 void DrawGame(void)
 {
-	// フォグの設定
-	Player* pPlayer = GetPlayer();
-
-	for (int nCntCamera = 0; nCntCamera < GetNumCamera(); nCntCamera++)
-	{
-		SetFog(D3DXCOLOR(0.0f, 0.1f, 0.2f, 1.0f), 1000.0f, pPlayer[nCntCamera].fFog, true);
-	}
-
 	// プレイヤーの描画処理
 	DrawPlayer();
 

@@ -5,10 +5,10 @@
 // 
 //=============================================================================
 #include "computer.h"
-#include "player.h"
 #include "esa.h"
 #include "pot.h"
 #include "time.h"
+#include "object.h"
 #include "meshcylinder.h"
 #include "meshring.h"
 #include "effect_3d.h"
@@ -71,6 +71,7 @@
 #define INK_ENEMY_COUNT_SCORE	(5.0f)									// ìGÇ™ï°êîÇ¢ÇÈÇ∆Ç´ÇÃÉXÉRÉA
 #define INK_ESA_COUNT			(0.2f)									// é©ï™ÇÃÉGÉTÇ™ëΩÇ¢
 #define INK_PILLAR_SCORE		(3.0f)									// íåÇ™ãﬂÇ¢ÉXÉRÉA
+#define INK_BLIND_DIST			(500.0f)								// ñnÇ…Ç©Ç©ÇÈãóó£
 
 #define POT_DISTANCE			(1000.0f)								// É^ÉRÇ¬Ç⁄Ç™âìÇ∑Ç¨ÇÈ
 #define POT_ESA_SCORE			(0.4f)									// é©ï™ÇÃÉGÉTÇ™ëΩÇ¢
@@ -97,7 +98,7 @@
 #define CAMERA_HEIGHT			(100.0f)								// âºëzÉJÉÅÉâÇÃçÇÇ≥
 #define RIPPLE_COUNT			(20)									// êÖñ Ç…îgñ‰Ç™èoÇÈä‘äu
 #define CPU_THINK				(5)										// évçlä‘äu
-#define CPU_WIDTH				(50.0f)									// ïù
+#define CPU_WIDTH				(25.0f)									// ïù
 #define CPU_HEIGHT				(100.0f)								// çÇÇ≥
 #define TENTACLE_RADIUS			(100.0f)								// êGéËÇÃìñÇΩÇËîªíË
 #define CPU_FILE				"data\\motion_octo_1.txt"				// CPUÇÃÉfÅ[É^ÉtÉ@ÉCÉã
@@ -164,6 +165,9 @@ void InitComputer(void)
 		pComputer->nBlindCounter = 0;
 
 		pComputer->nFoodCount = 0;
+		pComputer->esaQueue.nTail = -1;
+		memset(&pComputer->esaQueue.nData, -1, sizeof(int));
+		pComputer->Potstate = POTSTATE_NONE;
 		pComputer->nMaxFood = 1;
 
 		pComputer->nCurrentNode = 0;
@@ -354,6 +358,16 @@ void UpdateComputer(void)
 				pComputer->nInkCooldown--;
 			}
 
+			if (pComputer->nBlindCounter > 0)
+			{//	éãäEà´âªÇÃÉJÉEÉìÉg
+				pComputer->nBlindCounter--;
+			}
+			else if (pComputer->nBlindCounter == 0)
+			{// éãäEà´âªÇ™âÒïú
+				pComputer->bBlinded = false;
+				pComputer->nBlindCounter = 0;
+			}
+
 			if (pComputer->nTentacleCooldown > 0)
 			{// êGéËÉNÅ[ÉãÉ_ÉEÉì
 				pComputer->nTentacleCooldown--;
@@ -462,9 +476,18 @@ void UpdateComputer(void)
 					{// êGéËÇ™êLÇŒÇµèIÇÌÇ¡ÇΩÇÁ
 						D3DXVECTOR3 tentaclePos = D3DXVECTOR3(pComputer->aModel[4].mtxWorld._41, pComputer->aModel[4].mtxWorld._42, pComputer->aModel[4].mtxWorld._43);
 
-						if (CollisionMeshCylinder(&tentaclePos, &pComputer->phys.pos, &pComputer->phys.move,
+						if (CollisionPotArea(tentaclePos, TENTACLE_RADIUS * 0.5f, NULL, pComputer, true) == true ||
+							CollisionOcto(nCntComputer, true, pComputer->phys.pos) == true)
+						{// É^ÉRÇ¬Ç⁄Ç©ÇÁÉGÉTÇÇ∆ÇÈ
+							pComputer->TentState = CPUTENTACLESTATE_TENTACLESHORT;
+
+							SetMotionComputer(nCntComputer, MOTIONTYPE_TENTACLESHORT, true, 20);
+						}
+						else if (CollisionMeshCylinder(&tentaclePos, &pComputer->phys.pos, &pComputer->phys.move,
 							TENTACLE_RADIUS, TENTACLE_RADIUS, true) == true ||
-							tentaclePos.y < 0.0f)
+							tentaclePos.y < 0.0f ||
+							CollisionObject(&tentaclePos, &pComputer->phys.pos, &pComputer->phys.move,
+								TENTACLE_RADIUS, TENTACLE_RADIUS) == true)
 						{// ï«Ç∆ÇÃìñÇΩÇËîªíË
 							pComputer->TentState = CPUTENTACLESTATE_TENTACLESHORT;
 							SetMotionComputer(nCntComputer, MOTIONTYPE_DASH, true, 20);
@@ -620,7 +643,7 @@ void UpdateComputer(void)
 				CorrectAngle(&pComputer->phys.rot.x, pComputer->phys.rot.x);
 			}
 
-			if (GetTime() % (ONE_SECOND * 10) == 0 && GetTime() != ONE_GAME)
+			if (nCounter % (ONE_SECOND * 10) == 0 && GetTime() != ONE_GAME)
 			{// éùÇƒÇÈÉGÉTÇÃç≈ëÂílÇ™ëùÇ¶ÇÈ
 				pComputer->nMaxFood++;
 			}
@@ -647,6 +670,9 @@ void UpdateComputer(void)
 			CollisionMeshCylinder(&posAway, &pComputer->phys.pos, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, true);
 
 			// ìñÇΩÇËîªíË
+			CollisionObject(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius);
+			CollisionPot(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius);
+			CollisionPotArea(pComputer->phys.pos, pComputer->phys.fRadius, NULL, pComputer, false);
 			CollisionMeshCylinder(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, false);
 
 			nCounter++;
@@ -781,6 +807,7 @@ void MoveToFood(Computer* pComputer)
 		pEsa[nIdx].bUse = false;
 
 		pComputer->nFoodCount++;
+		Enqueue(&pComputer->esaQueue, nIdx);
 	}
 }
 
@@ -849,6 +876,9 @@ void InkAttack(Computer* pComputer)
 	SetParticle3D(14, 30, pComputer->phys.pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pComputer->phys.rot.x, pComputer->phys.rot.y - D3DX_PI, pComputer->phys.rot.z), 4.0f, 200, 8.0f, 0.06f, EFFECTTYPE_OCTOINK);
 	SetParticle3D(14, 30, pComputer->phys.pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pComputer->phys.rot.x, pComputer->phys.rot.y - D3DX_PI, pComputer->phys.rot.z), 4.0f, 200, 8.0f, 0.06f, EFFECTTYPE_OCTOINK);
 	SetParticle3D(14, 30, pComputer->phys.pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pComputer->phys.rot.x, pComputer->phys.rot.y - D3DX_PI, pComputer->phys.rot.z), 4.0f, 200, 8.0f, 0.06f, EFFECTTYPE_OCTOINK);
+
+	// ñnÇÃìñÇΩÇËîªíË
+	CollisionInk(pComputer->nIdx, true, pComputer->phys.pos);
 
 	// ñnìfÇ´ÉÇÅ[ÉVÉáÉì
 	SetMotionComputer(pComputer->nIdx, MOTIONTYPE_INK, true, 20);
@@ -951,13 +981,6 @@ void HideFood(Computer* pComputer)
 	Pot* pPot = GetPot();
 	pPot = &pPot[pComputer->nTargetPotIdx];
 
-	// é©ï™ÇÃÉGÉTÇÉ^ÉRÇ¬Ç⁄Ç…à⁄Ç∑
-	if (pComputer->nFoodCount > 0)
-	{
-		pPot->nFood += pComputer->nFoodCount;
-		pComputer->nFoodCount = 0;
-	}
-
 	// âBÇµèIÇÌÇ¡ÇΩÇÁíTçıÇ÷ñﬂÇÈ
 	pComputer->state = CPUSTATE_EXPLORE;
 }
@@ -979,17 +1002,14 @@ void StealFood(Computer* pComputer)
 	D3DXVECTOR3 posDiff = pPot->pos - pComputer->phys.pos;
 	float dist = D3DXVec3Length(&posDiff);
 
-	if (dist < TENTACLE_REACH)
-	{
-		pComputer->nFoodCount += pPot->nFood;
-		pPot->nFood = 0;
+	if (dist < TENTACLE_RADIUS * 0.5f)
+	{// êGéËÇÃîÕàÕì‡
+		pComputer->targetWall = pPot->pos;
+		UseTentacle(pComputer);
 
-		if (pPot->nFood <= 0)
-		{// ëSïîíDÇ¡ÇΩÇÁíTçıÇ÷
-			pComputer->state = CPUSTATE_EXPLORE;
+		pComputer->state = CPUSTATE_EXPLORE;
 
-			return;
-		}
+		return;
 	}
 
 	// Ç‹Çæãóó£Ç™âìÇ¢Ç»ÇÁãﬂÇ√Ç≠
@@ -1037,9 +1057,8 @@ void FinalCollect(Computer* pComputer)
 		Pot* pPot = GetPot();
 		pPot = &pPot[pComputer->nTargetPotIdx];
 
-		// ëSïîâÒé˚
-		pComputer->nFoodCount += pPot->nFood;
-		pPot->nFood = 0;
+		pComputer->targetWall = pPot[pComputer->nTargetPotIdx].pos;
+		UseTentacle(pComputer);
 
 		// âÒé˚å„ÇÕéüÇÃÉ^ÉRÇ¬Ç⁄Ç÷
 		pComputer->state = CPUSTATE_EXPLORE;
@@ -1129,7 +1148,7 @@ D3DXVECTOR3 GetNearestEnemy(Computer* pComputer)
 
 		float dist = D3DXVec3Length(&toEnemy);
 
-		if (dist > ESCAPE_ENEMY_DIST)
+		if (dist > ((pComputer->bBlinded) ? ESCAPE_ENEMY_DIST * 0.5f : ESCAPE_ENEMY_DIST))
 		{// âìÇ∑Ç¨ÇÈìGÇÕñ≥éã
 			continue;
 		}
@@ -1149,7 +1168,7 @@ D3DXVECTOR3 GetNearestEnemy(Computer* pComputer)
 
 		float dist = D3DXVec3Length(&toPlayer);
 
-		if (dist > ESCAPE_ENEMY_DIST)
+		if (dist > ((pComputer->bBlinded) ? ESCAPE_ENEMY_DIST * 0.5f : ESCAPE_ENEMY_DIST))
 		{// âìÇ∑Ç¨ÇÈìGÇÕñ≥éã
 			continue;
 		}
@@ -1213,7 +1232,7 @@ void CalcFoodScore(Computer* pComputer)
 
 			float dist = D3DXVec3Length(&toFood);
 
-			if (dist > FAR_DISTANCE)
+			if (dist > ((pComputer->bBlinded) ? FAR_DISTANCE * 0.5f : FAR_DISTANCE))
 			{// âìÇ∑Ç¨ÇÈÉGÉTÇÕñ≥éã
 				continue;
 			}
@@ -1221,7 +1240,7 @@ void CalcFoodScore(Computer* pComputer)
 			float score = 0.0f;
 
 			// ãóó£Ç™ãﬂÇ¢ÇŸÇ«çÇÉXÉRÉA
-			score += (FAR_DISTANCE - dist) * DISTANCE_SCORE;
+			score += (((pComputer->bBlinded) ? FAR_DISTANCE * 0.5f : FAR_DISTANCE) - dist) * DISTANCE_SCORE;
 
 			// êiçsï˚å¸Ç…Ç†ÇÈÇ©Åidir Ç∆ toFood ÇÃì‡êœÅj
 			D3DXVECTOR3 dirNorm, toFoodNorm;
@@ -1235,7 +1254,7 @@ void CalcFoodScore(Computer* pComputer)
 				score += ESA_DOT_SCORE;
 			}
 
-			if (IsEnemyNear(pComputer->nIdx, foodPos, ESA_ENEMY_DISTANCE) == false)
+			if (IsEnemyNear(pComputer->nIdx, foodPos, (pComputer->bBlinded) ? ESA_ENEMY_DISTANCE * 0.5f : ESA_ENEMY_DISTANCE) == false)
 			{// ìGÇ™ãﬂÇ≠Ç…Ç¢Ç»Ç¢Ç©
 				score += ESA_ENEMY_DIST_SCORE;
 			}
@@ -1294,7 +1313,7 @@ void CalcAttackScore(Computer* pComputer)
 		float dist = D3DXVec3Length(&toEnemy);
 		D3DXVec3Normalize(&pComputer->phys.dir, &toEnemy);
 
-		if (dist > FAR_DISTANCE)
+		if (dist > ((pComputer->bBlinded) ? FAR_DISTANCE * 0.5f : FAR_DISTANCE))
 		{// âìÇ∑Ç¨ÇÈìGÇÕñ≥éã
 			continue;
 		}
@@ -1302,7 +1321,7 @@ void CalcAttackScore(Computer* pComputer)
 		float score = 0.0f;
 
 		// ãóó£Ç™ãﬂÇ¢ÇŸÇ«çÇÉXÉRÉA
-		score += (FAR_DISTANCE - dist) * DISTANCE_SCORE;
+		score += (((pComputer->bBlinded) ? FAR_DISTANCE * 0.5f : FAR_DISTANCE) - dist) * DISTANCE_SCORE;
 
 		// ìGÇ™ÉGÉTÇëΩÇ≠éùÇ¡ÇƒÇ¢ÇÈ
 		score += pEnemy->nFoodCount * 0.5f;
@@ -1347,7 +1366,7 @@ void CalcAttackScore(Computer* pComputer)
 			score += ENEMY_TENTACLE_SCORE;
 		}
 
-		if (CountEnemiesNear(pComputer->nIdx, pComputer->phys.pos, ENEMY_COUNT_DIST) >= 2)
+		if (CountEnemiesNear(pComputer->nIdx, pComputer->phys.pos, (pComputer->bBlinded) ? ENEMY_COUNT_DIST * 0.5f : ENEMY_COUNT_DIST) >= 2)
 		{// ìGÇ™ï°êîãﬂÇ≠Ç…Ç¢ÇÈÇ»ÇÁäÎåØ
 			score -= ENEMY_COUNT_SCORE;
 		}
@@ -1367,7 +1386,7 @@ void CalcAttackScore(Computer* pComputer)
 		float dist = D3DXVec3Length(&toPlayer);
 		D3DXVec3Normalize(&pComputer->phys.dir, &toPlayer);
 
-		if (dist > FAR_DISTANCE)
+		if (dist > ((pComputer->bBlinded) ? FAR_DISTANCE * 0.5f : FAR_DISTANCE))
 		{// âìÇ∑Ç¨ÇÈìGÇÕñ≥éã
 			continue;
 		}
@@ -1375,7 +1394,7 @@ void CalcAttackScore(Computer* pComputer)
 		float score = 0.0f;
 
 		// ãóó£Ç™ãﬂÇ¢ÇŸÇ«çÇÉXÉRÉA
-		score += (FAR_DISTANCE - dist) * DISTANCE_SCORE;
+		score += (((pComputer->bBlinded) ? FAR_DISTANCE * 0.5f : FAR_DISTANCE) - dist) * DISTANCE_SCORE;
 
 		// ìGÇ™ÉGÉTÇëΩÇ≠éùÇ¡ÇƒÇ¢ÇÈ
 		score += pPlayer->nFood * 0.5f;
@@ -1420,7 +1439,7 @@ void CalcAttackScore(Computer* pComputer)
 			score += ENEMY_TENTACLE_SCORE;
 		}
 
-		if (CountEnemiesNear(pComputer->nIdx, pComputer->phys.pos, ENEMY_COUNT_DIST) >= 2)
+		if (CountEnemiesNear(pComputer->nIdx, pComputer->phys.pos, (pComputer->bBlinded) ? ENEMY_COUNT_DIST * 0.5f : ENEMY_COUNT_DIST) >= 2)
 		{// ìGÇ™ï°êîãﬂÇ≠Ç…Ç¢ÇÈÇ»ÇÁäÎåØ
 			score -= ENEMY_COUNT_SCORE;
 		}
@@ -1463,7 +1482,7 @@ void CalcEscapeScore(Computer* pComputer)
 
 		float dist = D3DXVec3Length(&toEnemy);
 
-		if (dist > ESCAPE_ENEMY_DIST)
+		if (dist > ((pComputer->bBlinded) ? ESCAPE_ENEMY_DIST * 0.5f : ESCAPE_ENEMY_DIST))
 		{// âìÇ∑Ç¨ÇÈìGÇÕñ≥éã
 			continue;
 		}
@@ -1471,7 +1490,7 @@ void CalcEscapeScore(Computer* pComputer)
 		float score = 0.0f;
 
 		// ìGÇ™ãﬂÇ¢ÇŸÇ«ì¶Ç∞ÇÈÇ◊Ç´
-		score += (ESCAPE_ENEMY_DIST - dist) * DISTANCE_SCORE;
+		score += (((pComputer->bBlinded) ? ESCAPE_ENEMY_DIST * 0.5f : ESCAPE_ENEMY_DIST) - dist) * DISTANCE_SCORE;
 
 		// ìGÇ™å„ï˚Ç…Ç¢ÇÈÅiì‡êœÇ™ïâÅj
 		D3DXVECTOR3 dirNorm, toEnemyNorm;
@@ -1493,7 +1512,7 @@ void CalcEscapeScore(Computer* pComputer)
 			score += ESCAPE_ENEMY_MOVE;
 		}
 
-		if (CountEnemiesNear(pComputer->nIdx, pComputer->phys.pos, ENEMY_COUNT_DIST) >= 2)
+		if (CountEnemiesNear(pComputer->nIdx, pComputer->phys.pos, (pComputer->bBlinded) ? ENEMY_COUNT_DIST * 0.5f : ENEMY_COUNT_DIST) >= 2)
 		{// ìGÇ™ï°êîãﬂÇ≠Ç…Ç¢ÇÈ
 			score += ESCAPE_ENEMY_SCORE;
 		}
@@ -1530,7 +1549,7 @@ void CalcEscapeScore(Computer* pComputer)
 
 		float dist = D3DXVec3Length(&toPlayer);
 
-		if (dist > ESCAPE_ENEMY_DIST)
+		if (dist > ((pComputer->bBlinded) ? ESCAPE_ENEMY_DIST * 0.5f : ESCAPE_ENEMY_DIST))
 		{// âìÇ∑Ç¨ÇÈìGÇÕñ≥éã
 			continue;
 		}
@@ -1538,7 +1557,7 @@ void CalcEscapeScore(Computer* pComputer)
 		float score = 0.0f;
 
 		// ìGÇ™ãﬂÇ¢ÇŸÇ«ì¶Ç∞ÇÈÇ◊Ç´
-		score += (ESCAPE_ENEMY_DIST - dist) * DISTANCE_SCORE;
+		score += (((pComputer->bBlinded) ? ESCAPE_ENEMY_DIST * 0.5f : ESCAPE_ENEMY_DIST) - dist) * DISTANCE_SCORE;
 
 		// ìGÇ™å„ï˚Ç…Ç¢ÇÈÅiì‡êœÇ™ïâÅj
 		D3DXVECTOR3 dirNorm, toPlayerNorm;
@@ -1560,7 +1579,7 @@ void CalcEscapeScore(Computer* pComputer)
 			score += ESCAPE_ENEMY_MOVE;
 		}
 
-		if (CountEnemiesNear(pComputer->nIdx, pComputer->phys.pos, ENEMY_COUNT_DIST) >= 2)
+		if (CountEnemiesNear(pComputer->nIdx, pComputer->phys.pos, (pComputer->bBlinded) ? ENEMY_COUNT_DIST * 0.5f : ENEMY_COUNT_DIST) >= 2)
 		{// ìGÇ™ï°êîãﬂÇ≠Ç…Ç¢ÇÈ
 			score += ESCAPE_ENEMY_SCORE;
 		}
@@ -1626,7 +1645,7 @@ void CalcInkScore(Computer* pComputer)
 
 		float dist = D3DXVec3Length(&toEnemy);
 
-		if (dist > FAR_DISTANCE)
+		if (dist > ((pComputer->bBlinded) ? FAR_DISTANCE * 0.5f : FAR_DISTANCE))
 		{// âìÇ∑Ç¨ÇÈìGÇÕñ≥éã
 			continue;
 		}
@@ -1634,7 +1653,7 @@ void CalcInkScore(Computer* pComputer)
 		float score = 0.0f;
 
 		// ìGÇ™ãﬂÇ¢ÇŸÇ«ñnÇ™óLå¯
-		score += (FAR_DISTANCE - dist) * DISTANCE_SCORE;
+		score += (((pComputer->bBlinded) ? FAR_DISTANCE * 0.5f : FAR_DISTANCE) - dist) * DISTANCE_SCORE;
 
 		// ìGÇ™å„ï˚Ç…Ç¢ÇÈ
 		D3DXVECTOR3 dirNorm, toEnemyNorm;
@@ -1660,7 +1679,7 @@ void CalcInkScore(Computer* pComputer)
 		// ìGÇ™ÉGÉTÇëΩÇ≠éùÇ¡ÇƒÇ¢ÇÈ
 		score += pEnemy->nFoodCount * INK_ENEMY_ESA_COUNT;
 
-		if (CountEnemiesNear(pComputer->nIdx, pComputer->phys.pos, ENEMY_COUNT_DIST) >= 2)
+		if (CountEnemiesNear(pComputer->nIdx, pComputer->phys.pos, (pComputer->bBlinded) ? ENEMY_COUNT_DIST * 0.5f : ENEMY_COUNT_DIST) >= 2)
 		{// ìGÇ™ï°êîãﬂÇ≠Ç…Ç¢ÇÈ
 			score += INK_ENEMY_COUNT_SCORE;
 		}
@@ -1687,7 +1706,7 @@ void CalcInkScore(Computer* pComputer)
 
 		float dist = D3DXVec3Length(&toPlayer);
 
-		if (dist > FAR_DISTANCE)
+		if (dist > ((pComputer->bBlinded) ? FAR_DISTANCE * 0.5f : FAR_DISTANCE))
 		{// âìÇ∑Ç¨ÇÈìGÇÕñ≥éã
 			continue;
 		}
@@ -1695,7 +1714,7 @@ void CalcInkScore(Computer* pComputer)
 		float score = 0.0f;
 
 		// ìGÇ™ãﬂÇ¢ÇŸÇ«ñnÇ™óLå¯
-		score += (FAR_DISTANCE - dist) * DISTANCE_SCORE;
+		score += (((pComputer->bBlinded) ? FAR_DISTANCE * 0.5f : FAR_DISTANCE) - dist) * DISTANCE_SCORE;
 
 		// ìGÇ™å„ï˚Ç…Ç¢ÇÈ
 		D3DXVECTOR3 dirNorm, toPlayerNorm;
@@ -1721,7 +1740,7 @@ void CalcInkScore(Computer* pComputer)
 		// ìGÇ™ÉGÉTÇëΩÇ≠éùÇ¡ÇƒÇ¢ÇÈ
 		score += pPlayer->nFood * INK_ENEMY_ESA_COUNT;
 
-		if (CountEnemiesNear(pComputer->nIdx, pComputer->phys.pos, ENEMY_COUNT_DIST) >= 2)
+		if (CountEnemiesNear(pComputer->nIdx, pComputer->phys.pos, (pComputer->bBlinded) ? ENEMY_COUNT_DIST * 0.5f : ENEMY_COUNT_DIST) >= 2)
 		{// ìGÇ™ï°êîãﬂÇ≠Ç…Ç¢ÇÈ
 			score += INK_ENEMY_COUNT_SCORE;
 		}
@@ -1768,7 +1787,7 @@ void CalcPotScore(Computer* pComputer)
 
 		float dist = D3DXVec3Length(&toPot);
 
-		if (dist > POT_DISTANCE || dist < POT_CLOSE_DISTANCE * 0.1f ||
+		if (dist > ((pComputer->bBlinded) ? POT_DISTANCE * 0.5f : POT_DISTANCE) || dist < POT_CLOSE_DISTANCE * 0.1f ||
 			pPot->bUse == false || pComputer->nTargetPotIdx == nCntPot)
 		{// âìÇ¢/ãﬂÇ¢É^ÉRÇ¬Ç⁄ÇÕñ≥éã
 			continue;
@@ -1785,9 +1804,9 @@ void CalcPotScore(Computer* pComputer)
 		}
 
 		// É^ÉRÇ¬Ç⁄Ç™ãﬂÇ¢
-		score += (POT_DISTANCE - dist) * DISTANCE_SCORE;
+		score += (((pComputer->bBlinded) ? POT_DISTANCE * 0.5f : POT_DISTANCE) - dist) * DISTANCE_SCORE;
 
-		if (IsEnemyNear(pComputer->nIdx, pPot->pos, POT_ENEMY_DISTANCE) == true)
+		if (IsEnemyNear(pComputer->nIdx, pPot->pos, (pComputer->bBlinded) ? POT_ENEMY_DISTANCE * 0.5f : POT_ENEMY_DISTANCE) == true)
 		{// ìGÇ™ãﬂÇ≠Ç…Ç¢Ç»Ç¢
 			score += POT_ENEMY_DIST_SCORE;
 		}
@@ -2146,7 +2165,7 @@ void UseTentacle(Computer* pComputer)
 		return;
 	}
 
-	PrintDebugProc("\n					êGéËà⁄ìÆíÜ\n\n");
+	//PrintDebugProc("\n					êGéËà⁄ìÆíÜ\n\n");
 
 	// ï˚å¸ÉxÉNÉgÉãÇê≥ãKâª
 	D3DXVECTOR3 dir;
@@ -2294,6 +2313,8 @@ void SetComputer(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 			pComputer->nBlindCounter = 0;
 
 			pComputer->nFoodCount = 0;
+			memset(&pComputer->esaQueue.nData, -1, sizeof(int));
+			pComputer->Potstate = POTSTATE_NONE;
 			pComputer->nMaxFood = 1;
 
 			pComputer->nCurrentNode = 0;
@@ -2344,6 +2365,120 @@ void SetRandomComputer(int nAmount)
 Computer* GetComputer(void)
 {
 	return &g_aComputer[0];
+}
+
+//=============================================================================
+// ñnìfÇ´ÇÃìñÇΩÇËîªíË
+//=============================================================================
+void CollisionInk(int nIdx, bool bCPU, D3DXVECTOR3 pos)
+{
+	for (int nCntEnemy = 0; nCntEnemy < MAX_COMPUTER; nCntEnemy++)
+	{
+		Computer* pEnemy = &g_aComputer[nCntEnemy];
+
+		if (pEnemy->bUse == false)
+		{// égópÇµÇƒÇ¢Ç»Ç¢
+			continue;
+		}
+
+		if (pEnemy->nIdx == nIdx && bCPU == true)
+		{// é©ï™é©êgÇÕñ≥éã
+			continue;
+		}
+
+		D3DXVECTOR3 dist = pEnemy->phys.pos - pos;
+
+		if (D3DXVec3Length(&dist) < INK_BLIND_DIST)
+		{// ñnÇÃîÕàÕì‡
+			pEnemy->bBlinded = true;
+			pEnemy->nBlindCounter = ONE_SECOND * 3;
+		}
+	}
+
+	Player* pPlayer = GetPlayer();
+
+	for (int nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++, pPlayer++)
+	{
+		if (nCntPlayer == nIdx && bCPU == false)
+		{// é©ï™é©êgÇÕñ≥éã
+			continue;
+		}
+
+		D3DXVECTOR3 dist = pPlayer->pos - pos;
+
+		if (D3DXVec3Length(&dist) < INK_BLIND_DIST)
+		{// ñnÇÃîÕàÕì‡
+			pPlayer->bBlind = true;
+			pPlayer->nBlindCounter = ONE_SECOND * 3;
+		}
+	}
+}
+
+//=============================================================================
+// êGéËÇÃìñÇΩÇËîªíË
+//=============================================================================
+bool CollisionOcto(int nIdx, bool bCPU, D3DXVECTOR3 pos)
+{
+	bool bColl = false;
+
+	for (int nCntEnemy = 0; nCntEnemy < MAX_COMPUTER; nCntEnemy++)
+	{
+		Computer* pEnemy = &g_aComputer[nCntEnemy];
+
+		if (pEnemy->bUse == false)
+		{// égópÇµÇƒÇ¢Ç»Ç¢
+			continue;
+		}
+
+		if (pEnemy->nIdx == nIdx && bCPU == true)
+		{// é©ï™é©êgÇÕñ≥éã
+			continue;
+		}
+
+		D3DXVECTOR3 dist = pEnemy->phys.pos - pos;
+
+		if (D3DXVec3Length(&dist) < CPU_WIDTH + TENTACLE_RADIUS)
+		{// êGéËÇ∆ìñÇΩÇ¡ÇΩ
+			bColl = true;
+
+			int nEsaIdx = Dequeue(&pEnemy->esaQueue);
+			pEnemy->nFoodCount--;
+
+			pEnemy = GetComputer();
+			Enqueue(&pEnemy[nIdx].esaQueue, nEsaIdx);
+			pEnemy[nIdx].nFoodCount++;
+
+			return bColl;
+		}
+	}
+
+	Player* pPlayer = GetPlayer();
+
+	for (int nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++, pPlayer++)
+	{
+		if (nCntPlayer == nIdx && bCPU == false)
+		{// é©ï™é©êgÇÕñ≥éã
+			continue;
+		}
+
+		D3DXVECTOR3 dist = pPlayer->pos - pos;
+
+		if (D3DXVec3Length(&dist) < CPU_WIDTH + TENTACLE_RADIUS)
+		{// êGéËÇ∆ìñÇΩÇ¡ÇΩ
+			bColl = true;
+
+			int nEsaIdx = Dequeue(&pPlayer->esaQueue);
+			pPlayer->nFood--;
+
+			pPlayer = GetPlayer();
+			Enqueue(&pPlayer[nIdx].esaQueue, nEsaIdx);
+			pPlayer[nIdx].nFood++;
+
+			return bColl;
+		}
+	}
+
+	return bColl;
 }
 
 //=============================================================================

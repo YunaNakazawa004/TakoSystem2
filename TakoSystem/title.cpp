@@ -14,12 +14,13 @@
 #include "game.h"
 #include "object.h"
 #include "meshcylinder.h"
+#include "meshfield.h"
 #include "waterSurf.h"
 #include "computer.h"
 
 // マクロ定義
 #define	MAX_TITLE	(5)	// タイトルで表示するテクスチャの最大数
-#define	RANKING_DELEY	(900)	// ランキング移行に掛かる時間
+#define	RANKING_DELEY	(1500)	// ランキング移行に掛かる時間
 #define	CLEAR_DELEY	(60)	// 消滅にかかる時間
 #define	TITLE_DELEY_MAX	(500.0f)	// タイトルの最大数
 
@@ -39,13 +40,13 @@ void InitTitle(void)
 	g_TitleDeley = 0.0f;	// ディレイの値を初期化
 	g_PressEnterDeley = 0;
 
-	// 配置物の初期化処理
-	InitObject("objpos.txt");
-
 	// メッシュシリンダーの初期化処理
 	InitMeshCylinder();
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 2.0f), D3DXVECTOR2(INCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, MESHCYLINDERTYPE_ROCK);
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(OUTCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), true, MESHCYLINDERTYPE_SEA);
+
+	// メッシュフィールドの初期化処理
+	InitMeshField();
 
 	// 水面の初期化処理
 	InitWaterSurf();
@@ -61,7 +62,19 @@ void InitTitle(void)
 	// カメラの数の設定
 	SetNumCamera(1);
 
-	SetCameraPos(0, D3DXVECTOR3(50.0f, 1000.0f, 0.0f), D3DXVECTOR3(50.0f, 1080.0f, 0.0f), CAMERATYPE_POINT);
+	// 乱数の種を設定
+	srand((unsigned int)time(0));
+
+	int nCamera = rand() % 6;	// カメラの位置設定
+	int nVecR = rand() % 5;		// カメラの角度設定
+
+	// カメラの位置設定
+	SetCameraPos(0, D3DXVECTOR3(0.0f, ((float)nCamera * 100.0f) + 600.0f, 0.0f), 
+		D3DXVECTOR3(0.0f, (((float)nCamera * 100.0f) + 600.0f) + (((float)nVecR * 50.0f) - 100.0f), 0.0f),
+		CAMERATYPE_POINT);
+
+	// 配置物の初期化処理
+	InitObject("data\\objpos001.txt");
 
 	// デバイスの取得
 	pDevice = GetDevice();
@@ -188,6 +201,9 @@ void UninitTitle(void)
 	// メッシュシリンダーの終了処理
 	UninitMeshCylinder();
 
+	// メッシュフィールドの終了処理
+	UninitMeshField();
+
 	// 水面の終了処理
 	UninitWaterSurf();
 
@@ -221,6 +237,9 @@ void UpdateTitle(void)
 	// メッシュシリンダーの更新処理
 	UpdateMeshCylinder();
 
+	// メッシュフィールドの更新処理
+	UpdateMeshField();
+
 	// 水面の更新処理
 	UpdateWaterSurf();
 
@@ -242,6 +261,7 @@ void UpdateTitle(void)
 	{
 		g_PlayerSelect--;
 		g_PressEnterDeley %= 100;	// ランキング移行までの時間を短縮
+		PlaySound(SOUND_SE_CURSORMOVE);
 	}
 	else if ((GetKeyboardTrigger(DIK_D) || GetJoypadTrigger(0, JOYKEY_RIGHT) ||
 		GetJoypadStick(0, JOYKEY_LEFTSTICK_RIGHT, NULL, NULL) == true)
@@ -249,6 +269,7 @@ void UpdateTitle(void)
 	{
 		g_PlayerSelect++;
 		g_PressEnterDeley %= 100;	// ランキング移行までの時間を短縮
+		PlaySound(SOUND_SE_CURSORMOVE);
 	}
 
 	VERTEX_2D* pVtx;	// 頂点情報へのポインタ
@@ -307,7 +328,7 @@ void UpdateTitle(void)
 		pFade == FADE_NONE && g_TitleDeley == TITLE_DELEY_MAX)
 	{// 決定キー（ENTERキー）が押された
 		// モード設定
-		//PlaySound(SOUND_LABEL_SE_SCORE);	// 再生したいサウンドを指定
+		PlaySound(SOUND_SE_DECISION);
 		SetFade(MODE_TUTORIAL);
 	}
 	else if (pFade == FADE_NONE && g_PressEnterDeley > RANKING_DELEY)
@@ -344,6 +365,9 @@ void DrawTitle(void)
 
 	// メッシュシリンダーの描画処理
 	DrawMeshCylinder();
+
+	// メッシュフィールドの描画処理
+	DrawMeshField();
 
 	// 水面の描画処理
 	DrawWaterSurf();

@@ -43,6 +43,7 @@ SOUNDINFO g_aSoundInfo[SOUND_MAX] =
 	{"data/SE/highspeed.wav",0},			//高速移動音
 	{"data/SE/landing.wav",0},				//着地音
 	{"data/SE/applause.wav",0},				//勝利音
+	{"data/SE/count.wav",0},				//カウント音
 	{"data/SE/countdown.wav",0},			//カウントダウン音
 	{"data/SE/timeup.wav",0},				//タイムアップ音
 	{"data/SE/boot.wav",0},					//起動音
