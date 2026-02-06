@@ -5,10 +5,8 @@
 // 
 //=============================================================================
 #include "object.h"
-//#include "explosion.h"
-//#include "particle.h"
+#include "pot.h"
 #include "player.h"
-//#include "shadow.h"
 #include "meshfield.h"
 #include "debugproc.h"
 #include "input.h"
@@ -532,7 +530,14 @@ void LoadObject(const char* pStr)
 					}
 				}
 
-				SetObject(pos, D3DXVECTOR3(D3DX_PI * rot.x / 180.0f, D3DX_PI * rot.y / 180.0f, D3DX_PI * rot.z / 180.0f), nIdx, bCollision);
+				if (nIdx == 7)
+				{// タコつぼ
+					SetPot(pos, D3DXVECTOR3(D3DX_PI* rot.x / 180.0f, D3DX_PI* rot.y / 180.0f, D3DX_PI* rot.z / 180.0f));
+				}
+				else
+				{// タコつぼ以外
+					SetObject(pos, D3DXVECTOR3(D3DX_PI * rot.x / 180.0f, D3DX_PI * rot.y / 180.0f, D3DX_PI * rot.z / 180.0f), nIdx, bCollision);
+				}
 			}
 
 			if (strcmp(&aString[0], "END_SCRIPT") == 0)
