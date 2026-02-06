@@ -46,23 +46,23 @@ void InitRanking(void)
 		&g_pTextureRanking[1]);
 
 	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/rank001.png",
+		"data/TEXTURE/rank000.png",
 		&g_pTextureRanking[2]);
 
 	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/rank001.png",
+		"data/TEXTURE/rank000.png",
 		&g_pTextureRanking[3]);
 
 	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/rank001.png",
+		"data/TEXTURE/rank000.png",
 		&g_pTextureRanking[4]);
 
 	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/rank001.png",
+		"data/TEXTURE/rank000.png",
 		&g_pTextureRanking[5]);
 
 	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/rank001.png",
+		"data/TEXTURE/rank000.png",
 		&g_pTextureRanking[6]);
 
 	// 頂点バッファの生成
