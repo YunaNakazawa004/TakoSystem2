@@ -9,6 +9,7 @@
 #define _COMPUTER_H_		// 2重インクルード防止のマクロを定義する
 
 #include "main.h"
+#include "player.h"
 #include "model.h"
 
 //*****************************************************************************
@@ -56,7 +57,8 @@ typedef struct
 	D3DXVECTOR3 move;				// 移動量
 	D3DXVECTOR3 rot;				// 向き
 	D3DXVECTOR3 dir;				// 向いている方向
-	float fAngle;					// 向きの最終地点
+	float fAngleY;					// Y向きの最終地点
+	float fAngleX;					// X向きの最終地点
 	float fRadius;					// 半径
 	float fHeight;					// 高さ
 	D3DXMATRIX mtxWorld;			// ワールドマトリックス
@@ -102,6 +104,8 @@ typedef struct
 
 	// 所持エサ
 	int nFoodCount;				// 所持エサの数
+	EsaQueue esaQueue;			// エサのキュー情報
+	POTSTATE Potstate;			// 状態
 	int nMaxFood;				// 一本の足にもてるエサの最大数
 
 	// ナビゲーション
@@ -196,9 +200,10 @@ D3DXVECTOR3 GetRandomExplorePoint(void);
 void SetComputer(D3DXVECTOR3 pos, D3DXVECTOR3 rot);
 void SetRandomComputer(int nAmount);
 Computer* GetComputer(void);
+void CollisionInk(int nIdx, bool bCPU, D3DXVECTOR3 pos);
 
 // モーション
-void UpdateMotionComputer(void);
+void UpdateMotionComputer(int nIdx);
 void SetMotionComputer(int nIdx, MOTIONTYPE motionType, bool bBlendMotion, int nFrameBlend);
 
 #endif

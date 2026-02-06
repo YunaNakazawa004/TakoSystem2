@@ -103,6 +103,8 @@ void InitLogo(void)
 	}
 	// 頂点バッファをアンロックする
 	g_pVtxBuffLogo->Unlock();
+
+	PlaySound(SOUND_SE_BOOT);	// 起動音
 }
 
 // ロゴの終了処理

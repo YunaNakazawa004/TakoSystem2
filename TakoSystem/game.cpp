@@ -61,11 +61,13 @@ void InitGame(void)
 
 	// カメラの初期化処理
 	SetNumCamera(GetPlayerSelect());
+	SetCameraPos(0, FIRST_POS, FIRST_POS, CAMERATYPE_PLAYER);
+	SetCameraPos(1, FIRST_POS, FIRST_POS, CAMERATYPE_PLAYER);
 
 	// プレイヤーの初期化処理
 	InitPlayer();
-	SetPlayer(0, D3DXVECTOR3(0.0f, 4000.0f, 500.0f), FIRST_POS);
-	SetPlayer(1, D3DXVECTOR3(0.0f, 4000.0f, -500.0f), FIRST_POS);
+	SetPlayer(0, D3DXVECTOR3(0.0f, 1500.0f, 500.0f), FIRST_POS);
+	SetPlayer(1, D3DXVECTOR3(0.0f, 1500.0f, -500.0f), FIRST_POS);
 
 	// CPUの初期化処理
 	InitComputer();
@@ -78,8 +80,8 @@ void InitGame(void)
 
 	// メッシュシリンダーの初期化処理
 	InitMeshCylinder();
-	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 2.0f), D3DXVECTOR2(400.0f, 2000.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, MESHCYLINDERTYPE_ROCK);
-	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(1500.0f, 2000.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), true, MESHCYLINDERTYPE_SEA);
+	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 2.0f), D3DXVECTOR2(INCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, MESHCYLINDERTYPE_ROCK);
+	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(OUTCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), true, MESHCYLINDERTYPE_SEA);
 
 	// メッシュドームの初期化処理
 	InitMeshDome();
@@ -115,7 +117,7 @@ void InitGame(void)
 	InitUiGaugeIcon();
 
 	// エサUIの初期化処理
-	//InitUiEsa();
+	InitUiEsa();
 
 	// 時間の初期化処理
 	InitTime();
@@ -192,7 +194,7 @@ void UninitGame(void)
 	UninitUiGaugeIcon();
 	
 	// エサUIの終了処理
-	//UninitUiEsa();
+	UninitUiEsa();
 
 	// 時間の終了処理
 	UninitTime();
@@ -287,7 +289,7 @@ void UpdateGame(void)
 		UpdateUiGaugeIcon();
 
 		// エサUIの更新処理
-		//UpdateUiEsa();
+		UpdateUiEsa();
 
 		// 時間の更新処理
 		UpdateTime();
@@ -304,14 +306,6 @@ void UpdateGame(void)
 //===================================================================
 void DrawGame(void)
 {
-	// フォグの設定
-	Player* pPlayer = GetPlayer();
-
-	for (int nCntCamera = 0; nCntCamera < GetNumCamera(); nCntCamera++)
-	{
-		SetFog(D3DXCOLOR(0.0f, 0.1f, 0.2f, 1.0f), 1000.0f, pPlayer[nCntCamera].fFog);
-	}
-
 	// プレイヤーの描画処理
 	DrawPlayer();
 
@@ -361,7 +355,7 @@ void DrawGame(void)
 	DrawUiGaugeIcon();
 
 	// エサUIの描画処理
-	//DrawUiEsa();
+	DrawUiEsa();
 
 	// 時間の描画処理
 	DrawTime();

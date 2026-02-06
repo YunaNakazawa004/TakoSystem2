@@ -480,6 +480,8 @@ void Draw(void)
 
 		for (int nCntCamera = 0; nCntCamera < GetNumCamera(); nCntCamera++)
 		{
+			Player* pPlayer = GetPlayer();
+
 			// カメラの描画処理
 			SetCamera(nCntCamera);
 
@@ -494,6 +496,8 @@ void Draw(void)
 				break;
 
 			case MODE_GAME:				// ゲーム画面
+				SetFog(D3DXCOLOR(0.0f, 0.1f, 0.2f, 1.0f), pPlayer[nCntCamera].fFogStart, pPlayer[nCntCamera].fFogEnd, true);
+
 				DrawGame();
 				break;
 
@@ -655,10 +659,10 @@ void CorrectAngle(float* fAngle, float fAngleCmp)
 //=============================================================================
 // フォグの設定
 //=============================================================================
-void SetFog(D3DXCOLOR col, float fFogStart, float fFogEnd)
+void SetFog(D3DXCOLOR col, float fFogStart, float fFogEnd, bool bUse)
 {
 	// フォグを有効にする
-	g_pD3DDevice->SetRenderState(D3DRS_FOGENABLE, TRUE);
+	g_pD3DDevice->SetRenderState(D3DRS_FOGENABLE, bUse);
 
 	// フォグカラー設定
 	g_pD3DDevice->SetRenderState(D3DRS_FOGCOLOR, col);

@@ -5,13 +5,17 @@
 // 
 //=============================================================================
 #include "player.h"
+#include "computer.h"
 #include "meshcylinder.h"
-#include "esa.h"
+#include "meshring.h"
 #include "particle_3d.h"
 #include "crosshair.h"
+#include "watersurf.h"
+#include "pot.h"
 #include "camera.h"
 #include "input.h"
-//#include "sound.h"
+#include "time.h"
+#include "sound.h"
 #include "debugproc.h"
 
 //*****************************************************************************
@@ -28,15 +32,19 @@
 #define INERTIA_ANGLE			(0.1f)									// 角度の慣性
 #define POS_ERROR				(50.0f)									// 位置の誤差
 #define MOVE_ERROR				(5.0f)									// 移動量の誤差
-#define FOG_MIN					(1500.0f)								// フォグの最低
-#define FOG_MAX					(7000.0f)								// フォグの最高
-#define TENTACLE_RANGE			(DISTANCE * DASH_REACH)					// 触手の長さ(見た目)
+#define FOGS_MIN				(500.0f)								// 開始フォグの最低
+#define FOGS_MAX				(1200.0f)								// 開始フォグの最高
+#define FOGE_MIN				(1000.0f)								// 終了フォグの最低
+#define FOGE_MAX				(3000.0f)								// 終了フォグの最高
+#define TENTACLE_RANGE			(1000.0f)								// 触手の長さ(見た目)
 #define TENTACLE_REACH			(1000.0f)								// 触手のリーチ(実際)
 #define TENTACLE_CT				(ONE_SECOND * 1 + ONE_SECOND)			// 触手のクールダウン
 #define INK_CT					(ONE_SECOND * 5 + ONE_SECOND)			// 墨吐きのクールダウン
+#define RIPPLE_COUNT			(20)									// 水面に波紋が出る間隔
 #define PLAYER_TENTACLE			(8)										// プレイヤーの足の数
-#define PLAYER_RADIUS			(50.0f)									// 半径
+#define PLAYER_RADIUS			(25.0f)									// 半径
 #define PLAYER_HEIGHT			(100.0f)								// 高さ
+#define TENTACLE_RADIUS			(100.0f)								// 触手の当たり判定
 #define PLAYER_FILE				"data\\motion_octo_1.txt"				// プレイヤーのデータファイル
 
 //*****************************************************************************
@@ -63,6 +71,7 @@ void InitPlayer(void)
 	// プレイヤーの情報の初期化
 	for (int nCntPlayer = 0; nCntPlayer < MAX_PLAYER; nCntPlayer++, pPlayer++)
 	{
+		pPlayer->nIdx = nCntPlayer;
 		pPlayer->pos = FIRST_POS;
 		pPlayer->posOld = FIRST_POS;
 		pPlayer->move = FIRST_POS;
@@ -72,7 +81,8 @@ void InitPlayer(void)
 		pPlayer->nCounterState = 0;
 		pPlayer->fAngleX = 0.0f;
 		pPlayer->fAngleY = 0.0f;
-		pPlayer->fFog = FOG_MIN;
+		pPlayer->fFogStart = (pPlayer->pos.y * 0.4f) + FOGS_MIN;
+		pPlayer->fFogEnd = (pPlayer->pos.y * 1.1f) + FOGE_MIN;
 		pPlayer->fRadius = PLAYER_RADIUS;
 		pPlayer->fHeight = PLAYER_HEIGHT;
 		pPlayer->bJump = false;
@@ -81,7 +91,11 @@ void InitPlayer(void)
 		pPlayer->bAct = false;
 		pPlayer->bUse = false;
 		pPlayer->bBlind = false;
+		pPlayer->nBlindCounter = 0;
 		pPlayer->nFood = 0;
+		pPlayer->esaQueue.nTail = -1;
+		memset(&pPlayer->esaQueue.nData, -1, sizeof(int));
+		pPlayer->Potstate = POTSTATE_NONE;
 		pPlayer->nMaxFood = 0;
 		pPlayer->nTentacleCooldown = 0;
 		pPlayer->nInkCooldown = 0;
@@ -182,15 +196,17 @@ void UpdatePlayer(void)
 {
 	Camera* pCamera = GetCamera();
 	Player* pPlayer = GetPlayer();
-	int nValueH, nValueV;
-	int nValue;
-	float fmoveAngle = 0.0f;
-	float fAngle;
 
 	for (int nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++, pPlayer++, pCamera++)
 	{
 		if (pPlayer->bUse == true)
 		{
+			static int nCounter = 0;		// 色々なものに使えるカウンター
+			int nValueH, nValueV;
+			int nValue;
+			float fmoveAngle = 0.0f;
+			float fAngle;
+
 			pPlayer->posOld = pPlayer->pos;
 			pPlayer->posX = pPlayer->pos + (pCamera->posR - pCamera->posV);
 
@@ -226,6 +242,8 @@ void UpdatePlayer(void)
 
 				break;
 			}
+
+			PrintDebugProc("エサの数 %d / %d\n", pPlayer->nFood, pPlayer->nMaxFood * PLAYER_TENTACLE);
 
 			if (pPlayer->state != PLAYERSTATE_APPEAR && pPlayer->state != PLAYERSTATE_DASH)
 			{// 出現状態のときは移動できない
@@ -359,28 +377,47 @@ void UpdatePlayer(void)
 				break;
 
 			case PLTENTACLESTATE_TENTACLELONG:		// 触手伸ばし状態
-				if (pPlayer->bFinishMotion == true)
-				{// 触手が伸ばし終わったら
-					CrossHair* pCrossHair = GetCrossHair();
-					pCrossHair = &pCrossHair[nCntPlayer];
+				if (pPlayer->motionType == MOTIONTYPE_INK || pPlayer->motionTypeBlend == MOTIONTYPE_INK)
+				{// モーションキャンセル
+					pPlayer->TentacleState = PLTENTACLESTATE_NORMAL;
+				}
+				else
+				{// キャンセルしない
+					if (pPlayer->bFinishMotion == true)
+					{// 触手が伸ばし終わったら
+						CrossHair* pCrossHair = GetCrossHair();
+						pCrossHair = &pCrossHair[nCntPlayer];
 
-					if (pCrossHair->state == CROSSHAIRSTATE_REACH)
-					{// 壁との当たり判定
-						pPlayer->state = PLAYERSTATE_DASH;
-						pPlayer->TentacleState = PLTENTACLESTATE_TENTACLESHORT;
-						SetMotionPlayer(nCntPlayer, MOTIONTYPE_DASH, true, 20);
-					}
-					else
-					{// 触手を伸ばす
-						if (pPlayer->aModel[2].scale.y < TENTACLE_RANGE * 0.1f)
-						{// リーチより短い
-							pPlayer->aModel[2].scale.y += 5.0f;
-						}
-						else
-						{// リーチの長さになった
+						//PrintDebugProc("触手のpos ( %f %f %f )\n", pPlayer->aModel[4].mtxWorld._41, pPlayer->aModel[4].mtxWorld._42, pPlayer->aModel[4].mtxWorld._43);
+						D3DXVECTOR3 tentaclePos = D3DXVECTOR3(pPlayer->aModel[4].mtxWorld._41, pPlayer->aModel[4].mtxWorld._42, pPlayer->aModel[4].mtxWorld._43);
+
+						if (CollisionPotArea(tentaclePos, TENTACLE_RADIUS * 0.5f, pPlayer, NULL, true) == true)
+						{// タコつぼからエサをとる
 							pPlayer->TentacleState = PLTENTACLESTATE_TENTACLESHORT;
 
 							SetMotionPlayer(nCntPlayer, MOTIONTYPE_TENTACLESHORT, true, 20);
+						}
+						else if (pCrossHair->state == CROSSHAIRSTATE_REACH &&
+							(CollisionMeshCylinder(&tentaclePos, &pPlayer->pos, &pPlayer->move,
+								TENTACLE_RADIUS, TENTACLE_RADIUS, true) == true ||
+								tentaclePos.y < 0.0f))
+						{// 壁との当たり判定
+							pPlayer->state = PLAYERSTATE_DASH;
+							pPlayer->TentacleState = PLTENTACLESTATE_TENTACLESHORT;
+							SetMotionPlayer(nCntPlayer, MOTIONTYPE_DASH, true, 20);
+						}
+						else
+						{// 触手を伸ばす
+							if (pPlayer->aModel[2].scale.y < TENTACLE_RANGE * 0.1f)
+							{// リーチより短い
+								pPlayer->aModel[2].scale.y += 5.0f;
+							}
+							else
+							{// リーチの長さになった
+								pPlayer->TentacleState = PLTENTACLESTATE_TENTACLESHORT;
+
+								SetMotionPlayer(nCntPlayer, MOTIONTYPE_TENTACLESHORT, true, 20);
+							}
 						}
 					}
 				}
@@ -396,7 +433,7 @@ void UpdatePlayer(void)
 				{// 元の長さに戻す
 					pPlayer->aModel[2].scale.y = 1.0f;
 					pPlayer->TentacleState = PLTENTACLESTATE_NORMAL;
-					
+
 					if (pPlayer->motionType != MOTIONTYPE_DASH)
 					{// 高速移動していないとき
 						pPlayer->fAngleX = 0.0f;
@@ -473,6 +510,16 @@ void UpdatePlayer(void)
 				pPlayer->nInkCooldown--;
 			}
 
+			if (pPlayer->nBlindCounter > 0)
+			{// 視界悪化カウント
+				pPlayer->nBlindCounter--;
+			}
+			else if (pPlayer->nBlindCounter == 0)
+			{// 視界悪化が終わる
+				pPlayer->bBlind = false;
+				pPlayer->nBlindCounter = 0;
+			}
+
 			// 移動量制限
 			if (pPlayer->move.x > MAX_MOVE)
 			{// 最大X
@@ -528,17 +575,45 @@ void UpdatePlayer(void)
 				pPlayer->pos.y = 0.0f;
 			}
 
+			if (pPlayer->pos.y > *GetWaterSurf_Height() - (PLAYER_HEIGHT * 0.5f))
+			{// 上									  
+				pPlayer->pos.y = *GetWaterSurf_Height() - (PLAYER_HEIGHT * 0.5f);
+
+				if (nCounter % RIPPLE_COUNT == 0)
+				{// 定期的に波紋
+					SetMeshRing(D3DXVECTOR3(pPlayer->pos.x + (rand() % 6 - 3), *GetWaterSurf_Height(), pPlayer->pos.z + (rand() % 6 - 3)), FIRST_POS,
+						D3DXVECTOR2(24.0f, 1.0f), D3DXVECTOR2(10.0f, 7.0f), D3DXCOLOR(WHITE_VTX.r, WHITE_VTX.g, WHITE_VTX.b, 0.5f));
+				}
+			}
+
 			//PrintDebugProc("fAngle : %f", pCamera->fAngle);
 
-			pPlayer->fFog = (pPlayer->pos.y * 1.5f * (-pCamera->fAngle * 0.5f)) + FOG_MIN;
+			pPlayer->fFogStart = (pPlayer->pos.y * 0.4f + (-pCamera->fAngle * 0.2f)) + FOGS_MIN;
 
-			if (pPlayer->fFog < FOG_MIN)
+			if (pPlayer->fFogStart < FOGS_MIN)
 			{// フォグの最低値
-				pPlayer->fFog = FOG_MIN;
+				pPlayer->fFogStart = FOGS_MIN;
 			}
-			else if (pPlayer->fFog > FOG_MAX)
+			else if (pPlayer->fFogStart > FOGS_MAX)
 			{// フォグの最高値
-				pPlayer->fFog = FOG_MAX;
+				pPlayer->fFogStart = FOGS_MAX;
+			}
+
+			pPlayer->fFogEnd = (pPlayer->pos.y * 1.1f + (-pCamera->fAngle * 0.2f)) + FOGE_MIN;
+
+			if (pPlayer->fFogEnd < FOGE_MIN)
+			{// フォグの最低値
+				pPlayer->fFogEnd = FOGE_MIN;
+			}
+			else if (pPlayer->fFogEnd > FOGE_MAX)
+			{// フォグの最高値
+				pPlayer->fFogEnd = FOGE_MAX;
+			}
+
+			if (pPlayer->bBlind == true)
+			{// 視界悪化中
+				pPlayer->fFogStart *= 0.5f;
+				pPlayer->fFogEnd *= 0.5f;
 			}
 
 			fmoveAngle = pPlayer->fAngleY - pPlayer->rot.y;
@@ -565,6 +640,11 @@ void UpdatePlayer(void)
 				CorrectAngle(&pPlayer->rot.x, pPlayer->rot.x);
 			}
 
+			if (nCounter % (ONE_SECOND * 10) == 0 && GetTime() != ONE_GAME)
+			{// 持てるエサの最大値が増える
+				pPlayer->nMaxFood++;
+			}
+
 			D3DXVECTOR3 dist;
 			dist = pPlayer->posX - pPlayer->pos;
 			D3DXVec3Normalize(&dist, &dist);
@@ -572,7 +652,8 @@ void UpdatePlayer(void)
 			dist += pPlayer->pos;
 
 			if (CollisionMeshCylinder(&dist, &pPlayer->pos, &pPlayer->move,
-				0.0f, 0.0f, true) == true)
+				0.0f, 0.0f, true) == true ||
+				dist.y < 0.0f)
 			{// 壁に当たった・オブジェクトに当たった・エサに当たった
 				// クロスヘアの設定
 				SetCrossHair(nCntPlayer, CROSSHAIRSTATE_REACH);
@@ -623,6 +704,8 @@ void UpdatePlayer(void)
 				SetParticle3D(14, 30, pPlayer->pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pPlayer->rot.x, pPlayer->rot.y - D3DX_PI, pPlayer->rot.z), 4.0f, 200, 8.0f, 0.06f, EFFECTTYPE_OCTOINK);
 				SetParticle3D(14, 30, pPlayer->pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pPlayer->rot.x, pPlayer->rot.y - D3DX_PI, pPlayer->rot.z), 4.0f, 200, 8.0f, 0.06f, EFFECTTYPE_OCTOINK);
 
+				CollisionInk(nCntPlayer, false, pPlayer->pos);
+
 				// クールダウンを設定
 				pPlayer->nInkCooldown = INK_CT;
 			}
@@ -641,6 +724,7 @@ void UpdatePlayer(void)
 
 			// 当たり判定
 			CollisionMeshCylinder(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight, false);
+			CollisionPot(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight);
 
 			if (pPlayer->nFood < pPlayer->nMaxFood * PLAYER_TENTACLE)
 			{// 持てる数より少ない
@@ -652,8 +736,13 @@ void UpdatePlayer(void)
 					pEsa[nIdx].bUse = false;
 
 					pPlayer->nFood++;
+					Enqueue(&pPlayer->esaQueue, nIdx);
 				}
 			}
+
+			CollisionPotArea(pPlayer->pos, pPlayer->fRadius, pPlayer, NULL, false);
+
+			nCounter++;
 
 			// モーションの更新処理
 			UpdateMotionPlayer();
@@ -819,19 +908,24 @@ void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 {
 	Player* pPlayer = GetPlayer();
 
+	pPlayer[nIdx].nIdx = nIdx;
 	pPlayer[nIdx].pos = pos;
 	pPlayer[nIdx].posOld = pos;
 	pPlayer[nIdx].rot = rot;
 	pPlayer[nIdx].state = PLAYERSTATE_NORMAL;
 	pPlayer[nIdx].TentacleState = PLTENTACLESTATE_NORMAL;
 	pPlayer[nIdx].nCounterState = 0;
+	pPlayer[nIdx].fFogStart = (pPlayer[nIdx].pos.y * 0.4f) + FOGS_MIN;
+	pPlayer[nIdx].fFogEnd = (pPlayer[nIdx].pos.y * 1.1f) + FOGE_MIN;
 	pPlayer[nIdx].bJump = true;
 	pPlayer[nIdx].bLand = false;
 	pPlayer[nIdx].bAct = false;
 	pPlayer[nIdx].bMove = false;
 	pPlayer[nIdx].bUse = true;
 	pPlayer[nIdx].bBlind = false;
+	pPlayer[nIdx].nBlindCounter = 0;
 	pPlayer[nIdx].nFood = 0;
+	pPlayer[nIdx].Potstate = POTSTATE_NONE;
 	pPlayer[nIdx].nMaxFood = 1;
 	pPlayer[nIdx].nTentacleCooldown = 0;
 	pPlayer[nIdx].nInkCooldown = 0;
@@ -1722,4 +1816,49 @@ void SetMotionPlayer(int nIdx, MOTIONTYPE motionType, bool bBlendMotion, int nFr
 			}
 		}
 	}
+}
+
+//=============================================================================
+// エサキューにエンキュー
+//=============================================================================
+void Enqueue(EsaQueue* queue, int nIdx)
+{
+	if (queue->nTail == MAX_QUEUE - 1)
+	{// キューが満杯なら何もせず関数終了 
+		return;
+	}
+
+	// データをデータの最後尾の１つ後ろに格納
+	queue->nData[queue->nTail + 1] = nIdx;
+
+	// データの最後尾を１つ後ろに移動 
+	queue->nTail = queue->nTail + 1;
+}
+
+//=============================================================================
+// エサキューにデキュー
+//=============================================================================
+int Dequeue(EsaQueue* queue)
+{
+	int nIdx = -1;
+
+	if (queue->nTail == -1)
+	{// キューが空なら何もせずに関数終了
+		return -1;
+	}
+
+	// データの先頭からデータを取得
+	nIdx = queue->nData[0];
+
+	// データの先頭を１つ後ろにずらす
+	for (int nCnt = 0; nCnt < queue->nTail; nCnt++)
+	{
+		queue->nData[nCnt] = queue->nData[nCnt + 1];
+	}
+
+	// データの最後尾も１つ前にずらす
+	queue->nTail = queue->nTail - 1;
+
+	// 取得したデータを返す
+	return nIdx;
 }

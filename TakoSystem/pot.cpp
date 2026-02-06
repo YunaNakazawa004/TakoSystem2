@@ -5,11 +5,14 @@
 // 
 //=============================================================================
 #include "pot.h"
+#include "debugproc.h"
+#include "input.h"
 
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
 #define MAX_POTMODEL		(1)										// タコつぼモデルの最大数
+#define POT_RADIUS			(30.0f)									// タコつぼ周辺の球判定の半径
 
 //*****************************************************************************
 // タコつぼモデルの構造体
@@ -55,6 +58,8 @@ void InitPot(void)
 		g_aPot[nCntPot].pos = FIRST_POS;
 		g_aPot[nCntPot].rot = FIRST_POS;
 		g_aPot[nCntPot].nFood = 0;
+		g_aPot[nCntPot].esaQueue.nTail = -1;
+		memset(&g_aPot[nCntPot].esaQueue.nData, -1, sizeof(int));
 		g_aPot[nCntPot].bUse = false;
 	}
 
@@ -178,6 +183,13 @@ void UninitPot(void)
 //=============================================================================
 void UpdatePot(void)
 {
+	for (int nCntPot = 0; nCntPot < MAX_POT; nCntPot++)
+	{
+		if (g_aPot[nCntPot].bUse == true)
+		{
+			PrintDebugProc("[ %d ]\n入ってるエサの数 %d\n", nCntPot, g_aPot[nCntPot].nFood);
+		}
+	}
 }
 
 //=============================================================================
@@ -245,6 +257,8 @@ void SetPot(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 			g_aPot[nCntPot].pos = pos;
 			g_aPot[nCntPot].rot = rot;
 			g_aPot[nCntPot].nFood = 0;
+			g_aPot[nCntPot].esaQueue.nTail = -1;
+			memset(&g_aPot[nCntPot].esaQueue.nData, -1, sizeof(int));
 			g_aPot[nCntPot].bUse = true;		// 使用している状態にする
 
 			break;
@@ -355,4 +369,122 @@ bool CollisionPot(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, f
 	}
 
 	return bLand;
+}
+
+//=============================================================================
+// タコつぼの周辺当たり判定(エサ関係用)
+//=============================================================================
+bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer* pComputer, bool bTentacle)
+{
+	Pot* pPot = GetPot();
+	bool bColl = false;
+
+	for (int nCntPot = 0; nCntPot < MAX_POT; nCntPot++, pPot++)
+	{
+		if (pPot->bUse == false)
+		{// 使ってないのは無視
+			continue;
+		}
+
+		D3DXVECTOR3 dist = pPot->pos - pos;
+
+		if (D3DXVec3Length(&dist) < POT_RADIUS + fRadius)
+		{// 距離が当たり判定内
+			bColl = true;
+
+			if (pPlayer != NULL)
+			{// プレイヤーの判定
+				if ((pPot->nFood == 0 && pPlayer->Potstate == POTSTATE_NONE) || pPlayer->Potstate == POTSTATE_HIDE)
+				{// 中身が空
+					if (bTentacle == false && pPlayer->nFood > 0)
+					{// 触手じゃない
+						pPlayer->Potstate = POTSTATE_HIDE;
+
+						int nIdx = Dequeue(&pPlayer->esaQueue);
+						pPlayer->nFood--;
+
+						Enqueue(&pPot->esaQueue, nIdx);
+						pPot->nFood++;
+					}
+				}
+				else if (pPot->nFood > 0 && pPlayer->Potstate != POTSTATE_HIDE)
+				{// 中身がある
+					if (bTentacle == true)
+					{// 触手
+						pPlayer->Potstate = POTSTATE_STEAL;
+						int nFood = pPot->nFood;
+
+						for (int nCnt = 0; nCnt < nFood; nCnt++)
+						{
+							if (pPlayer->nFood < pPlayer->nMaxFood * 8)
+							{// 持てる数だけ持つ
+								int nIdx = Dequeue(&pPot->esaQueue);
+								pPot->nFood--;
+
+								Enqueue(&pPlayer->esaQueue, nIdx);
+								pPlayer->nFood++;
+							}
+						}
+					}
+					else if (bTentacle == false)
+					{// もし触手を伸ばしてない
+						SetVibration(pPlayer->nIdx, 300, 300, 1);
+					}
+				}
+			}
+			else if (pComputer != NULL)
+			{// CPUの判定
+				if ((pPot->nFood == 0 && pComputer->Potstate == POTSTATE_NONE) || pComputer->Potstate == POTSTATE_HIDE)
+				{// 中身が空
+					if (bTentacle == false && pComputer->nFoodCount > 0)
+					{// 触手じゃない
+						pComputer->Potstate = POTSTATE_HIDE;
+
+						int nIdx = Dequeue(&pComputer->esaQueue);
+						pComputer->nFoodCount--;
+
+						Enqueue(&pPot->esaQueue, nIdx);
+						pPot->nFood++;
+					}
+				}
+				else if (pPot->nFood > 0 && pComputer->Potstate != POTSTATE_HIDE)
+				{// 中身がある
+					if (bTentacle == true)
+					{// 触手
+						pComputer->Potstate = POTSTATE_STEAL;
+						int nFood = pPot->nFood;
+
+						for (int nCnt = 0; nCnt < nFood; nCnt++)
+						{
+							if (pComputer->nFoodCount < pComputer->nMaxFood * 8)
+							{// 持てる数だけ持つ
+								int nIdx = Dequeue(&pPot->esaQueue);
+								pPot->nFood--;
+
+								Enqueue(&pComputer->esaQueue, nIdx);
+								pComputer->nFoodCount++;
+							}
+						}
+					}
+				}
+			}
+
+			return bColl;
+		}
+		else
+		{// 離れた
+			if (pPlayer != NULL)
+			{
+				pPlayer->Potstate = POTSTATE_NONE;
+			}
+			else if (pComputer != NULL)
+			{
+				pComputer->Potstate = POTSTATE_NONE;
+			}
+
+			bColl = false;
+		}
+	}
+
+	return bColl;
 }
