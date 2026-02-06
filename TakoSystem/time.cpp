@@ -170,7 +170,7 @@ void UpdateTime(void)
 			g_nTime100Delay = 0;
 			AddTime(-1);
 			if (g_nTime < (PINCH_TIME / 2) && g_nTime >= 0)
-				PlaySound(SOUND_SE_COUNTDOWN);	// カウントダウン
+				PlaySound(SOUND_SE_COUNT);	// カウントダウン
 		}
 		else
 		{// 下の桁を減らす

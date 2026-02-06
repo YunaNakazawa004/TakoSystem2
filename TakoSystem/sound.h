@@ -24,7 +24,8 @@ typedef enum
 	SOUND_SE_HIGHSPEED,					//高速移動音
 	SOUND_SE_LANDING,					//着地音	
 	SOUND_SE_WIN,						//勝利音
-	SOUND_SE_COUNTDOWN,					//カウントダウン音
+	SOUND_SE_COUNT,						//カウント音（残り時間10秒などに使用）
+	SOUND_SE_COUNTDOWN,					//カウントダウン音（3.2.1.Goで始まるやつ）
 	SOUND_SE_TIMEUP,					//タイムアップ音
 	SOUND_SE_BOOT,						//起動音
 	SOUND_SE_CURSORMOVE,				//カーソル移動音（ポーズメニューや人数選択時など）
