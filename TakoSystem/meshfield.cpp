@@ -41,9 +41,8 @@ MeshField g_aMeshField[MAX_MESHFIELD];						// メッシュフィールドの情報
 //*****************************************************************************
 const char* c_apFilenameMeshField[MESHFIELDTYPE_MAX] =
 {
-	"data\\TEXTURE\\field001.jpeg",
-	"data\\TEXTURE\\field001.jpeg",
-	"data\\TEXTURE\\field001.jpeg",
+	"data\\TEXTURE\\In_the_sea.png",
+	"data\\TEXTURE\\suna.png",
 };
 
 //=============================================================================
