@@ -27,6 +27,7 @@
 #include "time.h"
 #include "ui_gaugeicon.h"
 #include "ui_esa.h"
+#include "oceancurrents.h"
 
 #include "map.h"
 
@@ -128,6 +129,9 @@ void InitGame(void)
 	// マップの初期化処理
 	InitMap();
 
+	// 海流の初期化処理
+	InitOceanCurrents();
+
 	// ポーズの初期化処理
 	InitPause();
 
@@ -202,6 +206,9 @@ void UninitGame(void)
 	// マップの終了処理
 	UninitMap();
 
+	// 海流の終了処理
+	UninitOceanCurrents();
+
 	// ポーズ終了処理
 	UninitPause();
 
@@ -244,7 +251,7 @@ void UpdateGame(void)
 		UpdatePlayer();
 
 		// CPUの更新処理
-		UpdateComputer();
+		//UpdateComputer();
 
 		// ステージの更新処理
 		//UpdateStage();
@@ -297,6 +304,8 @@ void UpdateGame(void)
 		// マップの更新処理
 		UpdateMap();
 
+		// 海流の更新処理
+		UpdateOceanCurrents();
 	}
 
 }
@@ -362,6 +371,9 @@ void DrawGame(void)
 
 	// マップの描画処理
 	DrawMap();
+
+	// 海流の描画処理
+	DrawOceanCurrents();
 
 	// ポーズ中の描画処理
 	if (g_bPause == true) DrawPause();
