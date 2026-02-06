@@ -98,7 +98,7 @@
 #define CAMERA_HEIGHT			(100.0f)								// 仮想カメラの高さ
 #define RIPPLE_COUNT			(20)									// 水面に波紋が出る間隔
 #define CPU_THINK				(5)										// 思考間隔
-#define CPU_WIDTH				(50.0f)									// 幅
+#define CPU_WIDTH				(25.0f)									// 幅
 #define CPU_HEIGHT				(100.0f)								// 高さ
 #define TENTACLE_RADIUS			(100.0f)								// 触手の当たり判定
 #define CPU_FILE				"data\\motion_octo_1.txt"				// CPUのデータファイル
@@ -476,7 +476,8 @@ void UpdateComputer(void)
 					{// 触手が伸ばし終わったら
 						D3DXVECTOR3 tentaclePos = D3DXVECTOR3(pComputer->aModel[4].mtxWorld._41, pComputer->aModel[4].mtxWorld._42, pComputer->aModel[4].mtxWorld._43);
 
-						if (CollisionPotArea(tentaclePos, TENTACLE_RADIUS * 0.5f, NULL, pComputer, true) == true)
+						if (CollisionPotArea(tentaclePos, TENTACLE_RADIUS * 0.5f, NULL, pComputer, true) == true ||
+							CollisionOcto(nCntComputer, true, pComputer->phys.pos) == true)
 						{// タコつぼからエサをとる
 							pComputer->TentState = CPUTENTACLESTATE_TENTACLESHORT;
 
@@ -484,7 +485,9 @@ void UpdateComputer(void)
 						}
 						else if (CollisionMeshCylinder(&tentaclePos, &pComputer->phys.pos, &pComputer->phys.move,
 							TENTACLE_RADIUS, TENTACLE_RADIUS, true) == true ||
-							tentaclePos.y < 0.0f)
+							tentaclePos.y < 0.0f ||
+							CollisionObject(&tentaclePos, &pComputer->phys.pos, &pComputer->phys.move,
+								TENTACLE_RADIUS, TENTACLE_RADIUS) == true)
 						{// 壁との当たり判定
 							pComputer->TentState = CPUTENTACLESTATE_TENTACLESHORT;
 							SetMotionComputer(nCntComputer, MOTIONTYPE_DASH, true, 20);
@@ -2409,6 +2412,73 @@ void CollisionInk(int nIdx, bool bCPU, D3DXVECTOR3 pos)
 			pPlayer->nBlindCounter = ONE_SECOND * 3;
 		}
 	}
+}
+
+//=============================================================================
+// 触手の当たり判定
+//=============================================================================
+bool CollisionOcto(int nIdx, bool bCPU, D3DXVECTOR3 pos)
+{
+	bool bColl = false;
+
+	for (int nCntEnemy = 0; nCntEnemy < MAX_COMPUTER; nCntEnemy++)
+	{
+		Computer* pEnemy = &g_aComputer[nCntEnemy];
+
+		if (pEnemy->bUse == false)
+		{// 使用していない
+			continue;
+		}
+
+		if (pEnemy->nIdx == nIdx && bCPU == true)
+		{// 自分自身は無視
+			continue;
+		}
+
+		D3DXVECTOR3 dist = pEnemy->phys.pos - pos;
+
+		if (D3DXVec3Length(&dist) < CPU_WIDTH + TENTACLE_RADIUS)
+		{// 触手と当たった
+			bColl = true;
+
+			int nEsaIdx = Dequeue(&pEnemy->esaQueue);
+			pEnemy->nFoodCount--;
+
+			pEnemy = GetComputer();
+			Enqueue(&pEnemy[nIdx].esaQueue, nEsaIdx);
+			pEnemy[nIdx].nFoodCount++;
+
+			return bColl;
+		}
+	}
+
+	Player* pPlayer = GetPlayer();
+
+	for (int nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++, pPlayer++)
+	{
+		if (nCntPlayer == nIdx && bCPU == false)
+		{// 自分自身は無視
+			continue;
+		}
+
+		D3DXVECTOR3 dist = pPlayer->pos - pos;
+
+		if (D3DXVec3Length(&dist) < CPU_WIDTH + TENTACLE_RADIUS)
+		{// 触手と当たった
+			bColl = true;
+
+			int nEsaIdx = Dequeue(&pPlayer->esaQueue);
+			pPlayer->nFood--;
+
+			pPlayer = GetPlayer();
+			Enqueue(&pPlayer[nIdx].esaQueue, nEsaIdx);
+			pPlayer[nIdx].nFood++;
+
+			return bColl;
+		}
+	}
+
+	return bColl;
 }
 
 //=============================================================================
