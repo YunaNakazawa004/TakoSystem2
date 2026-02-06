@@ -400,7 +400,9 @@ void LoadObject(const char* pStr)
 	// セット用の変数
 	int nIdx = 0;			// テクスチャやモデルの種類
 	int nCollision = 0;		// 当たり判定するかどうか
+	int nShadow = 0;		// 影をつけるかどうか
 	bool bCollision = true;	// 当たり判定するかどうか
+	bool bShadow = false;	// 影をつけるかどうか
 	D3DXVECTOR3 pos;		// 位置
 	D3DXVECTOR3 rot;		// 向き
 
@@ -505,11 +507,36 @@ void LoadObject(const char* pStr)
 					}
 				}
 
+				if (strcmp(&aString[0], "SHADOW") == 0)
+				{// 影
+					fscanf(pFile, " = %d", &nShadow);
+
+					// 影の真偽を代入
+					if (nShadow == 0)
+					{// false
+						bShadow = false;
+					}
+					else if (nShadow == 1)
+					{// true
+						bShadow = true;
+					}
+
+					fscanf(pFile, "%s", &aString[0]);
+
+					if (aString[0] == '#')
+					{// コメント無視
+						fgets(&aTrash[0], ONE_LINE, pFile);
+
+						// 次の文字列を読み込む
+						fscanf(pFile, "%s", &aString[0]);
+					}
+				}
+
 				if (strcmp(&aString[0], "COLLISION") == 0)
-				{// ループするかどうか
+				{// 当たり判定
 					fscanf(pFile, " = %d", &nCollision);
 
-					// ループの真偽を代入
+					// 当たり判定の真偽を代入
 					if (nCollision == 0)
 					{// false
 						bCollision = false;
