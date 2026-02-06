@@ -42,7 +42,4 @@ void UpdateStage(void);
 void DrawStage(void);
 void CollisionStage(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, float fWidth, float fDepth);
 
-void MoveOceanCurrents			// ’†S‚ğ²‚É‚µ‚½ŠC—¬‚ÌˆÚ“®ˆ—
-(D3DXVECTOR3 *pPos);				// ˆÊ’u
-
 #endif
