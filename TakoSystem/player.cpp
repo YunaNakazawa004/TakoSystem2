@@ -8,6 +8,7 @@
 #include "computer.h"
 #include "meshcylinder.h"
 #include "meshring.h"
+#include "object.h"
 #include "particle_3d.h"
 #include "crosshair.h"
 #include "watersurf.h"
@@ -391,7 +392,8 @@ void UpdatePlayer(void)
 						//PrintDebugProc("触手のpos ( %f %f %f )\n", pPlayer->aModel[4].mtxWorld._41, pPlayer->aModel[4].mtxWorld._42, pPlayer->aModel[4].mtxWorld._43);
 						D3DXVECTOR3 tentaclePos = D3DXVECTOR3(pPlayer->aModel[4].mtxWorld._41, pPlayer->aModel[4].mtxWorld._42, pPlayer->aModel[4].mtxWorld._43);
 
-						if (CollisionPotArea(tentaclePos, TENTACLE_RADIUS * 0.5f, pPlayer, NULL, true) == true)
+						if (CollisionPotArea(tentaclePos, TENTACLE_RADIUS * 0.5f, pPlayer, NULL, true) == true ||
+							CollisionOcto(nCntPlayer, false, pPlayer->pos) == true)
 						{// タコつぼからエサをとる
 							pPlayer->TentacleState = PLTENTACLESTATE_TENTACLESHORT;
 
@@ -400,7 +402,9 @@ void UpdatePlayer(void)
 						else if (pCrossHair->state == CROSSHAIRSTATE_REACH &&
 							(CollisionMeshCylinder(&tentaclePos, &pPlayer->pos, &pPlayer->move,
 								TENTACLE_RADIUS, TENTACLE_RADIUS, true) == true ||
-								tentaclePos.y < 0.0f))
+								tentaclePos.y < 0.0f) || 
+							CollisionObject(&tentaclePos, &pPlayer->pos, &pPlayer->move, 
+								TENTACLE_RADIUS, TENTACLE_RADIUS) == true)
 						{// 壁との当たり判定
 							pPlayer->state = PLAYERSTATE_DASH;
 							pPlayer->TentacleState = PLTENTACLESTATE_TENTACLESHORT;
@@ -653,7 +657,8 @@ void UpdatePlayer(void)
 
 			if (CollisionMeshCylinder(&dist, &pPlayer->pos, &pPlayer->move,
 				0.0f, 0.0f, true) == true ||
-				dist.y < 0.0f)
+				dist.y < 0.0f || 
+				CollisionObject(&dist, &pPlayer->pos, &pPlayer->move, 0.0f, 0.0f) == true)
 			{// 壁に当たった・オブジェクトに当たった・エサに当たった
 				// クロスヘアの設定
 				SetCrossHair(nCntPlayer, CROSSHAIRSTATE_REACH);
@@ -723,8 +728,9 @@ void UpdatePlayer(void)
 			CollisionMeshCylinder(&posAway, &pPlayer->pos, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight, true);
 
 			// 当たり判定
-			CollisionMeshCylinder(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight, false);
 			CollisionPot(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight);
+			CollisionObject(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight);
+			CollisionMeshCylinder(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight, false);
 
 			if (pPlayer->nFood < pPlayer->nMaxFood * PLAYER_TENTACLE)
 			{// 持てる数より少ない
