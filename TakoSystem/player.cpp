@@ -8,6 +8,7 @@
 #include "computer.h"
 #include "meshcylinder.h"
 #include "meshring.h"
+#include "object.h"
 #include "particle_3d.h"
 #include "crosshair.h"
 #include "watersurf.h"
@@ -723,8 +724,9 @@ void UpdatePlayer(void)
 			CollisionMeshCylinder(&posAway, &pPlayer->pos, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight, true);
 
 			// “–‚½‚è”»’è
-			CollisionMeshCylinder(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight, false);
 			CollisionPot(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight);
+			CollisionObject(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight);
+			CollisionMeshCylinder(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight, false);
 
 			if (pPlayer->nFood < pPlayer->nMaxFood * PLAYER_TENTACLE)
 			{// Ž‚Ä‚é”‚æ‚è­‚È‚¢
