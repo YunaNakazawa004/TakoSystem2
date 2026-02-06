@@ -36,8 +36,6 @@ void InitTitle(void)
 {
 	LPDIRECT3DDEVICE9 pDevice;	// デバイスへのポインタ
 
-	int nCamera, nVecR;
-
 	g_TitleDeley = 0.0f;	// ディレイの値を初期化
 	g_PressEnterDeley = 0;
 
@@ -66,8 +64,8 @@ void InitTitle(void)
 	// 乱数の種を設定
 	srand((unsigned int)time(0));
 
-	nCamera = rand() % 6;	// カメラの位置設定
-	nVecR = rand() % 5;		// カメラの角度設定
+	int nCamera = rand() % 6;	// カメラの位置設定
+	int nVecR = rand() % 5;		// カメラの角度設定
 
 	// カメラの位置設定
 	SetCameraPos(0, D3DXVECTOR3(0.0f, ((float)nCamera * 100.0f) + 600.0f, 0.0f), 

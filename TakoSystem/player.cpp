@@ -8,10 +8,10 @@
 #include "computer.h"
 #include "meshcylinder.h"
 #include "meshring.h"
-#include "esa.h"
 #include "particle_3d.h"
 #include "crosshair.h"
 #include "watersurf.h"
+#include "pot.h"
 #include "camera.h"
 #include "input.h"
 #include "time.h"
@@ -42,7 +42,7 @@
 #define INK_CT					(ONE_SECOND * 5 + ONE_SECOND)			// 墨吐きのクールダウン
 #define RIPPLE_COUNT			(20)									// 水面に波紋が出る間隔
 #define PLAYER_TENTACLE			(8)										// プレイヤーの足の数
-#define PLAYER_RADIUS			(50.0f)									// 半径
+#define PLAYER_RADIUS			(25.0f)									// 半径
 #define PLAYER_HEIGHT			(100.0f)								// 高さ
 #define TENTACLE_RADIUS			(100.0f)								// 触手の当たり判定
 #define PLAYER_FILE				"data\\motion_octo_1.txt"				// プレイヤーのデータファイル
@@ -71,6 +71,7 @@ void InitPlayer(void)
 	// プレイヤーの情報の初期化
 	for (int nCntPlayer = 0; nCntPlayer < MAX_PLAYER; nCntPlayer++, pPlayer++)
 	{
+		pPlayer->nIdx = nCntPlayer;
 		pPlayer->pos = FIRST_POS;
 		pPlayer->posOld = FIRST_POS;
 		pPlayer->move = FIRST_POS;
@@ -92,6 +93,9 @@ void InitPlayer(void)
 		pPlayer->bBlind = false;
 		pPlayer->nBlindCounter = 0;
 		pPlayer->nFood = 0;
+		pPlayer->esaQueue.nTail = -1;
+		memset(&pPlayer->esaQueue.nData, -1, sizeof(int));
+		pPlayer->Potstate = POTSTATE_NONE;
 		pPlayer->nMaxFood = 0;
 		pPlayer->nTentacleCooldown = 0;
 		pPlayer->nInkCooldown = 0;
@@ -239,6 +243,8 @@ void UpdatePlayer(void)
 				break;
 			}
 
+			PrintDebugProc("エサの数 %d / %d\n", pPlayer->nFood, pPlayer->nMaxFood * PLAYER_TENTACLE);
+
 			if (pPlayer->state != PLAYERSTATE_APPEAR && pPlayer->state != PLAYERSTATE_DASH)
 			{// 出現状態のときは移動できない
 				// パッド移動
@@ -385,7 +391,13 @@ void UpdatePlayer(void)
 						//PrintDebugProc("触手のpos ( %f %f %f )\n", pPlayer->aModel[4].mtxWorld._41, pPlayer->aModel[4].mtxWorld._42, pPlayer->aModel[4].mtxWorld._43);
 						D3DXVECTOR3 tentaclePos = D3DXVECTOR3(pPlayer->aModel[4].mtxWorld._41, pPlayer->aModel[4].mtxWorld._42, pPlayer->aModel[4].mtxWorld._43);
 
-						if (pCrossHair->state == CROSSHAIRSTATE_REACH &&
+						if (CollisionPotArea(tentaclePos, TENTACLE_RADIUS * 0.5f, pPlayer, NULL, true) == true)
+						{// タコつぼからエサをとる
+							pPlayer->TentacleState = PLTENTACLESTATE_TENTACLESHORT;
+
+							SetMotionPlayer(nCntPlayer, MOTIONTYPE_TENTACLESHORT, true, 20);
+						}
+						else if (pCrossHair->state == CROSSHAIRSTATE_REACH &&
 							(CollisionMeshCylinder(&tentaclePos, &pPlayer->pos, &pPlayer->move,
 								TENTACLE_RADIUS, TENTACLE_RADIUS, true) == true ||
 								tentaclePos.y < 0.0f))
@@ -628,7 +640,7 @@ void UpdatePlayer(void)
 				CorrectAngle(&pPlayer->rot.x, pPlayer->rot.x);
 			}
 
-			if (GetTime() % (ONE_SECOND * 10) == 0 && GetTime() != ONE_GAME)
+			if (nCounter % (ONE_SECOND * 10) == 0 && GetTime() != ONE_GAME)
 			{// 持てるエサの最大値が増える
 				pPlayer->nMaxFood++;
 			}
@@ -712,6 +724,7 @@ void UpdatePlayer(void)
 
 			// 当たり判定
 			CollisionMeshCylinder(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight, false);
+			CollisionPot(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight);
 
 			if (pPlayer->nFood < pPlayer->nMaxFood * PLAYER_TENTACLE)
 			{// 持てる数より少ない
@@ -723,8 +736,11 @@ void UpdatePlayer(void)
 					pEsa[nIdx].bUse = false;
 
 					pPlayer->nFood++;
+					Enqueue(&pPlayer->esaQueue, nIdx);
 				}
 			}
+
+			CollisionPotArea(pPlayer->pos, pPlayer->fRadius, pPlayer, NULL, false);
 
 			nCounter++;
 
@@ -892,6 +908,7 @@ void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 {
 	Player* pPlayer = GetPlayer();
 
+	pPlayer[nIdx].nIdx = nIdx;
 	pPlayer[nIdx].pos = pos;
 	pPlayer[nIdx].posOld = pos;
 	pPlayer[nIdx].rot = rot;
@@ -908,6 +925,7 @@ void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	pPlayer[nIdx].bBlind = false;
 	pPlayer[nIdx].nBlindCounter = 0;
 	pPlayer[nIdx].nFood = 0;
+	pPlayer[nIdx].Potstate = POTSTATE_NONE;
 	pPlayer[nIdx].nMaxFood = 1;
 	pPlayer[nIdx].nTentacleCooldown = 0;
 	pPlayer[nIdx].nInkCooldown = 0;
@@ -1798,4 +1816,49 @@ void SetMotionPlayer(int nIdx, MOTIONTYPE motionType, bool bBlendMotion, int nFr
 			}
 		}
 	}
+}
+
+//=============================================================================
+// エサキューにエンキュー
+//=============================================================================
+void Enqueue(EsaQueue* queue, int nIdx)
+{
+	if (queue->nTail == MAX_QUEUE - 1)
+	{// キューが満杯なら何もせず関数終了 
+		return;
+	}
+
+	// データをデータの最後尾の１つ後ろに格納
+	queue->nData[queue->nTail + 1] = nIdx;
+
+	// データの最後尾を１つ後ろに移動 
+	queue->nTail = queue->nTail + 1;
+}
+
+//=============================================================================
+// エサキューにデキュー
+//=============================================================================
+int Dequeue(EsaQueue* queue)
+{
+	int nIdx = -1;
+
+	if (queue->nTail == -1)
+	{// キューが空なら何もせずに関数終了
+		return -1;
+	}
+
+	// データの先頭からデータを取得
+	nIdx = queue->nData[0];
+
+	// データの先頭を１つ後ろにずらす
+	for (int nCnt = 0; nCnt < queue->nTail; nCnt++)
+	{
+		queue->nData[nCnt] = queue->nData[nCnt + 1];
+	}
+
+	// データの最後尾も１つ前にずらす
+	queue->nTail = queue->nTail - 1;
+
+	// 取得したデータを返す
+	return nIdx;
 }

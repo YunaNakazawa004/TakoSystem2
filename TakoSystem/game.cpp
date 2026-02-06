@@ -76,7 +76,7 @@ void InitGame(void)
 	//InitStage();
 
 	// 配置物の初期化処理
-	InitObject("objpos.txt");
+	InitObject("objpos001.txt");
 
 	// メッシュシリンダーの初期化処理
 	InitMeshCylinder();

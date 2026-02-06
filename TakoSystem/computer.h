@@ -9,6 +9,7 @@
 #define _COMPUTER_H_		// 2重インクルード防止のマクロを定義する
 
 #include "main.h"
+#include "player.h"
 #include "model.h"
 
 //*****************************************************************************
@@ -103,6 +104,8 @@ typedef struct
 
 	// 所持エサ
 	int nFoodCount;				// 所持エサの数
+	EsaQueue esaQueue;			// エサのキュー情報
+	POTSTATE Potstate;			// 状態
 	int nMaxFood;				// 一本の足にもてるエサの最大数
 
 	// ナビゲーション
