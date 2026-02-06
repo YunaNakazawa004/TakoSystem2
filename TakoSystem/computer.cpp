@@ -5,7 +5,6 @@
 // 
 //=============================================================================
 #include "computer.h"
-#include "player.h"
 #include "esa.h"
 #include "pot.h"
 #include "time.h"
@@ -165,6 +164,9 @@ void InitComputer(void)
 		pComputer->nBlindCounter = 0;
 
 		pComputer->nFoodCount = 0;
+		pComputer->esaQueue.nTail = -1;
+		memset(&pComputer->esaQueue.nData, -1, sizeof(int));
+		pComputer->Potstate = POTSTATE_NONE;
 		pComputer->nMaxFood = 1;
 
 		pComputer->nCurrentNode = 0;
@@ -473,7 +475,13 @@ void UpdateComputer(void)
 					{// 触手が伸ばし終わったら
 						D3DXVECTOR3 tentaclePos = D3DXVECTOR3(pComputer->aModel[4].mtxWorld._41, pComputer->aModel[4].mtxWorld._42, pComputer->aModel[4].mtxWorld._43);
 
-						if (CollisionMeshCylinder(&tentaclePos, &pComputer->phys.pos, &pComputer->phys.move,
+						if (CollisionPotArea(tentaclePos, TENTACLE_RADIUS * 0.5f, NULL, pComputer, true) == true)
+						{// タコつぼからエサをとる
+							pComputer->TentState = CPUTENTACLESTATE_TENTACLESHORT;
+
+							SetMotionComputer(nCntComputer, MOTIONTYPE_TENTACLESHORT, true, 20);
+						}
+						else if (CollisionMeshCylinder(&tentaclePos, &pComputer->phys.pos, &pComputer->phys.move,
 							TENTACLE_RADIUS, TENTACLE_RADIUS, true) == true ||
 							tentaclePos.y < 0.0f)
 						{// 壁との当たり判定
@@ -631,7 +639,7 @@ void UpdateComputer(void)
 				CorrectAngle(&pComputer->phys.rot.x, pComputer->phys.rot.x);
 			}
 
-			if (GetTime() % (ONE_SECOND * 10) == 0 && GetTime() != ONE_GAME)
+			if (nCounter % (ONE_SECOND * 10) == 0 && GetTime() != ONE_GAME)
 			{// 持てるエサの最大値が増える
 				pComputer->nMaxFood++;
 			}
@@ -659,6 +667,8 @@ void UpdateComputer(void)
 
 			// 当たり判定
 			CollisionMeshCylinder(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, false);
+			CollisionPot(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius);
+			CollisionPotArea(pComputer->phys.pos, pComputer->phys.fRadius, NULL, pComputer, false);
 
 			nCounter++;
 
@@ -792,6 +802,7 @@ void MoveToFood(Computer* pComputer)
 		pEsa[nIdx].bUse = false;
 
 		pComputer->nFoodCount++;
+		Enqueue(&pComputer->esaQueue, nIdx);
 	}
 }
 
@@ -965,13 +976,6 @@ void HideFood(Computer* pComputer)
 	Pot* pPot = GetPot();
 	pPot = &pPot[pComputer->nTargetPotIdx];
 
-	// 自分のエサをタコつぼに移す
-	if (pComputer->nFoodCount > 0)
-	{
-		pPot->nFood += pComputer->nFoodCount;
-		pComputer->nFoodCount = 0;
-	}
-
 	// 隠し終わったら探索へ戻る
 	pComputer->state = CPUSTATE_EXPLORE;
 }
@@ -993,17 +997,14 @@ void StealFood(Computer* pComputer)
 	D3DXVECTOR3 posDiff = pPot->pos - pComputer->phys.pos;
 	float dist = D3DXVec3Length(&posDiff);
 
-	if (dist < TENTACLE_REACH)
-	{
-		pComputer->nFoodCount += pPot->nFood;
-		pPot->nFood = 0;
+	if (dist < TENTACLE_RADIUS * 0.5f)
+	{// 触手の範囲内
+		pComputer->targetWall = pPot->pos;
+		UseTentacle(pComputer);
 
-		if (pPot->nFood <= 0)
-		{// 全部奪ったら探索へ
-			pComputer->state = CPUSTATE_EXPLORE;
+		pComputer->state = CPUSTATE_EXPLORE;
 
-			return;
-		}
+		return;
 	}
 
 	// まだ距離が遠いなら近づく
@@ -1051,9 +1052,8 @@ void FinalCollect(Computer* pComputer)
 		Pot* pPot = GetPot();
 		pPot = &pPot[pComputer->nTargetPotIdx];
 
-		// 全部回収
-		pComputer->nFoodCount += pPot->nFood;
-		pPot->nFood = 0;
+		pComputer->targetWall = pPot[pComputer->nTargetPotIdx].pos;
+		UseTentacle(pComputer);
 
 		// 回収後は次のタコつぼへ
 		pComputer->state = CPUSTATE_EXPLORE;
@@ -2308,6 +2308,8 @@ void SetComputer(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 			pComputer->nBlindCounter = 0;
 
 			pComputer->nFoodCount = 0;
+			memset(&pComputer->esaQueue.nData, -1, sizeof(int));
+			pComputer->Potstate = POTSTATE_NONE;
 			pComputer->nMaxFood = 1;
 
 			pComputer->nCurrentNode = 0;

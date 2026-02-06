@@ -9,11 +9,13 @@
 
 #include "main.h"
 #include "model.h"
+#include "esa.h"
 
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
 #define START_POS		(D3DXVECTOR3(0.0f, 0.0f, -200.0f))		// 開始位置
+#define MAX_QUEUE		(256)									// キューに入るデータ数
 
 //*****************************************************************************
 // プレイヤーの状態
@@ -41,10 +43,31 @@ typedef enum
 }PLTENTACLESTATE;
 
 //*****************************************************************************
+// キュー構造体
+//*****************************************************************************
+typedef struct
+{
+	int nTail;					// データの最後尾
+	int nData[MAX_QUEUE];		// エサのインデックスデータ
+}EsaQueue;
+
+//*****************************************************************************
+// タコつぼとの関係
+//*****************************************************************************
+typedef enum
+{
+	POTSTATE_NONE = 0,			// 何もしてない
+	POTSTATE_HIDE,				// 隠されている最中
+	POTSTATE_STEAL,				// 盗られている最中
+	POTSTATE_MAX
+}POTSTATE;
+
+//*****************************************************************************
 // プレイヤーの構造体
 //*****************************************************************************
 typedef struct
 {
+	int nIdx;									// プレイヤーのインデックス
 	D3DXVECTOR3 pos;							// 現在の位置
 	D3DXVECTOR3 posOld;							// 前回の位置
 	D3DXVECTOR3 move;							// 移動量
@@ -74,6 +97,8 @@ typedef struct
 	int nBlindCounter;							// 視界が悪いのを制御するカウンター
 
 	int nFood;									// 持っているエサの数
+	EsaQueue esaQueue;							// 持っているエサのキュー配列
+	POTSTATE Potstate;							// 状態
 	int nMaxFood;								// 一本の腕に一度に持てるエサの数
 
 	int nTentacleCooldown;						// 触手のクールダウン
@@ -113,5 +138,9 @@ void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot);
 Player* GetPlayer(void);
 void UpdateMotionPlayer(void);
 void SetMotionPlayer(int nIdx, MOTIONTYPE motionType, bool bBlendMotion, int nFrameBlend);
+
+// キュー
+void Enqueue(EsaQueue* queue, int nIdx);
+int Dequeue(EsaQueue* queue);
 
 #endif
