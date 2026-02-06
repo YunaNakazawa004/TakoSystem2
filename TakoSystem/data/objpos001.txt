@@ -14,8 +14,8 @@ NUM_TEXTURE = 2
 #------------------------------------------------------------------------------
 # テクスチャファイル名
 #------------------------------------------------------------------------------
-TEXTURE_FILENAME = data/TEXTURE1/In_the_sea.png			# [0]海テクスチャ
-TEXTURE_FILENAME = data/TEXTURE1/suna.png				# [1]砂テクスチャ
+TEXTURE_FILENAME = data/TEXTURE/In_the_sea.png			# [0]海テクスチャ
+TEXTURE_FILENAME = data/TEXTURE/suna.png				# [1]砂テクスチャ
 
 #------------------------------------------------------------------------------
 # モデル数
