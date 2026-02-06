@@ -931,6 +931,7 @@ void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	pPlayer[nIdx].bBlind = false;
 	pPlayer[nIdx].nBlindCounter = 0;
 	pPlayer[nIdx].nFood = 0;
+	memset(&pPlayer[nIdx].esaQueue.nData, -1, sizeof(int));
 	pPlayer[nIdx].Potstate = POTSTATE_NONE;
 	pPlayer[nIdx].nMaxFood = 1;
 	pPlayer[nIdx].nTentacleCooldown = 0;
