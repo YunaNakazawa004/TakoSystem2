@@ -265,7 +265,7 @@ void DrawEffect3D(void)
 			if (g_aEffect3D[nCntEffect].effecttype != EFFECTTYPE_OCTOINK)
 			{
 				// Zテストを無効にする
-				pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
+				pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESS);
 				pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);			// Zバッファ更新の無効の設定
 
 				//アルファテストを有効にする
