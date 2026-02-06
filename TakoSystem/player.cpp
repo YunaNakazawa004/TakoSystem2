@@ -401,7 +401,9 @@ void UpdatePlayer(void)
 						else if (pCrossHair->state == CROSSHAIRSTATE_REACH &&
 							(CollisionMeshCylinder(&tentaclePos, &pPlayer->pos, &pPlayer->move,
 								TENTACLE_RADIUS, TENTACLE_RADIUS, true) == true ||
-								tentaclePos.y < 0.0f))
+								tentaclePos.y < 0.0f) || 
+							CollisionObject(&tentaclePos, &pPlayer->pos, &pPlayer->move, 
+								TENTACLE_RADIUS, TENTACLE_RADIUS) == true)
 						{// 壁との当たり判定
 							pPlayer->state = PLAYERSTATE_DASH;
 							pPlayer->TentacleState = PLTENTACLESTATE_TENTACLESHORT;
@@ -654,7 +656,8 @@ void UpdatePlayer(void)
 
 			if (CollisionMeshCylinder(&dist, &pPlayer->pos, &pPlayer->move,
 				0.0f, 0.0f, true) == true ||
-				dist.y < 0.0f)
+				dist.y < 0.0f || 
+				CollisionObject(&dist, &pPlayer->pos, &pPlayer->move, 0.0f, 0.0f) == true)
 			{// 壁に当たった・オブジェクトに当たった・エサに当たった
 				// クロスヘアの設定
 				SetCrossHair(nCntPlayer, CROSSHAIRSTATE_REACH);
