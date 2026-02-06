@@ -14,6 +14,7 @@
 #include "game.h"
 #include "object.h"
 #include "meshcylinder.h"
+#include "meshfield.h"
 #include "waterSurf.h"
 #include "computer.h"
 
@@ -43,6 +44,9 @@ void InitTitle(void)
 	InitMeshCylinder();
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 2.0f), D3DXVECTOR2(INCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, MESHCYLINDERTYPE_ROCK);
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(OUTCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), true, MESHCYLINDERTYPE_SEA);
+
+	// メッシュフィールドの初期化処理
+	InitMeshField();
 
 	// 水面の初期化処理
 	InitWaterSurf();
@@ -197,6 +201,9 @@ void UninitTitle(void)
 	// メッシュシリンダーの終了処理
 	UninitMeshCylinder();
 
+	// メッシュフィールドの終了処理
+	UninitMeshField();
+
 	// 水面の終了処理
 	UninitWaterSurf();
 
@@ -229,6 +236,9 @@ void UpdateTitle(void)
 
 	// メッシュシリンダーの更新処理
 	UpdateMeshCylinder();
+
+	// メッシュフィールドの更新処理
+	UpdateMeshField();
 
 	// 水面の更新処理
 	UpdateWaterSurf();
@@ -355,6 +365,9 @@ void DrawTitle(void)
 
 	// メッシュシリンダーの描画処理
 	DrawMeshCylinder();
+
+	// メッシュフィールドの描画処理
+	DrawMeshField();
 
 	// 水面の描画処理
 	DrawWaterSurf();
