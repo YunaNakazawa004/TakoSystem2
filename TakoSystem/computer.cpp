@@ -476,7 +476,8 @@ void UpdateComputer(void)
 					{// 触手が伸ばし終わったら
 						D3DXVECTOR3 tentaclePos = D3DXVECTOR3(pComputer->aModel[4].mtxWorld._41, pComputer->aModel[4].mtxWorld._42, pComputer->aModel[4].mtxWorld._43);
 
-						if (CollisionPotArea(tentaclePos, TENTACLE_RADIUS * 0.5f, NULL, pComputer, true) == true)
+						if (CollisionPotArea(tentaclePos, TENTACLE_RADIUS * 0.5f, NULL, pComputer, true) == true ||
+							CollisionOcto(nCntComputer, true, pComputer->phys.pos) == true)
 						{// タコつぼからエサをとる
 							pComputer->TentState = CPUTENTACLESTATE_TENTACLESHORT;
 
