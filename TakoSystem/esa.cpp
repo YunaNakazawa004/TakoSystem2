@@ -62,6 +62,7 @@ EsaModel_info g_aEsaModelInfo[] =
 	{"data/MODEL/esa/shell000.x",		0.0001f,	10.0f,	10},	// [0]貝
 	{"data/MODEL/esa/shrimp.x",			0.005f,	10.0f,	10},		// [2]エビ
 	{"data/MODEL/esa/Yadokari.x",		0.005f,	10.0f,	10},		// [2]エビ
+	{"data/MODEL/esa/spiny_lobster000.x",		0.005f,	10.0f,	10},		// [2]エビ
 };
 
 int g_nNumEsatype;						// エサの種類の総数
