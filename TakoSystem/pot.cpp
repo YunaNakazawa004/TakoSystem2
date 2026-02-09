@@ -144,7 +144,7 @@ void InitPot(void)
 	}
 
 	// ƒ‰ƒ“ƒ_ƒ€‚ÈˆÊ’u‚ÉÝ’è
-	SetRandomPot(1);
+	SetRandomPot(20);
 }
 
 //=============================================================================
@@ -439,11 +439,11 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 							{// Ž‚Ä‚é”‚¾‚¯Ž‚Â
 								int nIdx = Dequeue(&pPot->esaQueue);
 								pPot->nFood--;
-								SetAddUiEsa(pPlayer->nIdx, nIdx);
 								SetEsa(nIdx, ESA_ACTTYPE_GOTO_PLAYER, 0, pPot->pos, FIRST_POS);
 
-								Enqueue(&pPlayer->esaQueue, nIdx);
-								pPlayer->nFood++;
+								//SetAddUiEsa(pPlayer->nIdx, nIdx);
+								//Enqueue(&pPlayer->esaQueue, nIdx);
+								//pPlayer->nFood++;
 							}
 						}
 					}
@@ -482,8 +482,8 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 								int nIdx = Dequeue(&pPot->esaQueue);
 								pPot->nFood--;
 
-								Enqueue(&pComputer->esaQueue, nIdx);
-								pComputer->nFoodCount++;
+								//Enqueue(&pComputer->esaQueue, nIdx);
+								//pComputer->nFoodCount++;
 							}
 						}
 					}
