@@ -166,7 +166,7 @@ void InitComputer(void)
 
 		pComputer->nFoodCount = 0;
 		pComputer->esaQueue.nTail = -1;
-		memset(&pComputer->esaQueue.nData, -1, sizeof(int));
+		memset(&pComputer->esaQueue.nData, -1, sizeof(int[MAX_QUEUE]));
 		pComputer->Potstate = POTSTATE_NONE;
 		pComputer->nMaxFood = 1;
 
@@ -2313,7 +2313,7 @@ void SetComputer(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 			pComputer->nBlindCounter = 0;
 
 			pComputer->nFoodCount = 0;
-			memset(&pComputer->esaQueue.nData, -1, sizeof(int));
+			memset(&pComputer->esaQueue.nData, -1, sizeof(int[MAX_QUEUE]));
 			pComputer->Potstate = POTSTATE_NONE;
 			pComputer->nMaxFood = 1;
 
