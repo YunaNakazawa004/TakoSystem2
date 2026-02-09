@@ -22,10 +22,10 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define MOVEMENT				(D3DXVECTOR3(1.0f, 1.0f, 1.0f))			// 移動量
+#define MOVEMENT				(D3DXVECTOR3(0.3f, 0.3f, 0.3f))			// 移動量
 #define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// 向き移動量
-#define SEA_GRAVITY				(-0.1f)									// 重力
-#define INERTIA_MOVE			(0.2f)									// 移動の慣性
+#define SEA_GRAVITY				(-0.02f)								// 重力
+#define INERTIA_MOVE			(0.05f)									// 移動の慣性
 #define DASH_MOVE				(0.04f)									// 高速移動の速さ
 #define DASH_RATE				(0.15f)									// 高速移動の速さ
 #define DASH_REACH				(10.0f)									// 高速移動のリーチ
@@ -259,7 +259,7 @@ void UpdatePlayer(void)
 					fAngle = atan2f((float)(nValueH), (float)(nValueV));
 
 					pPlayer->move.x += sinf(fAngle + pCamera->rot.y) * MOVEMENT.x * sinf((D3DX_PI * 0.5f) + pCamera->fAngle);
-					pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * (nValueV / 30300);
+					pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * (nValueV / 30300) * MOVEMENT.y;
 					pPlayer->move.z += cosf(fAngle + pCamera->rot.y) * MOVEMENT.z * sinf((D3DX_PI * 0.5f) + pCamera->fAngle);
 
 					pPlayer->bMove = true;
@@ -530,24 +530,26 @@ void UpdatePlayer(void)
 				pPlayer->nBlindCounter = 0;
 			}
 
-			// 移動量制限
-			if (pPlayer->move.x > MAX_MOVE)
-			{// 最大X
-				pPlayer->move.x = MAX_MOVE;
-			}
-			else if (pPlayer->move.x < -MAX_MOVE)
-			{// 最小X
-				pPlayer->move.x = -MAX_MOVE;
-			}
+			//// 移動量制限
+			//if (pPlayer->move.x > MAX_MOVE)
+			//{// 最大X
+			//	pPlayer->move.x = MAX_MOVE;
+			//}
+			//else if (pPlayer->move.x < -MAX_MOVE)
+			//{// 最小X
+			//	pPlayer->move.x = -MAX_MOVE;
+			//}
 
-			if (pPlayer->move.z > MAX_MOVE)
-			{// 最大Z
-				pPlayer->move.z = MAX_MOVE;
-			}
-			else if (pPlayer->move.z < -MAX_MOVE)
-			{// 最小Z
-				pPlayer->move.z = -MAX_MOVE;
-			}
+			//if (pPlayer->move.z > MAX_MOVE)
+			//{// 最大Z
+			//	pPlayer->move.z = MAX_MOVE;
+			//}
+			//else if (pPlayer->move.z < -MAX_MOVE)
+			//{// 最小Z
+			//	pPlayer->move.z = -MAX_MOVE;
+			//}
+
+			PrintDebugProc("プレイヤーのmove ( %f %f %f )\n", pPlayer->move.x, pPlayer->move.y, pPlayer->move.z);
 
 			// 重力
 			pPlayer->move.y += SEA_GRAVITY;

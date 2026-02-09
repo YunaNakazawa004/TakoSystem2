@@ -27,6 +27,7 @@
 #define INERTIA_MOVE			(0.2f)									// 移動の慣性
 #define DASH_MOVE				(0.01f)									// 高速移動の速さ
 #define DASH_REACH				(10.0f)									// 高速移動のリーチ
+#define SEA_GRAVITY				(-0.02f)								// 重力
 #define MAX_MOVE				(10.0f)									// 移動の制限
 #define INERTIA_ANGLE			(0.1f)									// 角度の慣性
 #define POS_ERROR				(10.0f)									// 位置の誤差
@@ -544,6 +545,9 @@ void UpdateComputer(void)
 			{// 最小Z
 				pComputer->phys.move.z = -MAX_MOVE;
 			}
+
+			// 重力
+			pComputer->phys.move.y += SEA_GRAVITY;
 
 			if (pComputer->state != CPUSTATE_APPEAR)
 			{// 出現状態以外
