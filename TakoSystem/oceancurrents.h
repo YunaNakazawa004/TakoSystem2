@@ -53,13 +53,10 @@ int SetOceanCurrentsPolygon					// 海流のポリゴン設定処理
 void DelOceanCurrentsUi						// 海流UIの削除処理
 (int nIdxOCUi);									// インテックス
 
-void UpdateOCState(void);					// 海流の状態更新処理
+void UpdateOceanCurrentsState(void);					// 海流の状態更新処理
 
 void MoveOceanCurrents						// 中心を軸にした海流の移動処理
 (D3DXVECTOR3* pPos);
-
-void SetWarningOceanCurrents				// 海流の警告処理
-(D3DXVECTOR3 pos, int nWaitTime);
 
 OCEANCURRENTSSTATE GetOceanCurrents(void);	// 現在の海流の状態を返す
 

@@ -24,7 +24,7 @@
 
 #define WIRLPOOL_WAITTIME			(9)			// 待機時間の長さ
 
-#define OCEANCURRECT_TIME_NOMAL		(60 * /*20*/10)					// 通常状態の継続時間
+#define OCEANCURRECT_TIME_NOMAL		(60 * 20)					// 通常状態の継続時間
 #define OCEANCURRECT_SPEED_NOMAL	(0.00005f)					// 通常時の海流の速さ	
 
 #define OCEANCURRECT_TIME_WAIT		(60 * WIRLPOOL_WAITTIME)	// 渦潮待機状態の継続時間
@@ -119,13 +119,15 @@ const char* c_apFilenameOceanCurrents[] =
 	"data/TEXTURE/ui_OceanCurrents/tex_alpha000.jpg",			// [1]バックテクスチャ
 	"data/TEXTURE/ui_OceanCurrents/tex_warning000.jpg",			// [2]トラテープ
 	"data/TEXTURE/ui_OceanCurrents/text_warning.png",			// [3]テキスト「warning!」
-	"data/TEXTURE/number000.png",								// [4]数字
+	"data/TEXTURE/ui_OceanCurrents/text_warning_whirlpool.png",	// [4]テキスト「渦潮注意」
+	"data/TEXTURE/ui_OceanCurrents/text_Hide_behind.png",		// [5]テキスト「物陰に隠れろ」
+	"data/TEXTURE/number000.png",								// [6]数字
 };
 
 OCUI_info g_aOCUiInfo[] =
-{// {プレイヤー数, 種類, テクスチャ, aブレンド使用状態, オフセットPOS, 角度, 幅, 高さ, テクスチャ座標, テクスチャ座標加算量, テクスチャサイズ, 色}
+{// {プレイヤー数(あるだけ), 種類, テクスチャ, aブレンド使用状態, オフセットPOS, 角度, 幅, 高さ, テクスチャ座標, テクスチャ座標加算量, テクスチャサイズ, 色}
 
-	{1, OCUITYPE_TIMER,  4, false, D3DXVECTOR3(0.0f, 0.0f, 0.0f),	 D3DXVECTOR3(0.0f, 0.0f, 0.0f), 70.0f, 70.0f, D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(0.1f, 1.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 0.0f)},	// 1P 時間：数字
+	{1, OCUITYPE_TIMER,  6, false, D3DXVECTOR3(0.0f, 0.0f, 0.0f),	 D3DXVECTOR3(0.0f, 0.0f, 0.0f), 50.0f, 50.0f, D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(0.1f, 1.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 0.0f)},	// 1P 時間：数字
 	
 	{1, OCUITYPE_WANING, 1, true,  D3DXVECTOR3(0.0f, 0.0f, 0.0f),	 D3DXVECTOR3(0.0f, 0.0f, 0.0f), 180.0f, 40.0f, D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(1.0f, 1.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f)},	// 1P 警告：バックテクスチャ
 	{1, OCUITYPE_WANING, 0, false, D3DXVECTOR3(-140.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 25.0f, 25.0f,  D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(1.0f, 1.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f)},	// 1P 警告：バックテクスチャ
@@ -134,6 +136,10 @@ OCUI_info g_aOCUiInfo[] =
 	{1, OCUITYPE_WANING, 2, false, D3DXVECTOR3(0.0f, 35.0f, 0.0f),	 D3DXVECTOR3(0.0f, 0.0f, 0.0f), 180.0f, 5.0f,  D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(-0.01f, 0.0f), D3DXVECTOR2(10.0f, 1.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f)},	// 1P 警告：バックテクスチャ
 	{1, OCUITYPE_WANING, 3, false, D3DXVECTOR3(0.0f, -35.0f, 0.0f),	 D3DXVECTOR3(0.0f, 0.0f, 0.0f), 180.0f, 5.0f,  D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(0.01f, 0.0f), D3DXVECTOR2(5.0f, 1.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f)},	// 1P 警告：バックテクスチャ
 	{1, OCUITYPE_WANING, 3, false, D3DXVECTOR3(0.0f, 35.0f, 0.0f),	 D3DXVECTOR3(0.0f, 0.0f, 0.0f), 180.0f, 5.0f,  D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(0.01f, 0.0f), D3DXVECTOR2(5.0f, 1.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f)},	// 1P 警告：バックテクスチャ
+	{1, OCUITYPE_WANING, 4, false, D3DXVECTOR3(0.0f, 0.0f, 0.0f),	 D3DXVECTOR3(0.0f, 0.0f, 0.0f), 100.0f, 25.0f,  D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(1.0f, 1.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f)},	// 1P 警告：バックテクスチャ
+	{1, OCUITYPE_WANING, 5, false, D3DXVECTOR3(0.0f, 60.0f, 0.0f),	 D3DXVECTOR3(0.0f, 0.0f, 0.0f), 65.0f, 20.0f,  D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(1.0f, 1.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f)},	// 1P 警告：バックテクスチャ
+
+	
 };
 
 int g_nNumSelect;
@@ -308,7 +314,7 @@ void UpdateOceanCurrents(void)
 #endif
 
 	// 海流の状態の更新処理
-	UpdateOCState();
+	UpdateOceanCurrentsState();
 
 	// 海流UIの更新
 	for (int nCntOC = 0; nCntOC < MAX_SET_OCEANCURRENTS; nCntOC++)
@@ -560,7 +566,7 @@ int SetOceanCurrentsUi(OCUITYPE type, D3DXVECTOR3 pos, float fSizeMag)
 		g_aOCUi[nCntOCUi].type = type;						// 種類を設定
 		g_aOCUi[nCntOCUi].pos = pos;						// 位置を設定
 		g_aOCUi[nCntOCUi].fSizeMag = fSizeMag;				// 倍率を設定
-		g_aOCUi[nCntOCUi].fColAlpha = fSetColAlpha;				// 全体のa値を設定
+		g_aOCUi[nCntOCUi].fColAlpha = fSetColAlpha;			// 全体のa値を設定
 		g_aOCUi[nCntOCUi].nDiaorTime = nSetDiaorTime;		// a値の加算方向を設定
 		g_aOCUi[nCntOCUi].bUse = true;						// 使用している状態に設定
 
@@ -660,7 +666,7 @@ void DelOceanCurrentsUi(int nIdxOCUi)
 //========================================================================
 // 海流の状態更新処理
 //========================================================================
-void UpdateOCState(void)
+void UpdateOceanCurrentsState(void)
 {
 	g_nCounterOceanCurrents++;	// カウンタを加算
 
@@ -680,8 +686,8 @@ void UpdateOCState(void)
 			g_nCounterOceanCurrents = 0;							// カウンタを初期化
 
 			// 海流UIの設定
-			g_nIdxOCWaning = SetOceanCurrentsUi(OCUITYPE_WANING, D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 666.0f, 0.0f), 1.0f);	// 警告
-			//g_nIdxOCTimer = SetOceanCurrentsUi(OCUITYPE_TIMER, D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 120.0f, 0.0f), 1.0f);	// 警告
+			g_nIdxOCWaning = SetOceanCurrentsUi(OCUITYPE_WANING, D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 635.0f, 0.0f), 1.0f);	// 警告
+			g_nIdxOCTimer = SetOceanCurrentsUi(OCUITYPE_TIMER, D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 160.0f, 0.0f), 1.0f);	// 時間
 		}
 
 		break;
@@ -703,6 +709,7 @@ void UpdateOCState(void)
 
 				// 海流UIの削除
 				DelOceanCurrentsUi(g_nIdxOCWaning);
+				DelOceanCurrentsUi(g_nIdxOCTimer);
 			}
 		}
 
@@ -719,13 +726,6 @@ void UpdateOCState(void)
 			g_OceanCurrentsState = OCEANCURRENTSSTATE_NOMAL;		// 通常状態に設定
 
 			g_nCounterOceanCurrents = 0;							// カウンタを初期化
-
-			if (g_nIdxOCWaning != -1)
-			{// インデックスが設定されている場合
-
-				// 海流UIの削除
-				//DelOceanCurrentsUi(g_nIdxOCTimer);
-			}
 		}
 
 		break;
@@ -761,14 +761,6 @@ void MoveOceanCurrents(D3DXVECTOR3* pPos)
 	// 位置を設定
 	pPos->x = sinf(fNowAngle) * fDistRadius;
 	pPos->z = cosf(fNowAngle) * fDistRadius;
-}
-
-//========================================================================
-// 海流の警告処理
-//========================================================================
-void SetWarningOceanCurrents(D3DXVECTOR3 pos, int nWaitTime)
-{
-
 }
 
 //========================================================================
