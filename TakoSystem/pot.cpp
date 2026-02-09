@@ -61,7 +61,7 @@ void InitPot(void)
 		g_aPot[nCntPot].rot = FIRST_POS;
 		g_aPot[nCntPot].nFood = 0;
 		g_aPot[nCntPot].esaQueue.nTail = -1;
-		memset(&g_aPot[nCntPot].esaQueue.nData, -1, sizeof(int));
+		memset(&g_aPot[nCntPot].esaQueue.nData, -1, sizeof(int[MAX_QUEUE]));
 		g_aPot[nCntPot].bUse = false;
 	}
 
@@ -273,7 +273,7 @@ void SetPot(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 			g_aPot[nCntPot].rot = rot;
 			g_aPot[nCntPot].nFood = 0;
 			g_aPot[nCntPot].esaQueue.nTail = -1;
-			memset(&g_aPot[nCntPot].esaQueue.nData, -1, sizeof(int));
+			memset(&g_aPot[nCntPot].esaQueue.nData, -1, sizeof(int[MAX_QUEUE]));
 			g_aPot[nCntPot].bUse = true;		// égópÇµÇƒÇ¢ÇÈèÛë‘Ç…Ç∑ÇÈ
 
 			break;
