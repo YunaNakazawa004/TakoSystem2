@@ -245,11 +245,27 @@ void UpdatePlayer(void)
 				PrintDebugProc("プレイヤーの状態 : [ PLAYERSTATE_INK ]\n");
 
 				break;
+
+			case PLAYERSTATE_BACKAREA:			// エリア戻り状態
+				PrintDebugProc("プレイヤーの状態 : [ PLAYERSTATE_BACKAREA ]\n");
+
+				D3DXVECTOR3 correct = -pPlayer->pos;
+				pPlayer->move += *D3DXVec3Normalize(&pPlayer->move, &correct);
+
+				pPlayer->nCounterState--;
+				
+				if (pPlayer->nCounterState < 0)
+				{// 戻り状態を終わる
+					pPlayer->state = PLAYERSTATE_NORMAL;
+					pPlayer->nCounterState = 0;
+				}
+
+				break;
 			}
 
 			PrintDebugProc("エサの数 %d / %d\n", pPlayer->nFood, pPlayer->nMaxFood * PLAYER_TENTACLE);
 
-			if (pPlayer->state != PLAYERSTATE_APPEAR && pPlayer->state != PLAYERSTATE_DASH)
+			if (pPlayer->state != PLAYERSTATE_APPEAR && pPlayer->state != PLAYERSTATE_DASH && pPlayer->state != PLAYERSTATE_BACKAREA)
 			{// 出現状態のときは移動できない
 				// パッド移動
 				if (GetJoypadStick(nCntPlayer, JOYKEY_LEFTSTICK, &nValueH, &nValueV) == true)
@@ -502,7 +518,7 @@ void UpdatePlayer(void)
 				}
 			}
 
-			if (pPlayer->state != PLAYERSTATE_DASH && pPlayer->state != PLAYERSTATE_INK
+			if (pPlayer->state != PLAYERSTATE_DASH && pPlayer->state != PLAYERSTATE_INK && pPlayer->state != PLAYERSTATE_BACKAREA
 				&& pPlayer->bMove == true && pPlayer->TentacleState == PLTENTACLESTATE_NORMAL)
 			{// 普通に移動しているとき
 				pPlayer->state = PLAYERSTATE_MOVE;
@@ -584,16 +600,14 @@ void UpdatePlayer(void)
 			// 渦潮
 			MoveOceanCurrents(&pPlayer->pos);
 
-			float fDist = atan2f(pPlayer->pos.x, pPlayer->pos.z);
-			float fRadius = atan2f(OUTCYLINDER_RADIUS, OUTCYLINDER_RADIUS);
-			PrintDebugProc("中心からの距離 %f / %f\n", fDist, fRadius);
+			D3DXVECTOR2 XZdist = D3DXVECTOR2(pPlayer->pos.x, pPlayer->pos.z);
+			float fDist = D3DXVec2Length(&XZdist);
 
 			if (fDist > OUTCYLINDER_RADIUS)
 			{// 移動制限
-				D3DXVECTOR3 correct = -pPlayer->pos;
-
-				D3DXVec3Normalize(&pPlayer->move, &correct);
-				pPlayer->move *= MOVEMENT.x;
+				pPlayer->fAngleY = atan2f(pPlayer->pos.x, pPlayer->pos.z);
+				pPlayer->state = PLAYERSTATE_BACKAREA;
+				pPlayer->nCounterState = ONE_SECOND;
 			}
 
 			if (pPlayer->pos.y < 0.0f)
@@ -802,11 +816,11 @@ void UpdatePlayer(void)
 			else if (GetKeyboardPress(DIK_RIGHT) == true)
 			{// Z軸回転
 				pPlayer->rot.z += -ROT.z;
-		}
+			}
 
 #endif
+		}
 	}
-}
 }
 
 //=============================================================================
