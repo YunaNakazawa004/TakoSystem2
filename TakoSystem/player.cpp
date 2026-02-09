@@ -6,6 +6,7 @@
 //=============================================================================
 #include "player.h"
 #include "computer.h"
+#include "ui_esa.h"
 #include "meshcylinder.h"
 #include "meshring.h"
 #include "object.h"
@@ -22,10 +23,10 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define MOVEMENT				(D3DXVECTOR3(1.0f, 1.0f, 1.0f))			// 移動量
+#define MOVEMENT				(D3DXVECTOR3(0.3f, 0.3f, 0.3f))			// 移動量
 #define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// 向き移動量
-#define SEA_GRAVITY				(-0.1f)									// 重力
-#define INERTIA_MOVE			(0.2f)									// 移動の慣性
+#define SEA_GRAVITY				(-0.02f)								// 重力
+#define INERTIA_MOVE			(0.05f)									// 移動の慣性
 #define DASH_MOVE				(0.04f)									// 高速移動の速さ
 #define DASH_RATE				(0.15f)									// 高速移動の速さ
 #define DASH_REACH				(10.0f)									// 高速移動のリーチ
@@ -95,8 +96,9 @@ void InitPlayer(void)
 		pPlayer->nBlindCounter = 0;
 		pPlayer->nFood = 0;
 		pPlayer->esaQueue.nTail = -1;
-		memset(&pPlayer->esaQueue.nData, -1, sizeof(int));
+		memset(&pPlayer->esaQueue.nData, -1, sizeof(int[MAX_QUEUE]));
 		pPlayer->Potstate = POTSTATE_NONE;
+		pPlayer->nPotIdx = -1;
 		pPlayer->nMaxFood = 0;
 		pPlayer->nTentacleCooldown = 0;
 		pPlayer->nInkCooldown = 0;
@@ -259,7 +261,7 @@ void UpdatePlayer(void)
 					fAngle = atan2f((float)(nValueH), (float)(nValueV));
 
 					pPlayer->move.x += sinf(fAngle + pCamera->rot.y) * MOVEMENT.x * sinf((D3DX_PI * 0.5f) + pCamera->fAngle);
-					pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * (nValueV / 30300);
+					pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * (nValueV / 30300) * MOVEMENT.y;
 					pPlayer->move.z += cosf(fAngle + pCamera->rot.y) * MOVEMENT.z * sinf((D3DX_PI * 0.5f) + pCamera->fAngle);
 
 					pPlayer->bMove = true;
@@ -374,6 +376,8 @@ void UpdatePlayer(void)
 			{
 			case PLTENTACLESTATE_NORMAL:			// 通常状態
 				pPlayer->aModel[2].scale.y = 1.0f;
+				pPlayer->fAngleX = 0.0f;
+				SetCameraViewAngle(nCntPlayer, 45.0f);
 
 				break;
 
@@ -409,6 +413,8 @@ void UpdatePlayer(void)
 							pPlayer->state = PLAYERSTATE_DASH;
 							pPlayer->TentacleState = PLTENTACLESTATE_TENTACLESHORT;
 							SetMotionPlayer(nCntPlayer, MOTIONTYPE_DASH, true, 20);
+							
+							SetCameraViewAngle(nCntPlayer, 15.0f);
 						}
 						else
 						{// 触手を伸ばす
@@ -459,6 +465,8 @@ void UpdatePlayer(void)
 					pPlayer->vecX.z < MOVE_ERROR && pPlayer->vecX.z > -MOVE_ERROR)
 				{// 止まった
 					pPlayer->vecX = FIRST_POS;
+
+					SetCameraViewAngle(nCntPlayer, 45.0f);
 
 					if (pPlayer->motionType == MOTIONTYPE_DASH)
 					{// 高速移動モーションしていたら
@@ -524,24 +532,26 @@ void UpdatePlayer(void)
 				pPlayer->nBlindCounter = 0;
 			}
 
-			// 移動量制限
-			if (pPlayer->move.x > MAX_MOVE)
-			{// 最大X
-				pPlayer->move.x = MAX_MOVE;
-			}
-			else if (pPlayer->move.x < -MAX_MOVE)
-			{// 最小X
-				pPlayer->move.x = -MAX_MOVE;
-			}
+			//// 移動量制限
+			//if (pPlayer->move.x > MAX_MOVE)
+			//{// 最大X
+			//	pPlayer->move.x = MAX_MOVE;
+			//}
+			//else if (pPlayer->move.x < -MAX_MOVE)
+			//{// 最小X
+			//	pPlayer->move.x = -MAX_MOVE;
+			//}
 
-			if (pPlayer->move.z > MAX_MOVE)
-			{// 最大Z
-				pPlayer->move.z = MAX_MOVE;
-			}
-			else if (pPlayer->move.z < -MAX_MOVE)
-			{// 最小Z
-				pPlayer->move.z = -MAX_MOVE;
-			}
+			//if (pPlayer->move.z > MAX_MOVE)
+			//{// 最大Z
+			//	pPlayer->move.z = MAX_MOVE;
+			//}
+			//else if (pPlayer->move.z < -MAX_MOVE)
+			//{// 最小Z
+			//	pPlayer->move.z = -MAX_MOVE;
+			//}
+
+			//PrintDebugProc("プレイヤーのmove ( %f %f %f )\n", pPlayer->move.x, pPlayer->move.y, pPlayer->move.z);
 
 			// 重力
 			pPlayer->move.y += SEA_GRAVITY;
@@ -739,10 +749,15 @@ void UpdatePlayer(void)
 				if (CollisionEsa(&nIdx, false, &pPlayer->pos, pPlayer->fRadius) == true)
 				{// エサと接触した
 					Esa* pEsa = GetEsa();
-					pEsa[nIdx].bUse = false;
 
-					pPlayer->nFood++;
-					Enqueue(&pPlayer->esaQueue, nIdx);
+					if (pEsa[nIdx].esaType != ESA_ACTTYPE_GOTO_POT)
+					{// タコつぼに入れてる最中じゃない
+						pEsa[nIdx].bUse = false;
+						SetAddUiEsa(nCntPlayer, pEsa[nIdx].nIdxModel);
+
+						pPlayer->nFood++;
+						Enqueue(&pPlayer->esaQueue, pEsa[nIdx].nIdxModel);
+					}
 				}
 			}
 
@@ -931,8 +946,9 @@ void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	pPlayer[nIdx].bBlind = false;
 	pPlayer[nIdx].nBlindCounter = 0;
 	pPlayer[nIdx].nFood = 0;
-	memset(&pPlayer[nIdx].esaQueue.nData, -1, sizeof(int));
+	memset(&pPlayer[nIdx].esaQueue.nData, -1, sizeof(int[MAX_QUEUE]));
 	pPlayer[nIdx].Potstate = POTSTATE_NONE;
+	pPlayer[nIdx].nPotIdx = -1;
 	pPlayer[nIdx].nMaxFood = 1;
 	pPlayer[nIdx].nTentacleCooldown = 0;
 	pPlayer[nIdx].nInkCooldown = 0;

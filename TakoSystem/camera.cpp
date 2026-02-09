@@ -18,6 +18,8 @@
 #define MOVEMENT				(D3DXVECTOR3(5.0f, 5.0f, 5.0f))			// 移動量
 #define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// 向き移動量
 #define AUTO_ROT				(D3DXVECTOR3(0.005f, 0.005f, 0.005f))	// 自動回転移動量
+#define DEFAULT_VIEW_ANGLE		(45.0f)									// 規定の視野角
+#define INERTIA_VIEW_ANGLE		(0.05f)									// 視野角の慣性
 #define INERTIA_POSR			(0.6f)									// 注視点の慣性
 #define INERTIA_POSV			(0.6f)									// 視点の慣性
 #define MAX_Y					(300.0f)								// 上の制限
@@ -46,6 +48,8 @@ void InitCamera(void)
 		g_aCamera[nCntCamera].fAngle = 0.0f;
 		g_aCamera[nCntCamera].fDistance = 300.0f;
 		g_aCamera[nCntCamera].fRDistance = 0.0f;
+		g_aCamera[nCntCamera].fViewAngle = DEFAULT_VIEW_ANGLE;
+		g_aCamera[nCntCamera].fMoveVA = 0.0f;
 		g_aCamera[nCntCamera].type = CAMERATYPE_POINT;
 	}
 
@@ -305,8 +309,12 @@ void UpdateCamera(void)
 
 			break;
 		}
-	}
 
+		if (pCamera->fMoveVA != 0.0f)
+		{// 視野角
+			pCamera->fViewAngle += (pCamera->fMoveVA - pCamera->fViewAngle) * INERTIA_VIEW_ANGLE;
+		}
+	}
 }
 
 
@@ -326,7 +334,7 @@ void SetCamera(int nIdx)
 
 	// プロジェクションマトリックスを作成
 	D3DXMatrixPerspectiveFovLH(&g_aCamera[nIdx].mtxProjection,
-		D3DXToRadian(45.0f),								// 視野角
+		D3DXToRadian(g_aCamera[nIdx].fViewAngle),								// 視野角
 		(float)g_aCamera[nIdx].viewport.Width / (float)g_aCamera[nIdx].viewport.Height,			// 画面のアスペクト比
 		10.0f,												// カメラから一番近い描画距離
 		80000.0f);											// 最大描画距離
@@ -393,6 +401,16 @@ void SetCameraPos(int nIdx, D3DXVECTOR3 posV, D3DXVECTOR3 posR, CAMERATYPE type)
 	pCamera[nIdx].posR = posR;
 	pCamera[nIdx].posRDest = posR;
 	pCamera[nIdx].type = type;
+}
+
+//=============================================================================
+// カメラの視野角設定処理
+//=============================================================================
+void SetCameraViewAngle(int nIdx, float fViewAngle)
+{
+	Camera* pCamera = GetCamera();
+
+	pCamera[nIdx].fMoveVA = fViewAngle;
 }
 
 //=============================================================================
