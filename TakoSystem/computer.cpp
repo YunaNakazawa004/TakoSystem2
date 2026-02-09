@@ -653,6 +653,11 @@ void UpdateComputer(void)
 				pComputer->nMaxFood++;
 			}
 
+			if (pComputer->nFoodCount < 0)
+			{// Å¬’l0
+				pComputer->nFoodCount = 0;
+			}
+
 			//SetEffect3D(70, pComputer->phys.pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0.0f, 30.0f, -0.1f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), EFFECTTYPE_NORMAL);
 
 			//PrintDebugProc("ENEMY : pos ( %f %f %f )\n",
@@ -2482,7 +2487,7 @@ bool CollisionOcto(int nIdx, bool bCPU, D3DXVECTOR3 pos)
 
 			int nEsaIdx = Dequeue(&pPlayer->esaQueue);
 			pPlayer->nFood--;
-			SetSubUiEsa(nIdx);
+			SetSubUiEsa(nEsaIdx);
 
 			if (bCPU == true)
 			{// CPU‚ª’D‚Á‚½

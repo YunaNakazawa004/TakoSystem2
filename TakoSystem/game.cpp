@@ -36,6 +36,7 @@
 #include "pause.h"
 #include "input.h"
 #include "fade.h"
+#include "screen.h"
 #include "title.h"
 
 #include "game.h"
@@ -132,6 +133,9 @@ void InitGame(void)
 	// 海流の初期化処理
 	InitOceanCurrents();
 
+	// 画面の初期化処理
+	InitScreen();
+
 	// ポーズの初期化処理
 	InitPause();
 
@@ -208,6 +212,9 @@ void UninitGame(void)
 
 	// 海流の終了処理
 	UninitOceanCurrents();
+
+	// 画面の終了処理
+	UninitScreen();
 
 	// ポーズ終了処理
 	UninitPause();
@@ -308,6 +315,9 @@ void UpdateGame(void)
 		UpdateOceanCurrents();
 	}
 
+	// 画面の更新処理
+	UpdateScreen();
+
 }
 
 //===================================================================
@@ -374,6 +384,9 @@ void DrawGame(void)
 
 	// 海流の描画処理
 	DrawOceanCurrents();
+
+	// 画面の描画処理
+	DrawScreen();
 
 	// ポーズ中の描画処理
 	if (g_bPause == true) DrawPause();
