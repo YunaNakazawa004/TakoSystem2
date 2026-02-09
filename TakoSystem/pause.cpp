@@ -17,8 +17,6 @@
 #define REPEAT_COUNT			(10)									// リピート間隔
 #define GRAY_VTX				(D3DXCOLOR(0.1f, 0.1f, 0.1f, 1.0f))		// 頂点カラーが灰
 
-// 構造体の定義
-
 //ポーズ情報構造体
 typedef struct
 {
