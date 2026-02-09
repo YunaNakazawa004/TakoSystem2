@@ -99,40 +99,26 @@ void UpdateScreen(void)
 		if (pTime <= (PINCH_TIME / 2))
 		{// 制限時間がピンチ
 
-			if (g_bPinchScreen == true)
-			{// 赤ランプ点火
-				g_ScreenStock += 0.005f;
+			// 赤ランプ調整
+			if (g_bPinchScreen == true) g_ScreenStock += 0.0025f;
+			else g_ScreenStock -= 0.0025f;
 
-				// 赤ランプ沈下に切り替え
-				if (g_ScreenStock >= 0.33f) g_bPinchScreen = false;
-			}
-			else
-			{// 赤ランプ沈下
-				g_ScreenStock -= 0.005f;
-
-				// 赤ランプ点火に切り替え
-				if (g_ScreenStock <= 0.0f) g_bPinchScreen = true;
-			}
+			// 赤ランプ切り替え
+			if (g_ScreenStock >= 0.33f) g_bPinchScreen = false;
+			else if (g_ScreenStock <= 0.165f) g_bPinchScreen = true;
 
 			g_colorScreen = D3DXCOLOR(1.0f, 0.0f, 0.0f, g_ScreenStock);
 		}
 		else if (pTime <= PINCH_TIME)
 		{// 制限時間がピンチ
 
-			if (g_bPinchScreen == true)
-			{// 赤ランプ点火
-				g_ScreenStock += 0.0025f;
+			// 赤ランプ調整
+			if (g_bPinchScreen == true) g_ScreenStock += 0.0025f;
+			else g_ScreenStock -= 0.0025f;
 
-				// 赤ランプ沈下に切り替え
-				if (g_ScreenStock >= 0.165f) g_bPinchScreen = false;
-			}
-			else
-			{// 赤ランプ沈下
-				g_ScreenStock -= 0.0025f;
-
-				// 赤ランプ点火に切り替え
-				if (g_ScreenStock <= 0.0f) g_bPinchScreen = true;
-			}
+			// 赤ランプ切り替え
+			if (g_ScreenStock >= 0.165f) g_bPinchScreen = false;
+			else if (g_ScreenStock <= 0.0f) g_bPinchScreen = true;
 
 			g_colorScreen = D3DXCOLOR(1.0f, 0.0f, 0.0f, g_ScreenStock);
 		}
