@@ -9,6 +9,7 @@
 #include "ui_esa.h"
 #include "meshcylinder.h"
 #include "meshring.h"
+#include "oceancurrents.h"
 #include "object.h"
 #include "particle_3d.h"
 #include "crosshair.h"
@@ -580,23 +581,19 @@ void UpdatePlayer(void)
 				pPlayer->move.z += (0.0f - pPlayer->move.z) * INERTIA_MOVE;
 			}
 
-			// ˆÚ“®§ŒÀ
-			if (pPlayer->pos.x < -ALLOW_X)
-			{// ˆê”Ô¶
-				pPlayer->pos.x = -ALLOW_X;
-			}
-			else if (pPlayer->pos.x > ALLOW_X)
-			{// ˆê”Ô‰E
-				pPlayer->pos.x = ALLOW_X;
-			}
+			// ‰Q’ª
+			MoveOceanCurrents(&pPlayer->pos);
 
-			if (pPlayer->pos.z < -ALLOW_Z)
-			{// ˆê”Ô‰œ
-				pPlayer->pos.z = -ALLOW_Z;
-			}
-			else if (pPlayer->pos.z > ALLOW_Z)
-			{// ˆê”ÔŽè‘O
-				pPlayer->pos.z = ALLOW_Z;
+			float fDist = atan2f(pPlayer->pos.x, pPlayer->pos.z);
+			float fRadius = atan2f(OUTCYLINDER_RADIUS, OUTCYLINDER_RADIUS);
+			PrintDebugProc("’†S‚©‚ç‚Ì‹——£ %f / %f\n", fDist, fRadius);
+
+			if (fDist > OUTCYLINDER_RADIUS)
+			{// ˆÚ“®§ŒÀ
+				D3DXVECTOR3 correct = -pPlayer->pos;
+
+				D3DXVec3Normalize(&pPlayer->move, &correct);
+				pPlayer->move *= MOVEMENT.x;
 			}
 
 			if (pPlayer->pos.y < 0.0f)
