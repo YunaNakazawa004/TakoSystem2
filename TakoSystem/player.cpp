@@ -414,7 +414,7 @@ void UpdatePlayer(void)
 						D3DXVECTOR3 tentaclePos = D3DXVECTOR3(pPlayer->aModel[4].mtxWorld._41, pPlayer->aModel[4].mtxWorld._42, pPlayer->aModel[4].mtxWorld._43);
 						int nIdx = -1;
 
-						if (CollisionEsa(&nIdx, false, &tentaclePos, pPlayer->fRadius) == true &&
+						if (CollisionEsa(&nIdx, false, &tentaclePos, TENTACLE_RADIUS) == true &&
 							pPlayer->nFood < pPlayer->nMaxFood * PLAYER_TENTACLE)
 						{// ÉGÉTÇ∆ê⁄êGÇµÇΩ
 							Esa* pEsa = GetEsa();

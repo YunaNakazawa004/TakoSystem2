@@ -346,7 +346,7 @@ void UpdateComputer(void)
 				}
 
 				// ノードの設置
-				//CreateOuterNodes3D();
+				CreateOuterNodes3D();
 				CreateInnerNodes3D();
 			}
 
@@ -2023,16 +2023,21 @@ void FindTentacleTarget(Computer* pComputer)
 
 		// 外周と中央柱の両方にレイキャスト
 		float distOuter, distInner;
-		//bool hitOuter = RaycastToOuterWall(pComputer->phys.pos, dir, &distOuter);
+		bool hitOuter = RaycastToOuterWall(pComputer->phys.pos, dir, &distOuter);
 		bool hitInner = RaycastToInnerPillar(pComputer->phys.pos, dir, &distInner);
 
-		if (hitInner == false)
+		if (hitOuter == false && hitInner == false)
 		{// どちらにも当たらない方向は無視
 			continue;
 		}
 
 		// 近い方の壁を採用
 		float dist = 999999.0f;
+
+		if (hitOuter == true)
+		{// 外円
+			dist = distOuter;
+		}
 
 		if (hitInner == true && distInner < dist)
 		{// 内円
@@ -2046,7 +2051,6 @@ void FindTentacleTarget(Computer* pComputer)
 
 		// ヒット位置
 		D3DXVECTOR3 hitPoint = pComputer->phys.pos + dir * dist;
-		hitPoint.y = pComputer->phys.pos.y + ((float)(rand() % (int)TENTACLE_RANDOM) - (TENTACLE_RANDOM * 0.5f));
 
 		// スコア計算：自分の向いている方向に近いほど高い
 		D3DXVECTOR3 dirNorm;
@@ -2282,12 +2286,19 @@ void CreateInnerNodes3D(void)
 D3DXVECTOR3 GetRandomExplorePoint(void)
 {
 	// 外周ノード + 内周ノードの総数
-	int totalNodes = NODE_COUNT * NODE_HEIGHT;
+	int totalNodes = NODE_COUNT * NODE_HEIGHT * 2;
 
 	// ランダムにノードを選ぶ
 	int nIdx = rand() % totalNodes;
 
-	return g_aInNode[nIdx].pos;
+	if (nIdx < NODE_COUNT * NODE_HEIGHT)
+	{// 外周ノード
+		return g_aOutNode[nIdx].pos;
+	}
+	else
+	{// 内周ノード
+		return g_aInNode[nIdx - (NODE_COUNT * NODE_HEIGHT)].pos;
+	}
 }
 
 //=============================================================================
