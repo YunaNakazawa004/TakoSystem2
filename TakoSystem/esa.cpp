@@ -58,9 +58,9 @@ Esa g_aEsa[MAX_SET_ESA];				// エサの情報
 EsaModel_info g_aEsaModelInfo[] =
 {// {ファイル名, モデルの移動(回転)速度, 当たり判定の大きさ, 獲得スコア}
 
-	{"data/MODEL/esa/shell000.x",		0.0001f,	10.0f,	10},	// [0]車
-	{"data/MODEL/esa/kani.x",			0.0003f,	10.0f,	10},	// [1]四角形
-	{"data/MODEL/esa/shrimp.x",			0.005f,	10.0f,	10},	// [2]四角形
+	{"data/MODEL/esa/kani.x",			0.0003f,	10.0f,	10},	// [1]カニ
+	{"data/MODEL/esa/shell000.x",		0.0001f,	10.0f,	10},	// [0]貝
+	{"data/MODEL/esa/shrimp.x",			0.005f,	10.0f,	10},		// [2]エビ
 };
 
 int g_nNumEsatype;						// エサの種類の総数
@@ -136,7 +136,7 @@ void InitEsa(void)
 	{// 配置する数だけ繰り返す
 
 		int nSetType = rand() % ESATYPE_MAX;											// ランダムで種類を設定
-		float fRandRadius = rand() % (int)OUTCYLINDER_RADIUS + (int)INCYLINDER_RADIUS;	// 中心からの距離を設定
+		float fRandRadius = rand() % (int)(OUTCYLINDER_RADIUS - 100.0f) + (int)INCYLINDER_RADIUS;	// 中心からの距離を設定
 		float fRandAngle = (float)(rand() % 629 - 314) / 1000.0f;						// 角度を設定
 		float fRandHeight = rand() % (int)CYLINDER_HEIGHT;								// 高さを設定
 
@@ -146,7 +146,7 @@ void InitEsa(void)
 										 cosf(fRandAngle) * fRandRadius);
 
 		// エサの設定処理
-		SetEsa(nSetType, ESA_ACTTYPE_SWIM, 0, setPos, D3DXVECTOR3(0.0f,0.0f,0.0f));
+		SetEsa(nSetType, ESA_ACTTYPE_LAND, 0, setPos, D3DXVECTOR3(0.0f,0.0f,0.0f));
 	}
 
 #endif
@@ -211,7 +211,7 @@ void UpdateEsa(void)
 			// エサの移動処理
 			MoveEsa(&g_aEsa[nCntEsa]);
 
-			MoveOceanCurrents(&g_aEsa[nCntEsa].pos);
+			//MoveOceanCurrents(&g_aEsa[nCntEsa].pos);
 
 			// 海面を超えないよう修正
 			if (g_aEsa[nCntEsa].pos.y > *pWaterSurfHeight - g_aEsaModel[g_aEsa[nCntEsa].nIdxModel].fHitRadius)
@@ -551,26 +551,27 @@ bool CollisionEsa(int* pIdx, bool bCollision, D3DXVECTOR3 *pos, float fHitRadius
 
 	int nCntEsa = 1;
 
-	float fDistX, fDistZ;
+	D3DXVECTOR3 fDist;
 	float fDistLength;
 
 	float fRot;
 
 	// ====================================================
 
-	//for (nCntEsa = 0; nCntEsa < MAX_SET_ESA; nCntEsa++)
-	//{}
+	for (nCntEsa = 0; nCntEsa < MAX_SET_ESA; nCntEsa++)
+	{
 		if (g_aEsa[nCntEsa].bUse == true)
 		{// 使用している場合
 
-			fDistX = g_aEsa[nCntEsa].pos.x - pos->x;
-			fDistZ = g_aEsa[nCntEsa].pos.z - pos->z;
+			fDist.x = g_aEsa[nCntEsa].pos.x - pos->x;
+			fDist.y = g_aEsa[nCntEsa].pos.y - pos->y;
+			fDist.z = g_aEsa[nCntEsa].pos.z - pos->z;
 
 			// 離れている距離を求める
-			fDistLength = sqrtf(fDistX * fDistX + fDistZ * fDistZ) * 0.5f;
+			fDistLength = sqrtf(fDist.x * fDist.x + fDist.z * fDist.z) * 0.5f;
 
 			// 角度を求める
-			fRot = atan2f(fDistX * fDistX, fDistZ * fDistX);
+			fRot = atan2f(fDist.x * fDist.x, fDist.z * fDist.z);
 
 			//PrintDebugProc("ESA_COLLISION_DISTX %f\n", fDistX);
 			//PrintDebugProc("ESA_COLLISION_DISTZ %f\n", fDistZ);
@@ -578,22 +579,28 @@ bool CollisionEsa(int* pIdx, bool bCollision, D3DXVECTOR3 *pos, float fHitRadius
 			//PrintDebugProc("ESA_COLLISION_ROT  %f\n", fRot);
 
 			// 判定
-			if (fDistLength < g_aEsaModel[g_aIdxEsaModel[g_aEsa[nCntEsa].nIdxModel]].fHitRadius + fHitRadius)
-			{// 離れている距離が当たり判定より小さい場合
+			if (g_aEsa[nCntEsa].pos.y + g_aEsaModel[g_aIdxEsaModel[g_aEsa[nCntEsa].nIdxModel]].fHitRadius >= pos->y - fHitRadius
+			 && g_aEsa[nCntEsa].pos.y - g_aEsaModel[g_aIdxEsaModel[g_aEsa[nCntEsa].nIdxModel]].fHitRadius <= pos->y + fHitRadius)
+			{// 高さが範囲内(矩形)
 
-				if (pIdx)*pIdx = nCntEsa;	// 接触したエサのインデックスを設定
+				// XZの円形にめり込んでいるか判定
+				if (fDistLength < g_aEsaModel[g_aIdxEsaModel[g_aEsa[nCntEsa].nIdxModel]].fHitRadius + fHitRadius)
+				{// 離れている距離が当たり判定より小さい場合
 
-				if (bCollision == true)
-				{// 当たった時の処理をおこなう場合
+					if (pIdx)*pIdx = nCntEsa;	// 接触したエサのインデックスを設定
 
-					pos->x = g_aEsa[nCntEsa].pos.x + sinf(fRot + D3DX_PI) * g_aEsaModel[g_aIdxEsaModel[g_aEsa[nCntEsa].nIdxModel]].fHitRadius + fHitRadius;
-					pos->z = g_aEsa[nCntEsa].pos.z + cosf(fRot + D3DX_PI) * g_aEsaModel[g_aIdxEsaModel[g_aEsa[nCntEsa].nIdxModel]].fHitRadius + fHitRadius;
+					if (bCollision == true)
+					{// 当たった時の処理をおこなう場合
+
+						pos->x = g_aEsa[nCntEsa].pos.x + sinf(fRot + D3DX_PI) * g_aEsaModel[g_aIdxEsaModel[g_aEsa[nCntEsa].nIdxModel]].fHitRadius + fHitRadius;
+						pos->z = g_aEsa[nCntEsa].pos.z + cosf(fRot + D3DX_PI) * g_aEsaModel[g_aIdxEsaModel[g_aEsa[nCntEsa].nIdxModel]].fHitRadius + fHitRadius;
+					}
+
+					return true;
 				}
-
-				return true;
 			}
 		}
-
+	}
 	return false;
 }
 

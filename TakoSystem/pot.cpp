@@ -61,7 +61,7 @@ void InitPot(void)
 		g_aPot[nCntPot].rot = FIRST_POS;
 		g_aPot[nCntPot].nFood = 0;
 		g_aPot[nCntPot].esaQueue.nTail = -1;
-		memset(&g_aPot[nCntPot].esaQueue.nData, -1, sizeof(int));
+		memset(&g_aPot[nCntPot].esaQueue.nData, -1, sizeof(int[MAX_QUEUE]));
 		g_aPot[nCntPot].bUse = false;
 	}
 
@@ -144,7 +144,7 @@ void InitPot(void)
 	}
 
 	// ランダムな位置に設定
-	SetRandomPot(1);
+	SetRandomPot(20);
 }
 
 //=============================================================================
@@ -273,7 +273,7 @@ void SetPot(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 			g_aPot[nCntPot].rot = rot;
 			g_aPot[nCntPot].nFood = 0;
 			g_aPot[nCntPot].esaQueue.nTail = -1;
-			memset(&g_aPot[nCntPot].esaQueue.nData, -1, sizeof(int));
+			memset(&g_aPot[nCntPot].esaQueue.nData, -1, sizeof(int[MAX_QUEUE]));
 			g_aPot[nCntPot].bUse = true;		// 使用している状態にする
 
 			break;
@@ -439,11 +439,11 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 							{// 持てる数だけ持つ
 								int nIdx = Dequeue(&pPot->esaQueue);
 								pPot->nFood--;
-								SetAddUiEsa(pPlayer->nIdx, nIdx);
 								SetEsa(nIdx, ESA_ACTTYPE_GOTO_PLAYER, 0, pPot->pos, FIRST_POS);
 
-								Enqueue(&pPlayer->esaQueue, nIdx);
-								pPlayer->nFood++;
+								//SetAddUiEsa(pPlayer->nIdx, nIdx);
+								//Enqueue(&pPlayer->esaQueue, nIdx);
+								//pPlayer->nFood++;
 							}
 						}
 					}
@@ -482,8 +482,8 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 								int nIdx = Dequeue(&pPot->esaQueue);
 								pPot->nFood--;
 
-								Enqueue(&pComputer->esaQueue, nIdx);
-								pComputer->nFoodCount++;
+								//Enqueue(&pComputer->esaQueue, nIdx);
+								//pComputer->nFoodCount++;
 							}
 						}
 					}

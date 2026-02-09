@@ -36,6 +36,7 @@
 #include "pause.h"
 #include "input.h"
 #include "fade.h"
+#include "screen.h"
 #include "title.h"
 
 #include "game.h"
@@ -79,7 +80,7 @@ void InitGame(void)
 	// メッシュシリンダーの初期化処理
 	InitMeshCylinder();
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 2.0f), D3DXVECTOR2(INCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, MESHCYLINDERTYPE_ROCK);
-	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(OUTCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), true, MESHCYLINDERTYPE_SEA);
+	//SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(OUTCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), true, MESHCYLINDERTYPE_SEA);
 
 	// メッシュドームの初期化処理
 	InitMeshDome();
@@ -131,6 +132,9 @@ void InitGame(void)
 
 	// 海流の初期化処理
 	InitOceanCurrents();
+
+	// 画面の初期化処理
+	InitScreen();
 
 	// ポーズの初期化処理
 	InitPause();
@@ -208,6 +212,9 @@ void UninitGame(void)
 
 	// 海流の終了処理
 	UninitOceanCurrents();
+
+	// 画面の終了処理
+	UninitScreen();
 
 	// ポーズ終了処理
 	UninitPause();
@@ -308,6 +315,9 @@ void UpdateGame(void)
 		UpdateOceanCurrents();
 	}
 
+	// 画面の更新処理
+	UpdateScreen();
+
 }
 
 //===================================================================
@@ -374,6 +384,9 @@ void DrawGame(void)
 
 	// 海流の描画処理
 	DrawOceanCurrents();
+
+	// 画面の描画処理
+	DrawScreen();
 
 	// ポーズ中の描画処理
 	if (g_bPause == true) DrawPause();

@@ -9,6 +9,7 @@
 #include "ui_esa.h"
 #include "meshcylinder.h"
 #include "meshring.h"
+#include "oceancurrents.h"
 #include "object.h"
 #include "particle_3d.h"
 #include "crosshair.h"
@@ -395,8 +396,23 @@ void UpdatePlayer(void)
 
 						//PrintDebugProc("触手のpos ( %f %f %f )\n", pPlayer->aModel[4].mtxWorld._41, pPlayer->aModel[4].mtxWorld._42, pPlayer->aModel[4].mtxWorld._43);
 						D3DXVECTOR3 tentaclePos = D3DXVECTOR3(pPlayer->aModel[4].mtxWorld._41, pPlayer->aModel[4].mtxWorld._42, pPlayer->aModel[4].mtxWorld._43);
+						int nIdx = -1;
 
-						if (CollisionPotArea(tentaclePos, TENTACLE_RADIUS * 0.5f, pPlayer, NULL, true) == true ||
+						if (CollisionEsa(&nIdx, false, &tentaclePos, pPlayer->fRadius) == true &&
+							pPlayer->nFood < pPlayer->nMaxFood * PLAYER_TENTACLE)
+						{// エサと接触した
+							Esa* pEsa = GetEsa();
+
+							if (pEsa[nIdx].esaType != ESA_ACTTYPE_GOTO_POT)
+							{// タコつぼに入れてる最中じゃない
+								pEsa[nIdx].bUse = false;
+								SetAddUiEsa(nCntPlayer, pEsa[nIdx].nIdxModel);
+
+								pPlayer->nFood++;
+								Enqueue(&pPlayer->esaQueue, pEsa[nIdx].nIdxModel);
+							}
+						}
+						else if (CollisionPotArea(tentaclePos, TENTACLE_RADIUS * 0.5f, pPlayer, NULL, true) == true ||
 							CollisionOcto(nCntPlayer, false, tentaclePos) == true)
 						{// タコつぼからエサをとる
 							pPlayer->TentacleState = PLTENTACLESTATE_TENTACLESHORT;
@@ -406,14 +422,14 @@ void UpdatePlayer(void)
 						else if (pCrossHair->state == CROSSHAIRSTATE_REACH &&
 							(CollisionMeshCylinder(&tentaclePos, &pPlayer->pos, &pPlayer->move,
 								TENTACLE_RADIUS, TENTACLE_RADIUS, true) == true ||
-								tentaclePos.y < 0.0f) || 
-							CollisionObject(&tentaclePos, &pPlayer->pos, &pPlayer->move, 
+								tentaclePos.y < 0.0f) ||
+							CollisionObject(&tentaclePos, &pPlayer->pos, &pPlayer->move,
 								TENTACLE_RADIUS, TENTACLE_RADIUS) == true)
 						{// 壁との当たり判定
 							pPlayer->state = PLAYERSTATE_DASH;
 							pPlayer->TentacleState = PLTENTACLESTATE_TENTACLESHORT;
 							SetMotionPlayer(nCntPlayer, MOTIONTYPE_DASH, true, 20);
-							
+
 							SetCameraViewAngle(nCntPlayer, 15.0f);
 						}
 						else
@@ -565,23 +581,19 @@ void UpdatePlayer(void)
 				pPlayer->move.z += (0.0f - pPlayer->move.z) * INERTIA_MOVE;
 			}
 
-			// 移動制限
-			if (pPlayer->pos.x < -ALLOW_X)
-			{// 一番左
-				pPlayer->pos.x = -ALLOW_X;
-			}
-			else if (pPlayer->pos.x > ALLOW_X)
-			{// 一番右
-				pPlayer->pos.x = ALLOW_X;
-			}
+			// 渦潮
+			MoveOceanCurrents(&pPlayer->pos);
 
-			if (pPlayer->pos.z < -ALLOW_Z)
-			{// 一番奥
-				pPlayer->pos.z = -ALLOW_Z;
-			}
-			else if (pPlayer->pos.z > ALLOW_Z)
-			{// 一番手前
-				pPlayer->pos.z = ALLOW_Z;
+			float fDist = atan2f(pPlayer->pos.x, pPlayer->pos.z);
+			float fRadius = atan2f(OUTCYLINDER_RADIUS, OUTCYLINDER_RADIUS);
+			PrintDebugProc("中心からの距離 %f / %f\n", fDist, fRadius);
+
+			if (fDist > OUTCYLINDER_RADIUS)
+			{// 移動制限
+				D3DXVECTOR3 correct = -pPlayer->pos;
+
+				D3DXVec3Normalize(&pPlayer->move, &correct);
+				pPlayer->move *= MOVEMENT.x;
 			}
 
 			if (pPlayer->pos.y < 0.0f)
@@ -667,7 +679,7 @@ void UpdatePlayer(void)
 
 			if (CollisionMeshCylinder(&dist, &pPlayer->pos, &pPlayer->move,
 				0.0f, 0.0f, true) == true ||
-				dist.y < 0.0f || 
+				dist.y < 0.0f ||
 				CollisionObject(&dist, &pPlayer->pos, &pPlayer->move, 0.0f, 0.0f) == true)
 			{// 壁に当たった・オブジェクトに当たった・エサに当たった
 				// クロスヘアの設定
@@ -742,23 +754,26 @@ void UpdatePlayer(void)
 			CollisionObject(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight);
 			CollisionMeshCylinder(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight, false);
 
-			if (pPlayer->nFood < pPlayer->nMaxFood * PLAYER_TENTACLE)
-			{// 持てる数より少ない
-				int nIdx = -1;
+			int nIdx = -1;
 
-				if (CollisionEsa(&nIdx, false, &pPlayer->pos, pPlayer->fRadius) == true)
-				{// エサと接触した
-					Esa* pEsa = GetEsa();
+			if (CollisionEsa(&nIdx, false, &pPlayer->pos, pPlayer->fRadius) == true &&
+				pPlayer->nFood < pPlayer->nMaxFood * PLAYER_TENTACLE)
+			{// エサと接触した
+				Esa* pEsa = GetEsa();
 
-					if (pEsa[nIdx].esaType != ESA_ACTTYPE_GOTO_POT)
-					{// タコつぼに入れてる最中じゃない
-						pEsa[nIdx].bUse = false;
-						SetAddUiEsa(nCntPlayer, pEsa[nIdx].nIdxModel);
+				if (pEsa[nIdx].esaType != ESA_ACTTYPE_GOTO_POT)
+				{// タコつぼに入れてる最中じゃない
+					pEsa[nIdx].bUse = false;
+					SetAddUiEsa(nCntPlayer, pEsa[nIdx].nIdxModel);
 
-						pPlayer->nFood++;
-						Enqueue(&pPlayer->esaQueue, pEsa[nIdx].nIdxModel);
-					}
+					pPlayer->nFood++;
+					Enqueue(&pPlayer->esaQueue, pEsa[nIdx].nIdxModel);
 				}
+			}
+
+			if (pPlayer->nFood < 0)
+			{// 最小値0
+				pPlayer->nFood = 0;
 			}
 
 			CollisionPotArea(pPlayer->pos, pPlayer->fRadius, pPlayer, NULL, false);
@@ -787,11 +802,11 @@ void UpdatePlayer(void)
 			else if (GetKeyboardPress(DIK_RIGHT) == true)
 			{// Z軸回転
 				pPlayer->rot.z += -ROT.z;
-			}
+		}
 
 #endif
-		}
 	}
+}
 }
 
 //=============================================================================
@@ -1878,6 +1893,8 @@ int Dequeue(EsaQueue* queue)
 	{
 		queue->nData[nCnt] = queue->nData[nCnt + 1];
 	}
+
+	queue->nData[queue->nTail] = -1;
 
 	// データの最後尾も１つ前にずらす
 	queue->nTail = queue->nTail - 1;
