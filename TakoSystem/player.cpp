@@ -584,23 +584,16 @@ void UpdatePlayer(void)
 			// ‰Q’ª
 			MoveOceanCurrents(&pPlayer->pos);
 
-			// ˆÚ“®§ŒÀ
-			if (pPlayer->pos.x < -ALLOW_X)
-			{// ˆê”Ô¶
-				pPlayer->pos.x = -ALLOW_X;
-			}
-			else if (pPlayer->pos.x > ALLOW_X)
-			{// ˆê”Ô‰E
-				pPlayer->pos.x = ALLOW_X;
-			}
+			float fDist = atan2f(pPlayer->pos.x, pPlayer->pos.z);
+			float fRadius = atan2f(OUTCYLINDER_RADIUS, OUTCYLINDER_RADIUS);
+			PrintDebugProc("’†S‚©‚ç‚Ì‹——£ %f / %f\n", fDist, fRadius);
 
-			if (pPlayer->pos.z < -ALLOW_Z)
-			{// ˆê”Ô‰œ
-				pPlayer->pos.z = -ALLOW_Z;
-			}
-			else if (pPlayer->pos.z > ALLOW_Z)
-			{// ˆê”ÔŽè‘O
-				pPlayer->pos.z = ALLOW_Z;
+			if (fDist > OUTCYLINDER_RADIUS)
+			{// ˆÚ“®§ŒÀ
+				D3DXVECTOR3 correct = -pPlayer->pos;
+
+				D3DXVec3Normalize(&pPlayer->move, &correct);
+				pPlayer->move *= MOVEMENT.x;
 			}
 
 			if (pPlayer->pos.y < 0.0f)
