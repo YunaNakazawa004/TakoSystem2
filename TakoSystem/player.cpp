@@ -761,6 +761,11 @@ void UpdatePlayer(void)
 				}
 			}
 
+			if (pPlayer->nFood < 0)
+			{// Å¬’l0
+				pPlayer->nFood = 0;
+			}
+
 			CollisionPotArea(pPlayer->pos, pPlayer->fRadius, pPlayer, NULL, false);
 
 			nCounter++;
