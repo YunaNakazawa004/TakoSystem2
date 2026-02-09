@@ -7,6 +7,7 @@
 #include "pot.h"
 #include "debugproc.h"
 #include "input.h"
+#include "ui_esa.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -142,7 +143,7 @@ void InitPot(void)
 	}
 
 	// ランダムな位置に設定
-	SetRandomPot(20);
+	SetRandomPot(1);
 }
 
 //=============================================================================
@@ -402,6 +403,8 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 
 						int nIdx = Dequeue(&pPlayer->esaQueue);
 						pPlayer->nFood--;
+						pPlayer->nPotIdx = nCntPot;
+						SetSubUiEsa(pPlayer->nIdx);
 
 						Enqueue(&pPot->esaQueue, nIdx);
 						pPot->nFood++;
@@ -412,6 +415,7 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 					if (bTentacle == true)
 					{// 触手
 						pPlayer->Potstate = POTSTATE_STEAL;
+						pPlayer->nPotIdx = nCntPot;
 						int nFood = pPot->nFood;
 
 						for (int nCnt = 0; nCnt < nFood; nCnt++)
@@ -420,6 +424,7 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 							{// 持てる数だけ持つ
 								int nIdx = Dequeue(&pPot->esaQueue);
 								pPot->nFood--;
+								SetAddUiEsa(pPlayer->nIdx, nIdx);
 
 								Enqueue(&pPlayer->esaQueue, nIdx);
 								pPlayer->nFood++;
@@ -473,11 +478,12 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 		}
 		else
 		{// 離れた
-			if (pPlayer != NULL)
+			if (pPlayer != NULL && pPlayer->nPotIdx == nCntPot)
 			{
 				pPlayer->Potstate = POTSTATE_NONE;
+				pPlayer->nPotIdx = -1;
 			}
-			else if (pComputer != NULL)
+			else if (pComputer != NULL && pComputer->nTargetPotIdx == nCntPot)
 			{
 				pComputer->Potstate = POTSTATE_NONE;
 			}

@@ -99,6 +99,7 @@ typedef struct
 	int nFood;									// 持っているエサの数
 	EsaQueue esaQueue;							// 持っているエサのキュー配列
 	POTSTATE Potstate;							// 状態
+	int nPotIdx;								// 近づいていたタコつぼのインデックス
 	int nMaxFood;								// 一本の腕に一度に持てるエサの数
 
 	int nTentacleCooldown;						// 触手のクールダウン

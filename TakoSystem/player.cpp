@@ -6,6 +6,7 @@
 //=============================================================================
 #include "player.h"
 #include "computer.h"
+#include "ui_esa.h"
 #include "meshcylinder.h"
 #include "meshring.h"
 #include "object.h"
@@ -97,6 +98,7 @@ void InitPlayer(void)
 		pPlayer->esaQueue.nTail = -1;
 		memset(&pPlayer->esaQueue.nData, -1, sizeof(int[MAX_QUEUE]));
 		pPlayer->Potstate = POTSTATE_NONE;
+		pPlayer->nPotIdx = -1;
 		pPlayer->nMaxFood = 0;
 		pPlayer->nTentacleCooldown = 0;
 		pPlayer->nInkCooldown = 0;
@@ -549,7 +551,7 @@ void UpdatePlayer(void)
 			//	pPlayer->move.z = -MAX_MOVE;
 			//}
 
-			PrintDebugProc("プレイヤーのmove ( %f %f %f )\n", pPlayer->move.x, pPlayer->move.y, pPlayer->move.z);
+			//PrintDebugProc("プレイヤーのmove ( %f %f %f )\n", pPlayer->move.x, pPlayer->move.y, pPlayer->move.z);
 
 			// 重力
 			pPlayer->move.y += SEA_GRAVITY;
@@ -748,9 +750,10 @@ void UpdatePlayer(void)
 				{// エサと接触した
 					Esa* pEsa = GetEsa();
 					pEsa[nIdx].bUse = false;
+					SetAddUiEsa(nCntPlayer, pEsa[nIdx].nIdxModel);
 
 					pPlayer->nFood++;
-					Enqueue(&pPlayer->esaQueue, nIdx);
+					Enqueue(&pPlayer->esaQueue, pEsa[nIdx].nIdxModel);
 				}
 			}
 
@@ -941,6 +944,7 @@ void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	pPlayer[nIdx].nFood = 0;
 	memset(&pPlayer[nIdx].esaQueue.nData, -1, sizeof(int[MAX_QUEUE]));
 	pPlayer[nIdx].Potstate = POTSTATE_NONE;
+	pPlayer[nIdx].nPotIdx = -1;
 	pPlayer[nIdx].nMaxFood = 1;
 	pPlayer[nIdx].nTentacleCooldown = 0;
 	pPlayer[nIdx].nInkCooldown = 0;

@@ -811,7 +811,7 @@ void MoveToFood(Computer* pComputer)
 		pEsa[nIdx].bUse = false;
 
 		pComputer->nFoodCount++;
-		Enqueue(&pComputer->esaQueue, nIdx);
+		Enqueue(&pComputer->esaQueue, pEsa[nIdx].nIdxModel);
 	}
 }
 
