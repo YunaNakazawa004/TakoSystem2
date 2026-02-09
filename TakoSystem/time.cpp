@@ -188,7 +188,7 @@ void UpdateTime(void)
 #ifdef _DEBUG	// デバッグの時のみ使用可能
 
 	// デバッグ時間短縮
-	if (GetKeyboardTrigger(DIK_O) || GetJoypadTrigger(0, JOYKEY_BACK)) AddTime(-150);
+	if (GetKeyboardTrigger(DIK_O) || GetJoypadTrigger(0, JOYKEY_BACK)) AddTime(-130);
 
 #endif
 
