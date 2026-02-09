@@ -9,6 +9,7 @@
 #include "ui_esa.h"
 #include "pot.h"
 #include "time.h"
+#include "oceancurrents.h"
 #include "object.h"
 #include "meshcylinder.h"
 #include "meshring.h"
@@ -569,6 +570,9 @@ void UpdateComputer(void)
 				pComputer->phys.move.z += (0.0f - pComputer->phys.move.z) * INERTIA_MOVE;
 			}
 
+			// ‰Q’ª
+			MoveOceanCurrents(&pComputer->phys.pos);
+
 			if (pComputer->TentState == CPUTENTACLESTATE_NORMAL &&
 				D3DXVec3Length(&pComputer->phys.move) > 0.1f &&
 				pComputer->state != CPUSTATE_INK_ATTACK &&
@@ -824,10 +828,14 @@ void MoveToFood(Computer* pComputer)
 		pComputer->nFoodCount < pComputer->nMaxFood * CPU_TENTACLE)
 	{// ƒGƒT‚ÆÚG‚µ‚½
 		Esa* pEsa = GetEsa();
-		pEsa[nIdx].bUse = false;
 
-		pComputer->nFoodCount++;
-		Enqueue(&pComputer->esaQueue, pEsa[nIdx].nIdxModel);
+		if (pEsa[nIdx].esaType != ESA_ACTTYPE_GOTO_POT)
+		{// ƒ^ƒR‚Â‚Ú‚É“ü‚ê‚Ä‚éÅ’†‚¶‚á‚È‚¢
+			pEsa[nIdx].bUse = false;
+
+			pComputer->nFoodCount++;
+			Enqueue(&pComputer->esaQueue, pEsa[nIdx].nIdxModel);
+		}
 	}
 }
 

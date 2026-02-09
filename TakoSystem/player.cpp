@@ -9,6 +9,7 @@
 #include "ui_esa.h"
 #include "meshcylinder.h"
 #include "meshring.h"
+#include "oceancurrents.h"
 #include "object.h"
 #include "particle_3d.h"
 #include "crosshair.h"
@@ -579,6 +580,9 @@ void UpdatePlayer(void)
 				pPlayer->move.y += (0.0f - pPlayer->move.y) * INERTIA_MOVE;
 				pPlayer->move.z += (0.0f - pPlayer->move.z) * INERTIA_MOVE;
 			}
+
+			// ‰Q’ª
+			MoveOceanCurrents(&pPlayer->pos);
 
 			// ˆÚ“®§ŒÀ
 			if (pPlayer->pos.x < -ALLOW_X)
