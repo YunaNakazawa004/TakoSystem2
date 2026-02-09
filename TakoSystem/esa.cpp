@@ -85,7 +85,7 @@ void InitEsa(void)
 	// ====================================================
 
 	// ƒGƒTƒ‚ƒfƒ‹‚Ìî•ñ‚ğ‰Šú‰»
-	for (nCntEsa = 0; nCntEsa < MAX_SET_ESA; nCntEsa++)
+	for (nCntEsa = 0; nCntEsa < MAX_MODEL_ESA; nCntEsa++)
 	{
 		g_aEsaModel[nCntEsa].nScore = 0;
 		g_aEsaModel[nCntEsa].fHitRadius = 0.0f;
