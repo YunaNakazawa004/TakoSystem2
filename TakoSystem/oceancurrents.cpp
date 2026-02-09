@@ -138,8 +138,6 @@ OCUI_info g_aOCUiInfo[] =
 	{1, OCUITYPE_WANING, 3, false, D3DXVECTOR3(0.0f, 35.0f, 0.0f),	 D3DXVECTOR3(0.0f, 0.0f, 0.0f), 180.0f, 5.0f,  D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(0.01f, 0.0f), D3DXVECTOR2(5.0f, 1.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f)},	// 1P 警告：バックテクスチャ
 	{1, OCUITYPE_WANING, 4, false, D3DXVECTOR3(0.0f, 0.0f, 0.0f),	 D3DXVECTOR3(0.0f, 0.0f, 0.0f), 100.0f, 25.0f,  D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(1.0f, 1.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f)},	// 1P 警告：バックテクスチャ
 	{1, OCUITYPE_WANING, 5, false, D3DXVECTOR3(0.0f, 60.0f, 0.0f),	 D3DXVECTOR3(0.0f, 0.0f, 0.0f), 65.0f, 20.0f,  D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(1.0f, 1.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f)},	// 1P 警告：バックテクスチャ
-
-	
 };
 
 int g_nNumSelect;
@@ -572,11 +570,11 @@ int SetOceanCurrentsUi(OCUITYPE type, D3DXVECTOR3 pos, float fSizeMag)
 
 		for (int nCntOCSet = 0; nCntOCSet < sizeof g_aOCUiInfo / sizeof(g_aOCUiInfo[0]); nCntOCSet++)
 		{
-			if (GetNumCamera() != g_aOCUiInfo[nCntOCSet].nNumPlayer)
-			{// 設定人数が違う場合
-
-				continue;	// 処理の始めに戻る
-			}
+			//if (GetNumCamera() != g_aOCUiInfo[nCntOCSet].nNumPlayer)
+			//{// 設定人数が違う場合
+			//
+			//	continue;	// 処理の始めに戻る
+			//}
 
 			if (g_aOCUi[nCntOCUi].type != g_aOCUiInfo[nCntOCSet].type)
 			{// 種類が違う場合
