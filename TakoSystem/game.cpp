@@ -251,7 +251,7 @@ void UpdateGame(void)
 		UpdatePlayer();
 
 		// CPUの更新処理
-		//UpdateComputer();
+		UpdateComputer();
 
 		// ステージの更新処理
 		//UpdateStage();

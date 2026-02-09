@@ -125,7 +125,7 @@ const char* c_apFilenameOceanCurrents[] =
 OCUI_info g_aOCUiInfo[] =
 {// {プレイヤー数, 種類, テクスチャ, aブレンド使用状態, オフセットPOS, 角度, 幅, 高さ, テクスチャ座標, テクスチャ座標加算量, テクスチャサイズ, 色}
 
-	{1, OCUITYPE_TIMER,  4, false, D3DXVECTOR3(0.0f, 0.0f, 0.0f),	 D3DXVECTOR3(0.0f, 0.0f, 0.0f), 200.0f, 50.0f, D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(0.1f, 1.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f)},	// 1P 時間：数字
+	{1, OCUITYPE_TIMER,  4, false, D3DXVECTOR3(0.0f, 0.0f, 0.0f),	 D3DXVECTOR3(0.0f, 0.0f, 0.0f), 70.0f, 70.0f, D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(0.1f, 1.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 0.0f)},	// 1P 時間：数字
 	
 	{1, OCUITYPE_WANING, 1, true,  D3DXVECTOR3(0.0f, 0.0f, 0.0f),	 D3DXVECTOR3(0.0f, 0.0f, 0.0f), 180.0f, 40.0f, D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(1.0f, 1.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f)},	// 1P 警告：バックテクスチャ
 	{1, OCUITYPE_WANING, 0, false, D3DXVECTOR3(-140.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 25.0f, 25.0f,  D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(1.0f, 1.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f)},	// 1P 警告：バックテクスチャ
@@ -680,7 +680,7 @@ void UpdateOCState(void)
 			g_nCounterOceanCurrents = 0;							// カウンタを初期化
 
 			// 海流UIの設定
-			//g_nIdxOCWaning = SetOceanCurrentsUi(OCUITYPE_WANING, D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 666.0f, 0.0f), 1.0f);	// 警告
+			g_nIdxOCWaning = SetOceanCurrentsUi(OCUITYPE_WANING, D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 666.0f, 0.0f), 1.0f);	// 警告
 			//g_nIdxOCTimer = SetOceanCurrentsUi(OCUITYPE_TIMER, D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 120.0f, 0.0f), 1.0f);	// 警告
 		}
 
@@ -702,7 +702,7 @@ void UpdateOCState(void)
 			{// インデックスが設定されている場合
 
 				// 海流UIの削除
-				//DelOceanCurrentsUi(g_nIdxOCWaning);
+				DelOceanCurrentsUi(g_nIdxOCWaning);
 			}
 		}
 
