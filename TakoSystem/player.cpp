@@ -374,6 +374,8 @@ void UpdatePlayer(void)
 			{
 			case PLTENTACLESTATE_NORMAL:			// ’Êíó‘Ô
 				pPlayer->aModel[2].scale.y = 1.0f;
+				pPlayer->fAngleX = 0.0f;
+				SetCameraViewAngle(nCntPlayer, 45.0f);
 
 				break;
 
@@ -409,6 +411,8 @@ void UpdatePlayer(void)
 							pPlayer->state = PLAYERSTATE_DASH;
 							pPlayer->TentacleState = PLTENTACLESTATE_TENTACLESHORT;
 							SetMotionPlayer(nCntPlayer, MOTIONTYPE_DASH, true, 20);
+							
+							SetCameraViewAngle(nCntPlayer, 15.0f);
 						}
 						else
 						{// GŽè‚ðL‚Î‚·
@@ -459,6 +463,8 @@ void UpdatePlayer(void)
 					pPlayer->vecX.z < MOVE_ERROR && pPlayer->vecX.z > -MOVE_ERROR)
 				{// Ž~‚Ü‚Á‚½
 					pPlayer->vecX = FIRST_POS;
+
+					SetCameraViewAngle(nCntPlayer, 45.0f);
 
 					if (pPlayer->motionType == MOTIONTYPE_DASH)
 					{// ‚‘¬ˆÚ“®ƒ‚[ƒVƒ‡ƒ“‚µ‚Ä‚¢‚½‚ç

@@ -39,6 +39,8 @@ typedef struct
 	float fAngle;					// 上下移動用の角度
 	float fDistance;				// 視点と注視点の距離
 	float fRDistance;				// 注視点の差異
+	float fViewAngle;				// 視野角
+	float fMoveVA;					// 視野角の増加量
 	D3DXMATRIX mtxProjection;		// プロジェクションマトリックス(モニターのサイズ)
 	D3DXMATRIX mtxView;				// ビューマトリックス(カメラの画面のサイズ)
 	D3DVIEWPORT9 viewport;			// ビューポート
@@ -54,6 +56,7 @@ void UpdateCamera(void);
 void SetCamera(int nIdx);
 void SetNumCamera(int nNum);
 void SetCameraPos(int nIdx, D3DXVECTOR3 posV, D3DXVECTOR3 posR, CAMERATYPE type);
+void SetCameraViewAngle(int nIdx, float fViewAngle);
 Camera* GetCamera(void);
 int GetNumCamera(void);
 
