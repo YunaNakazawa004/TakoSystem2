@@ -21,6 +21,7 @@ typedef enum
 	ESATYPE_CRAB = 0,	// [0]カニ
 	ESATYPE_SHELL,		// [1]貝
 	ESATYPE_SHRIMP,		// [2]エビ
+	ESATYPE_YA,		// [2]エビ
 
 	ESATYPE_MAX			// 最大値
 
