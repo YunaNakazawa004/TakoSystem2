@@ -749,11 +749,15 @@ void UpdatePlayer(void)
 				if (CollisionEsa(&nIdx, false, &pPlayer->pos, pPlayer->fRadius) == true)
 				{// エサと接触した
 					Esa* pEsa = GetEsa();
-					pEsa[nIdx].bUse = false;
-					SetAddUiEsa(nCntPlayer, pEsa[nIdx].nIdxModel);
 
-					pPlayer->nFood++;
-					Enqueue(&pPlayer->esaQueue, pEsa[nIdx].nIdxModel);
+					if (pEsa[nIdx].esaType != ESA_ACTTYPE_GOTO_POT)
+					{// タコつぼに入れてる最中じゃない
+						pEsa[nIdx].bUse = false;
+						SetAddUiEsa(nCntPlayer, pEsa[nIdx].nIdxModel);
+
+						pPlayer->nFood++;
+						Enqueue(&pPlayer->esaQueue, pEsa[nIdx].nIdxModel);
+					}
 				}
 			}
 

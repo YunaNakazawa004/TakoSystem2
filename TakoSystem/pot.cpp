@@ -7,13 +7,14 @@
 #include "pot.h"
 #include "debugproc.h"
 #include "input.h"
+#include "esa.h"
 #include "ui_esa.h"
 
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
 #define MAX_POTMODEL		(1)										// タコつぼモデルの最大数
-#define POT_RADIUS			(30.0f)									// タコつぼ周辺の球判定の半径
+#define POT_RADIUS			(50.0f)									// タコつぼ周辺の球判定の半径
 
 //*****************************************************************************
 // タコつぼモデルの構造体
@@ -184,11 +185,24 @@ void UninitPot(void)
 //=============================================================================
 void UpdatePot(void)
 {
-	for (int nCntPot = 0; nCntPot < MAX_POT; nCntPot++)
+	Pot* pPot = GetPot();
+
+	for (int nCntPot = 0; nCntPot < MAX_POT; nCntPot++, pPot++)
 	{
-		if (g_aPot[nCntPot].bUse == true)
+		if (pPot->bUse == true)
 		{
 			//PrintDebugProc("[ %d ]\n入ってるエサの数 %d\n", nCntPot, g_aPot[nCntPot].nFood);
+			int nIdx = -1;
+
+			if (CollisionEsa(&nIdx, false, &pPot->pos, 0.0f) == true)
+			{// エサと接触した
+				Esa* pEsa = GetEsa();
+
+				if (pEsa[nIdx].esaType == ESA_ACTTYPE_GOTO_POT)
+				{// タコつぼに入れてる最中
+					pEsa[nIdx].bUse = false;
+				}
+			}
 		}
 	}
 }
@@ -405,6 +419,7 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 						pPlayer->nFood--;
 						pPlayer->nPotIdx = nCntPot;
 						SetSubUiEsa(pPlayer->nIdx);
+						SetEsa(nIdx, ESA_ACTTYPE_GOTO_POT, 0, pPlayer->pos, FIRST_POS);
 
 						Enqueue(&pPot->esaQueue, nIdx);
 						pPot->nFood++;
@@ -425,6 +440,7 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 								int nIdx = Dequeue(&pPot->esaQueue);
 								pPot->nFood--;
 								SetAddUiEsa(pPlayer->nIdx, nIdx);
+								SetEsa(nIdx, ESA_ACTTYPE_GOTO_PLAYER, 0, pPot->pos, FIRST_POS);
 
 								Enqueue(&pPlayer->esaQueue, nIdx);
 								pPlayer->nFood++;
