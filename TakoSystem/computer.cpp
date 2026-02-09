@@ -477,8 +477,18 @@ void UpdateComputer(void)
 					if (pComputer->bFinishMotion == true)
 					{// 触手が伸ばし終わったら
 						D3DXVECTOR3 tentaclePos = D3DXVECTOR3(pComputer->aModel[4].mtxWorld._41, pComputer->aModel[4].mtxWorld._42, pComputer->aModel[4].mtxWorld._43);
+						int nIdx = -1;
 
-						if (CollisionPotArea(tentaclePos, TENTACLE_RADIUS * 0.5f, NULL, pComputer, true) == true ||
+						if (CollisionEsa(&nIdx, false, &tentaclePos, pComputer->phys.fRadius) == true &&
+							pComputer->nFoodCount < pComputer->nMaxFood * CPU_TENTACLE)
+						{// エサと接触した
+							Esa* pEsa = GetEsa();
+							pEsa[nIdx].bUse = false;
+
+							pComputer->nFoodCount++;
+							Enqueue(&pComputer->esaQueue, pEsa[nIdx].nIdxModel);
+						}
+						else if (CollisionPotArea(tentaclePos, TENTACLE_RADIUS * 0.5f, NULL, pComputer, true) == true ||
 							CollisionOcto(nCntComputer, true, tentaclePos) == true)
 						{// タコつぼからエサをとる
 							pComputer->TentState = CPUTENTACLESTATE_TENTACLESHORT;
@@ -2435,7 +2445,6 @@ bool CollisionOcto(int nIdx, bool bCPU, D3DXVECTOR3 pos)
 
 	for (int nCntEnemy = 0; nCntEnemy < MAX_COMPUTER; nCntEnemy++, pEnemy++)
 	{
-
 		if (pEnemy->bUse == false)
 		{// 使用していない
 			continue;
@@ -2443,6 +2452,11 @@ bool CollisionOcto(int nIdx, bool bCPU, D3DXVECTOR3 pos)
 
 		if (pEnemy->nIdx == nIdx && bCPU == true)
 		{// 自分自身は無視
+			continue;
+		}
+
+		if (pEnemy->nFoodCount == 0)
+		{// 持ってない
 			continue;
 		}
 
@@ -2476,6 +2490,11 @@ bool CollisionOcto(int nIdx, bool bCPU, D3DXVECTOR3 pos)
 	{
 		if (nCntPlayer == nIdx && bCPU == false)
 		{// 自分自身は無視
+			continue;
+		}
+
+		if (pPlayer->nFood == 0)
+		{// 持ってない
 			continue;
 		}
 
