@@ -6,6 +6,7 @@
 //=============================================================================
 #include "computer.h"
 #include "esa.h"
+#include "ui_esa.h"
 #include "pot.h"
 #include "time.h"
 #include "object.h"
@@ -478,7 +479,7 @@ void UpdateComputer(void)
 						D3DXVECTOR3 tentaclePos = D3DXVECTOR3(pComputer->aModel[4].mtxWorld._41, pComputer->aModel[4].mtxWorld._42, pComputer->aModel[4].mtxWorld._43);
 
 						if (CollisionPotArea(tentaclePos, TENTACLE_RADIUS * 0.5f, NULL, pComputer, true) == true ||
-							CollisionOcto(nCntComputer, true, pComputer->phys.pos) == true)
+							CollisionOcto(nCntComputer, true, tentaclePos) == true)
 						{// タコつぼからエサをとる
 							pComputer->TentState = CPUTENTACLESTATE_TENTACLESHORT;
 
@@ -2424,10 +2425,11 @@ void CollisionInk(int nIdx, bool bCPU, D3DXVECTOR3 pos)
 bool CollisionOcto(int nIdx, bool bCPU, D3DXVECTOR3 pos)
 {
 	bool bColl = false;
+	Player* pPlayer = GetPlayer();
+	Computer* pEnemy = GetComputer();
 
-	for (int nCntEnemy = 0; nCntEnemy < MAX_COMPUTER; nCntEnemy++)
+	for (int nCntEnemy = 0; nCntEnemy < MAX_COMPUTER; nCntEnemy++, pEnemy++)
 	{
-		Computer* pEnemy = &g_aComputer[nCntEnemy];
 
 		if (pEnemy->bUse == false)
 		{// 使用していない
@@ -2448,15 +2450,22 @@ bool CollisionOcto(int nIdx, bool bCPU, D3DXVECTOR3 pos)
 			int nEsaIdx = Dequeue(&pEnemy->esaQueue);
 			pEnemy->nFoodCount--;
 
-			pEnemy = GetComputer();
-			Enqueue(&pEnemy[nIdx].esaQueue, nEsaIdx);
-			pEnemy[nIdx].nFoodCount++;
+			if (bCPU == true)
+			{// CPUが奪った
+				pEnemy = GetComputer();
+				Enqueue(&pEnemy[nIdx].esaQueue, nEsaIdx);
+				pEnemy[nIdx].nFoodCount++;
+			}
+			else
+			{// プレイヤーが奪った
+				Enqueue(&pPlayer[nIdx].esaQueue, nEsaIdx);
+				pPlayer[nIdx].nFood++;
+				SetAddUiEsa(nIdx, nEsaIdx);
+			}
 
 			return bColl;
 		}
 	}
-
-	Player* pPlayer = GetPlayer();
 
 	for (int nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++, pPlayer++)
 	{
@@ -2473,10 +2482,21 @@ bool CollisionOcto(int nIdx, bool bCPU, D3DXVECTOR3 pos)
 
 			int nEsaIdx = Dequeue(&pPlayer->esaQueue);
 			pPlayer->nFood--;
+			SetSubUiEsa(nIdx);
 
-			pPlayer = GetPlayer();
-			Enqueue(&pPlayer[nIdx].esaQueue, nEsaIdx);
-			pPlayer[nIdx].nFood++;
+			if (bCPU == true)
+			{// CPUが奪った
+				pEnemy = GetComputer();
+				Enqueue(&pEnemy[nIdx].esaQueue, nEsaIdx);
+				pEnemy[nIdx].nFoodCount++;
+			}
+			else
+			{// プレイヤーが奪った
+				pPlayer = GetPlayer();
+				Enqueue(&pPlayer[nIdx].esaQueue, nEsaIdx);
+				pPlayer[nIdx].nFood++;
+				SetAddUiEsa(nIdx, nEsaIdx);
+			}
 
 			return bColl;
 		}
