@@ -33,6 +33,7 @@ typedef enum {
 	CPUSTATE_HIDE_FOOD,				// エサを隠す
 	CPUSTATE_STEAL_FOOD,			// 隠されたエサを奪う
 	CPUSTATE_FINAL_COLLECT,		    // 終盤の回収行動
+	CPUSTATE_BACKAREA,			    // エリア戻り状態
 	CPUCPUSTATE_MAX
 } CPUSTATE;
 
