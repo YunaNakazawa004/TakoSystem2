@@ -78,8 +78,23 @@ Esa_info g_aEsaInfo[] =
 //========================================================================
 void InitEsa(void)
 {
+	// 変数宣言 ===========================================
+
+	int nCntEsa;
+
+	// ====================================================
+
+	// エサモデルの情報を初期化
+	for (nCntEsa = 0; nCntEsa < MAX_SET_ESA; nCntEsa++)
+	{
+		g_aEsaModel[nCntEsa].nScore = 0;
+		g_aEsaModel[nCntEsa].fHitRadius = 0.0f;
+		g_aEsaModel[nCntEsa].fSpeed = 0.0f;
+		g_aEsaModel[nCntEsa].bUse = false;
+	}
+
 	// エサの情報を初期化
-	for (int nCntEsa = 0; nCntEsa < MAX_SET_ESA; nCntEsa++)
+	for (nCntEsa = 0; nCntEsa < MAX_SET_ESA; nCntEsa++)
 	{
 		g_aEsa[nCntEsa].nIdxModel = -1;							// モデルのインデックスを初期化
 		g_aEsa[nCntEsa].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 位置を初期化
