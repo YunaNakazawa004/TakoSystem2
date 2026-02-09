@@ -397,7 +397,7 @@ void UpdatePlayer(void)
 						D3DXVECTOR3 tentaclePos = D3DXVECTOR3(pPlayer->aModel[4].mtxWorld._41, pPlayer->aModel[4].mtxWorld._42, pPlayer->aModel[4].mtxWorld._43);
 
 						if (CollisionPotArea(tentaclePos, TENTACLE_RADIUS * 0.5f, pPlayer, NULL, true) == true ||
-							CollisionOcto(nCntPlayer, false, pPlayer->pos) == true)
+							CollisionOcto(nCntPlayer, false, tentaclePos) == true)
 						{// タコつぼからエサをとる
 							pPlayer->TentacleState = PLTENTACLESTATE_TENTACLESHORT;
 
