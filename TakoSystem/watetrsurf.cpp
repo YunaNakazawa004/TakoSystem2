@@ -79,6 +79,12 @@ void UninitWaterSurf(void)
 			g_aWatersurf[nCntSurf].pVtxBuff->Release();
 			g_aWatersurf[nCntSurf].pVtxBuff = NULL;
 		}
+		// インデックスバッファの破棄
+		if (g_aWatersurf[nCntSurf].pIdxBuff != NULL)
+		{
+			g_aWatersurf[nCntSurf].pIdxBuff->Release();
+			g_aWatersurf[nCntSurf].pIdxBuff = NULL;
+		}
 	}
 }
 
