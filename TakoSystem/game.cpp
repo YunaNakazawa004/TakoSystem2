@@ -241,6 +241,15 @@ void UpdateGame(void)
 	{// フェードが何もしていない状態のみ発動
 		if (GetKeyboardTrigger(DIK_P) || GetJoypadTrigger(0, JOYKEY_START) == true)
 		{// ポーズの確認
+			if (g_bPause == true)
+			{
+				PlaySound(SOUND_SE_DECISION);
+			}
+			else
+			{
+				PlaySound(SOUND_SE_MUD);
+			}
+			StopSound(SOUND_BGM_GAME);
 			ResetPause();
 			g_bPause = g_bPause ? false : true;
 		}
