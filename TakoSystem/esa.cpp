@@ -213,7 +213,7 @@ void UpdateEsa(void)
 			// ƒGƒT‚ÌˆÚ“®ˆ—
 			MoveEsa(&g_aEsa[nCntEsa]);
 
-			//MoveOceanCurrents(&g_aEsa[nCntEsa].pos);
+			MoveOceanCurrents(&g_aEsa[nCntEsa].pos);
 
 			// ŠC–Ê‚ð’´‚¦‚È‚¢‚æ‚¤C³
 			if (g_aEsa[nCntEsa].pos.y > *pWaterSurfHeight - g_aEsaModel[g_aEsa[nCntEsa].nIdxModel].fHitRadius)

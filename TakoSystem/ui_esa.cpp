@@ -66,6 +66,8 @@ const char* c_apFilenameUiEsa[] =	// 最終的にMAX_MODEL_ESAと同じ値にする
 	"data/TEXTURE/esa_tmp_texture/esa_tmp_crab.png",	// [0]カニ
 	"data/TEXTURE/esa_tmp_texture/esa_tmp_shell.png",	// [1]貝
 	"data/TEXTURE/esa_tmp_texture/esa_tmp_shrimp.png",	// [2]エビ
+	"data/TEXTURE/esa_tmp_texture/esa_tmp_hermitcrab.png",	// [2]ヤドカリ
+	"data/TEXTURE/esa_tmp_texture/esa_tmp_ise-shrimp.png",	// [2]イセエビ
 };
 
 // エサUIの設定情報

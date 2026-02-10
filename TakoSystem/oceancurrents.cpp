@@ -127,7 +127,7 @@ const char* c_apFilenameOceanCurrents[] =
 OCUI_info g_aOCUiInfo[] =
 {// {プレイヤー数(あるだけ), 種類, テクスチャ, aブレンド使用状態, オフセットPOS, 角度, 幅, 高さ, テクスチャ座標, テクスチャ座標加算量, テクスチャサイズ, 色}
 
-	{1, OCUITYPE_TIMER,  6, false, D3DXVECTOR3(0.0f, 0.0f, 0.0f),	 D3DXVECTOR3(0.0f, 0.0f, 0.0f), 50.0f, 50.0f, D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(0.1f, 1.0f), D3DXCOLOR(1.0f, 0.0f, 0.0f, 0.0f)},	// 1P 時間：数字
+	{1, OCUITYPE_TIMER,  6, false, D3DXVECTOR3(0.0f, 0.0f, 0.0f),	 D3DXVECTOR3(0.0f, 0.0f, 0.0f), 50.0f, 50.0f, D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(0.1f, 1.0f), D3DXCOLOR(1.0f, 1.0f, 0.0f, 0.0f)},	// 1P 時間：数字
 	
 	{1, OCUITYPE_WANING, 1, true,  D3DXVECTOR3(0.0f, 0.0f, 0.0f),	 D3DXVECTOR3(0.0f, 0.0f, 0.0f), 180.0f, 40.0f, D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(1.0f, 1.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f)},	// 1P 警告：バックテクスチャ
 	{1, OCUITYPE_WANING, 0, false, D3DXVECTOR3(-140.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 25.0f, 25.0f,  D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(0.0f, 0.0f), D3DXVECTOR2(1.0f, 1.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f)},	// 1P 警告：バックテクスチャ
@@ -746,7 +746,7 @@ void MoveOceanCurrents(D3DXVECTOR3* pPos)
 	// ====================================================
 
 	fDistRadius = sqrtf(pPos->x * pPos->x + pPos->z * pPos->z);		// 中心からの距離を求める
-	fNomRadius = fDistRadius / pMeshCylinder[1].size.x;				// posが中心からどれだけ離れているかを求める
+	fNomRadius = fDistRadius / OUTCYLINDER_RADIUS;				// posが中心からどれだけ離れているかを求める
 	fNowAngle = (float)atan2(pPos->x, pPos->z);						// 中心からの角度を求める
 
 	// 角度を更新
