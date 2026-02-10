@@ -39,7 +39,7 @@ Pot g_aPot[MAX_POT];									// ƒ^ƒR‚Â‚Ú‚Ìî•ñ
 //*****************************************************************************
 const char* c_apFilenamePot[MAX_POTMODEL] =
 {
-	"data\\MODEL\\Others_Object\\Takotsubo.x",
+	"data\\MODEL\\Others_Object\\takotsubo000.x",
 };
 
 //=============================================================================
