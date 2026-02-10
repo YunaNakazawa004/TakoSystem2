@@ -24,6 +24,8 @@
 
 // 設定値 ===================
 
+#define MAX_ESATYPE				(32)				// エサの種類の総数
+
 // 挙動 : 地面
 #define ESA_LANDING_MOVEVALUE	(0.1f)				// 地面にいる時の値の増加量	
 #define ESA_LANDING_MOVESPEED	(0.05f)				// 地面にいる時の値の増加量
@@ -33,8 +35,8 @@
 #define ESA_BUOYANCY_MOVESPEED	(0.05f)				// 浮いている時の値の増加量	
 
 #define ESA_SWIM_SPEED			(0.001f)			// 浮いている時の移動(回転)速度
+#define ESA_HOMING_SPEED		(0.1f)				// エサの追跡速度
 
-#define ESA_HOMING_SPEED		(0.01f)
 
 // 計算用 ===================
 
@@ -49,23 +51,12 @@
 
 // グローバル宣言 ==============================================
 
-EsaModel g_aEsaModel[MAX_MODEL_ESA];	// エサのモデル情報
-int g_aIdxEsaModel[MAX_MODEL_ESA];		// モデルのインデックス
+EsaData g_aEsaData[MAX_ESATYPE];		// エサの種類別の情報
+
+int g_aIdxEsaData[MAX_MODEL_ESA];		// モデルのインデックス
+int g_nNumEsatype;						// エサの種類の総数
 
 Esa g_aEsa[MAX_SET_ESA];				// エサの情報
-
-// モデルファイル情報
-EsaModel_info g_aEsaModelInfo[] =
-{// {ファイル名, モデルの移動(回転)速度, 当たり判定の大きさ, 獲得スコア}
-
-	{"data/MODEL/esa/kani.x",			0.0003f,	10.0f,	10},	// [1]カニ
-	{"data/MODEL/esa/shell000.x",		0.0001f,	10.0f,	10},	// [0]貝
-	{"data/MODEL/esa/shrimp.x",			0.005f,	10.0f,	10},		// [2]エビ
-	{"data/MODEL/esa/Yadokari.x",		0.005f,	10.0f,	10},		// [2]エビ
-	{"data/MODEL/esa/spiny_lobster000.x",		0.005f,	10.0f,	10},		// [2]エビ
-};
-
-int g_nNumEsatype;						// エサの種類の総数
 
 // エサの配置情報
 Esa_info g_aEsaInfo[] =
@@ -87,12 +78,12 @@ void InitEsa(void)
 	// ====================================================
 
 	// エサモデルの情報を初期化
-	for (nCntEsa = 0; nCntEsa < MAX_MODEL_ESA; nCntEsa++)
+	for (nCntEsa = 0; nCntEsa < MAX_ESATYPE; nCntEsa++)
 	{
-		g_aEsaModel[nCntEsa].nScore = 0;
-		g_aEsaModel[nCntEsa].fHitRadius = 0.0f;
-		g_aEsaModel[nCntEsa].fSpeed = 0.0f;
-		g_aEsaModel[nCntEsa].bUse = false;
+		g_aEsaData[nCntEsa].nScore = 0;			// 獲得スコアを初期化
+		g_aEsaData[nCntEsa].fHitRadius = 0.0f;	// 当たり判定の大きさを初期化
+		g_aEsaData[nCntEsa].fSpeed = 0.0f;		// 移動速度を初期化
+		g_aEsaData[nCntEsa].bUse = false;		// 使用していない状態に設定
 	}
 
 	// エサの情報を初期化
@@ -108,17 +99,12 @@ void InitEsa(void)
 		g_aEsa[nCntEsa].bUse = false;							// 使用していない状態に設定
 	}
 
-	memset(g_aIdxEsaModel,-1,sizeof g_aIdxEsaModel);	// モデルのインデックスを初期化
+	memset(g_aIdxEsaData,-1,sizeof g_aIdxEsaData);		// モデルのインデックスを初期化
 
 	g_nNumEsatype = 0;									// エサの種類の総数を初期化
-
-	// モデル読み込み
-	for (int nCntEsaModel = 0; nCntEsaModel < ESA_CALC_SIZEARRAY(g_aEsaModelInfo); nCntEsaModel++)
-	{// 用意したファイルの数だけ繰り返す
-
-		// エサのモデル読み込み処理
-		g_aIdxEsaModel[nCntEsaModel] = SetModelEsa(g_aEsaModelInfo[nCntEsaModel], &g_aEsaModel[0], ESA_CALC_SIZEARRAY(g_aEsaModel));
-	}
+	
+	// エサの種類別情報の読み取り
+	SetLoadEsaData(&g_aEsaData[0], "data/FILE/esa.txt");
 
 // エサの配置
 #if 0	// Infoの設定
@@ -137,7 +123,7 @@ void InitEsa(void)
 	for (int nCntEsa = 0; nCntEsa < 20; nCntEsa++)
 	{// 配置する数だけ繰り返す
 
-		int nSetType = rand() % ESATYPE_MAX;											// ランダムで種類を設定
+		int nSetType = rand() % g_nNumEsatype;											// ランダムで種類を設定
 		float fRandRadius = rand() % (int)(OUTCYLINDER_RADIUS - 100.0f) + (int)INCYLINDER_RADIUS;	// 中心からの距離を設定
 		float fRandAngle = (float)(rand() % 629 - 314) / 1000.0f;						// 角度を設定
 		float fRandHeight = rand() % (int)CYLINDER_HEIGHT;								// 高さを設定
@@ -159,33 +145,42 @@ void InitEsa(void)
 //========================================================================
 void UninitEsa(void)
 {
-	for (int nCntEsaModel = 0; nCntEsaModel < MAX_MODEL_ESA; nCntEsaModel++)
+	// EsaDataの破棄
+	for (int nCntEsaModel = 0; nCntEsaModel < MAX_ESATYPE; nCntEsaModel++)
 	{
 		// テクスチャの破棄
+		if (g_aEsaData[nCntEsaModel].pTexture != NULL)
+		{// 情報がある場合
+
+			g_aEsaData[nCntEsaModel].pTexture->Release();
+			g_aEsaData[nCntEsaModel].pTexture = NULL;
+		}
+
+		// モデルのテクスチャの破棄
 		for (int nCntTexture = 0; nCntTexture < MAX_TEXTURE; nCntTexture++)
 		{
-			if (g_aEsaModel[nCntEsaModel].apTexture[nCntTexture] != NULL)
+			if (g_aEsaData[nCntEsaModel].model.apTexture[nCntTexture] != NULL)
 			{// 情報がある場合
 
-				g_aEsaModel[nCntEsaModel].apTexture[nCntTexture]->Release();
-				g_aEsaModel[nCntEsaModel].apTexture[nCntTexture] = NULL;
+				g_aEsaData[nCntEsaModel].model.apTexture[nCntTexture]->Release();
+				g_aEsaData[nCntEsaModel].model.apTexture[nCntTexture] = NULL;
 			}
 		}
 
-		// メッシュの破棄
-		if (g_aEsaModel[nCntEsaModel].pMesh != NULL)
+		// モデルのメッシュの破棄
+		if (g_aEsaData[nCntEsaModel].model.pMesh != NULL)
 		{// 情報がある場合
 
-			g_aEsaModel[nCntEsaModel].pMesh->Release();
-			g_aEsaModel[nCntEsaModel].pMesh = NULL;
+			g_aEsaData[nCntEsaModel].model.pMesh->Release();
+			g_aEsaData[nCntEsaModel].model.pMesh = NULL;
 		}
 
-		// マテリアルの破棄
-		if (g_aEsaModel[nCntEsaModel].pBuffMat != NULL)
+		// モデルのマテリアルの破棄
+		if (g_aEsaData[nCntEsaModel].model.pBuffMat != NULL)
 		{// 情報がある場合
 
-			g_aEsaModel[nCntEsaModel].pBuffMat->Release();
-			g_aEsaModel[nCntEsaModel].pBuffMat = NULL;
+			g_aEsaData[nCntEsaModel].model.pBuffMat->Release();
+			g_aEsaData[nCntEsaModel].model.pBuffMat = NULL;
 		}
 	}
 }
@@ -213,13 +208,19 @@ void UpdateEsa(void)
 			// エサの移動処理
 			MoveEsa(&g_aEsa[nCntEsa]);
 
-			MoveOceanCurrents(&g_aEsa[nCntEsa].pos);
+			if (g_aEsa[nCntEsa].esaType != ESA_ACTTYPE_GOTO_PLAYER
+			 || g_aEsa[nCntEsa].esaType != ESA_ACTTYPE_GOTO_POT)
+			{// プレイヤーとポットにむかっている状態でない場合
+
+				// 海流の処理
+				MoveOceanCurrents(&g_aEsa[nCntEsa].pos);
+			}
 
 			// 海面を超えないよう修正
-			if (g_aEsa[nCntEsa].pos.y > *pWaterSurfHeight - g_aEsaModel[g_aEsa[nCntEsa].nIdxModel].fHitRadius)
+			if (g_aEsa[nCntEsa].pos.y > *pWaterSurfHeight - g_aEsaData[g_aEsa[nCntEsa].nIdxModel].fHitRadius)
 			{// 
 
-				g_aEsa[nCntEsa].pos.y = *pWaterSurfHeight - g_aEsaModel[g_aEsa[nCntEsa].nIdxModel].fHitRadius;
+				g_aEsa[nCntEsa].pos.y = *pWaterSurfHeight - g_aEsaData[g_aEsa[nCntEsa].nIdxModel].fHitRadius;
 			}
 
 			SetEffect3D(70, g_aEsa[nCntEsa].pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0.0f, 30.0f, -0.1f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f),EFFECTTYPE_NORMAL);
@@ -275,19 +276,19 @@ void DrawEsa(void)
 			pDevice->GetMaterial(&matDef);
 
 			// マテリアルデータへのポインタを所得
-			pMat = (D3DXMATERIAL*)g_aEsaModel[g_aEsa[nCntEsa].nIdxModel].pBuffMat->GetBufferPointer();
+			pMat = (D3DXMATERIAL*)g_aEsaData[g_aEsa[nCntEsa].nIdxModel].model.pBuffMat->GetBufferPointer();
 
-			for (int nCntMat = 0; nCntMat < (int)g_aEsaModel[g_aEsa[nCntEsa].nIdxModel].dwNumMat; nCntMat++)
+			for (int nCntMat = 0; nCntMat < (int)g_aEsaData[g_aEsa[nCntEsa].nIdxModel].model.dwNumMat; nCntMat++)
 			{// マテリアルの数分繰り返す
 
 				// マテリアルの設定
 				pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
 
 				// テクスチャの設定
-				pDevice->SetTexture(0, g_aEsaModel[g_aEsa[nCntEsa].nIdxModel].apTexture[nCntMat]);
+				pDevice->SetTexture(0, g_aEsaData[g_aEsa[nCntEsa].nIdxModel].model.apTexture[nCntMat]);
 
 				// モデルパーツの描画
-				g_aEsaModel[g_aEsa[nCntEsa].nIdxModel].pMesh->DrawSubset(nCntMat);
+				g_aEsaData[g_aEsa[nCntEsa].nIdxModel].model.pMesh->DrawSubset(nCntMat);
 			}
 
 			// 保存していたマテリアルを戻す
@@ -297,19 +298,96 @@ void DrawEsa(void)
 }
 
 //========================================================================
+// エサ情報の設定処理
+//========================================================================
+int SetEsaData(EsaData* pEsaData, EsaData_info infoEsaData)			
+{
+	// 変数宣言 ===========================================
+
+	// デバイスの所得
+	LPDIRECT3DDEVICE9 pDevice = GetDevice();
+
+	// ====================================================
+
+	for (int nCntModel = 0; nCntModel < MAX_ESATYPE; nCntModel++, pEsaData++)
+	{
+		if (pEsaData->bUse == true)
+		{// 使用していない場合
+
+			continue;	// 処理の始めに戻る
+
+			//MessageBox(NULL,"test_errer","test",MB_OK);
+		}
+
+		// テクスチャの読み込み
+		if (FAILED(D3DXCreateTextureFromFile(pDevice,							// Direct3Dデバイスへのポインタ
+											 &infoEsaData.aFilenameTexture[0],	// 読み込むテクスチャ
+											 &pEsaData->pTexture)))				// テクスチャへのポインタ)
+		{// テクスチャの読み込みに失敗
+
+			return -1;	// 設定した場所がない事を返す
+		}
+
+		// Xファイルの読み込み
+		if(FAILED(D3DXLoadMeshFromX(&infoEsaData.aFilenameModel[0],
+								    D3DXMESH_SYSTEMMEM,
+								    pDevice,
+								    NULL,
+								    &pEsaData->model.pBuffMat,
+								    NULL,
+								    &pEsaData->model.dwNumMat,
+								    &pEsaData->model.pMesh)))
+		{// Xファイルの読み込みに失敗した場合
+
+			return -1;	// 設定した場所がない事を返す
+		}
+
+		D3DXMATERIAL* pMat;	// マテリアルのポインタを宣言
+
+		// マテリアルデータへのポインタを所得
+		pMat = (D3DXMATERIAL*)pEsaData->model.pBuffMat->GetBufferPointer();
+
+		// マテリアルの設定
+		for (int nCntMat = 0; nCntMat < (int)pEsaData->model.dwNumMat; nCntMat++)
+		{// マテリアルの数分繰り返す
+
+			if (pMat[nCntMat].pTextureFilename != NULL)
+			{// テクスチャファイルがある
+
+				// テクスチャの読み込み
+				D3DXCreateTextureFromFile(pDevice,								// Direct3Dデバイスへのポインタ
+										  pMat[nCntMat].pTextureFilename,		// 読み込むテクスチャ
+										  &pEsaData->model.apTexture[nCntMat]);	// テクスチャへのポインタ
+			}
+		}
+
+		pEsaData->fSpeed = infoEsaData.fSpeed;			// 移動速度を設定
+
+		pEsaData->fHitRadius = infoEsaData.fHitRadius;	// 当たり判定の大きさを設定
+
+		pEsaData->bUse = true;							// 使用している状態に設定
+
+		return nCntModel;								// 設定した場所を返す
+	}
+
+	// 設定できる場所がなかった場合
+	return -1;		// 設定した場所がない事を返す
+}
+
+//========================================================================
 // エサの設定処理
 //========================================================================
 int SetEsa(int nEsaType, ESA_ACTTYPE esaType, int nBehavior, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 {
 	// 設定したいモデルがない場合
-	if (g_aIdxEsaModel[nEsaType] == -1) return -1;	// 処理を抜ける
+	if (g_aIdxEsaData[nEsaType] == -1) return -1;	// 処理を抜ける
 
 	for (int nCntEsa = 0; nCntEsa < MAX_SET_ESA; nCntEsa++)
 	{
 		if (g_aEsa[nCntEsa].bUse == false)
 		{// 使用していない場合
 
-			g_aEsa[nCntEsa].nIdxModel = g_aIdxEsaModel[nEsaType];	// 種類を設定
+			g_aEsa[nCntEsa].nIdxModel = g_aIdxEsaData[nEsaType];	// 種類を設定
 			g_aEsa[nCntEsa].pos = pos;								// 位置を設定
 			g_aEsa[nCntEsa].rot = rot;								// 角度を設定
 			g_aEsa[nCntEsa].fMoveAngle = 0.0f;						// 移動角度を初期化
@@ -323,72 +401,6 @@ int SetEsa(int nEsaType, ESA_ACTTYPE esaType, int nBehavior, D3DXVECTOR3 pos, D3
 	}
 
 	return -1;				// 設定してない事を返す
-}
-
-//========================================================================
-// エサのモデル設定処理
-//========================================================================
-int SetModelEsa(EsaModel_info infoEsaModel, EsaModel* pEsaModel, int nMaxSizeNum)
-{
-	// 変数宣言 ===========================================
-
-	// デバイスの所得
-	LPDIRECT3DDEVICE9 pDevice = GetDevice();
-
-	// ====================================================
-
-	for (int nCntModel = 0; nCntModel < nMaxSizeNum; nCntModel++, pEsaModel++)
-	{
-		if (pEsaModel->bUse == false)
-		{// 使用していない場合
-
-			// Xファイルの読み込み
-			if(FAILED(D3DXLoadMeshFromX(&infoEsaModel.aFilename[0],
-									    D3DXMESH_SYSTEMMEM,
-									    pDevice,
-									    NULL,
-									    &pEsaModel->pBuffMat,
-									    NULL,
-									    &pEsaModel->dwNumMat,
-									    &pEsaModel->pMesh)))
-			{// Xファイルの読み込みに失敗した場合
-
-				return -1;	// 設定した場所がない事を返す
-			}
-
-			D3DXMATERIAL* pMat;	// マテリアルのポインタを宣言
-
-			// マテリアルデータへのポインタを所得
-			pMat = (D3DXMATERIAL*)pEsaModel->pBuffMat->GetBufferPointer();
-
-			// マテリアルの設定
-			for (int nCntMat = 0; nCntMat < (int)pEsaModel->dwNumMat; nCntMat++)
-			{// マテリアルの数分繰り返す
-
-				if (pMat[nCntMat].pTextureFilename != NULL)
-				{// テクスチャファイルがある
-
-					// テクスチャの読み込み
-					D3DXCreateTextureFromFile(pDevice,							// Direct3Dデバイスへのポインタ
-											  pMat[nCntMat].pTextureFilename,	// 読み込むテクスチャ
-											  &pEsaModel->apTexture[nCntMat]);	// テクスチャへのポインタ
-				}
-			}
-
-			pEsaModel->fSpeed = infoEsaModel.fSpeed;			// 移動速度を設定
-
-			pEsaModel->fHitRadius = infoEsaModel.fHitRadius;	// 当たり判定の大きさを設定
-
-			pEsaModel->bUse = true;								// 使用している状態に設定
-
-			g_nNumEsatype++;									// エサの種類の総数を増やす
-
-			return nCntModel;									// 設定した場所を返す
-		}
-	}
-
-	// 設定できる場所が残っていなかった場合
-	return -1;		// 設定した場所がない事を返す
 }
 
 //========================================================================
@@ -495,7 +507,7 @@ void MoveEsa(Esa* pEsa)
 		}
 		else
 		{
-			fToTagetAngle += g_aEsaModel[pEsa->nIdxModel].fSpeed / fNomRadius;				// 移動量(角度)を正規化した距離の長さにする
+			fToTagetAngle += g_aEsaData[pEsa->nIdxModel].fSpeed / fNomRadius;				// 移動量(角度)を正規化した距離の長さにする
 		}
 		
 		// 位置を更新
@@ -522,7 +534,7 @@ void MoveEsa(Esa* pEsa)
 		pEsa->pos.y += fHeight * ESA_HOMING_SPEED;
 		pEsa->pos.z += fDipth * ESA_HOMING_SPEED;
 
-		PrintDebugProc("\nESA_ROT %f", fToTagetAngle);
+		//PrintDebugProc("\nESA_ROT %f", fToTagetAngle);
 
 		break;
 
@@ -581,12 +593,12 @@ bool CollisionEsa(int* pIdx, bool bCollision, D3DXVECTOR3 *pos, float fHitRadius
 			//PrintDebugProc("ESA_COLLISION_ROT  %f\n", fRot);
 
 			// 判定
-			if (g_aEsa[nCntEsa].pos.y + g_aEsaModel[g_aIdxEsaModel[g_aEsa[nCntEsa].nIdxModel]].fHitRadius >= pos->y - fHitRadius
-			 && g_aEsa[nCntEsa].pos.y - g_aEsaModel[g_aIdxEsaModel[g_aEsa[nCntEsa].nIdxModel]].fHitRadius <= pos->y + fHitRadius)
+			if (g_aEsa[nCntEsa].pos.y + g_aEsaData[g_aIdxEsaData[g_aEsa[nCntEsa].nIdxModel]].fHitRadius >= pos->y - fHitRadius
+			 && g_aEsa[nCntEsa].pos.y - g_aEsaData[g_aIdxEsaData[g_aEsa[nCntEsa].nIdxModel]].fHitRadius <= pos->y + fHitRadius)
 			{// 高さが範囲内(矩形)
 
 				// XZの円形にめり込んでいるか判定
-				if (fDistLength < g_aEsaModel[g_aIdxEsaModel[g_aEsa[nCntEsa].nIdxModel]].fHitRadius + fHitRadius)
+				if (fDistLength < g_aEsaData[g_aIdxEsaData[g_aEsa[nCntEsa].nIdxModel]].fHitRadius + fHitRadius)
 				{// 離れている距離が当たり判定より小さい場合
 
 					if (pIdx)*pIdx = nCntEsa;	// 接触したエサのインデックスを設定
@@ -594,8 +606,8 @@ bool CollisionEsa(int* pIdx, bool bCollision, D3DXVECTOR3 *pos, float fHitRadius
 					if (bCollision == true)
 					{// 当たった時の処理をおこなう場合
 
-						pos->x = g_aEsa[nCntEsa].pos.x + sinf(fRot + D3DX_PI) * g_aEsaModel[g_aIdxEsaModel[g_aEsa[nCntEsa].nIdxModel]].fHitRadius + fHitRadius;
-						pos->z = g_aEsa[nCntEsa].pos.z + cosf(fRot + D3DX_PI) * g_aEsaModel[g_aIdxEsaModel[g_aEsa[nCntEsa].nIdxModel]].fHitRadius + fHitRadius;
+						pos->x = g_aEsa[nCntEsa].pos.x + sinf(fRot + D3DX_PI) * g_aEsaData[g_aIdxEsaData[g_aEsa[nCntEsa].nIdxModel]].fHitRadius + fHitRadius;
+						pos->z = g_aEsa[nCntEsa].pos.z + cosf(fRot + D3DX_PI) * g_aEsaData[g_aIdxEsaData[g_aEsa[nCntEsa].nIdxModel]].fHitRadius + fHitRadius;
 					}
 
 					return true;
@@ -604,6 +616,200 @@ bool CollisionEsa(int* pIdx, bool bCollision, D3DXVECTOR3 *pos, float fHitRadius
 		}
 	}
 	return false;
+}
+
+
+//========================================================================
+// ファイルから文字だけの読み取り処理
+//========================================================================
+bool FileExtractText(FILE* pFile, char* pReadText)
+{// <処理> 空欄、コメントを省いた文字を読み取る
+
+	// 変数宣言 ===========================================
+
+	char aReadText[256] = {};	// 読み取った文字
+	char aBlank[256] = {};		// 空の読み取り
+
+	int nCntPass = 0;			// 処理の通過(繰り返し)回数
+
+	bool bSCRead;				// 読み取れたかの状態
+
+	// ====================================================
+
+	// ファイルから文字だけを読み取る
+	while (1)
+	{
+		// 文字の読み取り
+		fscanf(pFile, "%[^ \n\t]", &aReadText[0]);	// 文字でなくなる所まで読み取る
+
+		if (aReadText[0] == '#')
+		{// 最初の文字が「#」の場合
+
+			fscanf(pFile, "%[^\n]", &aBlank[0]);	// 改行まで読み取る
+		}
+		else
+		{// 最初の文字が「#」ではない
+
+			if (aReadText[0] != '\0')
+			{// 読み取った文字の一文字目が「\0」ではない場合
+
+				if (pReadText)
+				{
+					// 読み取った文字を入れる
+					strcpy(&pReadText[0], &aReadText[0]);
+				}
+
+				bSCRead = true;	// 読み取りに成功
+
+				break;			// while文を抜ける
+			}
+		}
+
+		// 空欄の読み取り
+		fscanf(pFile, "%[ \t\n]", &aBlank[0]);		// 空欄でなくなる所まで読み取る
+
+		nCntPass++;	// 通過回数をカウント
+
+		if (nCntPass >= 50)
+		{// 正常に読み取れていなさそうな場合
+
+			bSCRead = false;	// 文字の読み取りに失敗
+
+			break;				// while文を抜ける
+		}
+	}
+
+	return bSCRead;
+}
+
+//========================================================================
+// エサの情報を読み取る処理
+//========================================================================
+bool SetLoadEsaData(EsaData* pEsaData, const char* pFilename)
+{
+	// 変数宣言 ===========================================
+
+	FILE *pFile;	// ファイルポインタ
+
+	char aReadText[256] = {};
+	char aBlank[256] = {};		// 空の読み取り
+
+	bool bSCReadFile = true;
+
+	EsaData_info setEsaDataInfo;
+
+	// ====================================================
+
+	// ▼ファイルを開く
+	pFile = fopen(pFilename, "r");
+
+	if (pFile == NULL)
+	{// ファイルが開けなかった
+
+		return false;		// 読み取りに失敗した事を返す
+	}
+
+	do
+	{// 読み取り開始位置まで読み取る
+
+		// 文字の読み取り処理
+		if (FileExtractText(pFile, &aReadText[0]) == false)
+		{// 開始位置の読み取りに失敗した場合
+
+			return false;	// 読み取りに失敗した事を返す
+		}
+
+	} while (strcmp(&aReadText[0], "SCRIPT"));	// ●SCRIPTまで
+
+	// 文字の読み取り
+	while(FileExtractText(pFile, &aReadText[0]))
+	{
+		// 読み取った文字の判定
+		if (strcmp(&aReadText[0], "END_SCRIPT") == 0)
+		{// 〇END_SCRIPT
+
+			break;	// while文を抜ける
+		
+		}
+		else if (strcmp(&aReadText[0], "SET_ESADATA") == 0)
+		{// ●SET_ESADATA
+
+			// 文字の読み取り
+			while (FileExtractText(pFile, &aReadText[0]))
+			{
+				// 設定用のエサ情報の初期化
+				setEsaDataInfo.nScore = 0;			// 獲得スコアを初期化
+				setEsaDataInfo.fHitRadius = 0.0f;	// 当たり判定の大きさを初期化
+				setEsaDataInfo.fSpeed = 0.0f;		// 移動速度を初期化
+
+				memset(&setEsaDataInfo.aFilenameTexture[0], '\0', sizeof setEsaDataInfo.aFilenameTexture);	// テクスチャファイル名を初期化
+				memset(&setEsaDataInfo.aFilenameModel[0], '\0', sizeof setEsaDataInfo.aFilenameModel);		// モデルァイル名を初期化
+
+				// 読み取った文字の判定
+				if (strcmp(&aReadText[0], "END_ESADATA") == 0)
+				{// 〇END_ESADATA
+
+					break;	// while文を抜ける
+				
+				}
+				else if (strcmp(&aReadText[0], "SET_ESA") == 0)
+				{// ●SET_ESA
+
+					// 文字の読み取り
+					while (FileExtractText(pFile, &aReadText[0]))
+					{
+						// 読み取った文字の判定
+						if (strcmp(&aReadText[0], "END_ESA") == 0)
+						{// 〇END_ESA
+
+							// エサの情報を設定
+							g_aIdxEsaData[g_nNumEsatype] = SetEsaData(&g_aEsaData[0], setEsaDataInfo);	// 設定したエサのインデックスを代入
+							
+							g_nNumEsatype++;															// エサの種類の総数を増やす
+
+							break;	// while文を抜ける
+						}
+						else if (strcmp(&aReadText[0], "TEXTURE") == 0)
+						{// TEXTURE
+
+							fscanf(pFile, "%[ =\t\n]", &aBlank[0]);						// 余分な情報を読み取る
+							fscanf(pFile, "%s", &setEsaDataInfo.aFilenameTexture[0]);	// テクスチャ名を読み取る
+						}
+						else if (strcmp(&aReadText[0], "MODEL") == 0)
+						{// MODEL
+
+							fscanf(pFile, "%[ =\t\n]", &aBlank[0]);						// 余分な情報を読み取る
+							fscanf(pFile, "%s", &setEsaDataInfo.aFilenameModel[0]);		// モデル名を読み取る
+						}
+						else if (strcmp(&aReadText[0], "SPEED") == 0)
+						{// SPEED
+
+							fscanf(pFile, "%[ =\t\n]", &aBlank[0]);						// 余分な情報を読み取る
+							fscanf(pFile, "%f", &setEsaDataInfo.fSpeed);				// 移動速度を読み取る
+						}
+						else if (strcmp(&aReadText[0], "HIT_RADIUS") == 0)
+						{// HIT_RADIUS
+							
+							fscanf(pFile, "%[ =\t\n]", &aBlank[0]);						// 余分な情報を読み取る
+							fscanf(pFile, "%f", &setEsaDataInfo.fHitRadius);			// 当たり判定の大きさを読み取る
+						}
+						else if (strcmp(&aReadText[0], "GET_SCORE") == 0)
+						{// GET_SCORE
+
+							fscanf(pFile, "%[ =\t\n]", &aBlank[0]);						// 余分な情報を読み取る
+							fscanf(pFile, "%d", &setEsaDataInfo.nScore);				// 獲得スコアを読み取る
+						}
+
+					}
+				}
+			}
+		}
+	}
+
+	// ▲ファイルを閉じる
+	fclose(pFile);
+
+	return bSCReadFile;				// 読み取りに成功したか事を返す
 }
 
 //========================================================================
@@ -615,7 +821,15 @@ Esa* GetEsa(void)
 }
 
 //========================================================================
-// エサの種類数を返す処理
+// エサの種類情報を返す処理
+//========================================================================
+EsaData* GetEsaData(int nIdx)
+{
+	return &g_aEsaData[nIdx];
+}
+
+//========================================================================
+// エサの種類の総数を返す処理
 //========================================================================
 int GetNumEsaType(void)
 {

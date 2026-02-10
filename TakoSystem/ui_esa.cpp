@@ -54,21 +54,10 @@ typedef struct
 
 // グローバル宣言 ==============================================
 
-LPDIRECT3DTEXTURE9 g_apTextureUiEsa[MAX_MODEL_ESA] = {};	// テクスチャへのポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffUiEsa = NULL;				// 頂点バッファ
 
 UiEsaParent g_aUiEsaParent[MAX_PLAYER];						// エサUIの親の情報
 UiEsaChild g_aUiEsaChild[MAX_SET_ESA];						// エサUIの子の情報(総ポリゴン)
-
-// テクスチャファイル情報
-const char* c_apFilenameUiEsa[] =	// 最終的にMAX_MODEL_ESAと同じ値にする
-{
-	"data/TEXTURE/esa_tmp_texture/esa_tmp_crab.png",	// [0]カニ
-	"data/TEXTURE/esa_tmp_texture/esa_tmp_shell.png",	// [1]貝
-	"data/TEXTURE/esa_tmp_texture/esa_tmp_shrimp.png",	// [2]エビ
-	"data/TEXTURE/esa_tmp_texture/esa_tmp_hermitcrab.png",	// [2]ヤドカリ
-	"data/TEXTURE/esa_tmp_texture/esa_tmp_ise-shrimp.png",	// [2]イセエビ
-};
 
 // エサUIの設定情報
 UiEsaParent_info g_aUiEsaParentInfo[] =
@@ -93,15 +82,6 @@ void InitUiEsa(void)
 	int nCntUiEsa;
 
 	// ====================================================
-
-	// テクスチャの読み込み
-	for (int nCntTexture = 0; nCntTexture < sizeof c_apFilenameUiEsa / sizeof c_apFilenameUiEsa[0]; nCntTexture++)
-	{
-		// テクスチャの読み込み
-		D3DXCreateTextureFromFile(pDevice,							// Direct3Dデバイスへのポインタ
-								  c_apFilenameUiEsa[nCntTexture],	// 読み込むテクスチャ
-								  &g_apTextureUiEsa[nCntTexture]);	// テクスチャへのポインタ
-	}
 
 	// エサUIの親の情報を初期化
 	for (nCntUiEsa = 0; nCntUiEsa < MAX_PLAYER; nCntUiEsa++)
@@ -193,16 +173,6 @@ void InitUiEsa(void)
 //========================================================================
 void UninitUiEsa(void)		
 {
-	// テクスチャの破棄
-	for (int nCntTexture = 0; nCntTexture < MAX_MODEL_ESA; nCntTexture++)
-	{
-		if (g_apTextureUiEsa[nCntTexture] != NULL)
-		{
-			g_apTextureUiEsa[nCntTexture]->Release();
-			g_apTextureUiEsa[nCntTexture] = NULL;		// 中身を空にする
-		}
-	}
-
 	// 頂点バッファの破棄
 	if (g_pVtxBuffUiEsa != NULL)
 	{
@@ -320,6 +290,8 @@ void DrawUiEsa(void)
 
 	int nIdx;	// インデックスの値
 
+	EsaData* pEsaData = GetEsaData(0);
+
 	// =========================================================
 
 	// 頂点バッファをデータストリームに設定
@@ -348,7 +320,7 @@ void DrawUiEsa(void)
 				if (g_aUiEsaChild[nIdx].nIdxTexture != -1)
 				{// テクスチャが設定されている場合
 
-					pDevice->SetTexture(0, g_apTextureUiEsa[g_aUiEsaChild[nIdx].nIdxTexture]);
+					pDevice->SetTexture(0, pEsaData[g_aUiEsaChild[nIdx].nIdxTexture].pTexture);
 				}
 				else
 				{// テクスチャが設定されていない場合

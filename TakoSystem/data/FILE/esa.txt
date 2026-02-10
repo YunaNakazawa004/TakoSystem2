@@ -1,0 +1,61 @@
+#=====================================================================
+#
+# エサの各種類の情報[esa.txt]
+# Author : Soki Inamura
+#
+#=====================================================================
+SCRIPT		# 読み取り開始
+
+#===========================================================
+# エサ情報の設定
+#===========================================================
+SET_ESADATA
+
+	SET_ESA		# [0]エビ
+		TEXTURE	= data/TEXTURE/esa_tmp_texture/esa_tmp_shrimp.png	# テクスチャ
+		MODEL	= data/MODEL/esa/shrimp.x							# モデル
+		
+		SPEED		= 0.005		# 移動速度
+		HIT_RADIUS  = 10.0		# 当たり判定の大きさ
+		GET_SCORE   = 10		# 獲得スコア
+	END_ESA  
+
+	SET_ESA		# [1]カニ
+		TEXTURE	= data/TEXTURE/esa_tmp_texture/esa_tmp_crab.png	# テクスチャ
+		MODEL	= data/MODEL/esa/kani.x							# モデル
+		
+		SPEED		= 0.0003	# 移動速度
+		HIT_RADIUS  = 10.0		# 当たり判定の大きさ
+		GET_SCORE   = 10		# 獲得スコア
+	END_ESA  
+	
+	SET_ESA		# [2]貝
+		TEXTURE	= data/TEXTURE/esa_tmp_texture/esa_tmp_shell.png	# テクスチャ
+		MODEL	= data/MODEL/esa/shell000.x							# モデル
+		
+		SPEED		= 0.0001	# 移動速度
+		HIT_RADIUS  = 10.0		# 当たり判定の大きさ
+		GET_SCORE   = 10		# 獲得スコア
+	END_ESA
+	
+	SET_ESA		# [3]ヤドカリ
+		TEXTURE	= data/TEXTURE/esa_tmp_texture/esa_tmp_hermitcrab.png	# テクスチャ
+		MODEL	= data/MODEL/esa/Yadokari.x								# モデル
+		
+		SPEED		= 0.005		# 移動速度
+		HIT_RADIUS  = 10.0		# 当たり判定の大きさ
+		GET_SCORE   = 10		# 獲得スコア
+	END_ESA
+	
+	SET_ESA		# [4]伊勢エビ
+		TEXTURE	= data/TEXTURE/esa_tmp_texture/esa_tmp_ise-shrimp.png	# テクスチャ
+		MODEL	= data/MODEL/esa/spiny_lobster000.x						# モデル
+		
+		SPEED		= 0.005		# 移動速度
+		HIT_RADIUS  = 10.0		# 当たり判定の大きさ
+		GET_SCORE   = 10		# 獲得スコア
+	END_ESA
+	
+END_ESADATA
+
+END_SCRIPT	# 読み取り終了
