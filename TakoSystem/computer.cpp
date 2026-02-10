@@ -13,6 +13,7 @@
 #include "object.h"
 #include "meshcylinder.h"
 #include "meshring.h"
+#include "meshorbit.h"
 #include "effect_3d.h"
 #include "particle_3d.h"
 #include "watersurf.h"
@@ -281,7 +282,7 @@ void UpdateComputer(void)
 	{
 		if (pComputer->bUse == true)
 		{
-			if (pComputer->nThinkCooldown > 0 && pComputer->state != CPUSTATE_BACKAREA)
+			if (pComputer->nThinkCooldown > 0)
 			{// évçlÉNÅ[ÉãÉ_ÉEÉì
 				pComputer->nThinkCooldown--;
 			}
@@ -289,60 +290,63 @@ void UpdateComputer(void)
 			{// 5ÉtÉåÅ[ÉÄÇ…1âÒîªíf
 				pComputer->nThinkCooldown = CPU_THINK;
 
-				// ÉXÉRÉAåvéZ
-				CalcFoodScore(pComputer);
-				CalcAttackScore(pComputer);
-				CalcEscapeScore(pComputer);
-				CalcInkScore(pComputer);
-				CalcPotScore(pComputer);
+				if (pComputer->state != CPUSTATE_BACKAREA)
+				{// ÉGÉäÉAñﬂÇËèÛë‘Ç∂Ç·Ç»Ç¢Ç∆Ç´ÇæÇØ
+					// ÉXÉRÉAåvéZ
+					CalcFoodScore(pComputer);
+					CalcAttackScore(pComputer);
+					CalcEscapeScore(pComputer);
+					CalcInkScore(pComputer);
+					CalcPotScore(pComputer);
 
-				// ç≈óDêÊçsìÆÇåàíË
-				float best = pComputer->fFoodScore;
-				pComputer->state = CPUSTATE_MOVE_TO_FOOD;
+					// ç≈óDêÊçsìÆÇåàíË
+					float best = pComputer->fFoodScore;
+					pComputer->state = CPUSTATE_MOVE_TO_FOOD;
 
-				if (pComputer->fAttackScore > best)
-				{// çUåÇ
-					best = pComputer->fAttackScore;
-					pComputer->state = CPUSTATE_ATTACK;
-				}
+					if (pComputer->fAttackScore > best)
+					{// çUåÇ
+						best = pComputer->fAttackScore;
+						pComputer->state = CPUSTATE_ATTACK;
+					}
 
-				if (pComputer->fEscapeScore > best)
-				{// âÒî
-					best = pComputer->fEscapeScore;
-					pComputer->state = CPUSTATE_ESCAPE;
-				}
+					if (pComputer->fEscapeScore > best)
+					{// âÒî
+						best = pComputer->fEscapeScore;
+						pComputer->state = CPUSTATE_ESCAPE;
+					}
 
-				if (pComputer->fInkScore > best)
-				{// ñnìfÇ´
-					best = pComputer->fInkScore;
-					pComputer->state = CPUSTATE_INK_ATTACK;
-				}
+					if (pComputer->fInkScore > best)
+					{// ñnìfÇ´
+						best = pComputer->fInkScore;
+						pComputer->state = CPUSTATE_INK_ATTACK;
+					}
 
-				if (pComputer->fPotScore > best)
-				{// É^ÉRÇ¬Ç⁄
-					best = pComputer->fPotScore;
-					pComputer->state = CPUSTATE_GO_TO_POT;
-				}
+					if (pComputer->fPotScore > best)
+					{// É^ÉRÇ¬Ç⁄
+						best = pComputer->fPotScore;
+						pComputer->state = CPUSTATE_GO_TO_POT;
+					}
 
-				float exploreThreshold = EXPLORE_THRESHOLD;
+					float exploreThreshold = EXPLORE_THRESHOLD;
 
 
-				if (pComputer->nFoodCount < EXPLORE_ESA)
-				{// ÉGÉTÇ™è≠Ç»Ç¢ÇŸÇ«íTçıÇµÇ‚Ç∑Ç≠Ç∑ÇÈ
-					exploreThreshold = EXPLORE_THRESHOLD * 2.0f;
-				}
-				else if (pComputer->nFoodCount < EXPLORE_LITTLE_ESA)
-				{// è≠ÇµíTçıÇµÇ‚Ç∑Ç¢
-					exploreThreshold = EXPLORE_LIT_THRESHOLD;
-				}
-				else
-				{// í èÌ
-					exploreThreshold = EXPLORE_THRESHOLD;
-				}
+					if (pComputer->nFoodCount < EXPLORE_ESA)
+					{// ÉGÉTÇ™è≠Ç»Ç¢ÇŸÇ«íTçıÇµÇ‚Ç∑Ç≠Ç∑ÇÈ
+						exploreThreshold = EXPLORE_THRESHOLD * 2.0f;
+					}
+					else if (pComputer->nFoodCount < EXPLORE_LITTLE_ESA)
+					{// è≠ÇµíTçıÇµÇ‚Ç∑Ç¢
+						exploreThreshold = EXPLORE_LIT_THRESHOLD;
+					}
+					else
+					{// í èÌ
+						exploreThreshold = EXPLORE_THRESHOLD;
+					}
 
-				if (best < exploreThreshold)
-				{// Ëáílà»â∫Ç»ÇÁíTçı
-					pComputer->state = CPUSTATE_EXPLORE;
+					if (best < exploreThreshold)
+					{// Ëáílà»â∫Ç»ÇÁíTçı
+						pComputer->state = CPUSTATE_EXPLORE;
+					}
 				}
 
 				// ÉmÅ[ÉhÇÃê›íu
@@ -516,7 +520,7 @@ void UpdateComputer(void)
 							TENTACLE_RADIUS, TENTACLE_RADIUS, true) == true ||
 							tentaclePos.y < 0.0f ||
 							CollisionObject(&tentaclePos, &pComputer->phys.pos, &pComputer->phys.move,
-								TENTACLE_RADIUS, TENTACLE_RADIUS) == true)
+								TENTACLE_RADIUS, TENTACLE_RADIUS, true) == true)
 						{// ï«Ç∆ÇÃìñÇΩÇËîªíË
 							pComputer->TentState = CPUTENTACLESTATE_TENTACLESHORT;
 							SetMotionComputer(nCntComputer, MOTIONTYPE_DASH, true, 20);
@@ -584,6 +588,14 @@ void UpdateComputer(void)
 				pComputer->phys.move.x += (0.0f - pComputer->phys.move.x) * INERTIA_MOVE;
 				pComputer->phys.move.y += (0.0f - pComputer->phys.move.y) * INERTIA_MOVE;
 				pComputer->phys.move.z += (0.0f - pComputer->phys.move.z) * INERTIA_MOVE;
+			}
+
+			// ãOê’
+			for (int nCntTent = 0; nCntTent < CPU_TENTACLE; nCntTent++)
+			{
+				SetMeshOrbit(D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
+					D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
+					WHITE_VTX, CYAN_VTX, &pComputer->aModel[(nCntTent + 1) * 4].mtxWorld);
 			}
 
 			// âQí™
@@ -699,9 +711,10 @@ void UpdateComputer(void)
 			posAway.z = pComputer->phys.pos.z + cosf(D3DX_PI - pComputer->phys.rot.y) * 10000.0f;
 
 			CollisionMeshCylinder(&posAway, &pComputer->phys.pos, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, true);
+			CollisionObject(&posAway, &pComputer->phys.pos, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, true);
 
 			// ìñÇΩÇËîªíË
-			CollisionObject(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius);
+			CollisionObject(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, false);
 			CollisionPot(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius);
 			CollisionPotArea(pComputer->phys.pos, pComputer->phys.fRadius, NULL, pComputer, false);
 			CollisionMeshCylinder(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, false);

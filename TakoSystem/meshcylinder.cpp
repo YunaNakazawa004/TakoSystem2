@@ -343,7 +343,7 @@ bool CollisionMeshCylinder(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3*
 			D3DXVECTOR3 vecLine, vecMove, vecToPos, vecToPosOld, vecNor, vecMoveRef, vecMoveDest;		// 各ベクトル
 			static D3DXVECTOR3 insec = FIRST_POS;		// 交点
 			D3DXVECTOR3 vecLineW, posDest;
-			float fRate, /*fMoveRate, */fDot;
+			float fRate, fDot;
 
 			if (pMeshC->bInside == true)
 			{// 内側
@@ -426,12 +426,6 @@ bool CollisionMeshCylinder(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3*
 
 			//PrintDebugProc("fRate : %f\n", fRate);
 
-			// vecMoveの交点の割合
-			//fMoveRate = ((vecMove.z * vecToPosOld.x) - (vecMove.x * vecToPosOld.z)) /
-			//	(((fRate * vecLine.z) * vecToPosOld.x) - ((fRate * vecLine.x) * vecToPosOld.z));
-
-			//PrintDebugProc("fMoveRate : %f\n", fMoveRate);
-
 			float fAngle;
 
 			// 角度
@@ -461,22 +455,13 @@ bool CollisionMeshCylinder(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3*
 			vecMoveRef.y = 0.0f;
 			vecMoveRef.z = vecMove.z + ((vecNor.z * fDot) * 2);
 
-			// 壁刷りベクトル
-			//vecMoveDest.x = (insec.x - pPos->x) + (vecNor.x * fDot * (1.0f - fRate));
-			//vecMoveDest.y = 0.0f;
-			//vecMoveDest.z = (insec.z - pPos->z) + (vecNor.z * fDot * (1.0f - fRate));
-
-			//vecMoveDest.x = -(insec.x - pPos->x);
-			//vecMoveDest.y = 0.0f;
-			//vecMoveDest.z = -(insec.z - pPos->z);
-
 			if (fRate >= 0.0f && fRate <= 1.0f)
 			{// 交点の割合が範囲内
-				float fPosLine = (float)((int)(((vecLine.z * vecToPos.x) - (vecLine.x * vecToPos.z)) * 1.0f) / (int)1);
-				float fPosOldLine = (float)((int)(((vecLine.z * vecToPosOld.x) - (vecLine.x * vecToPosOld.z)) * 1.0f) / (int)1);
+				float fPosLine = (float)((int)(((vecLine.z * vecToPos.x) - (vecLine.x * vecToPos.z)) * 10.0f) / (int)10);
+				float fPosOldLine = (float)((int)(((vecLine.z * vecToPosOld.x) - (vecLine.x * vecToPosOld.z)) * 10.0f) / (int)10);
 
-				if ((pMeshC->bInside == true && fPosLine < 0.0f && (fPosOldLine >= 0.0f || fPosOldLine >= -10.0f)) ||
-					(pMeshC->bInside == false && fPosLine > 0.0f && (fPosOldLine <= 0.0f || fPosOldLine <= 10.0f)))
+				if ((pMeshC->bInside == true && fPosLine < 0.0f && (fPosOldLine >= 0.0f/* || fPosOldLine >= -10.0f*/)) ||
+					(pMeshC->bInside == false && fPosLine > 0.0f && (fPosOldLine <= 0.0f/* || fPosOldLine <= 10.0f*/)))
 				{// 交差した
 					bColl = true;
 

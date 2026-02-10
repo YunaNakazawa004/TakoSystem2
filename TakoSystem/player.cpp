@@ -9,6 +9,7 @@
 #include "ui_esa.h"
 #include "meshcylinder.h"
 #include "meshring.h"
+#include "meshorbit.h"
 #include "oceancurrents.h"
 #include "object.h"
 #include "particle_3d.h"
@@ -440,7 +441,7 @@ void UpdatePlayer(void)
 								TENTACLE_RADIUS, TENTACLE_RADIUS, true) == true ||
 								tentaclePos.y < 0.0f) ||
 							CollisionObject(&tentaclePos, &pPlayer->pos, &pPlayer->move,
-								TENTACLE_RADIUS, TENTACLE_RADIUS) == true)
+								TENTACLE_RADIUS, TENTACLE_RADIUS, true) == true)
 						{// 壁との当たり判定
 							pPlayer->state = PLAYERSTATE_DASH;
 							pPlayer->TentacleState = PLTENTACLESTATE_TENTACLESHORT;
@@ -597,6 +598,14 @@ void UpdatePlayer(void)
 				pPlayer->move.z += (0.0f - pPlayer->move.z) * INERTIA_MOVE;
 			}
 
+			// 軌跡
+			for (int nCntTent = 0; nCntTent < PLAYER_TENTACLE; nCntTent++)
+			{
+				SetMeshOrbit(D3DXVECTOR3(pPlayer->aModel[(nCntTent + 1) * 4].posOff.x, pPlayer->aModel[(nCntTent + 1) * 4].posOff.y, pPlayer->aModel[(nCntTent + 1) * 4].posOff.z),
+					D3DXVECTOR3(pPlayer->aModel[(nCntTent + 1) * 4].posOff.x, pPlayer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pPlayer->aModel[(nCntTent + 1) * 4].posOff.z),
+					WHITE_VTX, CYAN_VTX, &pPlayer->aModel[(nCntTent + 1) * 4].mtxWorld);
+			}
+
 			// 渦潮
 			MoveOceanCurrents(&pPlayer->pos);
 
@@ -608,6 +617,11 @@ void UpdatePlayer(void)
 				pPlayer->fAngleY = atan2f(pPlayer->pos.x, pPlayer->pos.z);
 				pPlayer->state = PLAYERSTATE_BACKAREA;
 				pPlayer->nCounterState = ONE_SECOND;
+			}
+			else if(fDist < INCYLINDER_RADIUS + 0.1f)
+			{// 内側の岩
+				D3DXVECTOR3 correct = -pPlayer->pos;
+				pPlayer->move += *D3DXVec3Normalize(&pPlayer->move, &correct);
 			}
 
 			if (pPlayer->pos.y < 0.0f)
@@ -694,7 +708,7 @@ void UpdatePlayer(void)
 			if (CollisionMeshCylinder(&dist, &pPlayer->pos, &pPlayer->move,
 				0.0f, 0.0f, true) == true ||
 				dist.y < 0.0f ||
-				CollisionObject(&dist, &pPlayer->pos, &pPlayer->move, 0.0f, 0.0f) == true)
+				CollisionObject(&dist, &pPlayer->pos, &pPlayer->move, 0.0f, 0.0f, true) == true)
 			{// 壁に当たった・オブジェクトに当たった・エサに当たった
 				// クロスヘアの設定
 				SetCrossHair(nCntPlayer, CROSSHAIRSTATE_REACH);
@@ -762,10 +776,11 @@ void UpdatePlayer(void)
 			posAway.z = pPlayer->pos.z + cosf(D3DX_PI - pPlayer->rot.y) * 10000.0f;
 
 			CollisionMeshCylinder(&posAway, &pPlayer->pos, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight, true);
+			CollisionObject(&posAway, &pPlayer->pos, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight, true);
 
 			// 当たり判定
 			CollisionPot(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight);
-			CollisionObject(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight);
+			CollisionObject(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight, false);
 			CollisionMeshCylinder(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight, false);
 
 			int nIdx = -1;

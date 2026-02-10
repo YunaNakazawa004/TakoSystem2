@@ -60,9 +60,9 @@ void InitTutorial(void)
 		if (nCntTutorial == 0)
 		{// îwåi
 			pVtx[0].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// âEâÒÇËÇ≈ê›íËÇ∑ÇÈ
-			pVtx[1].pos = D3DXVECTOR3(1280.0f, 0.0f, 0.0f);	// 2DÇÃèÍçáZÇÃílÇÕ0Ç…Ç∑ÇÈ
-			pVtx[2].pos = D3DXVECTOR3(0.0f, 720.0f, 0.0f);
-			pVtx[3].pos = D3DXVECTOR3(1280.0f, 720.0f, 0.0f);
+			pVtx[1].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 2DÇÃèÍçáZÇÃílÇÕ0Ç…Ç∑ÇÈ
+			pVtx[2].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		}
 		else
 		{// RESULTÉçÉS
