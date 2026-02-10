@@ -472,11 +472,11 @@ bool CollisionMeshCylinder(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3*
 
 			if (fRate >= 0.0f && fRate <= 1.0f)
 			{// Œð“_‚ÌŠ„‡‚ª”ÍˆÍ“à
-				float fPosLine = (float)((int)(((vecLine.z * vecToPos.x) - (vecLine.x * vecToPos.z)) * 1.0f) / (int)1);
-				float fPosOldLine = (float)((int)(((vecLine.z * vecToPosOld.x) - (vecLine.x * vecToPosOld.z)) * 1.0f) / (int)1);
+				float fPosLine = (float)((int)(((vecLine.z * vecToPos.x) - (vecLine.x * vecToPos.z)) * 10.0f) / (int)10);
+				float fPosOldLine = (float)((int)(((vecLine.z * vecToPosOld.x) - (vecLine.x * vecToPosOld.z)) * 10.0f) / (int)10);
 
-				if ((pMeshC->bInside == true && fPosLine < 0.0f && (fPosOldLine >= 0.0f || fPosOldLine >= -10.0f)) ||
-					(pMeshC->bInside == false && fPosLine > 0.0f && (fPosOldLine <= 0.0f || fPosOldLine <= 10.0f)))
+				if ((pMeshC->bInside == true && fPosLine < 0.0f && (fPosOldLine >= 0.0f/* || fPosOldLine >= -10.0f*/)) ||
+					(pMeshC->bInside == false && fPosLine > 0.0f && (fPosOldLine <= 0.0f/* || fPosOldLine <= 10.0f*/)))
 				{// Œð·‚µ‚½
 					bColl = true;
 

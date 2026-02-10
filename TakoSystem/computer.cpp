@@ -13,6 +13,7 @@
 #include "object.h"
 #include "meshcylinder.h"
 #include "meshring.h"
+#include "meshorbit.h"
 #include "effect_3d.h"
 #include "particle_3d.h"
 #include "watersurf.h"
@@ -281,7 +282,7 @@ void UpdateComputer(void)
 	{
 		if (pComputer->bUse == true)
 		{
-			if (pComputer->nThinkCooldown > 0 && pComputer->state != CPUSTATE_BACKAREA)
+			if (pComputer->nThinkCooldown > 0)
 			{// ŽvlƒN[ƒ‹ƒ_ƒEƒ“
 				pComputer->nThinkCooldown--;
 			}
@@ -289,60 +290,63 @@ void UpdateComputer(void)
 			{// 5ƒtƒŒ[ƒ€‚É1‰ñ”»’f
 				pComputer->nThinkCooldown = CPU_THINK;
 
-				// ƒXƒRƒAŒvŽZ
-				CalcFoodScore(pComputer);
-				CalcAttackScore(pComputer);
-				CalcEscapeScore(pComputer);
-				CalcInkScore(pComputer);
-				CalcPotScore(pComputer);
+				if (pComputer->state != CPUSTATE_BACKAREA)
+				{// ƒGƒŠƒA–ß‚èó‘Ô‚¶‚á‚È‚¢‚Æ‚«‚¾‚¯
+					// ƒXƒRƒAŒvŽZ
+					CalcFoodScore(pComputer);
+					CalcAttackScore(pComputer);
+					CalcEscapeScore(pComputer);
+					CalcInkScore(pComputer);
+					CalcPotScore(pComputer);
 
-				// Å—Dæs“®‚ðŒˆ’è
-				float best = pComputer->fFoodScore;
-				pComputer->state = CPUSTATE_MOVE_TO_FOOD;
+					// Å—Dæs“®‚ðŒˆ’è
+					float best = pComputer->fFoodScore;
+					pComputer->state = CPUSTATE_MOVE_TO_FOOD;
 
-				if (pComputer->fAttackScore > best)
-				{// UŒ‚
-					best = pComputer->fAttackScore;
-					pComputer->state = CPUSTATE_ATTACK;
-				}
+					if (pComputer->fAttackScore > best)
+					{// UŒ‚
+						best = pComputer->fAttackScore;
+						pComputer->state = CPUSTATE_ATTACK;
+					}
 
-				if (pComputer->fEscapeScore > best)
-				{// ‰ñ”ð
-					best = pComputer->fEscapeScore;
-					pComputer->state = CPUSTATE_ESCAPE;
-				}
+					if (pComputer->fEscapeScore > best)
+					{// ‰ñ”ð
+						best = pComputer->fEscapeScore;
+						pComputer->state = CPUSTATE_ESCAPE;
+					}
 
-				if (pComputer->fInkScore > best)
-				{// –n“f‚«
-					best = pComputer->fInkScore;
-					pComputer->state = CPUSTATE_INK_ATTACK;
-				}
+					if (pComputer->fInkScore > best)
+					{// –n“f‚«
+						best = pComputer->fInkScore;
+						pComputer->state = CPUSTATE_INK_ATTACK;
+					}
 
-				if (pComputer->fPotScore > best)
-				{// ƒ^ƒR‚Â‚Ú
-					best = pComputer->fPotScore;
-					pComputer->state = CPUSTATE_GO_TO_POT;
-				}
+					if (pComputer->fPotScore > best)
+					{// ƒ^ƒR‚Â‚Ú
+						best = pComputer->fPotScore;
+						pComputer->state = CPUSTATE_GO_TO_POT;
+					}
 
-				float exploreThreshold = EXPLORE_THRESHOLD;
+					float exploreThreshold = EXPLORE_THRESHOLD;
 
 
-				if (pComputer->nFoodCount < EXPLORE_ESA)
-				{// ƒGƒT‚ª­‚È‚¢‚Ù‚Ç’Tõ‚µ‚â‚·‚­‚·‚é
-					exploreThreshold = EXPLORE_THRESHOLD * 2.0f;
-				}
-				else if (pComputer->nFoodCount < EXPLORE_LITTLE_ESA)
-				{// ­‚µ’Tõ‚µ‚â‚·‚¢
-					exploreThreshold = EXPLORE_LIT_THRESHOLD;
-				}
-				else
-				{// ’Êí
-					exploreThreshold = EXPLORE_THRESHOLD;
-				}
+					if (pComputer->nFoodCount < EXPLORE_ESA)
+					{// ƒGƒT‚ª­‚È‚¢‚Ù‚Ç’Tõ‚µ‚â‚·‚­‚·‚é
+						exploreThreshold = EXPLORE_THRESHOLD * 2.0f;
+					}
+					else if (pComputer->nFoodCount < EXPLORE_LITTLE_ESA)
+					{// ­‚µ’Tõ‚µ‚â‚·‚¢
+						exploreThreshold = EXPLORE_LIT_THRESHOLD;
+					}
+					else
+					{// ’Êí
+						exploreThreshold = EXPLORE_THRESHOLD;
+					}
 
-				if (best < exploreThreshold)
-				{// è‡’lˆÈ‰º‚È‚ç’Tõ
-					pComputer->state = CPUSTATE_EXPLORE;
+					if (best < exploreThreshold)
+					{// è‡’lˆÈ‰º‚È‚ç’Tõ
+						pComputer->state = CPUSTATE_EXPLORE;
+					}
 				}
 
 				// ƒm[ƒh‚ÌÝ’u
@@ -585,6 +589,32 @@ void UpdateComputer(void)
 				pComputer->phys.move.y += (0.0f - pComputer->phys.move.y) * INERTIA_MOVE;
 				pComputer->phys.move.z += (0.0f - pComputer->phys.move.z) * INERTIA_MOVE;
 			}
+
+			// ‹OÕ
+			SetMeshOrbit(D3DXVECTOR3(pComputer->aModel[4].posOff.x, pComputer->aModel[4].posOff.y, pComputer->aModel[4].posOff.z),
+				D3DXVECTOR3(pComputer->aModel[4].posOff.x, pComputer->aModel[4].posOff.y + 5.5f, pComputer->aModel[4].posOff.z),
+				WHITE_VTX, CYAN_VTX, &pComputer->aModel[4].mtxWorld);
+			SetMeshOrbit(D3DXVECTOR3(pComputer->aModel[8].posOff.x, pComputer->aModel[8].posOff.y, pComputer->aModel[8].posOff.z),
+				D3DXVECTOR3(pComputer->aModel[4].posOff.x, pComputer->aModel[8].posOff.y + 5.5f, pComputer->aModel[8].posOff.z),
+				WHITE_VTX, CYAN_VTX, &pComputer->aModel[8].mtxWorld);
+			SetMeshOrbit(D3DXVECTOR3(pComputer->aModel[12].posOff.x, pComputer->aModel[12].posOff.y, pComputer->aModel[12].posOff.z),
+				D3DXVECTOR3(pComputer->aModel[12].posOff.x, pComputer->aModel[12].posOff.y + 5.5f, pComputer->aModel[12].posOff.z),
+				WHITE_VTX, CYAN_VTX, &pComputer->aModel[12].mtxWorld);
+			SetMeshOrbit(D3DXVECTOR3(pComputer->aModel[16].posOff.x, pComputer->aModel[16].posOff.y, pComputer->aModel[16].posOff.z),
+				D3DXVECTOR3(pComputer->aModel[16].posOff.x, pComputer->aModel[16].posOff.y + 5.5f, pComputer->aModel[16].posOff.z),
+				WHITE_VTX, CYAN_VTX, &pComputer->aModel[16].mtxWorld);
+			SetMeshOrbit(D3DXVECTOR3(pComputer->aModel[20].posOff.x, pComputer->aModel[20].posOff.y, pComputer->aModel[20].posOff.z),
+				D3DXVECTOR3(pComputer->aModel[20].posOff.x, pComputer->aModel[20].posOff.y + 5.5f, pComputer->aModel[20].posOff.z),
+				WHITE_VTX, CYAN_VTX, &pComputer->aModel[20].mtxWorld);
+			SetMeshOrbit(D3DXVECTOR3(pComputer->aModel[24].posOff.x, pComputer->aModel[24].posOff.y, pComputer->aModel[24].posOff.z),
+				D3DXVECTOR3(pComputer->aModel[24].posOff.x, pComputer->aModel[24].posOff.y + 5.5f, pComputer->aModel[24].posOff.z),
+				WHITE_VTX, CYAN_VTX, &pComputer->aModel[24].mtxWorld);
+			SetMeshOrbit(D3DXVECTOR3(pComputer->aModel[28].posOff.x, pComputer->aModel[28].posOff.y, pComputer->aModel[28].posOff.z),
+				D3DXVECTOR3(pComputer->aModel[28].posOff.x, pComputer->aModel[28].posOff.y + 5.5f, pComputer->aModel[28].posOff.z),
+				WHITE_VTX, CYAN_VTX, &pComputer->aModel[28].mtxWorld);
+			SetMeshOrbit(D3DXVECTOR3(pComputer->aModel[32].posOff.x, pComputer->aModel[32].posOff.y, pComputer->aModel[32].posOff.z),
+				D3DXVECTOR3(pComputer->aModel[32].posOff.x, pComputer->aModel[32].posOff.y + 5.5f, pComputer->aModel[32].posOff.z),
+				WHITE_VTX, CYAN_VTX, &pComputer->aModel[32].mtxWorld);
 
 			// ‰Q’ª
 			MoveOceanCurrents(&pComputer->phys.pos);
