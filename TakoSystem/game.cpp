@@ -12,6 +12,7 @@
 #include "meshdome.h"
 #include "meshfield.h"
 #include "meshring.h"
+#include "meshorbit.h"
 
 #include "player.h"
 #include "sound.h"
@@ -106,6 +107,9 @@ void InitGame(void)
 	// エサの初期化処理
 	InitEsa();
 
+	// メッシュオービットの初期化処理
+	InitMeshOrbit();
+
 	// 水面の初期化処理
 	InitWaterSurf();
 
@@ -191,6 +195,9 @@ void UninitGame(void)
 
 	// エサの終了処理
 	UninitEsa();
+
+	// メッシュオービットの終了処理
+	UninitMeshOrbit();
 
 	// 水面の終了処理
 	UninitWaterSurf();
@@ -302,6 +309,9 @@ void UpdateGame(void)
 		// エサの更新処理
 		UpdateEsa();
 
+		// メッシュオービットの更新処理
+		UpdateMeshOrbit();
+
 		// 水面の更新処理
 		UpdateWaterSurf();
 
@@ -372,6 +382,9 @@ void DrawGame(void)
 
 	// エサの描画処理
 	DrawEsa();
+
+	// メッシュオービットの描画処理
+	DrawMeshOrbit();
 
 	// 水面の描画処理
 	DrawWaterSurf();
