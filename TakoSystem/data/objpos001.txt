@@ -1,69 +1,71 @@
 #======================================                                                                                                                   ========================================
 #
-# „ÄéTakosystem„Äè„Çπ„ÇØ„É™„Éó„Éà„Éï„Ç°„Ç§„É´ [objpos.txt]
-# Author : Â§ßÂØùÂùä
+# ÅwTakosystemÅxÉXÉNÉäÉvÉgÉtÉ@ÉCÉã [objpos.txt]
+# Author : ëÂêQñV
 #
 #==============================================================================
-SCRIPT			# „Åì„ÅÆË°å„ÅØÁµ∂ÂØæÊ∂à„Åï„Å™„ÅÑ„Åì„Å®ÔºÅ
+SCRIPT			# Ç±ÇÃçsÇÕê‚ëŒè¡Ç≥Ç»Ç¢Ç±Ç∆ÅI
 
 #------------------------------------------------------------------------------
-# „ÉÜ„ÇØ„Çπ„ÉÅ„É£Êï∞
+# ÉeÉNÉXÉ`ÉÉêî
 #------------------------------------------------------------------------------
 NUM_TEXTURE = 2
 
 #------------------------------------------------------------------------------
-# „ÉÜ„ÇØ„Çπ„ÉÅ„É£„Éï„Ç°„Ç§„É´Âêç
+# ÉeÉNÉXÉ`ÉÉÉtÉ@ÉCÉãñº
 #------------------------------------------------------------------------------
-TEXTURE_FILENAME = data/TEXTURE/In_the_sea.png			# [0]Êµ∑„ÉÜ„ÇØ„Çπ„ÉÅ„É£
-TEXTURE_FILENAME = data/TEXTURE/suna.png				# [1]Á†Ç„ÉÜ„ÇØ„Çπ„ÉÅ„É£
+TEXTURE_FILENAME = data/TEXTURE1/In_the_sea.png			# [0]äCÉeÉNÉXÉ`ÉÉ
+TEXTURE_FILENAME = data/TEXTURE1/suna.png				# [1]çªÉeÉNÉXÉ`ÉÉ
 
 #------------------------------------------------------------------------------
-# „É¢„Éá„É´Êï∞
+# ÉÇÉfÉãêî
 #------------------------------------------------------------------------------
-NUM_MODEL = 12
+NUM_MODEL = 11
 
 #------------------------------------------------------------------------------
-# „É¢„Éá„É´„Éï„Ç°„Ç§„É´Âêç
+# ÉÇÉfÉãÉtÉ@ÉCÉãñº
 #------------------------------------------------------------------------------
-MODEL_FILENAME = data/MODEL/rock/iwa000.x		# [0]Â≤©
-MODEL_FILENAME = data/MODEL/rock/iwa001.x		# [1]Â≤©2
-MODEL_FILENAME = data/MODEL/rock/iwa002.x		# [1]Â≤©3
-MODEL_FILENAME = data/MODEL/stage/StageReplica002.x		# [1]Â≤©3
-MODEL_FILENAME = data/MODEL/Others_Object/ami000.x		# [2]Á∂≤
-MODEL_FILENAME = data/MODEL/Others_Object/fishborn000.x		# [3]„Çπ„ÉÜ„Éº„Ç∏
-MODEL_FILENAME = data/MODEL/Others_Object/SangoSho.x		# [3]„Çπ„ÉÜ„Éº„Ç∏
-MODEL_FILENAME = data/MODEL/Others_Object/Takotsubo.x		# [3]„Çπ„ÉÜ„Éº„Ç∏
-MODEL_FILENAME = data/MODEL/Others_Object/taru000.x		# [3]„Çπ„ÉÜ„Éº„Ç∏
-MODEL_FILENAME = data/MODEL/rock/iwa003.x		# [3]Â≤©4
+MODEL_FILENAME = data/MODEL/rock/iwa000.x						# [0]ä‚
+MODEL_FILENAME = data/MODEL/rock/iwa001.x						# [1]ä‚2
+MODEL_FILENAME = data/MODEL/rock/iwa002.x						# [1]ä‚3
+MODEL_FILENAME = data/MODEL/stage/StageReplica002.x				# [1]ä‚3
+MODEL_FILENAME = data/MODEL/Others_Object/ami000.x				# [2]ñ‘
+MODEL_FILENAME = data/MODEL/Others_Object/fishborn000.x			# [3]ÉXÉeÅ[ÉW
+MODEL_FILENAME = data/MODEL/Others_Object/SangoSho.x			# [3]ÉXÉeÅ[ÉW
+MODEL_FILENAME = data/MODEL/Others_Object/taru000half.x				# [3]ÉXÉeÅ[ÉW
+MODEL_FILENAME = data/MODEL/rock/iwa003.x						# [3]ä‚4
+MODEL_FILENAME = data/MODEL/Others_Object/Takotsubo000.x			# [3]ÉXÉeÅ[ÉW
+MODEL_FILENAME = data/MODEL/Others_Object/Takotsubo001.x			# [3]ÉXÉeÅ[ÉW
+MODEL_FILENAME = data/MODEL/rock/iwa004.x						# [3]ä‚4
 
 #------------------------------------------------------------------------------
-# „Ç´„É°„É©ÊÉÖÂ†±
+# ÉJÉÅÉâèÓïÒ
 #------------------------------------------------------------------------------
 CAMERASET
-	POS = 0.0 180.0 -600.0			# Ë¶ñÁÇπ
-	REF = 0.0 0.0 0.0				# Ê≥®Ë¶ñÁÇπ
+	POS = 0.0 180.0 -720.0			# éãì_
+	REF = 0.0 0.0 0.0				# íçéãì_
 END_CAMERASET
 
 #------------------------------------------------------------------------------
-# „É©„Ç§„ÉàÊÉÖÂ†±
+# ÉâÉCÉgèÓïÒ
 #------------------------------------------------------------------------------
 LIGHTSET
-	DIRECTION = 0.22 -0.87 0.44		# ÊñπÂêë
-	DIFFUSE = 1.0 1.0 1.0			# Êã°Êï£ÂÖâ
+	DIRECTION = 0.22 -0.87 0.44		# ï˚å¸
+	DIFFUSE = 1.0 1.0 1.0			# ägéUåı
 END_LIGHTSET
 
 LIGHTSET
-	DIRECTION = -0.18 0.88 -0.44	# ÊñπÂêë
-	DIFFUSE = 0.65 0.65 0.65		# Êã°Êï£ÂÖâ
+	DIRECTION = -0.18 0.88 -0.44	# ï˚å¸
+	DIFFUSE = 0.65 0.65 0.65		# ägéUåı
 END_LIGHTSET
 
 LIGHTSET
-	DIRECTION = 0.89 -0.11 0.44		# ÊñπÂêë
-	DIFFUSE = 0.15 0.15 0.15		# Êã°Êï£ÂÖâ
+	DIRECTION = 0.89 -0.11 0.44		# ï˚å¸
+	DIFFUSE = 0.15 0.15 0.15		# ägéUåı
 END_LIGHTSET
 
 #------------------------------------------------------------------------------
-# Á©∫ÊÉÖÂ†±
+# ãÛèÓïÒ
 #------------------------------------------------------------------------------
 SEASET
 	TEXTYPE = 0
@@ -71,21 +73,21 @@ SEASET
 END_SKYSET
 
 #------------------------------------------------------------------------------
-# Â±±ÊÉÖÂ†±
+# éRèÓïÒ
 #------------------------------------------------------------------------------
 #MOUNTAINSET
 #	TEXTYPE = 1
 #END_MOUNTAINSET
 
 #------------------------------------------------------------------------------
-# Âú∞Èù¢ÊÉÖÂ†±
+# ínñ èÓïÒ
 #------------------------------------------------------------------------------
 FIELDSET
 	TEXTYPE = 1
 	POS = 0 0 0
 	ROT = 0 0 0
 	BLOCK = 16 16
-	SIZE = 39000 39000
+	SIZE = 9000	9000
 END_FIELDSET
 
 #FIELDSET
@@ -105,18 +107,17 @@ END_FIELDSET
 #END_FIELDSET
 
 #------------------------------------------------------------------------------
-# Â£ÅÊÉÖÂ†±
+# ï«èÓïÒ
 #------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
-# „É¢„Éá„É´ÈÖçÁΩÆÊÉÖÂ†±
+# ÉÇÉfÉãîzíuèÓïÒ
 #------------------------------------------------------------------------------
 MODELSET
 	TYPE = 0
 	POS = 1025 0 205
 	ROT = 0 45 0
 	SHADOW = 0
-	COLLISION = 1
 END_MODELSET
 
 MODELSET
@@ -124,7 +125,6 @@ MODELSET
 	POS = 800 0 700
 	ROT = 0 315 0
 	SHADOW = 0
-	COLLISION = 1
 END_MODELSET
 
 MODELSET
@@ -132,7 +132,6 @@ MODELSET
 	POS = -90 0 -950
 	ROT = 0 180 0
 	SHADOW = 0
-	COLLISION = 1
 END_MODELSET
 
 MODELSET
@@ -140,30 +139,27 @@ MODELSET
 	POS = 50 0 -770
 	ROT = 0 180 0
 	SHADOW = 0
-	COLLISION = 1
 END_MODELSET
 
 MODELSET
 	TYPE = 4
-	POS = 350 0 -600
+	POS = 630 0 900
 	ROT = 0 180 0
 	SHADOW = 0
-	COLLISION = 0
 END_MODELSET
 
-#MODELSET
-#	TYPE = 3
-#	POS = 0 0 0
-#	ROT = 0 0 0
-#	SHADOW = 0
-#END_MODELSET
+MODELSET
+	TYPE = 3
+	POS = 0 0 0
+	ROT = 0 0 0
+	SHADOW = 0
+END_MODELSET
 
 MODELSET
 	TYPE = 2
 	POS = 120 0 1000
 	ROT = 0 180 0
 	SHADOW = 0
-	COLLISION = 1
 END_MODELSET
 
 MODELSET
@@ -171,7 +167,6 @@ MODELSET
 	POS = 600 0 750
 	ROT = 0 0 0
 	SHADOW = 0
-	COLLISION = 1
 END_MODELSET
 
 MODELSET
@@ -179,61 +174,62 @@ MODELSET
 	POS = 500 0 550
 	ROT = 0 180 0
 	SHADOW = 0
-	COLLISION = 0
 END_MODELSET
 
 MODELSET
 	TYPE = 7
-	POS = -750 0 475
-	ROT = 0 180 0
-	SHADOW = 0
-	COLLISION = 1
-END_MODELSET
-
-MODELSET
-	TYPE = 8
 	POS = 675 0 -600
 	ROT = 0 180 0
 	SHADOW = 0
-	COLLISION = 1
 END_MODELSET
 
 MODELSET
-	TYPE = 8
+	TYPE = 7
 	POS = 1025 0 -525
 	ROT = 0 180 0
 	SHADOW = 0
-	COLLISION = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 7
+	POS = 975 0 -875
+	ROT = 0 180 0
+	SHADOW = 0
 END_MODELSET
 
 MODELSET
 	TYPE = 8
-	POS = 975 0 -875
+	POS = -950 0 -100
 	ROT = 0 180 0
 	SHADOW = 0
-	COLLISION = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 4
+	POS = 200 0 -1100
+	ROT = 0 75 0
+	SHADOW = 0
 END_MODELSET
 
 MODELSET
 	TYPE = 9
-	POS = -950 0 -100
-	ROT = 0 180 0
+	POS = 825 0 -750
+	ROT = 0 75 0
 	SHADOW = 0
-	COLLISION = 1
 END_MODELSET
 
 #------------------------------------------------------------------------------
-# „Éì„É´„Éú„Éº„ÉâÈÖçÁΩÆÊÉÖÂ†±
+# ÉrÉãÉ{Å[ÉhîzíuèÓïÒ
 #------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
-# ËçâÈÖçÁΩÆÊÉÖÂ†±
+# ëêîzíuèÓïÒ
 #------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
-# „Éó„É¨„Ç§„É§„ÉºÊÉÖÂ†±
+# ÉvÉåÉCÉÑÅ[èÓïÒ
 #------------------------------------------------------------------------------
 
 
 
-END_SCRIPT		# „Åì„ÅÆË°å„ÅØÁµ∂ÂØæÊ∂à„Åï„Å™„ÅÑ„Åì„Å®ÔºÅ
+END_SCRIPT		# Ç±ÇÃçsÇÕê‚ëŒè¡Ç≥Ç»Ç¢Ç±Ç∆ÅI
