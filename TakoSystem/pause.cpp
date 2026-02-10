@@ -220,7 +220,7 @@ void UpdatePause(void)
 		if (nCoolTime == 0)
 		{
 			g_nSelect--;
-			PlaySound(SOUND_SE_CURSORMOVE);
+			PlaySound(SOUND_SE_MUD);
 			if (g_nSelect < PAUSE_MENU_CONTINUE)
 			{
 				g_nSelect = PAUSE_MENU_QUIT;
@@ -235,7 +235,7 @@ void UpdatePause(void)
 		if (nCoolTime == 0)
 		{
 			g_nSelect++;
-			PlaySound(SOUND_SE_CURSORMOVE);
+			PlaySound(SOUND_SE_MUD);
 			if (g_nSelect >= PAUSE_MENU_MAX)
 			{
 				g_nSelect = PAUSE_MENU_CONTINUE;
@@ -256,6 +256,7 @@ void UpdatePause(void)
 		case PAUSE_MENU_CONTINUE:
 			SetEnablePause(false);
 			g_pauseMenu = PAUSE_MENU_CONTINUE;
+			PlaySound(SOUND_BGM_GAME);
 			break;
 
 		case PAUSE_MENU_RETRY:
