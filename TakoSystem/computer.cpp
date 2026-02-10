@@ -520,7 +520,7 @@ void UpdateComputer(void)
 							TENTACLE_RADIUS, TENTACLE_RADIUS, true) == true ||
 							tentaclePos.y < 0.0f ||
 							CollisionObject(&tentaclePos, &pComputer->phys.pos, &pComputer->phys.move,
-								TENTACLE_RADIUS, TENTACLE_RADIUS) == true)
+								TENTACLE_RADIUS, TENTACLE_RADIUS, true) == true)
 						{// •Ç‚Æ‚Ì“–‚½‚è”»’è
 							pComputer->TentState = CPUTENTACLESTATE_TENTACLESHORT;
 							SetMotionComputer(nCntComputer, MOTIONTYPE_DASH, true, 20);
@@ -591,30 +591,12 @@ void UpdateComputer(void)
 			}
 
 			// ‹OÕ
-			SetMeshOrbit(D3DXVECTOR3(pComputer->aModel[4].posOff.x, pComputer->aModel[4].posOff.y, pComputer->aModel[4].posOff.z),
-				D3DXVECTOR3(pComputer->aModel[4].posOff.x, pComputer->aModel[4].posOff.y + 5.5f, pComputer->aModel[4].posOff.z),
-				WHITE_VTX, CYAN_VTX, &pComputer->aModel[4].mtxWorld);
-			SetMeshOrbit(D3DXVECTOR3(pComputer->aModel[8].posOff.x, pComputer->aModel[8].posOff.y, pComputer->aModel[8].posOff.z),
-				D3DXVECTOR3(pComputer->aModel[4].posOff.x, pComputer->aModel[8].posOff.y + 5.5f, pComputer->aModel[8].posOff.z),
-				WHITE_VTX, CYAN_VTX, &pComputer->aModel[8].mtxWorld);
-			SetMeshOrbit(D3DXVECTOR3(pComputer->aModel[12].posOff.x, pComputer->aModel[12].posOff.y, pComputer->aModel[12].posOff.z),
-				D3DXVECTOR3(pComputer->aModel[12].posOff.x, pComputer->aModel[12].posOff.y + 5.5f, pComputer->aModel[12].posOff.z),
-				WHITE_VTX, CYAN_VTX, &pComputer->aModel[12].mtxWorld);
-			SetMeshOrbit(D3DXVECTOR3(pComputer->aModel[16].posOff.x, pComputer->aModel[16].posOff.y, pComputer->aModel[16].posOff.z),
-				D3DXVECTOR3(pComputer->aModel[16].posOff.x, pComputer->aModel[16].posOff.y + 5.5f, pComputer->aModel[16].posOff.z),
-				WHITE_VTX, CYAN_VTX, &pComputer->aModel[16].mtxWorld);
-			SetMeshOrbit(D3DXVECTOR3(pComputer->aModel[20].posOff.x, pComputer->aModel[20].posOff.y, pComputer->aModel[20].posOff.z),
-				D3DXVECTOR3(pComputer->aModel[20].posOff.x, pComputer->aModel[20].posOff.y + 5.5f, pComputer->aModel[20].posOff.z),
-				WHITE_VTX, CYAN_VTX, &pComputer->aModel[20].mtxWorld);
-			SetMeshOrbit(D3DXVECTOR3(pComputer->aModel[24].posOff.x, pComputer->aModel[24].posOff.y, pComputer->aModel[24].posOff.z),
-				D3DXVECTOR3(pComputer->aModel[24].posOff.x, pComputer->aModel[24].posOff.y + 5.5f, pComputer->aModel[24].posOff.z),
-				WHITE_VTX, CYAN_VTX, &pComputer->aModel[24].mtxWorld);
-			SetMeshOrbit(D3DXVECTOR3(pComputer->aModel[28].posOff.x, pComputer->aModel[28].posOff.y, pComputer->aModel[28].posOff.z),
-				D3DXVECTOR3(pComputer->aModel[28].posOff.x, pComputer->aModel[28].posOff.y + 5.5f, pComputer->aModel[28].posOff.z),
-				WHITE_VTX, CYAN_VTX, &pComputer->aModel[28].mtxWorld);
-			SetMeshOrbit(D3DXVECTOR3(pComputer->aModel[32].posOff.x, pComputer->aModel[32].posOff.y, pComputer->aModel[32].posOff.z),
-				D3DXVECTOR3(pComputer->aModel[32].posOff.x, pComputer->aModel[32].posOff.y + 5.5f, pComputer->aModel[32].posOff.z),
-				WHITE_VTX, CYAN_VTX, &pComputer->aModel[32].mtxWorld);
+			for (int nCntTent = 0; nCntTent < CPU_TENTACLE; nCntTent++)
+			{
+				SetMeshOrbit(D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
+					D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
+					WHITE_VTX, CYAN_VTX, &pComputer->aModel[(nCntTent + 1) * 4].mtxWorld);
+			}
 
 			// ‰Q’ª
 			MoveOceanCurrents(&pComputer->phys.pos);
@@ -729,9 +711,10 @@ void UpdateComputer(void)
 			posAway.z = pComputer->phys.pos.z + cosf(D3DX_PI - pComputer->phys.rot.y) * 10000.0f;
 
 			CollisionMeshCylinder(&posAway, &pComputer->phys.pos, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, true);
+			CollisionObject(&posAway, &pComputer->phys.pos, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, true);
 
 			// “–‚½‚è”»’è
-			CollisionObject(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius);
+			CollisionObject(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, false);
 			CollisionPot(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius);
 			CollisionPotArea(pComputer->phys.pos, pComputer->phys.fRadius, NULL, pComputer, false);
 			CollisionMeshCylinder(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, false);

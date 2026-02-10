@@ -295,91 +295,289 @@ void SetObjectRandom(int nType, D3DXVECTOR3 posMin, D3DXVECTOR3 posMax, int nAmo
 //=============================================================================
 // 配置物の当たり判定
 //=============================================================================
-bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, float fRadius, float fHeight)
+bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, float fRadius, float fHeight, bool bInsec)
 {
 	bool bLand = false;		// 着地しているか
 	Object* pObject = GetObjectAll();
 
 	for (int nCntObject = 0; nCntObject < MAX_OBJECT; nCntObject++, pObject++)
 	{
-		if (pObject->bUse == true && pObject->bCollision == true)
-		{// 使用されているとき
-			float fLengthX = 0.0f;
-			float fLengthZ = 0.0f;
+		if (pObject->bUse != true && pObject->bCollision != true)
+		{// 使用されてない
+			continue;
+		}
 
-			if (pObject->rot.y == 0.0f || pObject->rot.y == D3DX_PI)
-			{// そのままの向き
-				fLengthX = (g_aObjectModel[pObject->nType].VtxMax.x - g_aObjectModel[pObject->nType].VtxMin.x) / 2.0f;
-				fLengthZ = (g_aObjectModel[pObject->nType].VtxMax.z - g_aObjectModel[pObject->nType].VtxMin.z) / 2.0f;
+#if 0
+		float fLengthX = 0.0f;
+		float fLengthZ = 0.0f;
+
+		if (pObject->rot.y == 0.0f || pObject->rot.y == D3DX_PI)
+		{// そのままの向き
+			fLengthX = (g_aObjectModel[pObject->nType].VtxMax.x - g_aObjectModel[pObject->nType].VtxMin.x) / 2.0f;
+			fLengthZ = (g_aObjectModel[pObject->nType].VtxMax.z - g_aObjectModel[pObject->nType].VtxMin.z) / 2.0f;
+		}
+		else
+		{// 角度が変わっている
+			fLengthX = (g_aObjectModel[pObject->nType].VtxMax.z - g_aObjectModel[pObject->nType].VtxMin.z) / 2.0f;
+			fLengthZ = (g_aObjectModel[pObject->nType].VtxMax.x - g_aObjectModel[pObject->nType].VtxMin.x) / 2.0f;
+		}
+
+		if ((pPos->x + fRadius > pObject->posOff.x - fLengthX) &&
+			(pPos->x - fRadius < pObject->posOff.x + fLengthX) &&
+			(pObject->posOff.z - fLengthZ - fRadius <= pPos->z) &&
+			(pObject->posOff.z + fLengthZ + fRadius >= pPos->z) &&
+			(pObject->posOff.y + g_aObjectModel[pObject->nType].VtxMin.y - fHeight <= pPos->y) &&
+			(pObject->posOff.y + g_aObjectModel[pObject->nType].VtxMax.y >= pPos->y))
+		{// 現在の位置が配置物の範囲内
+			if (((pObject->posOff.x - fLengthX - fRadius == pPosOld->x) &&
+				(pObject->posOff.x + fLengthX + fRadius > pPosOld->x)) ||
+				((pObject->posOff.x + fLengthX + fRadius == pPosOld->x) &&
+					(pObject->posOff.x - fLengthX - fRadius < pPosOld->x)))
+			{// 前回の位置が配置物の位置なら奥行判定しない
+
 			}
-			else
-			{// 角度が変わっている
-				fLengthX = (g_aObjectModel[pObject->nType].VtxMax.z - g_aObjectModel[pObject->nType].VtxMin.z) / 2.0f;
-				fLengthZ = (g_aObjectModel[pObject->nType].VtxMax.x - g_aObjectModel[pObject->nType].VtxMin.x) / 2.0f;
+			else if (((pObject->posOff.z + fLengthZ + fRadius <= pPosOld->z) &&
+				(pObject->posOff.z + fLengthZ + fRadius >= pPos->z)))
+			{// 奥からの当たり判定
+				pPos->z = pObject->posOff.z + fLengthZ + fRadius;
+				pMove->z = 0.0f;
+			}
+			else if (((pObject->posOff.z - fLengthZ - fRadius >= pPosOld->z) &&
+				(pObject->posOff.z - fLengthZ - fRadius <= pPos->z)))
+			{// 手前からの当たり判定
+				pPos->z = pObject->posOff.z - fLengthZ - fRadius;
+				pMove->z = 0.0f;
 			}
 
-			if ((pPos->x + fRadius > pObject->posOff.x - fLengthX) &&
-				(pPos->x - fRadius < pObject->posOff.x + fLengthX) &&
-				(pObject->posOff.z - fLengthZ - fRadius <= pPos->z) &&
-				(pObject->posOff.z + fLengthZ + fRadius >= pPos->z) &&
-				(pObject->posOff.y + g_aObjectModel[pObject->nType].VtxMin.y - fHeight <= pPos->y) &&
+			if (((pObject->posOff.z - fLengthZ - fRadius == pPosOld->z) &&
+				(pObject->posOff.z + fLengthZ + fRadius > pPosOld->z)) ||
+				((pObject->posOff.z + fLengthZ + fRadius == pPosOld->z) &&
+					(pObject->posOff.z - fLengthZ - fRadius < pPosOld->z)))
+			{// 前回の位置が配置物の位置なら左右判定しない
+
+			}
+			else if ((pObject->posOff.x - fLengthX - fRadius >= pPosOld->x) &&
+				(pObject->posOff.x - fLengthX - fRadius <= pPos->x))
+			{// 左からの当たり判定
+				pPos->x = pObject->posOff.x - fLengthX - fRadius;
+				pMove->x = 0.0f;
+			}
+			else if ((pObject->posOff.x + fLengthX + fRadius <= pPosOld->x) &&
+				(pObject->posOff.x + fLengthX + fRadius >= pPos->x))
+			{// 右からの当たり判定
+				pPos->x = pObject->posOff.x + fLengthX + fRadius;
+				pMove->x = 0.0f;
+			}
+			else if ((pObject->posOff.y + g_aObjectModel[pObject->nType].VtxMin.y - fHeight >= pPosOld->y) &&
+				(pObject->posOff.y + g_aObjectModel[pObject->nType].VtxMin.y - fHeight <= pPos->y))
+			{// 下からの当たり判定
+				pPos->y = pObject->posOff.y + g_aObjectModel[pObject->nType].VtxMin.y - fHeight;
+				pMove->y = -0.5f;							// 移動量を0にする
+			}
+			else if ((pObject->posOff.y + g_aObjectModel[pObject->nType].VtxMax.y <= pPosOld->y) &&
 				(pObject->posOff.y + g_aObjectModel[pObject->nType].VtxMax.y >= pPos->y))
-			{// 現在の位置が配置物の範囲内
-				if (((pObject->posOff.x - fLengthX - fRadius == pPosOld->x) &&
-					(pObject->posOff.x + fLengthX + fRadius > pPosOld->x)) ||
-					((pObject->posOff.x + fLengthX + fRadius == pPosOld->x) &&
-						(pObject->posOff.x - fLengthX - fRadius < pPosOld->x)))
-				{// 前回の位置が配置物の位置なら奥行判定しない
+			{// 上からの当たり判定
+				pPos->y = pObject->posOff.y + g_aObjectModel[pObject->nType].VtxMax.y;
+				pMove->y = 0.0f;							// 移動量を0にする
 
-				}
-				else if (((pObject->posOff.z + fLengthZ + fRadius <= pPosOld->z) &&
-					(pObject->posOff.z + fLengthZ + fRadius >= pPos->z)))
-				{// 奥からの当たり判定
-					pPos->z = pObject->posOff.z + fLengthZ + fRadius;
-					pMove->z = 0.0f;
-				}
-				else if (((pObject->posOff.z - fLengthZ - fRadius >= pPosOld->z) &&
-					(pObject->posOff.z - fLengthZ - fRadius <= pPos->z)))
-				{// 手前からの当たり判定
-					pPos->z = pObject->posOff.z - fLengthZ - fRadius;
-					pMove->z = 0.0f;
+				bLand = true;
+			}
+		}
+#else
+		for (int nCnt = 0; nCnt < 4; nCnt++)
+		{
+			//PrintDebugProc("[ %d ]\n", nCnt);
+			ObjectModel* pObjectModel = &g_aObjectModel[pObject->nType];
+
+			D3DXVECTOR3 start, end;
+			float fXS, fZS, fXE, fZE;
+			D3DXVECTOR3 vecLine, vecMove, vecToPos, vecToPosOld, vecNor, vecMoveRef, vecMoveDest;		// 各ベクトル
+			static D3DXVECTOR3 insec = FIRST_POS;		// 交点
+			D3DXVECTOR3 vecLineW, posDest;
+			float fRate, fDot;
+
+			switch (nCnt)
+			{
+			case 0:
+				fXS = sinf(pObject->rot.y) * pObjectModel->VtxMin.x;
+				fZS = cosf(pObject->rot.y) * pObjectModel->VtxMax.z;
+
+				fXE = sinf(pObject->rot.y) * pObjectModel->VtxMax.x;
+				fZE = cosf(pObject->rot.y) * pObjectModel->VtxMax.z;
+
+				break;
+
+			case 1:
+				fXS = sinf(pObject->rot.y) * pObjectModel->VtxMax.x;
+				fZS = cosf(pObject->rot.y) * pObjectModel->VtxMax.z;
+
+				fXE = sinf(pObject->rot.y) * pObjectModel->VtxMax.x;
+				fZE = cosf(pObject->rot.y) * pObjectModel->VtxMin.z;
+
+				break;
+
+			case 2:
+				fXS = sinf(pObject->rot.y) * pObjectModel->VtxMax.x;
+				fZS = cosf(pObject->rot.y) * pObjectModel->VtxMin.z;
+
+				fXE = sinf(pObject->rot.y) * pObjectModel->VtxMin.x;
+				fZE = cosf(pObject->rot.y) * pObjectModel->VtxMin.z;
+
+				break;
+
+			case 3:
+				fXS = sinf(pObject->rot.y) * pObjectModel->VtxMin.x;
+				fZS = cosf(pObject->rot.y) * pObjectModel->VtxMin.z;
+
+				fXE = sinf(pObject->rot.y) * pObjectModel->VtxMin.x;
+				fZE = cosf(pObject->rot.y) * pObjectModel->VtxMax.z;
+
+				break;
+			}
+
+			// 始点
+			start.x = pObject->pos.x + fXS;
+			start.y = 0.0f;
+			start.z = pObject->pos.z + fZS;
+
+			//PrintDebugProc("始点( %f %f %f )\n", start.x, start.y, start.z);
+
+			// 終点
+			end.x = pObject->pos.x + fXE;
+			end.y = 0.0f;
+			end.z = pObject->pos.z + fZE;
+
+			//PrintDebugProc("終点( %f %f %f )\n", end.x, end.y, end.z);
+
+			// 境界線ベクトル
+			vecLine.x = (end.x) - (start.x);
+			vecLine.y = 0.0f;
+			vecLine.z = (end.z) - (start.z);
+
+			//PrintDebugProc("境界線ベクトル( %f %f %f )\n", vecLine.x, vecLine.y, vecLine.z);
+
+			// 移動ベクトル
+			vecMove.x = pPos->x - pPosOld->x;
+			vecMove.y = 0.0f;
+			vecMove.z = pPos->z - pPosOld->z;
+
+			vecToPos.x = pPos->x - (start.x);
+			vecToPos.y = 0.0f;
+			vecToPos.z = pPos->z - (start.z);
+
+			vecToPosOld.x = pPosOld->x - (start.x);
+			vecToPosOld.y = 0.0f;
+			vecToPosOld.z = pPosOld->z - (start.z);
+
+			// 法線ベクトル
+			vecNor.x = (vecLine.x * cosf(-D3DX_PI * 0.5f)) + (vecLine.z * sinf(-D3DX_PI * 0.5f));
+			vecNor.y = 0.0f;
+			vecNor.z = (vecLine.x * sinf(D3DX_PI * 0.5f)) - (vecLine.z * cosf(D3DX_PI * 0.5f));
+			D3DXVec3Normalize(&vecNor, &vecNor);		// ベクトルを正規化する
+
+			//PrintDebugProc("法線ベクトル( %f %f %f )\n", vecNor.x, vecNor.y, vecNor.z);
+
+			// 内積
+			fDot = (-vecMove.x * vecNor.x) + (-vecMove.z * vecNor.z);
+
+			// 外積
+			float f = ((vecMove.z * vecNor.x) - (vecMove.x * vecNor.z));
+
+			// 交点の割合
+			fRate = ((vecToPos.z * vecMove.x) - (vecToPos.x * vecMove.z)) /
+				((vecLine.z * vecMove.x) - (vecLine.x * vecMove.z));
+
+			//PrintDebugProc("fRate : %f\n", fRate);
+
+			float fAngle;
+
+			// 角度
+			fAngle = D3DX_PI - atan2f(vecMove.x, vecMove.z);
+			float fMeshAngle = atan2f(vecLine.x, vecLine.z);
+			fAngle += fMeshAngle;
+			fAngle = D3DX_PI - fAngle;
+			fAngle -= D3DX_PI * 0.5f;
+			CorrectAngle(&fAngle, fAngle);
+
+			//PrintDebugProc("入射角 : %f\n", fAngle);
+
+			// 反射後の移動ベクトル
+			vecMoveRef.x = vecMove.x + ((vecNor.x * fDot) * 2);
+			vecMoveRef.y = 0.0f;
+			vecMoveRef.z = vecMove.z + ((vecNor.z * fDot) * 2);
+
+			if ((pObject->posOff.y + pObjectModel->VtxMin.y - fHeight <= pPos->y) &&
+				(pObject->posOff.y + pObjectModel->VtxMax.y >= pPos->y))
+			{// Y座標が範囲内
+				if (fRate >= 0.0f && fRate <= 1.0f)
+				{// 交点の割合が範囲内
+					float fPosLine = (float)((int)(((vecLine.z * vecToPos.x) - (vecLine.x * vecToPos.z)) * 10.0f) / (int)10);
+					float fPosOldLine = (float)((int)(((vecLine.z * vecToPosOld.x) - (vecLine.x * vecToPosOld.z)) * 10.0f) / (int)10);
+
+					if (fPosLine < 0.0f && (fPosOldLine >= 0.0f))
+					{// 交差した
+						if (bInsec == true)
+						{// 交点出す用
+							insec.x = start.x + (vecLine.x * (fRate));
+							insec.y = pPos->y;
+							insec.z = start.z + (vecLine.z * (fRate));
+
+							//PrintDebugProc("交点( %f %f %f )\n", insec.x, insec.y, insec.z);
+						}
+						else
+						{
+							D3DXVECTOR3 vecPosDiff;
+							vecPosDiff.x = -(insec.x - pPos->x);
+							vecPosDiff.y = 0.0f;
+							vecPosDiff.z = -(insec.z - pPos->z);
+							D3DXVec3Normalize(&vecPosDiff, &vecPosDiff);		// ベクトルを正規化する
+
+							//PrintDebugProc("めり込みベクトル( %f %f %f )\n", vecPosDiff.x, vecPosDiff.y, vecPosDiff.z);
+
+							if (fAngle < 0)
+							{// 壁に対して右側から
+								vecMoveDest.x = (vecPosDiff.x * cosf(-(D3DX_PI * 0.5f) - fAngle)) + (vecPosDiff.z * sinf(-(D3DX_PI * 0.5f) - fAngle));
+								vecMoveDest.y = 0.0f;
+								vecMoveDest.z = (vecPosDiff.x * sinf((D3DX_PI * 0.5f) - fAngle)) - (vecPosDiff.z * cosf((D3DX_PI * 0.5f) - fAngle));
+							}
+							else
+							{// 左側から
+								vecMoveDest.x = (vecPosDiff.x * cosf((D3DX_PI * 0.5f) - fAngle)) + (vecPosDiff.z * sinf((D3DX_PI * 0.5f) - fAngle));
+								vecMoveDest.y = 0.0f;
+								vecMoveDest.z = (vecPosDiff.x * sinf(-(D3DX_PI * 0.5f) - fAngle)) - (vecPosDiff.z * cosf(-(D3DX_PI * 0.5f) - fAngle));
+							}
+
+							//PrintDebugProc("壁刷りベクトル( %f %f %f )\n", vecMoveDest.x, vecMoveDest.y, vecMoveDest.z);
+
+							pPos->x = start.x + (vecLine.x * fRate);
+							pPos->z = start.z + (vecLine.z * fRate);
+
+							pMove->x = vecMoveDest.x;
+							pMove->z = vecMoveDest.z;
+						}
+					}
 				}
 
-				if (((pObject->posOff.z - fLengthZ - fRadius == pPosOld->z) &&
-					(pObject->posOff.z + fLengthZ + fRadius > pPosOld->z)) ||
-					((pObject->posOff.z + fLengthZ + fRadius == pPosOld->z) &&
-						(pObject->posOff.z - fLengthZ - fRadius < pPosOld->z)))
-				{// 前回の位置が配置物の位置なら左右判定しない
+				if (bInsec == false)
+				{// 交点じゃない
+					if ((pObject->posOff.y + pObjectModel->VtxMin.y - fHeight >= pPosOld->y) &&
+						(pObject->posOff.y + pObjectModel->VtxMin.y - fHeight <= pPos->y))
+					{// 下からの当たり判定
+						pPos->y = pObject->posOff.y + pObjectModel->VtxMin.y - fHeight;
+						pMove->y = -0.5f;							// 移動量を0にする
+					}
+					else if ((pObject->posOff.y + pObjectModel->VtxMax.y <= pPosOld->y) &&
+						(pObject->posOff.y + pObjectModel->VtxMax.y >= pPos->y))
+					{// 上からの当たり判定
+						pPos->y = pObject->posOff.y + pObjectModel->VtxMax.y;
+						pMove->y = 0.0f;							// 移動量を0にする
 
-				}
-				else if ((pObject->posOff.x - fLengthX - fRadius >= pPosOld->x) &&
-					(pObject->posOff.x - fLengthX - fRadius <= pPos->x))
-				{// 左からの当たり判定
-					pPos->x = pObject->posOff.x - fLengthX - fRadius;
-					pMove->x = 0.0f;
-				}
-				else if ((pObject->posOff.x + fLengthX + fRadius <= pPosOld->x) &&
-					(pObject->posOff.x + fLengthX + fRadius >= pPos->x))
-				{// 右からの当たり判定
-					pPos->x = pObject->posOff.x + fLengthX + fRadius;
-					pMove->x = 0.0f;
-				}
-				else if ((pObject->posOff.y + g_aObjectModel[pObject->nType].VtxMin.y - fHeight >= pPosOld->y) &&
-					(pObject->posOff.y + g_aObjectModel[pObject->nType].VtxMin.y - fHeight <= pPos->y))
-				{// 下からの当たり判定
-					pPos->y = pObject->posOff.y + g_aObjectModel[pObject->nType].VtxMin.y - fHeight;
-					pMove->y = -0.5f;							// 移動量を0にする
-				}
-				else if ((pObject->posOff.y + g_aObjectModel[pObject->nType].VtxMax.y <= pPosOld->y) &&
-					(pObject->posOff.y + g_aObjectModel[pObject->nType].VtxMax.y >= pPos->y))
-				{// 上からの当たり判定
-					pPos->y = pObject->posOff.y + g_aObjectModel[pObject->nType].VtxMax.y;
-					pMove->y = 0.0f;							// 移動量を0にする
-
-					bLand = true;
+						bLand = true;
+					}
 				}
 			}
 		}
+#endif
 	}
 
 	return bLand;
@@ -559,7 +757,7 @@ void LoadObject(const char* pStr)
 
 				if (nIdx == 7)
 				{// タコつぼ
-					SetPot(pos, D3DXVECTOR3(D3DX_PI* rot.x / 180.0f, D3DX_PI* rot.y / 180.0f, D3DX_PI* rot.z / 180.0f));
+					SetPot(pos, D3DXVECTOR3(D3DX_PI * rot.x / 180.0f, D3DX_PI * rot.y / 180.0f, D3DX_PI * rot.z / 180.0f));
 				}
 				else
 				{// タコつぼ以外
