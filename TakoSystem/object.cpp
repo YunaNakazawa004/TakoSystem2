@@ -307,7 +307,7 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 			continue;
 		}
 
-#if 0
+#if 1
 		float fLengthX = 0.0f;
 		float fLengthZ = 0.0f;
 
@@ -506,75 +506,73 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 			vecMoveRef.y = 0.0f;
 			vecMoveRef.z = vecMove.z + ((vecNor.z * fDot) * 2);
 
-			if ((pObject->posOff.y + pObjectModel->VtxMin.y - fHeight <= pPos->y) &&
+			if (fRate >= 0.0f && fRate <= 1.0f &&
+				(pObject->posOff.y + pObjectModel->VtxMin.y - fHeight <= pPos->y) &&
 				(pObject->posOff.y + pObjectModel->VtxMax.y >= pPos->y))
-			{// Y座標が範囲内
-				if (fRate >= 0.0f && fRate <= 1.0f)
-				{// 交点の割合が範囲内
-					float fPosLine = (float)((int)(((vecLine.z * vecToPos.x) - (vecLine.x * vecToPos.z)) * 10.0f) / (int)10);
-					float fPosOldLine = (float)((int)(((vecLine.z * vecToPosOld.x) - (vecLine.x * vecToPosOld.z)) * 10.0f) / (int)10);
+			{// 交点の割合が範囲内
+				float fPosLine = (float)((int)(((vecLine.z * vecToPos.x) - (vecLine.x * vecToPos.z)) * 10.0f) / (int)10);
+				float fPosOldLine = (float)((int)(((vecLine.z * vecToPosOld.x) - (vecLine.x * vecToPosOld.z)) * 10.0f) / (int)10);
 
-					if (fPosLine < 0.0f && (fPosOldLine >= 0.0f))
-					{// 交差した
-						if (bInsec == true)
-						{// 交点出す用
-							insec.x = start.x + (vecLine.x * (fRate));
-							insec.y = pPos->y;
-							insec.z = start.z + (vecLine.z * (fRate));
+				if (fPosLine < 0.0f && (fPosOldLine >= 0.0f))
+				{// 交差した
+					if (bInsec == true)
+					{// 交点出す用
+						insec.x = start.x + (vecLine.x * (fRate));
+						insec.y = pPos->y;
+						insec.z = start.z + (vecLine.z * (fRate));
 
-							//PrintDebugProc("交点( %f %f %f )\n", insec.x, insec.y, insec.z);
+						//PrintDebugProc("交点( %f %f %f )\n", insec.x, insec.y, insec.z);
+					}
+					else
+					{
+						D3DXVECTOR3 vecPosDiff;
+						vecPosDiff.x = -(insec.x - pPos->x);
+						vecPosDiff.y = 0.0f;
+						vecPosDiff.z = -(insec.z - pPos->z);
+						D3DXVec3Normalize(&vecPosDiff, &vecPosDiff);		// ベクトルを正規化する
+
+						//PrintDebugProc("めり込みベクトル( %f %f %f )\n", vecPosDiff.x, vecPosDiff.y, vecPosDiff.z);
+
+						if (fAngle < 0)
+						{// 壁に対して右側から
+							vecMoveDest.x = (vecPosDiff.x * cosf(-(D3DX_PI * 0.5f) - fAngle)) + (vecPosDiff.z * sinf(-(D3DX_PI * 0.5f) - fAngle));
+							vecMoveDest.y = 0.0f;
+							vecMoveDest.z = (vecPosDiff.x * sinf((D3DX_PI * 0.5f) - fAngle)) - (vecPosDiff.z * cosf((D3DX_PI * 0.5f) - fAngle));
 						}
 						else
-						{
-							D3DXVECTOR3 vecPosDiff;
-							vecPosDiff.x = -(insec.x - pPos->x);
-							vecPosDiff.y = 0.0f;
-							vecPosDiff.z = -(insec.z - pPos->z);
-							D3DXVec3Normalize(&vecPosDiff, &vecPosDiff);		// ベクトルを正規化する
-
-							//PrintDebugProc("めり込みベクトル( %f %f %f )\n", vecPosDiff.x, vecPosDiff.y, vecPosDiff.z);
-
-							if (fAngle < 0)
-							{// 壁に対して右側から
-								vecMoveDest.x = (vecPosDiff.x * cosf(-(D3DX_PI * 0.5f) - fAngle)) + (vecPosDiff.z * sinf(-(D3DX_PI * 0.5f) - fAngle));
-								vecMoveDest.y = 0.0f;
-								vecMoveDest.z = (vecPosDiff.x * sinf((D3DX_PI * 0.5f) - fAngle)) - (vecPosDiff.z * cosf((D3DX_PI * 0.5f) - fAngle));
-							}
-							else
-							{// 左側から
-								vecMoveDest.x = (vecPosDiff.x * cosf((D3DX_PI * 0.5f) - fAngle)) + (vecPosDiff.z * sinf((D3DX_PI * 0.5f) - fAngle));
-								vecMoveDest.y = 0.0f;
-								vecMoveDest.z = (vecPosDiff.x * sinf(-(D3DX_PI * 0.5f) - fAngle)) - (vecPosDiff.z * cosf(-(D3DX_PI * 0.5f) - fAngle));
-							}
-
-							//PrintDebugProc("壁刷りベクトル( %f %f %f )\n", vecMoveDest.x, vecMoveDest.y, vecMoveDest.z);
-
-							pPos->x = start.x + (vecLine.x * fRate);
-							pPos->z = start.z + (vecLine.z * fRate);
-
-							pMove->x = vecMoveDest.x;
-							pMove->z = vecMoveDest.z;
+						{// 左側から
+							vecMoveDest.x = (vecPosDiff.x * cosf((D3DX_PI * 0.5f) - fAngle)) + (vecPosDiff.z * sinf((D3DX_PI * 0.5f) - fAngle));
+							vecMoveDest.y = 0.0f;
+							vecMoveDest.z = (vecPosDiff.x * sinf(-(D3DX_PI * 0.5f) - fAngle)) - (vecPosDiff.z * cosf(-(D3DX_PI * 0.5f) - fAngle));
 						}
+
+						//PrintDebugProc("壁刷りベクトル( %f %f %f )\n", vecMoveDest.x, vecMoveDest.y, vecMoveDest.z);
+
+						pPos->x = start.x + (vecLine.x * fRate);
+						pPos->z = start.z + (vecLine.z * fRate);
+
+						pMove->x = vecMoveDest.x;
+						pMove->z = vecMoveDest.z;
 					}
 				}
 
-				if (bInsec == false)
-				{// 交点じゃない
-					if ((pObject->posOff.y + pObjectModel->VtxMin.y - fHeight >= pPosOld->y) &&
-						(pObject->posOff.y + pObjectModel->VtxMin.y - fHeight <= pPos->y))
-					{// 下からの当たり判定
-						pPos->y = pObject->posOff.y + pObjectModel->VtxMin.y - fHeight;
-						pMove->y = -0.5f;							// 移動量を0にする
-					}
-					else if ((pObject->posOff.y + pObjectModel->VtxMax.y <= pPosOld->y) &&
-						(pObject->posOff.y + pObjectModel->VtxMax.y >= pPos->y))
-					{// 上からの当たり判定
-						pPos->y = pObject->posOff.y + pObjectModel->VtxMax.y;
-						pMove->y = 0.0f;							// 移動量を0にする
+				//if (bInsec == false)
+				//{// 交点じゃない
+				//	if ((pObject->posOff.y + pObjectModel->VtxMin.y - fHeight >= pPosOld->y) &&
+				//		(pObject->posOff.y + pObjectModel->VtxMin.y - fHeight <= pPos->y))
+				//	{// 下からの当たり判定
+				//		pPos->y = pObject->posOff.y + pObjectModel->VtxMin.y - fHeight;
+				//		pMove->y = -0.5f;							// 移動量を0にする
+				//	}
+				//	else if ((pObject->posOff.y + pObjectModel->VtxMax.y <= pPosOld->y) &&
+				//		(pObject->posOff.y + pObjectModel->VtxMax.y >= pPos->y))
+				//	{// 上からの当たり判定
+				//		pPos->y = pObject->posOff.y + pObjectModel->VtxMax.y;
+				//		pMove->y = 0.0f;							// 移動量を0にする
 
-						bLand = true;
-					}
-				}
+				//		bLand = true;
+				//	}
+				//}
 			}
 		}
 #endif
