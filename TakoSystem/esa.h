@@ -18,10 +18,10 @@
 // エサの種類（ファイル追加まで）
 typedef enum
 {
+	ESATYPE_SHRIMP,		// [2]エビ
 	ESATYPE_CRAB = 0,	// [0]カニ
 	ESATYPE_SHELL,		// [1]貝
-	ESATYPE_SHRIMP,		// [2]エビ
-	ESATYPE_YA,		// [2]エビ
+	ESATYPE_YA,			// [2]エビ
 	ESATYPE_ISE,		// [2]エビ
 
 	ESATYPE_MAX			// 最大値
@@ -44,6 +44,44 @@ typedef enum
 }ESA_ACTTYPE;
 
 // 構造体の定義 ================================================
+
+// エサのモデル情報
+typedef struct
+{
+	LPDIRECT3DTEXTURE9 apTexture[MAX_TEXTURE];	// テクスチャへのポインタ
+	LPD3DXMESH pMesh;							// マテリアルへのポインタ
+	LPD3DXBUFFER pBuffMat;						// メッシュ(頂点情報)へのポインタ
+	DWORD dwNumMat;								// マテリアルの数
+
+}EsaModel;
+
+// エサの種類別設定情報
+typedef struct
+{
+	char aFilenameTexture[128];		// テクスチャファイル名
+	char aFilenameModel[128];		// モデルファイル名
+
+	int nScore;						// モデル(エサ)の獲得スコア
+
+	float fSpeed;					// 移動速度
+	float fHitRadius;				// 当たり判定の大きさ
+
+}EsaData_info;
+
+// エサの種類別情報
+typedef struct
+{
+	LPDIRECT3DTEXTURE9 pTexture;	// テクスチャ
+	EsaModel model;					// エサのモデル情報
+
+	int nScore;						// モデル(エサ)の獲得スコア
+
+	float fSpeed;					// 移動速度
+	float fHitRadius;				// 当たり判定の大きさ
+
+	bool bUse;						// 使用状態
+
+}EsaData;
 
 // エサの設定情報
 typedef struct
@@ -73,40 +111,10 @@ typedef struct
 	ESA_ACTTYPE esaType;	// エサの挙動
 	int nNumBehavior;		// 挙動の値
 
-	//bool bHave;				// 所持され状態(持っているか)
 	bool bDisp;				// 表示状態
 	bool bUse;				// 使用状態
 
 }Esa;
-
-// エサのモデルの設定情報
-typedef struct
-{
-	char aFilename[128];	// モデルファイル名
-
-	float fSpeed;			// 移動速度
-	float fHitRadius;		// 当たり判定の大きさ
-
-	int nScore;				// モデル(エサ)の獲得スコア
-
-}EsaModel_info;
-
-// エサのモデル情報
-typedef struct
-{
-	LPDIRECT3DTEXTURE9 apTexture[MAX_TEXTURE];	// テクスチャへのポインタ
-	LPD3DXMESH pMesh;							// マテリアルへのポインタ
-	LPD3DXBUFFER pBuffMat;						// メッシュ(頂点情報)へのポインタ
-	DWORD dwNumMat;								// マテリアルの数
-
-	int nScore;									// モデル(エサ)の獲得スコア
-	
-	float fSpeed;								// 移動速度
-	float fHitRadius;							// 当たり判定の大きさ
-
-	bool bUse;									// 使用状態
-
-}EsaModel;
 
 // プロトタイプ宣言 ============================================
 
@@ -119,9 +127,9 @@ void DrawEsa(void);			// エサの描画処理
 
 // 設定処理
 
-int SetModelEsa				// エサのモデル読み込み処理
-(EsaModel_info infoEsaModel,			// エサモデルの設定情報 
- EsaModel *pEsaModel, int nMaxSizeNum);	// 読み込んだエサの格納場所, エサの格納場所の数
+int SetEsaData				// エサ情報の設定処理
+(EsaData *pEsaData,						// 設定する対象
+ EsaData_info infoEsaData); 			// 設定するエサ情報,
 
 int SetEsa					// エサの設定処理
 (int nEsaType,							// 設定するエサのタイプ, 
@@ -148,11 +156,24 @@ bool CollisionEsa			// エサの当たり判定処理
 
 // 値を返す処理
 
-Esa *GetEsa(void);			// エサの情報を返す処理
-
 EsaModel* GetEsaModel		// エサモデルの情報を返す処理
 (int nIdx);								// エサモデル
 
+Esa *GetEsa(void);			// エサの情報を返す処理
+
+EsaData* GetEsaData			// エサの種類情報を返す処理
+(int nIdx);
+
 int GetNumEsaType(void);	// エサの種類数を返す処理
+
+
+// その他
+
+bool FileExtractText		// ファイルから文字だけの読み取り処理
+(FILE* pFile, char* pReadText);			// ファイルポインタ, 読み取った文字	
+ 	
+bool SetLoadEsaData			// エサの情報を読み取る処理
+(EsaData* pEsaData, const char* pFilename);
+
 
 #endif
