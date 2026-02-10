@@ -13,7 +13,7 @@
 // マクロ定義
 //*****************************************************************************
 #define MAX_OBJECTMODEL			(30)									// 配置物モデルの最大数
-#define MAX_OBJECT				(2048)									// 配置物の最大数
+#define MAX_OBJECT				(256)									// 配置物の最大数
 
 //*****************************************************************************
 // 配置物の状態
@@ -66,7 +66,7 @@ void SetObject(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nIdx, bool bCollision);
 void SetObjectRandom(int nType, D3DXVECTOR3 posMin, D3DXVECTOR3 posMax, int nAmount);
 Object* GetObjectAll(void);
 
-bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, float fRadius, float fHeight);
+bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, float fRadius, float fHeight, bool bInsec);
 
 void LoadObject(const char* pStr);
 void LoadStage(const char* pStr);
