@@ -598,10 +598,31 @@ void UpdatePlayer(void)
 				pPlayer->move.z += (0.0f - pPlayer->move.z) * INERTIA_MOVE;
 			}
 
-			D3DXVECTOR3 posOrbit = pPlayer->aModel[0].posOff;
-
 			// ‹OÕ
-			SetMeshOrbit(D3DXVECTOR3(posOrbit.x, posOrbit.y - 20.0f, posOrbit.z), D3DXVECTOR3(posOrbit.x, posOrbit.y - 25.0f, posOrbit.z), WHITE_VTX, CYAN_VTX, &pPlayer->aModel[0].mtxWorld);
+			SetMeshOrbit(D3DXVECTOR3(pPlayer->aModel[4].posOff.x, pPlayer->aModel[4].posOff.y, pPlayer->aModel[4].posOff.z), 
+				D3DXVECTOR3(pPlayer->aModel[4].posOff.x, pPlayer->aModel[4].posOff.y + 5.5f, pPlayer->aModel[4].posOff.z), 
+				WHITE_VTX, CYAN_VTX, &pPlayer->aModel[4].mtxWorld);
+			SetMeshOrbit(D3DXVECTOR3(pPlayer->aModel[8].posOff.x, pPlayer->aModel[8].posOff.y, pPlayer->aModel[8].posOff.z),
+				D3DXVECTOR3(pPlayer->aModel[4].posOff.x, pPlayer->aModel[8].posOff.y + 5.5f, pPlayer->aModel[8].posOff.z),
+				WHITE_VTX, CYAN_VTX, &pPlayer->aModel[8].mtxWorld);
+			SetMeshOrbit(D3DXVECTOR3(pPlayer->aModel[12].posOff.x, pPlayer->aModel[12].posOff.y, pPlayer->aModel[12].posOff.z),
+				D3DXVECTOR3(pPlayer->aModel[12].posOff.x, pPlayer->aModel[12].posOff.y + 5.5f, pPlayer->aModel[12].posOff.z),
+				WHITE_VTX, CYAN_VTX, &pPlayer->aModel[12].mtxWorld);
+			SetMeshOrbit(D3DXVECTOR3(pPlayer->aModel[16].posOff.x, pPlayer->aModel[16].posOff.y, pPlayer->aModel[16].posOff.z),
+				D3DXVECTOR3(pPlayer->aModel[16].posOff.x, pPlayer->aModel[16].posOff.y + 5.5f, pPlayer->aModel[16].posOff.z),
+				WHITE_VTX, CYAN_VTX, &pPlayer->aModel[16].mtxWorld);
+			SetMeshOrbit(D3DXVECTOR3(pPlayer->aModel[20].posOff.x, pPlayer->aModel[20].posOff.y, pPlayer->aModel[20].posOff.z),
+				D3DXVECTOR3(pPlayer->aModel[20].posOff.x, pPlayer->aModel[20].posOff.y + 5.5f, pPlayer->aModel[20].posOff.z),
+				WHITE_VTX, CYAN_VTX, &pPlayer->aModel[20].mtxWorld);
+			SetMeshOrbit(D3DXVECTOR3(pPlayer->aModel[24].posOff.x, pPlayer->aModel[24].posOff.y, pPlayer->aModel[24].posOff.z),
+				D3DXVECTOR3(pPlayer->aModel[24].posOff.x, pPlayer->aModel[24].posOff.y + 5.5f, pPlayer->aModel[24].posOff.z),
+				WHITE_VTX, CYAN_VTX, &pPlayer->aModel[24].mtxWorld);
+			SetMeshOrbit(D3DXVECTOR3(pPlayer->aModel[28].posOff.x, pPlayer->aModel[28].posOff.y, pPlayer->aModel[28].posOff.z),
+				D3DXVECTOR3(pPlayer->aModel[28].posOff.x, pPlayer->aModel[28].posOff.y + 5.5f, pPlayer->aModel[28].posOff.z),
+				WHITE_VTX, CYAN_VTX, &pPlayer->aModel[28].mtxWorld);
+			SetMeshOrbit(D3DXVECTOR3(pPlayer->aModel[32].posOff.x, pPlayer->aModel[32].posOff.y, pPlayer->aModel[32].posOff.z),
+				D3DXVECTOR3(pPlayer->aModel[32].posOff.x, pPlayer->aModel[32].posOff.y + 5.5f, pPlayer->aModel[32].posOff.z),
+				WHITE_VTX, CYAN_VTX, &pPlayer->aModel[32].mtxWorld);
 
 			// ‰Q’ª
 			MoveOceanCurrents(&pPlayer->pos);
@@ -614,6 +635,11 @@ void UpdatePlayer(void)
 				pPlayer->fAngleY = atan2f(pPlayer->pos.x, pPlayer->pos.z);
 				pPlayer->state = PLAYERSTATE_BACKAREA;
 				pPlayer->nCounterState = ONE_SECOND;
+			}
+			else if(fDist < INCYLINDER_RADIUS + 0.1f)
+			{// “à‘¤‚ÌŠâ
+				D3DXVECTOR3 correct = -pPlayer->pos;
+				pPlayer->move += *D3DXVec3Normalize(&pPlayer->move, &correct);
 			}
 
 			if (pPlayer->pos.y < 0.0f)
