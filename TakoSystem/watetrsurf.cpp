@@ -9,7 +9,27 @@
 #include "input.h"
 #include "meshcylinder.h"
 
-// グローバル変数------------------------
+//=======================================
+// 構造体の定義
+//=======================================
+
+// 水面の構造体 -------------------------
+
+typedef struct
+{
+	D3DXVECTOR3 pos;			// 位置
+	D3DXVECTOR3 rot;			// 角度
+	D3DXCOLOR col;				// 色
+	D3DXVECTOR2 block;			// 分割数
+	D3DXMATRIX mtxWorld;
+	D3DXVECTOR3 size;			// サイズ
+	bool bUse;					// 使用しているか
+	bool bUp;					// 上昇か
+}WaterSurf;
+
+//=======================================
+// グローバル宣言
+//=======================================
 
 LPDIRECT3DTEXTURE9 g_pTextureWaterSurf = NULL;			// テクスチャへのポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffWaterSurf = NULL;		// 頂点バッファへのポインタ
@@ -22,7 +42,7 @@ void InitWaterSurf(void)
 {
 	VERTEX_3D* pVtx;				// 頂点情報へのポインタ
 	LPDIRECT3DDEVICE9 pDevice;		// デバイスへのポインタ
-	MeshCylinder* pMC = GetMeshCylinder();
+	float pRadius = 10000.0f;
 
 	// デバイスの取得
 	pDevice = GetDevice();
@@ -53,7 +73,7 @@ void InitWaterSurf(void)
 		g_awatersurf[nCntWaterSurf].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		g_awatersurf[nCntWaterSurf].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		g_awatersurf[nCntWaterSurf].col = D3DXCOLOR(1.0f, 1.0f, 1.0f,0.4f);
-		g_awatersurf[nCntWaterSurf].size = D3DXVECTOR3(pMC[1].size.x * 2, 0.0f, pMC[1].size.x * 2);
+		g_awatersurf[nCntWaterSurf].size = D3DXVECTOR3(pRadius * 2, 0.0f, pRadius * 2);
 		g_awatersurf[nCntWaterSurf].bUse = false;
 
 		// 頂点座標の設定
