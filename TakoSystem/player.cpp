@@ -9,6 +9,7 @@
 #include "ui_esa.h"
 #include "meshcylinder.h"
 #include "meshring.h"
+#include "meshorbit.h"
 #include "oceancurrents.h"
 #include "object.h"
 #include "particle_3d.h"
@@ -596,6 +597,11 @@ void UpdatePlayer(void)
 				pPlayer->move.y += (0.0f - pPlayer->move.y) * INERTIA_MOVE;
 				pPlayer->move.z += (0.0f - pPlayer->move.z) * INERTIA_MOVE;
 			}
+
+			D3DXVECTOR3 posOrbit = pPlayer->aModel[0].posOff;
+
+			// ‹OÕ
+			SetMeshOrbit(D3DXVECTOR3(posOrbit.x, posOrbit.y - 20.0f, posOrbit.z), D3DXVECTOR3(posOrbit.x, posOrbit.y - 25.0f, posOrbit.z), WHITE_VTX, CYAN_VTX, &pPlayer->aModel[0].mtxWorld);
 
 			// ‰Q’ª
 			MoveOceanCurrents(&pPlayer->pos);
