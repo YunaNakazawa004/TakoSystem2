@@ -56,6 +56,18 @@ void InitWaterSurf(void)
 		"data/TEXTURE/sea3.jpg",
 		&g_pTextureWaterSurf);
 
+	// 初期化
+	for (int nCntSurf = 0; nCntSurf < MAX_WATERSURF; nCntSurf++)
+	{
+		g_aWatersurf[nCntSurf].pos = {0.0f,0.0f,0.0f};				// 位置
+		g_aWatersurf[nCntSurf].rot = { 0.0f,0.0f,0.0f };			// 角度
+		g_aWatersurf[nCntSurf].col = { 1.0f,1.0f,1.0f,1.0f };		// 色
+		g_aWatersurf[nCntSurf].block = { 1,1 };						// 分割数
+		g_aWatersurf[nCntSurf].mtxWorld;
+		g_aWatersurf[nCntSurf].size = { 1.0f,1.0f };				// サイズ
+		g_aWatersurf[nCntSurf].bUse = false;						// 使用しているか
+		g_aWatersurf[nCntSurf].bUp = false;							// 上昇か
+	}
 
 	SetWaterSurf({ 0.0f,CYLINDER_HEIGHT,0.0f }, { 0.0f,0.0f,0.0f }, { 4,4 }, { pRadius * 2, pRadius * 2 }, D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.4f));
 }
@@ -99,10 +111,12 @@ void UpdateWaterSurf(void)
 	static D3DXVECTOR2 move = { 0.0f,0.0f };	// 移動量
 
 
-	move = {speedX, speedY};
-	
+	move = { speedX, speedY };
+
+
 	for (int nCntWaterSurf = 0; nCntWaterSurf < MAX_WATERSURF; nCntWaterSurf++)
 	{
+
 		if (g_aWatersurf[nCntWaterSurf].bUse == true)
 		{
 			// 頂点バッファをロックし、頂点情報へのポインタを取得
@@ -126,7 +140,7 @@ void UpdateWaterSurf(void)
 				g_aWatersurf[nCntWaterSurf].pos.y -= CYLINDER_HEIGHT / 10000;
 			}
 
-			for (int nCntWaterSurf1 = 0; nCntWaterSurf1 <((int)g_aWatersurf[nCntWaterSurf].block.x + 1) * ((int)g_aWatersurf[nCntWaterSurf].block.y + 1); nCntWaterSurf1++)
+			for (int nCntWaterSurf1 = 0; nCntWaterSurf1 < ((int)g_aWatersurf[nCntWaterSurf].block.x + 1) * ((int)g_aWatersurf[nCntWaterSurf].block.y + 1); nCntWaterSurf1++)
 			{
 				pVtx[0].tex.x += move.x;
 				pVtx[0].tex.y += move.y;
@@ -137,10 +151,8 @@ void UpdateWaterSurf(void)
 			// 頂点バッファをアンロックする
 			g_aWatersurf[nCntWaterSurf].pVtxBuff->Unlock();
 		}
-
 	}
 }
-
 //=========================================
 // 水面の描画処理
 //=========================================
