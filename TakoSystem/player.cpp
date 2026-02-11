@@ -589,6 +589,9 @@ void UpdatePlayer(void)
 			// d—Í
 			pPlayer->move.y += SEA_GRAVITY;
 
+			// ‰Q’ª
+			MoveOceanCurrents(&pPlayer->pos);
+
 			if (pPlayer->state != PLAYERSTATE_APPEAR && pPlayer->state != PLAYERSTATE_DASH)
 			{// oŒ»ó‘ÔˆÈŠO
 				// Šµ«
@@ -605,9 +608,6 @@ void UpdatePlayer(void)
 					D3DXVECTOR3(pPlayer->aModel[(nCntTent + 1) * 4].posOff.x, pPlayer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pPlayer->aModel[(nCntTent + 1) * 4].posOff.z),
 					WHITE_VTX, CYAN_VTX, &pPlayer->aModel[(nCntTent + 1) * 4].mtxWorld);
 			}
-
-			// ‰Q’ª
-			MoveOceanCurrents(&pPlayer->pos);
 
 			D3DXVECTOR2 XZdist = D3DXVECTOR2(pPlayer->pos.x, pPlayer->pos.z);
 			float fDist = D3DXVec2Length(&XZdist);
