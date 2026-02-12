@@ -701,8 +701,6 @@ void UpdateComputer(void)
 				pComputer->nFoodCount = 0;
 			}
 
-			//SetEffect3D(70, pComputer->phys.pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0.0f, 30.0f, -0.1f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), EFFECTTYPE_NORMAL);
-
 			//PrintDebugProc("ENEMY : pos ( %f %f %f )\n",
 			//	pComputer->phys.pos.x, pComputer->phys.pos.y, pComputer->phys.pos.z);
 			//PrintDebugProc("ENEMY : move ( %f %f %f )\n",
@@ -713,15 +711,13 @@ void UpdateComputer(void)
 			//PrintDebugProc("ENEMY : ƒm[ƒh ( %f %f %f )\n",
 			//	pComputer->extarget.x, pComputer->extarget.y, pComputer->extarget.z);
 
-			CollisionPot(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius);
+			//D3DXVECTOR3 posAway;
+			//posAway.x = pComputer->phys.pos.x + sinf(D3DX_PI + pComputer->phys.rot.y) * 10000.0f;
+			//posAway.y = pComputer->phys.pos.y;
+			//posAway.z = pComputer->phys.pos.z + cosf(D3DX_PI - pComputer->phys.rot.y) * 10000.0f;
 
-			D3DXVECTOR3 posAway;
-			posAway.x = pComputer->phys.pos.x + sinf(D3DX_PI + pComputer->phys.rot.y) * 10000.0f;
-			posAway.y = pComputer->phys.pos.y;
-			posAway.z = pComputer->phys.pos.z + cosf(D3DX_PI - pComputer->phys.rot.y) * 10000.0f;
-
-			CollisionMeshCylinder(&posAway, &pComputer->phys.pos, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, true);
-			CollisionObject(&posAway, &pComputer->phys.pos, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, true);
+			//CollisionMeshCylinder(&posAway, &pComputer->phys.pos, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, true);
+			//CollisionObject(&posAway, &pComputer->phys.pos, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, true);
 
 			// “–‚½‚è”»’è
 			CollisionObject(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, false);
