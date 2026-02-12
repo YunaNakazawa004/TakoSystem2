@@ -14,6 +14,7 @@
 #include "effect_3d.h"
 
 #include "meshcylinder.h"
+#include "meshorbit.h"
 #include "watersurf.h"
 #include "player.h"
 #include "pot.h"
@@ -227,6 +228,8 @@ void UpdateEsa(void)
 
 			SetEffect3D(70, g_aEsa[nCntEsa].pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0.0f, 30.0f, -0.1f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f),EFFECTTYPE_NORMAL);
 
+			D3DXVECTOR3 pos = D3DXVECTOR3(g_aEsa[nCntEsa].mtxWorld._41, g_aEsa[nCntEsa].mtxWorld._42, g_aEsa[nCntEsa].mtxWorld._43);
+			SetMeshOrbit(FIRST_POS, D3DXVECTOR3(FIRST_POS.x, FIRST_POS.y + 10.0f, FIRST_POS.z), WHITE_VTX, CYAN_VTX, &g_aEsa[nCntEsa].mtxWorld);
 #if 0
 			PrintDebugProc("\nESA[%d]_POS %s", nCntEsa, (g_aEsa[nCntEsa].bUse == true ? "true":"false"));
 			PrintDebugProc("\nESA[%d]_POS %f %f %f", nCntEsa, g_aEsa[nCntEsa].pos.x, g_aEsa[nCntEsa].pos.y, g_aEsa[nCntEsa].pos.z);

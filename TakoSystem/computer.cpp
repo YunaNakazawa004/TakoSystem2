@@ -661,7 +661,7 @@ void UpdateComputer(void)
 					pComputer->aModel[0].mtxWorld._42 + 10.0f,
 					pComputer->aModel[0].mtxWorld._43);
 
-				SetEffect3D(1, pComputer->phys.pos, FIRST_POS, 0.0f, 15.0f, 0.0f, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), EFFECTTYPE_OCTOINK);
+				SetEffect3D(5, pComputer->phys.pos, FIRST_POS, 0.0f, 15.0f, 0.0f, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), EFFECTTYPE_OCTOINK);
 			}
 
 			pComputer->phys.fAngleY = D3DX_PI + atan2f(pComputer->phys.dir.x, pComputer->phys.dir.z);

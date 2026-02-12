@@ -15,6 +15,7 @@
 #include "object.h"
 #include "meshcylinder.h"
 #include "meshfield.h"
+#include "meshorbit.h"
 #include "waterSurf.h"
 #include "computer.h"
 
@@ -47,6 +48,9 @@ void InitTitle(void)
 
 	// メッシュフィールドの初期化処理
 	InitMeshField();
+
+	// メッシュオービットの初期化処理
+	InitMeshOrbit();
 
 	// 水面の初期化処理
 	InitWaterSurf();
@@ -204,6 +208,9 @@ void UninitTitle(void)
 	// メッシュフィールドの終了処理
 	UninitMeshField();
 
+	// メッシュオービットの終了処理
+	UninitMeshOrbit();
+
 	// 水面の終了処理
 	UninitWaterSurf();
 
@@ -239,6 +246,9 @@ void UpdateTitle(void)
 
 	// メッシュフィールドの更新処理
 	UpdateMeshField();
+
+	// メッシュオービットの更新処理
+	UpdateMeshOrbit();
 
 	// 水面の更新処理
 	UpdateWaterSurf();
@@ -368,6 +378,9 @@ void DrawTitle(void)
 
 	// メッシュフィールドの描画処理
 	DrawMeshField();
+
+	// メッシュオービットの描画処理
+	DrawMeshOrbit();
 
 	// 水面の描画処理
 	DrawWaterSurf();

@@ -6,6 +6,7 @@
 //=============================================================================
 #include "pot.h"
 #include "debugproc.h"
+#include "meshring.h"
 #include "input.h"
 #include "esa.h"
 #include "ui_esa.h"
@@ -191,6 +192,8 @@ void UpdatePot(void)
 	{
 		if (pPot->bUse == true)
 		{
+			static int nCounter = 0;
+
 			//PrintDebugProc("[ %d ]\n“ü‚Á‚Ä‚éƒGƒT‚Ì” %d\n", nCntPot, g_aPot[nCntPot].nFood);
 			int nIdx = -1;
 
@@ -203,6 +206,14 @@ void UpdatePot(void)
 					pEsa[nIdx].bUse = false;
 				}
 			}
+
+			if (nCounter % ((rand() % 300 + 1)) == 0)
+			{// ˆê’èŽžŠÔ‚²‚Æ‚É”g–ä
+				SetMeshRing(D3DXVECTOR3(pPot->pos.x, 0.0f, pPot->pos.z), FIRST_POS,
+					D3DXVECTOR2(24.0f, 1.0f), D3DXVECTOR2(13.0f, 8.0f), D3DXCOLOR(WHITE_VTX.r, WHITE_VTX.g, WHITE_VTX.b, 0.8f));
+			}
+
+			nCounter++;
 		}
 	}
 }

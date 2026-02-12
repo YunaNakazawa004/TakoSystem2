@@ -745,7 +745,7 @@ void LoadObject(const char* pStr)
 					}
 				}
 
-				if (nIdx == 7)
+				if (nIdx == 9 || nIdx == 10)
 				{// ƒ^ƒR‚Â‚Ú
 					SetPot(pos, D3DXVECTOR3(D3DX_PI * rot.x / 180.0f, D3DX_PI * rot.y / 180.0f, D3DX_PI * rot.z / 180.0f));
 				}
