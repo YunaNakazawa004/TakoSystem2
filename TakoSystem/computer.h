@@ -198,7 +198,7 @@ void CreateOuterNodes3D(void);
 void CreateInnerNodes3D(void);
 D3DXVECTOR3 GetRandomExplorePoint(void);
 
-void SetComputer(D3DXVECTOR3 pos, D3DXVECTOR3 rot);
+void SetComputer(D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType);
 void SetRandomComputer(int nAmount);
 Computer* GetComputer(void);
 void CollisionInk(int nIdx, bool bCPU, D3DXVECTOR3 pos);

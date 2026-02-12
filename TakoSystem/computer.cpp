@@ -226,8 +226,6 @@ void InitComputer(void)
 				}
 			}
 		}
-
-		SetMotionComputer(nCntComputer, MOTIONTYPE_NEUTRAL, false, 0);
 	}
 
 	// ランダムな位置に設定
@@ -710,14 +708,6 @@ void UpdateComputer(void)
 			//PrintDebugProc("ENEMY : TargetEnemy ( %d )\n", pComputer->nTargetEnemyIdx);
 			//PrintDebugProc("ENEMY : ノード ( %f %f %f )\n",
 			//	pComputer->extarget.x, pComputer->extarget.y, pComputer->extarget.z);
-
-			//D3DXVECTOR3 posAway;
-			//posAway.x = pComputer->phys.pos.x + sinf(D3DX_PI + pComputer->phys.rot.y) * 10000.0f;
-			//posAway.y = pComputer->phys.pos.y;
-			//posAway.z = pComputer->phys.pos.z + cosf(D3DX_PI - pComputer->phys.rot.y) * 10000.0f;
-
-			//CollisionMeshCylinder(&posAway, &pComputer->phys.pos, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, true);
-			//CollisionObject(&posAway, &pComputer->phys.pos, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, true);
 
 			// 当たり判定
 			CollisionObject(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, false);
@@ -1651,7 +1641,7 @@ void CalcEscapeScore(Computer* pComputer)
 			score += ESCAPE_TENTACLE_SCORE;
 		}
 
-		if (pPlayer->nInkCooldown < ESCAPE_INK_COUNT)
+		if (pPlayer->nInkCooldown > INK_CT - ESCAPE_INK_COUNT)
 		{// 敵が墨を吐いた直後
 			score += ESCAPE_INK_SCORE;
 		}
@@ -1852,11 +1842,6 @@ void CalcPotScore(Computer* pComputer)
 		// 自分のエサを隠したい
 		score += pComputer->nFoodCount * POT_ESA_SCORE;
 
-		if (pComputer->nFoodCount == 0)
-		{// エサを持っていない
-			score -= POT_NO_ESA_SCORE;
-		}
-
 		// タコつぼが近い
 		score += (((pComputer->bBlinded) ? POT_DISTANCE * 0.5f : POT_DISTANCE) - dist) * DISTANCE_SCORE;
 
@@ -1869,11 +1854,15 @@ void CalcPotScore(Computer* pComputer)
 		if (GetTime() < POT_PHASE_1)
 		{
 			score += POT_PHASE_1_SCORE;
-		}
 
-		if (GetTime() < POT_PHASE_2)
-		{
-			score += POT_PHASE_2_SCORE;
+			if (GetTime() < POT_PHASE_2)
+			{
+				score += POT_PHASE_2_SCORE;
+			}
+		}
+		else if (pComputer->nFoodCount == 0)
+		{// エサを持っていない
+			score -= POT_NO_ESA_SCORE;
 		}
 
 		if (score > bestScore)
@@ -1956,10 +1945,10 @@ bool IsNearWall(D3DXVECTOR3 pos)
 {
 	float r = sqrtf(pos.x * pos.x + pos.z * pos.z);
 
-	if (fabs(r - OUTCYLINDER_RADIUS) < NEAR_WALL_DISTANCE)
-	{// 外周
-		return true;
-	}
+	//if (fabs(r - OUTCYLINDER_RADIUS) < NEAR_WALL_DISTANCE)
+	//{// 外周
+	//	return true;
+	//}
 
 	if (fabs(r - INCYLINDER_RADIUS) < NEAR_WALL_DISTANCE)
 	{// 中央柱
@@ -2323,7 +2312,7 @@ D3DXVECTOR3 GetRandomExplorePoint(void)
 //=============================================================================
 // CPUの設定処理
 //=============================================================================
-void SetComputer(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
+void SetComputer(D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType)
 {
 	Computer* pComputer = GetComputer();
 
@@ -2388,6 +2377,8 @@ void SetComputer(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 			pComputer->nFrameBlend = 0;
 			pComputer->nCounterBlend = 0;
 
+			SetMotionComputer(nCntComputer, MotionType, false, 0);
+
 			break;
 		}
 	}
@@ -2408,7 +2399,7 @@ void SetRandomComputer(int nAmount)
 		pos.y = (float)(rand() % (int)(CYLINDER_HEIGHT * 0.6f)) + (CYLINDER_HEIGHT * 0.2f);
 		pos.z = cosf(fAngle) * (INCYLINDER_RADIUS + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) + 1))));
 
-		SetComputer(pos, FIRST_POS);
+		SetComputer(pos, FIRST_POS, MOTIONTYPE_NEUTRAL);
 	}
 }
 
