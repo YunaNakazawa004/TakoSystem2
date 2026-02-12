@@ -589,6 +589,9 @@ void UpdatePlayer(void)
 			// d—Í
 			pPlayer->move.y += SEA_GRAVITY;
 
+			// ‰Q’ª
+			MoveOceanCurrents(&pPlayer->pos);
+
 			if (pPlayer->state != PLAYERSTATE_APPEAR && pPlayer->state != PLAYERSTATE_DASH)
 			{// oŒ»ó‘ÔˆÈŠO
 				// Šµ«
@@ -606,13 +609,10 @@ void UpdatePlayer(void)
 					WHITE_VTX, CYAN_VTX, &pPlayer->aModel[(nCntTent + 1) * 4].mtxWorld);
 			}
 
-			// ‰Q’ª
-			MoveOceanCurrents(&pPlayer->pos);
-
 			D3DXVECTOR2 XZdist = D3DXVECTOR2(pPlayer->pos.x, pPlayer->pos.z);
 			float fDist = D3DXVec2Length(&XZdist);
 
-			if (fDist > OUTCYLINDER_RADIUS)
+			if (fDist > OUTCYLINDER_RADIUS + 30.0f)
 			{// ˆÚ“®§ŒÀ
 				pPlayer->fAngleY = atan2f(pPlayer->pos.x, pPlayer->pos.z);
 				pPlayer->state = PLAYERSTATE_BACKAREA;
@@ -668,6 +668,13 @@ void UpdatePlayer(void)
 			{// Ž‹ŠEˆ«‰»’†
 				pPlayer->fFogStart *= 0.5f;
 				pPlayer->fFogEnd *= 0.5f;
+
+				D3DXVECTOR3 headPos = D3DXVECTOR3(
+					pPlayer->aModel[0].mtxWorld._41, 
+					pPlayer->aModel[0].mtxWorld._42 + 10.0f, 
+					pPlayer->aModel[0].mtxWorld._43);
+
+				SetEffect3D(5, headPos, FIRST_POS, 0.0f, 15.0f, 0.0f, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), EFFECTTYPE_OCTOINK);
 			}
 
 			fmoveAngle = pPlayer->fAngleY - pPlayer->rot.y;
