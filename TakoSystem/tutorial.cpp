@@ -45,9 +45,9 @@ LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffTutorial = NULL;	// 頂点バッファへのポインタ
 void InitTutorial(void)
 {
 	// ライトの設定
-	SetLightColor(0, D3DXCOLOR(0.8f, 0.9f, 1.0f, 1.0f));
-	SetLightColor(1, D3DXCOLOR(0.5f, 0.6f, 0.8f, 0.7f));
-	SetLightColor(2, D3DXCOLOR(0.3f, 0.3f, 0.5f, 0.3f));
+	SetLightColor(0, D3DXCOLOR(0.7f, 0.9f, 1.0f, 1.0f));
+	SetLightColor(1, D3DXCOLOR(0.4f, 0.5f, 0.7f, 0.7f));
+	SetLightColor(2, D3DXCOLOR(0.1f, 0.1f, 0.3f, 0.3f));
 
 	// カメラの初期化処理
 	SetNumCamera(GetPlayerSelect());
