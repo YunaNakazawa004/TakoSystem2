@@ -20,7 +20,7 @@
 #include "computer.h"
 
 // マクロ定義
-#define	MAX_TITLE	(5)	// タイトルで表示するテクスチャの最大数
+#define	MAX_TITLE	(6)	// タイトルで表示するテクスチャの最大数
 #define	RANKING_DELEY	(1500)	// ランキング移行に掛かる時間（25秒）
 #define	CLEAR_DELEY	(60)	// 消滅にかかる時間
 #define	TITLE_DELEY_MAX	(500.0f)	// タイトルの最大数
@@ -104,6 +104,10 @@ void InitTitle(void)
 		"data/TEXTURE/WPO.png",
 		&g_pTextureTitle[4]);
 
+	D3DXCreateTextureFromFile(pDevice,
+		"data/TEXTURE/CURSOR.png",
+		&g_pTextureTitle[5]);
+
 	// 頂点バッファの生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4 * MAX_TITLE,
 		D3DUSAGE_WRITEONLY,
@@ -148,12 +152,19 @@ void InitTitle(void)
 			pVtx[2].pos = D3DXVECTOR3(1080.0f, 620.0f, 0.0f);
 			pVtx[3].pos = D3DXVECTOR3(1150.0f, 620.0f, 0.0f);
 		}
-		else
+		else if (nCntTitle == 4)
 		{// タイトル：(C)WPO
 			pVtx[0].pos = D3DXVECTOR3(0.0f, 690.0f, 0.0f);		// 右回りで設定する
 			pVtx[1].pos = D3DXVECTOR3(310.0f, 690.0f, 0.0f);	// 2Dの場合Zの値は0にする
 			pVtx[2].pos = D3DXVECTOR3(0.0f, 720.0f, 0.0f);
 			pVtx[3].pos = D3DXVECTOR3(310.0f, 720.0f, 0.0f);
+		}
+		else
+		{// カーソル
+			pVtx[0].pos = D3DXVECTOR3(400.0f, 480.0f, 0.0f);	// 右回りで設定する
+			pVtx[1].pos = D3DXVECTOR3(640.0f, 480.0f, 0.0f);	// 2Dの場合Zの値は0にする
+			pVtx[2].pos = D3DXVECTOR3(400.0f, 640.0f, 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(640.0f, 640.0f, 0.0f);
 		}
 
 		// rhwの設定
