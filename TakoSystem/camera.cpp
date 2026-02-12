@@ -308,6 +308,15 @@ void UpdateCamera(void)
 			pCamera->posV.z = pCamera->posR.z + cosf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance;
 
 			break;
+
+		case CAMERATYPE_STOP:
+			// ƒJƒƒ‰Œü‚«‚ð’²®
+			CorrectAngle(&pCamera->rot.y, pCamera->rot.y);
+
+			pCamera->posV.x = pCamera->posR.x + sinf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance;
+			pCamera->posV.z = pCamera->posR.z + cosf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance;
+
+			break;
 		}
 
 		if (pCamera->fMoveVA != 0.0f)

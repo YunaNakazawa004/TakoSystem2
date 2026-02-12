@@ -21,7 +21,8 @@
 typedef enum
 {
 	CAMERATYPE_PLAYER = 0,			// プレイヤー追従
-	CAMERATYPE_POINT,				// 定点カメラ
+	CAMERATYPE_POINT,				// 定点周回カメラ
+	CAMERATYPE_STOP,				// 定点カメラ
 	CAMERATYPE_MAX
 }CAMERATYPE;
 

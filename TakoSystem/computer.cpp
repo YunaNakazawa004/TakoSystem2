@@ -226,8 +226,6 @@ void InitComputer(void)
 				}
 			}
 		}
-
-		SetMotionComputer(nCntComputer, MOTIONTYPE_NEUTRAL, false, 0);
 	}
 
 	// ƒ‰ƒ“ƒ_ƒ€‚ÈˆÊ’u‚ÉÝ’è
@@ -2323,7 +2321,7 @@ D3DXVECTOR3 GetRandomExplorePoint(void)
 //=============================================================================
 // CPU‚ÌÝ’èˆ—
 //=============================================================================
-void SetComputer(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
+void SetComputer(D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType)
 {
 	Computer* pComputer = GetComputer();
 
@@ -2388,6 +2386,8 @@ void SetComputer(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 			pComputer->nFrameBlend = 0;
 			pComputer->nCounterBlend = 0;
 
+			SetMotionComputer(nCntComputer, MotionType, false, 0);
+
 			break;
 		}
 	}
@@ -2408,7 +2408,7 @@ void SetRandomComputer(int nAmount)
 		pos.y = (float)(rand() % (int)(CYLINDER_HEIGHT * 0.6f)) + (CYLINDER_HEIGHT * 0.2f);
 		pos.z = cosf(fAngle) * (INCYLINDER_RADIUS + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) + 1))));
 
-		SetComputer(pos, FIRST_POS);
+		SetComputer(pos, FIRST_POS, MOTIONTYPE_NEUTRAL);
 	}
 }
 

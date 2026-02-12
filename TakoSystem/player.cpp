@@ -154,8 +154,6 @@ void InitPlayer(void)
 				}
 			}
 		}
-
-		SetMotionPlayer(nCntPlayer, MOTIONTYPE_NEUTRAL, false, 0);
 	}
 
 	SetRandomPlayer(GetNumCamera());
@@ -927,7 +925,7 @@ void DrawPlayer(void)
 //=============================================================================
 // ÉvÉåÉCÉÑÅ[ÇÃê›íËèàóù
 //=============================================================================
-void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
+void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType)
 {
 	Player* pPlayer = GetPlayer();
 
@@ -969,6 +967,8 @@ void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	pPlayer[nIdx].nCounterMotionBlend = 0;
 	pPlayer[nIdx].nFrameBlend = 0;
 	pPlayer[nIdx].nCounterBlend = 0;
+
+	SetMotionPlayer(nIdx, MotionType, false, 0);
 }
 
 //=============================================================================
@@ -986,7 +986,7 @@ void SetRandomPlayer(int nAmount)
 		pos.y = (float)(rand() % (int)(CYLINDER_HEIGHT * 0.6f)) + (CYLINDER_HEIGHT * 0.2f);
 		pos.z = cosf(fAngle) * (INCYLINDER_RADIUS + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) + 1))));
 
-		SetPlayer(nCntPlayer, pos, FIRST_POS);
+		SetPlayer(nCntPlayer, pos, FIRST_POS, MOTIONTYPE_NEUTRAL);
 	}
 }
 
