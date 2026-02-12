@@ -7,21 +7,39 @@
 #ifndef _RESULT_H_		
 #define _RESULT_H_		// 2重インクルード防止のマクロを定義
 
-// リザルト構造体の定義
-typedef struct
+// 列挙型の定義
+typedef enum
 {
-	int nAddScore;	// ゲームで得たスコア
-	int nAddLife;	// ライフをスコアに追加
-	int nAddTime;	// タイムをスコアに追加
-}Result;
+	RESULTSTATE_BEGIN = 0,	// [0]開始状態
+	RESULTSTAE_WAIT,		// [1]待機状態
+
+	RESULTSTAE_MAX			// 最大値
+
+}RESULTSTATE;
+
+typedef enum
+{
+	RESULTTYPE_RADIATION = 0,	// [0]放射線
+	RESULTTYPE_,
+
+	RESULTTYPE_MAX
+}RESULTTYPE;
+
 
 // プロトタイプ宣言
-void InitResult(void);
-void UninitResult(void);
-void UpdateResult(void);
-void DrawResult(void);
-void SetResult(int nScore, int nLife, int nTime);
+void InitResult(void);		// リザルトの初期化処理
+void UninitResult(void);	// リザルトの終了処理
+void UpdateResult(void);	// リザルトの更新処理
+void DrawResult(void);		// リザルトの描画処理
 
-Result* GetResult(void);
+int SetResultPolygon		// リザルトのポリゴンの設定処理
+(int nIdxTexture, bool bAlphaBlend,			// テクスチャインデックス, aブレンドをするか
+ float fSizeWidth, float fSizeHeight,		// 大きさ(幅, 高さ)
+ D3DXVECTOR2 texPos, D3DXVECTOR2 texSize,	// テクスチャ座標, テクスチャサイズ
+ D3DXCOLOR col);							// 色
+
+int SetResult
+(bool bPolygon, int nIdx, int nDrowLevel,	// ポリゴンか, インデックス, 描画順位
+ D3DXVECTOR3 pos, D3DXVECTOR3 rot);			// 位置, 角度
 
 #endif

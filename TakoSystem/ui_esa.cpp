@@ -196,6 +196,8 @@ void UpdateUiEsa(void)
 
 	// =========================================================
 
+#if 0	// デバッグ
+
 	if (GetKeyboardTrigger(DIK_RSHIFT))
 	{
 		SetAddUiEsa(0, nSetRand);
@@ -206,8 +208,6 @@ void UpdateUiEsa(void)
 		SetSubUiEsa(0);
 		SetSubUiEsa(1);
 	}
-
-#if 0	// デバッグ：親情報
 
 		if (GetKeyboardPress(DIK_I)) g_aUiEsaParent[0].pos.y -= 1.0f;
 		if (GetKeyboardPress(DIK_K)) g_aUiEsaParent[0].pos.y += 1.0f;
@@ -372,8 +372,6 @@ int SetUiEsaParent(D3DXVECTOR3 pos, int nNumNewLine, D3DXVECTOR2 space, float fE
 int SetUiEsaChild(int nIdxType, float fSizeWidth, float fSizeHeight)
 {
 	// 変数宣言 ================================================
-
-	VERTEX_2D* pVtx;		// 頂点情報へのポインタを宣言
 	
 	float fLength, fAngle;	// 対角線の値
 
