@@ -101,7 +101,7 @@
 #define INK_CT					(ONE_SECOND * 5 + ONE_SECOND)			// 墨吐きのクールダウン
 #define CAMERA_HEIGHT			(100.0f)								// 仮想カメラの高さ
 #define RIPPLE_COUNT			(20)									// 水面に波紋が出る間隔
-#define CPU_THINK				(5)										// 思考間隔
+#define CPU_THINK				(15)									// 思考間隔
 #define CPU_WIDTH				(25.0f)									// 幅
 #define CPU_HEIGHT				(100.0f)								// 高さ
 #define TENTACLE_RADIUS			(100.0f)								// 触手の当たり判定
@@ -631,7 +631,7 @@ void UpdateComputer(void)
 			D3DXVECTOR2 XZdist = D3DXVECTOR2(pComputer->phys.pos.x, pComputer->phys.pos.z);
 			float fDist = D3DXVec2Length(&XZdist);
 
-			if (fDist > OUTCYLINDER_RADIUS)
+			if (fDist > OUTCYLINDER_RADIUS + 30.0f)
 			{// 移動制限
 				pComputer->phys.fAngleY = atan2f(pComputer->phys.pos.x, pComputer->phys.pos.z);
 				pComputer->state = CPUSTATE_BACKAREA;
@@ -652,6 +652,16 @@ void UpdateComputer(void)
 					SetMeshRing(D3DXVECTOR3(pComputer->phys.pos.x + (rand() % 6 - 3), *GetWaterSurf_Height(), pComputer->phys.pos.z + (rand() % 6 - 3)), FIRST_POS,
 						D3DXVECTOR2(24.0f, 1.0f), D3DXVECTOR2(10.0f, 7.0f), D3DXCOLOR(WHITE_VTX.r, WHITE_VTX.g, WHITE_VTX.b, 0.5f));
 				}
+			}
+
+			if (pComputer->bBlinded == true)
+			{// 視界が悪そうなエフェクト
+				D3DXVECTOR3 headPos = D3DXVECTOR3(
+					pComputer->aModel[0].mtxWorld._41,
+					pComputer->aModel[0].mtxWorld._42 + 10.0f,
+					pComputer->aModel[0].mtxWorld._43);
+
+				SetEffect3D(1, pComputer->phys.pos, FIRST_POS, 0.0f, 15.0f, 0.0f, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), EFFECTTYPE_OCTOINK);
 			}
 
 			pComputer->phys.fAngleY = D3DX_PI + atan2f(pComputer->phys.dir.x, pComputer->phys.dir.z);
@@ -2036,10 +2046,10 @@ void FindTentacleTarget(Computer* pComputer)
 
 		// 外周と中央柱の両方にレイキャスト
 		float distOuter, distInner;
-		bool hitOuter = RaycastToOuterWall(pComputer->phys.pos, dir, &distOuter);
+		//bool hitOuter = RaycastToOuterWall(pComputer->phys.pos, dir, &distOuter);
 		bool hitInner = RaycastToInnerPillar(pComputer->phys.pos, dir, &distInner);
 
-		if (hitOuter == false && hitInner == false)
+		if (/*hitOuter == false && */hitInner == false)
 		{// どちらにも当たらない方向は無視
 			continue;
 		}
@@ -2047,10 +2057,10 @@ void FindTentacleTarget(Computer* pComputer)
 		// 近い方の壁を採用
 		float dist = 999999.0f;
 
-		if (hitOuter == true)
-		{// 外円
-			dist = distOuter;
-		}
+		//if (hitOuter == true)
+		//{// 外円
+		//	dist = distOuter;
+		//}
 
 		if (hitInner == true && distInner < dist)
 		{// 内円

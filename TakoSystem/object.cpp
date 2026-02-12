@@ -535,7 +535,7 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 							vecMoveDest = move - (vecNor * fDotN);
 						}
 
-						PrintDebugProc("壁刷りベクトル( %f %f %f )\n", vecMoveDest.x, vecMoveDest.y, vecMoveDest.z);
+						//PrintDebugProc("壁刷りベクトル( %f %f %f )\n", vecMoveDest.x, vecMoveDest.y, vecMoveDest.z);
 
 						pPos->x = start.x + (vecLine.x * fRate) + vecMoveDest.x;
 						pPos->z = start.z + (vecLine.z * fRate) + vecMoveDest.z;
