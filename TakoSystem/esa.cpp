@@ -14,17 +14,20 @@
 #include "effect_3d.h"
 
 #include "meshcylinder.h"
+#include "meshorbit.h"
 #include "watersurf.h"
 #include "player.h"
 #include "pot.h"
 
 #include "oceancurrents.h"
 
+#include "file.h"
+
 // マクロ定義 ==================================================
 
 // 設定値 ===================
 
-#define MAX_ESATYPE				(32)				// エサの種類の総数
+
 
 // 挙動 : 地面
 #define ESA_LANDING_MOVEVALUE	(0.1f)				// 地面にいる時の値の増加量	
@@ -53,7 +56,7 @@
 
 EsaData g_aEsaData[MAX_ESATYPE];		// エサの種類別の情報
 
-int g_aIdxEsaData[MAX_MODEL_ESA];		// モデルのインデックス
+int g_aIdxEsaData[MAX_ESATYPE];			// モデルのインデックス
 int g_nNumEsatype;						// エサの種類の総数
 
 Esa g_aEsa[MAX_SET_ESA];				// エサの情報
@@ -225,6 +228,7 @@ void UpdateEsa(void)
 
 			SetEffect3D(70, g_aEsa[nCntEsa].pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0.0f, 30.0f, -0.1f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f),EFFECTTYPE_NORMAL);
 
+			SetMeshOrbit(FIRST_POS, D3DXVECTOR3(FIRST_POS.x, FIRST_POS.y + 10.0f, FIRST_POS.z), WHITE_VTX, CYAN_VTX, &g_aEsa[nCntEsa].mtxWorld);
 #if 0
 			PrintDebugProc("\nESA[%d]_POS %s", nCntEsa, (g_aEsa[nCntEsa].bUse == true ? "true":"false"));
 			PrintDebugProc("\nESA[%d]_POS %f %f %f", nCntEsa, g_aEsa[nCntEsa].pos.x, g_aEsa[nCntEsa].pos.y, g_aEsa[nCntEsa].pos.z);
@@ -619,68 +623,7 @@ bool CollisionEsa(int* pIdx, bool bCollision, D3DXVECTOR3 *pos, float fHitRadius
 }
 
 
-//========================================================================
-// ファイルから文字だけの読み取り処理
-//========================================================================
-bool FileExtractText(FILE* pFile, char* pReadText)
-{// <処理> 空欄、コメントを省いた文字を読み取る
 
-	// 変数宣言 ===========================================
-
-	char aReadText[256] = {};	// 読み取った文字
-	char aBlank[256] = {};		// 空の読み取り
-
-	int nCntPass = 0;			// 処理の通過(繰り返し)回数
-
-	bool bSCRead;				// 読み取れたかの状態
-
-	// ====================================================
-
-	// ファイルから文字だけを読み取る
-	while (1)
-	{
-		// 文字の読み取り
-		fscanf(pFile, "%[^ \n\t]", &aReadText[0]);	// 文字でなくなる所まで読み取る
-
-		if (aReadText[0] == '#')
-		{// 最初の文字が「#」の場合
-
-			fscanf(pFile, "%[^\n]", &aBlank[0]);	// 改行まで読み取る
-		}
-		else
-		{// 最初の文字が「#」ではない
-
-			if (aReadText[0] != '\0')
-			{// 読み取った文字の一文字目が「\0」ではない場合
-
-				if (pReadText)
-				{
-					// 読み取った文字を入れる
-					strcpy(&pReadText[0], &aReadText[0]);
-				}
-
-				bSCRead = true;	// 読み取りに成功
-
-				break;			// while文を抜ける
-			}
-		}
-
-		// 空欄の読み取り
-		fscanf(pFile, "%[ \t\n]", &aBlank[0]);		// 空欄でなくなる所まで読み取る
-
-		nCntPass++;	// 通過回数をカウント
-
-		if (nCntPass >= 50)
-		{// 正常に読み取れていなさそうな場合
-
-			bSCRead = false;	// 文字の読み取りに失敗
-
-			break;				// while文を抜ける
-		}
-	}
-
-	return bSCRead;
-}
 
 //========================================================================
 // エサの情報を読み取る処理

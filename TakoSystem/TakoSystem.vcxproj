@@ -155,6 +155,7 @@
     <ClCompile Include="effect_3d.cpp" />
     <ClCompile Include="esa.cpp" />
     <ClCompile Include="fade.cpp" />
+    <ClCompile Include="file.cpp" />
     <ClCompile Include="fishes.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="input.cpp" />
@@ -194,6 +195,7 @@
     <ClInclude Include="effect_3d.h" />
     <ClInclude Include="esa.h" />
     <ClInclude Include="fade.h" />
+    <ClInclude Include="file.h" />
     <ClInclude Include="fishes.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="input.h" />

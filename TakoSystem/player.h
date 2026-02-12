@@ -137,6 +137,7 @@ void UninitPlayer(void);
 void UpdatePlayer(void);
 void DrawPlayer(void);
 void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot);
+void SetRandomPlayer(int nAmount);
 Player* GetPlayer(void);
 void UpdateMotionPlayer(void);
 void SetMotionPlayer(int nIdx, MOTIONTYPE motionType, bool bBlendMotion, int nFrameBlend);

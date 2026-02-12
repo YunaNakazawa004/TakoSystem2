@@ -157,6 +157,8 @@ void InitPlayer(void)
 
 		SetMotionPlayer(nCntPlayer, MOTIONTYPE_NEUTRAL, false, 0);
 	}
+
+	SetRandomPlayer(GetNumCamera());
 }
 
 //=============================================================================
@@ -205,7 +207,7 @@ void UpdatePlayer(void)
 	for (int nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++, pPlayer++, pCamera++)
 	{
 		if (pPlayer->bUse == true)
-		{
+		{// 使用している
 			static int nCounter = 0;		// 色々なものに使えるカウンター
 			int nValueH, nValueV;
 			int nValue;
@@ -411,7 +413,6 @@ void UpdatePlayer(void)
 						CrossHair* pCrossHair = GetCrossHair();
 						pCrossHair = &pCrossHair[nCntPlayer];
 
-						//PrintDebugProc("触手のpos ( %f %f %f )\n", pPlayer->aModel[4].mtxWorld._41, pPlayer->aModel[4].mtxWorld._42, pPlayer->aModel[4].mtxWorld._43);
 						D3DXVECTOR3 tentaclePos = D3DXVECTOR3(pPlayer->aModel[4].mtxWorld._41, pPlayer->aModel[4].mtxWorld._42, pPlayer->aModel[4].mtxWorld._43);
 						int nIdx = -1;
 
@@ -565,25 +566,6 @@ void UpdatePlayer(void)
 				pPlayer->nBlindCounter = 0;
 			}
 
-			//// 移動量制限
-			//if (pPlayer->move.x > MAX_MOVE)
-			//{// 最大X
-			//	pPlayer->move.x = MAX_MOVE;
-			//}
-			//else if (pPlayer->move.x < -MAX_MOVE)
-			//{// 最小X
-			//	pPlayer->move.x = -MAX_MOVE;
-			//}
-
-			//if (pPlayer->move.z > MAX_MOVE)
-			//{// 最大Z
-			//	pPlayer->move.z = MAX_MOVE;
-			//}
-			//else if (pPlayer->move.z < -MAX_MOVE)
-			//{// 最小Z
-			//	pPlayer->move.z = -MAX_MOVE;
-			//}
-
 			//PrintDebugProc("プレイヤーのmove ( %f %f %f )\n", pPlayer->move.x, pPlayer->move.y, pPlayer->move.z);
 
 			// 重力
@@ -612,7 +594,7 @@ void UpdatePlayer(void)
 			D3DXVECTOR2 XZdist = D3DXVECTOR2(pPlayer->pos.x, pPlayer->pos.z);
 			float fDist = D3DXVec2Length(&XZdist);
 
-			if (fDist > OUTCYLINDER_RADIUS)
+			if (fDist > OUTCYLINDER_RADIUS + 30.0f)
 			{// 移動制限
 				pPlayer->fAngleY = atan2f(pPlayer->pos.x, pPlayer->pos.z);
 				pPlayer->state = PLAYERSTATE_BACKAREA;
@@ -668,6 +650,13 @@ void UpdatePlayer(void)
 			{// 視界悪化中
 				pPlayer->fFogStart *= 0.5f;
 				pPlayer->fFogEnd *= 0.5f;
+
+				D3DXVECTOR3 headPos = D3DXVECTOR3(
+					pPlayer->aModel[0].mtxWorld._41, 
+					pPlayer->aModel[0].mtxWorld._42 + 10.0f, 
+					pPlayer->aModel[0].mtxWorld._43);
+
+				SetEffect3D(5, headPos, FIRST_POS, 0.0f, 15.0f, 0.0f, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), EFFECTTYPE_OCTOINK);
 			}
 
 			fmoveAngle = pPlayer->fAngleY - pPlayer->rot.y;
@@ -770,14 +759,6 @@ void UpdatePlayer(void)
 				pPlayer->state = PLAYERSTATE_WAIT;
 			}
 
-			D3DXVECTOR3 posAway;
-			posAway.x = pPlayer->pos.x + sinf(D3DX_PI + pPlayer->rot.y) * 10000.0f;
-			posAway.y = pPlayer->pos.y;
-			posAway.z = pPlayer->pos.z + cosf(D3DX_PI - pPlayer->rot.y) * 10000.0f;
-
-			CollisionMeshCylinder(&posAway, &pPlayer->pos, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight, true);
-			CollisionObject(&posAway, &pPlayer->pos, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight, true);
-
 			// 当たり判定
 			CollisionPot(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight);
 			CollisionObject(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight, false);
@@ -811,29 +792,6 @@ void UpdatePlayer(void)
 
 			// モーションの更新処理
 			UpdateMotionPlayer();
-
-#if 0
-
-			// 回転
-			if (GetKeyboardPress(DIK_UP) == true)
-			{// X軸回転
-				pPlayer->rot.x += ROT.x;
-			}
-			else if (GetKeyboardPress(DIK_DOWN) == true)
-			{// X軸回転
-				pPlayer->rot.x += -ROT.x;
-			}
-
-			if (GetKeyboardPress(DIK_LEFT) == true)
-			{// Z軸回転
-				pPlayer->rot.z += ROT.z;
-			}
-			else if (GetKeyboardPress(DIK_RIGHT) == true)
-			{// Z軸回転
-				pPlayer->rot.z += -ROT.z;
-			}
-
-#endif
 		}
 	}
 }
@@ -1011,6 +969,25 @@ void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	pPlayer[nIdx].nCounterMotionBlend = 0;
 	pPlayer[nIdx].nFrameBlend = 0;
 	pPlayer[nIdx].nCounterBlend = 0;
+}
+
+//=============================================================================
+// プレイヤーのランダム設定処理
+//=============================================================================
+void SetRandomPlayer(int nAmount)
+{
+	for (int nCntPlayer = 0; nCntPlayer < nAmount; nCntPlayer++)
+	{
+		D3DXVECTOR3 pos;
+		float fAngle = (D3DX_PI * 2.0f) * ((float)((nCntPlayer + 1) * (360.0f / nAmount)) / 360.0f);
+		float fsin = sinf(fAngle);
+
+		pos.x = sinf(fAngle) * (INCYLINDER_RADIUS + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) + 1))));
+		pos.y = (float)(rand() % (int)(CYLINDER_HEIGHT * 0.6f)) + (CYLINDER_HEIGHT * 0.2f);
+		pos.z = cosf(fAngle) * (INCYLINDER_RADIUS + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) + 1))));
+
+		SetPlayer(nCntPlayer, pos, FIRST_POS);
+	}
 }
 
 //=============================================================================

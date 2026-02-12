@@ -10,7 +10,8 @@
 
 // マクロ定義 ==================================================
 
-#define MAX_MODEL_ESA	(64)	// 用意出来るモデルの最大値
+#define MAX_ESATYPE				(32)				// エサの種類の総数
+//#define MAX_MODEL_ESA	(64)	// 用意出来るモデルの最大値
 #define MAX_SET_ESA		(128)	// 設定出来るエサの総数
 
 // 列挙型の定義 ================================================
@@ -118,14 +119,14 @@ typedef struct
 
 // プロトタイプ宣言 ============================================
 
-// 基本処理
+// 基本処理 ================================
 
 void InitEsa(void);			// エサの初期化処理
 void UninitEsa(void);		// エサの終了処理
 void UpdateEsa(void);		// エサの更新処理
 void DrawEsa(void);			// エサの描画処理
 
-// 設定処理
+// 設定処理 ================================
 
 int SetEsaData				// エサ情報の設定処理
 (EsaData *pEsaData,						// 設定する対象
@@ -140,7 +141,7 @@ void ChangeEsaState			// エサの状態切り替え処理
 (int nIdxEsa,							// エサのインテックス
  ESA_ACTTYPE changeState, int nValue);	// 切り替える挙動, 挙動の値
 
-// 更新処理
+// 更新処理 ================================
 
 void BehaviorEsa			// エサの挙動の処理
 (Esa *pEsa);							// 処理するエサのポインタ
@@ -148,13 +149,13 @@ void BehaviorEsa			// エサの挙動の処理
 void MoveEsa				// エサの移動処理
 (Esa *pEsa);							// 処理するエサのポインタ
 
-// 判定処理
+// 判定処理 ================================
 
 bool CollisionEsa			// エサの当たり判定処理
 (int* pIdx,	bool bCollision,			// 判定したエサのインデックス, ぶつかりの判定をするか 
  D3DXVECTOR3 *pos, float fHitRadius);	// 位置, 大きさ 
 
-// 値を返す処理
+// 値を返す処理 ============================
 
 EsaModel* GetEsaModel		// エサモデルの情報を返す処理
 (int nIdx);								// エサモデル
@@ -167,11 +168,8 @@ EsaData* GetEsaData			// エサの種類情報を返す処理
 int GetNumEsaType(void);	// エサの種類数を返す処理
 
 
-// その他
+// ファイル ================================
 
-bool FileExtractText		// ファイルから文字だけの読み取り処理
-(FILE* pFile, char* pReadText);			// ファイルポインタ, 読み取った文字	
- 	
 bool SetLoadEsaData			// エサの情報を読み取る処理
 (EsaData* pEsaData, const char* pFilename);
 

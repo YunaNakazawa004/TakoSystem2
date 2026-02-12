@@ -69,8 +69,6 @@ void InitGame(void)
 
 	// ƒvƒŒƒCƒ„[‚Ì‰Šú‰»ˆ—
 	InitPlayer();
-	SetPlayer(0, D3DXVECTOR3(0.0f, 1500.0f, 500.0f), FIRST_POS);
-	SetPlayer(1, D3DXVECTOR3(0.0f, 1500.0f, -500.0f), FIRST_POS);
 
 	// CPU‚Ì‰Šú‰»ˆ—
 	InitComputer();

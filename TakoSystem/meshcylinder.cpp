@@ -475,31 +475,50 @@ bool CollisionMeshCylinder(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3*
 					}
 					else
 					{
-						D3DXVECTOR3 vecPosDiff;
-						vecPosDiff.x = -(insec.x - pPos->x);
-						vecPosDiff.y = 0.0f;
-						vecPosDiff.z = -(insec.z - pPos->z);
-						D3DXVec3Normalize(&vecPosDiff, &vecPosDiff);		// ベクトルを正規化する
+						//D3DXVECTOR3 vecPosDiff;
+						//vecPosDiff.x = -(insec.x - pPos->x);
+						//vecPosDiff.y = 0.0f;
+						//vecPosDiff.z = -(insec.z - pPos->z);
+						//D3DXVec3Normalize(&vecPosDiff, &vecPosDiff);		// ベクトルを正規化する
 
-						//PrintDebugProc("めり込みベクトル( %f %f %f )\n", vecPosDiff.x, vecPosDiff.y, vecPosDiff.z);
+						////PrintDebugProc("めり込みベクトル( %f %f %f )\n", vecPosDiff.x, vecPosDiff.y, vecPosDiff.z);
 
-						if (fAngle < 0)
-						{// 壁に対して右側から
-							vecMoveDest.x = (vecPosDiff.x * cosf(-(D3DX_PI * 0.5f) - fAngle)) + (vecPosDiff.z * sinf(-(D3DX_PI * 0.5f) - fAngle));
-							vecMoveDest.y = 0.0f;
-							vecMoveDest.z = (vecPosDiff.x * sinf((D3DX_PI * 0.5f) - fAngle)) - (vecPosDiff.z * cosf((D3DX_PI * 0.5f) - fAngle));
-						}
-						else
-						{// 左側から
-							vecMoveDest.x = (vecPosDiff.x * cosf((D3DX_PI * 0.5f) - fAngle)) + (vecPosDiff.z * sinf((D3DX_PI * 0.5f) - fAngle));
-							vecMoveDest.y = 0.0f;
-							vecMoveDest.z = (vecPosDiff.x * sinf(-(D3DX_PI * 0.5f) - fAngle)) - (vecPosDiff.z * cosf(-(D3DX_PI * 0.5f) - fAngle));
+						//if (fAngle < 0)
+						//{// 壁に対して右側から
+						//	vecMoveDest.x = (vecPosDiff.x * cosf(-(D3DX_PI * 0.5f) - fAngle)) + (vecPosDiff.z * sinf(-(D3DX_PI * 0.5f) - fAngle));
+						//	vecMoveDest.y = 0.0f;
+						//	vecMoveDest.z = (vecPosDiff.x * sinf((D3DX_PI * 0.5f) - fAngle)) - (vecPosDiff.z * cosf((D3DX_PI * 0.5f) - fAngle));
+						//}
+						//else
+						//{// 左側から
+						//	vecMoveDest.x = (vecPosDiff.x * cosf((D3DX_PI * 0.5f) - fAngle)) + (vecPosDiff.z * sinf((D3DX_PI * 0.5f) - fAngle));
+						//	vecMoveDest.y = 0.0f;
+						//	vecMoveDest.z = (vecPosDiff.x * sinf(-(D3DX_PI * 0.5f) - fAngle)) - (vecPosDiff.z * cosf(-(D3DX_PI * 0.5f) - fAngle));
+						//}
+
+						////PrintDebugProc("壁刷りベクトル( %f %f %f )\n", vecMoveDest.x, vecMoveDest.y, vecMoveDest.z);
+
+						//pPos->x = start.x + (vecLine.x * fRate);
+						//pPos->z = start.z + (vecLine.z * fRate);
+
+						//pMove->x = vecMoveDest.x;
+						//pMove->z = vecMoveDest.z;
+
+						D3DXVECTOR3 move = vecMove;
+						move.y = 0.0f;
+						D3DXVec3Normalize(&move, &move);
+
+						float fDotN = D3DXVec3Dot(&move, &vecNor);
+
+						if (fDotN < 0.0f)
+						{// 壁に向かっているときだけ法線成分を消す
+							vecMoveDest = move - (vecNor * fDotN);
 						}
 
 						//PrintDebugProc("壁刷りベクトル( %f %f %f )\n", vecMoveDest.x, vecMoveDest.y, vecMoveDest.z);
 
-						pPos->x = start.x + (vecLine.x * fRate);
-						pPos->z = start.z + (vecLine.z * fRate);
+						pPos->x = start.x + (vecLine.x * fRate) + vecMoveDest.x;
+						pPos->z = start.z + (vecLine.z * fRate) + vecMoveDest.z;
 
 						pMove->x = vecMoveDest.x;
 						pMove->z = vecMoveDest.z;
