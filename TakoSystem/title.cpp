@@ -369,7 +369,7 @@ void UpdateTitle(void)
 		GetJoypadStick(0, JOYKEY_LEFTSTICK_UP, NULL, NULL) == true))
 	{// カーソル下移動
 		g_CursorPos--;
-		if (g_CursorPos < 0) g_CursorPos = TITLECURSOR_MAX - 1;
+		if (g_CursorPos < 0) g_CursorPos = TITLECURSOR_PLAYER_SELECT;
 		PlaySound(SOUND_SE_CURSORMOVE);
 		g_PressEnterDeley = 0;
 	}
@@ -377,7 +377,7 @@ void UpdateTitle(void)
 		GetJoypadStick(0, JOYKEY_LEFTSTICK_DOWN, NULL, NULL) == true))
 	{// カーソル上移動
 		g_CursorPos++;
-		if (g_CursorPos >= TITLECURSOR_MAX) g_CursorPos = TITLECURSOR_PLAYER_SELECT;
+		if (g_CursorPos >= TITLECURSOR_MAX) g_CursorPos = TITLECURSOR_PLAY_START;
 		PlaySound(SOUND_SE_CURSORMOVE);
 		g_PressEnterDeley = 0;
 	}
