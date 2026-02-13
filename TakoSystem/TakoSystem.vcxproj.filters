@@ -1,268 +1,267 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="ソース ファイル">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="ヘッダー ファイル">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="リソース ファイル">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="input.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="light.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="debugproc.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="camera.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="model.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="player.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="stage.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="esa.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="fishes.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="fade.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="pause.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="time.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="crosshair.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="object.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="effect_3d.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="particle_3d.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="sound.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="meshcylinder.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="game.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="ranking.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="result.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="title.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="tutorial.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="meshdome.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="meshfield.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="meshring.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>cppファイル</Filter>
     </ClCompile>
     <ClCompile Include="computer.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>cppファイル</Filter>
     </ClCompile>
-    <ClCompile Include="pot.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="crosshair.cpp">
+      <Filter>cppファイル</Filter>
     </ClCompile>
-    <ClCompile Include="map.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="debugproc.cpp">
+      <Filter>cppファイル</Filter>
     </ClCompile>
-    <ClCompile Include="logo.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="effect_3d.cpp">
+      <Filter>cppファイル</Filter>
     </ClCompile>
-    <ClCompile Include="ui_gaugeicon.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="esa.cpp">
+      <Filter>cppファイル</Filter>
     </ClCompile>
-    <ClCompile Include="ui_esa.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="watetrsurf.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="oceancurrents.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="screen.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="meshorbit.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="fade.cpp">
+      <Filter>cppファイル</Filter>
     </ClCompile>
     <ClCompile Include="file.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="fishes.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="game.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="input.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="light.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="logo.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="map.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="meshcylinder.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="meshdome.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="meshfield.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="meshorbit.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="meshring.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="model.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="object.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="oceancurrents.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="particle_3d.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="pause.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="player.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="pot.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="ranking.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="result.cpp">
+      <Filter>cppファイル</Filter>
     </ClCompile>
     <ClCompile Include="result2.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>    <ClCompile Include="seadust.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>    <ClCompile Include="tutorialtxt.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>    <ClCompile Include="ui_result_getscore.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="screen.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="seadust.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="sound.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="stage.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="time.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="title.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="tutorial.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="tutorialtxt.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_esa.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_gaugeicon.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_result_getscore.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="watetrsurf.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="main.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="input.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="light.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="debugproc.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="camera.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="model.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="player.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="stage.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="esa.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="fishes.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="fade.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="pause.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="time.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="crosshair.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="object.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="effect_3d.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="particle_3d.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="sound.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="meshcylinder.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="game.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="ranking.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="result.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="title.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="tutorial.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="meshdome.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="meshfield.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="meshring.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>hファイル</Filter>
     </ClInclude>
     <ClInclude Include="computer.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>hファイル</Filter>
     </ClInclude>
-    <ClInclude Include="pot.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="crosshair.h">
+      <Filter>hファイル</Filter>
     </ClInclude>
-    <ClInclude Include="map.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="debugproc.h">
+      <Filter>hファイル</Filter>
     </ClInclude>
-    <ClInclude Include="logo.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="effect_3d.h">
+      <Filter>hファイル</Filter>
     </ClInclude>
-    <ClInclude Include="ui_gaugeicon.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="esa.h">
+      <Filter>hファイル</Filter>
     </ClInclude>
-    <ClInclude Include="ui_esa.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="watersurf.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="oceancurrents.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="screen.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="meshorbit.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="fade.h">
+      <Filter>hファイル</Filter>
     </ClInclude>
     <ClInclude Include="file.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>hファイル</Filter>
     </ClInclude>
-    <ClInclude Include="tutorialtxt.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="fishes.h">
+      <Filter>hファイル</Filter>
     </ClInclude>
-    <ClInclude Include="seadust.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="game.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="input.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="light.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="logo.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="main.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="map.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="meshcylinder.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="meshdome.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="meshfield.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="meshorbit.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="meshring.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="model.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="object.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="oceancurrents.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="particle_3d.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="pause.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="player.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="pot.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="ranking.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="result.h">
+      <Filter>hファイル</Filter>
     </ClInclude>
     <ClInclude Include="result2.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="screen.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="seadust.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="sound.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="stage.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="time.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="title.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="tutorial.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="tutorialtxt.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_esa.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_gaugeicon.h">
+      <Filter>hファイル</Filter>
     </ClInclude>
     <ClInclude Include="ui_result_getscore.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>  </ItemGroup>
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="watersurf.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="cppファイル">
+      <UniqueIdentifier>{f53a934e-272c-4298-b879-346aef78f1a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="hファイル">
+      <UniqueIdentifier>{48b0bfa3-eb42-408b-aa76-32cbb46f96e3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
 </Project>
