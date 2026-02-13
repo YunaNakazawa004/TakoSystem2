@@ -150,12 +150,14 @@ bool g_bScreenTransGame = false;
 //========================================================================
 void InitResult(void)
 {
-	LPDIRECT3DDEVICE9 pDevice;	// デバイスへのポインタ
+	// 変数宣言 ===========================================
 
 	// デバイスの取得
-	pDevice = GetDevice();
+	LPDIRECT3DDEVICE9 pDevice = GetDevice();	// デバイスへのポインタ
 
 	int nCntResult;				// カウンタ
+
+	// ====================================================
 
 	// ライトの設定
 	SetLightColor(0, D3DXCOLOR(0.8f, 0.9f, 1.0f, 1.0f));
@@ -172,7 +174,7 @@ void InitResult(void)
 	InitEsa(false);	
 
 	
-
+#if 0
 	// ゲームからの設定がされていない場合の設定
 	if (g_bScreenTransGame == false)
 	{// エサを初期化してモデル情報を獲得
@@ -280,6 +282,8 @@ void InitResult(void)
 		SetResult(g_aResultInfo[nCntResult].bPolygon, g_aResultInfo[nCntResult].nIdx, g_aResultInfo[nCntResult].nDrowLevel, g_aResultInfo[nCntResult].pos, g_aResultInfo[nCntResult].rot);
 	}
 
+#endif
+
 	// サウンドの再生
 	PlaySound(SOUND_BGM_RESULT);
 }
@@ -344,7 +348,7 @@ void UpdateResult(void)
 
 	float fWidth, fHeight;	// ポリゴンの辺の長さ
 	float fAngle, fLength;	// 対角線の値
-
+#if 0
 	if (GetKeyboardTrigger(DIK_L))
 	{
 		g_aResult[g_nSelectNum].bPolygon = (g_aResult[g_nSelectNum].bPolygon == true) ? false : true;
@@ -376,7 +380,9 @@ void UpdateResult(void)
 	{
 		g_aResult[g_nSelectNum].nDrowLevel--;
 	}
+#endif
 
+#if 0
 	FileMovePosion("data/FILE/tmpPosionResult.txt",&g_aResult[g_nSelectNum].pos, 1.0f, DIK_RIGHT, DIK_LEFT, DIK_DOWN, DIK_UP, NULL, NULL);
 	
 	PrintDebugProc("\nIDXSELECT %d[9,0]", g_nSelectNum);
@@ -448,7 +454,8 @@ void UpdateResult(void)
 			g_pVtxBuffResult->Unlock();
 		}
 	}
-	
+#endif
+
 	// 次のモードへの移動処理
 	if (pFade == FADE_NONE && g_resultState == RESULTSTAE_WAIT 
 	    || (GetKeyboardTrigger(DIK_RETURN) == true || GetJoypadTrigger(0, JOYKEY_START) == true || GetJoypadTrigger(0, JOYKEY_A) == true))
