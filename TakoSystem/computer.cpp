@@ -635,12 +635,6 @@ void UpdateComputer(void)
 				}
 			}
 
-			if (GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL &&
-				CollisionObjectArea(pComputer->phys.pos) == true)
-			{// ‰Q’ª’†‚ÉˆÀ’n‚É‚¢‚½‚ç
-				SetMotionComputer(nCntComputer, MOTIONTYPE_NEUTRAL, true, 20);
-			}
-
 			if (pComputer->TentState == CPUTENTACLESTATE_NORMAL &&
 				D3DXVec3Length(&pComputer->phys.move) > 0.1f &&
 				pComputer->state != CPUSTATE_INK_ATTACK && pComputer->state != CPUSTATE_BACKAREA &&

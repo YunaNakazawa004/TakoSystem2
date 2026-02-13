@@ -21,6 +21,7 @@
 #include "time.h"
 #include "sound.h"
 #include "debugproc.h"
+#include "readygo.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -199,6 +200,11 @@ void UninitPlayer(void)
 //=============================================================================
 void UpdatePlayer(void)
 {
+	if (GetGameStart() == false && GetMode() == MODE_GAME)
+	{// まだ始まらない
+		return;
+	}
+
 	Camera* pCamera = GetCamera();
 	Player* pPlayer = GetPlayer();
 
@@ -254,7 +260,7 @@ void UpdatePlayer(void)
 				pPlayer->move += *D3DXVec3Normalize(&pPlayer->move, &correct);
 
 				pPlayer->nCounterState--;
-				
+
 				if (pPlayer->nCounterState < 0)
 				{// 戻り状態を終わる
 					pPlayer->state = PLAYERSTATE_NORMAL;
@@ -580,7 +586,7 @@ void UpdatePlayer(void)
 
 				if (GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL)
 				{// 安地外で渦潮
-					if (pPlayer->TentacleState == PLTENTACLESTATE_NORMAL && pPlayer->state != PLAYERSTATE_DASH && 
+					if (pPlayer->TentacleState == PLTENTACLESTATE_NORMAL && pPlayer->state != PLAYERSTATE_DASH &&
 						pPlayer->state != PLAYERSTATE_INK && pPlayer->state != PLAYERSTATE_BACKAREA)
 					{// 触手が通常状態のときだけ
 						SetMotionPlayer(nCntPlayer, MOTIONTYPE_OCEANCULLENT, true, 20);
@@ -594,21 +600,6 @@ void UpdatePlayer(void)
 
 						SetEsa(nIdx, ESA_ACTTYPE_SWIM, 0, pPlayer->pos, FIRST_POS);
 					}
-				}
-			}
-
-			if (GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL &&
-				CollisionObjectArea(pPlayer->pos) == true)
-			{// 渦潮中に安地にいたら
-				if (pPlayer->bMove == true)
-				{// 移動してる
-					pPlayer->state = PLAYERSTATE_MOVE;
-					SetMotionPlayer(nCntPlayer, MOTIONTYPE_MOVE, true, 20);
-				}
-				else
-				{// 移動してない
-					pPlayer->state = PLAYERSTATE_WAIT;
-					SetMotionPlayer(nCntPlayer, MOTIONTYPE_NEUTRAL, true, 20);
 				}
 			}
 
@@ -638,7 +629,7 @@ void UpdatePlayer(void)
 				pPlayer->state = PLAYERSTATE_BACKAREA;
 				pPlayer->nCounterState = ONE_SECOND;
 			}
-			else if(fDist < INCYLINDER_RADIUS + 0.1f)
+			else if (fDist < INCYLINDER_RADIUS + 0.1f)
 			{// 内側の岩
 				D3DXVECTOR3 correct = -pPlayer->pos;
 				pPlayer->move += *D3DXVec3Normalize(&pPlayer->move, &correct);
@@ -690,8 +681,8 @@ void UpdatePlayer(void)
 				pPlayer->fFogEnd *= 0.5f;
 
 				D3DXVECTOR3 headPos = D3DXVECTOR3(
-					pPlayer->aModel[0].mtxWorld._41, 
-					pPlayer->aModel[0].mtxWorld._42 + 10.0f, 
+					pPlayer->aModel[0].mtxWorld._41,
+					pPlayer->aModel[0].mtxWorld._42 + 10.0f,
 					pPlayer->aModel[0].mtxWorld._43);
 
 				SetEffect3D(5, headPos, FIRST_POS, 0.0f, 15.0f, 0.0f, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), EFFECTTYPE_OCTOINK);
@@ -848,7 +839,7 @@ void DrawPlayer(void)
 	Player* pPlayer = GetPlayer();
 	Camera* pCamera = GetCamera();
 
-	for (int nCntPlayer = 0; nCntPlayer < MAX_PLAYER; nCntPlayer++, pPlayer++, pCamera++)
+	for (int nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++, pPlayer++, pCamera++)
 	{
 		if (pPlayer->bUse == true)
 		{// 使用しているとき
@@ -1538,7 +1529,7 @@ void UpdateMotionPlayer(void)
 	int nNextKey;
 	Player* pPlayer = GetPlayer();
 
-	for (int nCntPlayer = 0; nCntPlayer < MAX_PLAYER; nCntPlayer++, pPlayer++)
+	for (int nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++, pPlayer++)
 	{
 		// 全モデル(パーツ)の更新
 		for (int nCntModel = 0; nCntModel < pPlayer->nNumModel; nCntModel++)
