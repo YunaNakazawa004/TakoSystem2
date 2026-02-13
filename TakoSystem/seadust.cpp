@@ -130,7 +130,12 @@ void UpdateSeaDust(void)
 			continue;
 		}
 
-		//float fAngle = (rand() % 100 + 1) / 10000.0f;
+		float fAngleMove = (rand() % 100 + 1) / 100000.0f;
+
+		static float fAngle = 0.0f;
+		fAngle += fAngleMove * 0.01f;
+
+		g_aSeaDust[nCntDust].pos.y += cosf(fAngle);
 	}
 }
 
