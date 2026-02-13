@@ -30,6 +30,7 @@
 #include "ui_gaugeicon.h"
 #include "ui_esa.h"
 #include "oceancurrents.h"
+#include "readygo.h"
 
 #include "map.h"
 
@@ -117,6 +118,9 @@ void InitGame(void)
 
 	// 配置物の初期化処理
 	InitObject("data\\objpos001.txt");
+
+	// レディの初期化処理
+	InitReady();
 
 	// クロスヘアの初期化処理
 	InitCrossHair();
@@ -207,6 +211,9 @@ void UninitGame(void)
 	// 水面の終了処理
 	UninitWaterSurf();
 
+	// レディの終了処理
+	UninitReady();
+
 	// クロスヘアの終了処理
 	UninitCrossHair();
 
@@ -248,6 +255,7 @@ void UpdateGame(void)
 {
 	// フェード情報の取得
 	FADE pFade = GetFade();
+	bool bGameStart = GetGameStart();
 
 	if (pFade == FADE_NONE)
 	{// フェードが何もしていない状態のみ発動
@@ -265,21 +273,52 @@ void UpdateGame(void)
 			ResetPause();
 			g_bPause = g_bPause ? false : true;
 		}
+
+		if (g_bPause == true)
+		{
+			// ポーズの更新処理
+			UpdatePause();
+
+		}
+		else
+		{
+			// レディの更新処理
+			UpdateReady();
+
+			if (bGameStart == true)
+			{
+				// CPUの更新処理
+				UpdateComputer();
+
+				// 水面の更新処理
+				UpdateWaterSurf();
+
+				// クロスヘアの更新処理
+				UpdateCrossHair();
+
+				// UIゲージアイコンの更新処理
+				UpdateUiGaugeIcon();
+
+				// エサUIの更新処理
+				UpdateUiEsa();
+
+				// 時間の更新処理
+				UpdateTime();
+
+				// 海流の更新処理
+				UpdateOceanCurrents();
+
+			}
+		}
 	}
 
 	if (g_bPause == true)
 	{
-		// ポーズの更新処理
-		UpdatePause();
 	}
 	else
 	{
-
 		// プレイヤーの更新処理
 		UpdatePlayer();
-
-		// CPUの更新処理
-		UpdateComputer();
 
 		// ステージの更新処理
 		//UpdateStage();
@@ -317,29 +356,11 @@ void UpdateGame(void)
 		// エサの更新処理
 		UpdateEsa();
 
-		// メッシュオービットの更新処理
-		UpdateMeshOrbit();
-
-		// 水面の更新処理
-		UpdateWaterSurf();
-
-		// クロスヘアの更新処理
-		UpdateCrossHair();
-
-		// UIゲージアイコンの更新処理
-		UpdateUiGaugeIcon();
-
-		// エサUIの更新処理
-		UpdateUiEsa();
-
-		// 時間の更新処理
-		UpdateTime();
-
 		// マップの更新処理
 		UpdateMap();
 
-		// 海流の更新処理
-		UpdateOceanCurrents();
+		// メッシュオービットの更新処理
+		UpdateMeshOrbit();
 	}
 
 	// 画面の更新処理
@@ -352,6 +373,8 @@ void UpdateGame(void)
 //===================================================================
 void DrawGame(void)
 {
+	bool bGameStart = GetGameStart();
+
 	// プレイヤーの描画処理
 	DrawPlayer();
 
@@ -400,20 +423,26 @@ void DrawGame(void)
 	// 水面の描画処理
 	DrawWaterSurf();
 
-	// クロスヘアの描画処理
-	DrawCrossHair();
+	// レディの描画処理
+	DrawReady();
 
-	// UIゲージアイコンの描画処理
-	DrawUiGaugeIcon();
+	if (bGameStart == true)
+	{
+		// クロスヘアの描画処理
+		DrawCrossHair();
 
-	// エサUIの描画処理
-	DrawUiEsa();
+		// UIゲージアイコンの描画処理
+		DrawUiGaugeIcon();
 
-	// 時間の描画処理
-	DrawTime();
+		// エサUIの描画処理
+		DrawUiEsa();
 
-	// マップの描画処理
-	DrawMap();
+		// 時間の描画処理
+		DrawTime();
+
+		// マップの描画処理
+		DrawMap();
+	}
 
 	// 海流の描画処理
 	DrawOceanCurrents();

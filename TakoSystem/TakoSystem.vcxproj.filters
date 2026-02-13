@@ -127,6 +127,9 @@
     <ClCompile Include="watetrsurf.cpp">
       <Filter>cppファイル</Filter>
     </ClCompile>
+    <ClCompile Include="readygo.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h">
@@ -253,6 +256,9 @@
       <Filter>hファイル</Filter>
     </ClInclude>
     <ClInclude Include="watersurf.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="readygo.h">
       <Filter>hファイル</Filter>
     </ClInclude>
   </ItemGroup>
