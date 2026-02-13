@@ -1,6 +1,6 @@
 //=============================================================================
 // 
-// ビルボードヘッダー [billboard.h]
+// チュートリアルテキストヘッダー [tutorialtxt.h]
 // Author : 中澤優奈
 // 
 //=============================================================================
@@ -12,9 +12,10 @@
 //*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
-void InitBillboard(void);
-void UninitBillboard(void);
-void UpdateBillboard(void);
-void DrawBillboard(void);
+void InitTutorialTxt(void);
+void UninitTutorialTxt(void);
+void UpdateTutorialTxt(void);
+void DrawTutorialTxt(void);
+void SetTutorialTxt(D3DXVECTOR3 pos);
 
 #endif

@@ -33,6 +33,7 @@
 #include "effect_3d.h"
 #include "particle_3d.h"
 #include "title.h"
+#include "tutorialtxt.h"
 
 // マクロ定義
 #define	MAX_TUTORIAL	(2)	// タイトルで表示するテクスチャの最大数
@@ -96,6 +97,9 @@ void InitTutorial(void)
 
 	// 配置物の初期化処理
 	InitObject("data\\objpos001.txt");
+
+	// チュートリアルテキストの初期化処理
+	InitTutorialTxt();
 
 	// クロスヘアの初期化処理
 	InitCrossHair();
@@ -232,6 +236,9 @@ void UninitTutorial(void)
 	// 配置物の終了処理
 	UninitObject();
 
+	// チュートリアルテキストの終了処理
+	UninitTutorialTxt();
+
 	// クロスヘアの終了処理
 	UninitCrossHair();
 
@@ -310,6 +317,9 @@ void UpdateTutorial(void)
 	// 配置物の更新処理
 	UpdateObject();
 
+	// チュートリアルテキストの更新処理
+	UpdateTutorialTxt();
+
 	// クロスヘアの更新処理
 	UpdateCrossHair();
 
@@ -381,6 +391,9 @@ void DrawTutorial(void)
 
 	// 配置物の描画処理
 	DrawObject();
+
+	// チュートリアルテキストの描画処理
+	DrawTutorialTxt();
 
 	// クロスヘアの描画処理
 	DrawCrossHair();
