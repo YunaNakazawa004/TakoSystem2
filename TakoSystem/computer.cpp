@@ -913,10 +913,10 @@ void AttackEnemy(Computer* pComputer)
 	D3DXVECTOR3 dir = target - pComputer->phys.pos;
 	D3DXVec3Normalize(&dir, &dir);
 
-	// Šµ«ˆÚ“®
-	pComputer->phys.move.x += dir.x * MOVEMENT.x;
-	pComputer->phys.move.y += dir.y * MOVEMENT.y;
-	pComputer->phys.move.z += dir.z * MOVEMENT.z;
+	//// Šµ«ˆÚ“®
+	//pComputer->phys.move.x += dir.x * MOVEMENT.x;
+	//pComputer->phys.move.y += dir.y * MOVEMENT.y;
+	//pComputer->phys.move.z += dir.z * MOVEMENT.z;
 
 	D3DXVECTOR3 posDiff = target - pComputer->phys.pos;
 
