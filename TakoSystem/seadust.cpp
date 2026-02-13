@@ -6,14 +6,14 @@
 //=============================================================================
 #include "main.h"
 #include "seadust.h"
-
+#include "oceancurrents.h"
+#include "meshorbit.h"
 
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
 #define MAX_SEADUST				(20000)							// 塵の最大数
-#define SEADUST_SIZE			(2.5f)							// サイズ
-#define SEADUST_INERTIA			(0.017f)						// 慣性
+#define SEADUST_SIZE			(1.0f)							// サイズ
 #define SEADUST_FILENAME		"data\\TEXTURE\\shadow000.png"	// 使用する塵のファイル名
 
 //*****************************************************************************
@@ -123,6 +123,15 @@ void UninitSeaDust(void)
 //========================================================================
 void UpdateSeaDust(void)
 {
+	for (int nCntDust = 0; nCntDust < MAX_SEADUST; nCntDust++)
+	{
+		if (g_aSeaDust[nCntDust].bUse == false)
+		{// 使用されてない
+			continue;
+		}
+
+		//MoveOceanCurrents(&g_aSeaDust[nCntDust].pos);
+	}
 }
 
 //======================================================================== 
