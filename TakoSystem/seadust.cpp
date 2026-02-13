@@ -46,8 +46,8 @@ void InitSeaDust(void)
 	// 塵情報の初期化
 	for (int nCntDust = 0; nCntDust < MAX_SEADUST; nCntDust++)
 	{
-		g_aSeaDust[nCntDust].pos = FIRST_POS;	
-		g_aSeaDust[nCntDust].bUse = false;						
+		g_aSeaDust[nCntDust].pos = FIRST_POS;
+		g_aSeaDust[nCntDust].bUse = false;
 	}
 
 	// 頂点バッファの生成
@@ -66,16 +66,16 @@ void InitSeaDust(void)
 	for (int nCntDust = 0; nCntDust < MAX_SEADUST; nCntDust++)
 	{
 		// 頂点座標の設定
-		pVtx[0].pos = D3DXVECTOR3(-SEADUST_SIZE, SEADUST_SIZE, 0.0f);	
-		pVtx[1].pos = D3DXVECTOR3(SEADUST_SIZE, SEADUST_SIZE, 0.0f);	
-		pVtx[2].pos = D3DXVECTOR3(-SEADUST_SIZE, -SEADUST_SIZE, 0.0f);	
-		pVtx[3].pos = D3DXVECTOR3(SEADUST_SIZE, -SEADUST_SIZE, 0.0f);	
+		pVtx[0].pos = D3DXVECTOR3(-SEADUST_SIZE, SEADUST_SIZE, 0.0f);
+		pVtx[1].pos = D3DXVECTOR3(SEADUST_SIZE, SEADUST_SIZE, 0.0f);
+		pVtx[2].pos = D3DXVECTOR3(-SEADUST_SIZE, -SEADUST_SIZE, 0.0f);
+		pVtx[3].pos = D3DXVECTOR3(SEADUST_SIZE, -SEADUST_SIZE, 0.0f);
 
 		// 法線ベクトル(向き)の設定
-		pVtx[0].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);					
-		pVtx[1].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);				
-		pVtx[2].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);				
-		pVtx[3].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);				
+		pVtx[0].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+		pVtx[1].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+		pVtx[2].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+		pVtx[3].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 
 		// 頂点カラーの設定
 		pVtx[0].col = WHITE_VTX;
@@ -84,12 +84,12 @@ void InitSeaDust(void)
 		pVtx[3].col = WHITE_VTX;
 
 		// テクスチャ座標の設定
-		pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);			
-		pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);			
-		pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);			
-		pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);			
+		pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
+		pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
+		pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
+		pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
 
-		pVtx += MAX_VERTEX;	
+		pVtx += MAX_VERTEX;
 	}
 
 	// ▲頂点バッファをアンロックする
@@ -130,7 +130,7 @@ void UpdateSeaDust(void)
 			continue;
 		}
 
-		//MoveOceanCurrents(&g_aSeaDust[nCntDust].pos);
+		//float fAngle = (rand() % 100 + 1) / 10000.0f;
 	}
 }
 
