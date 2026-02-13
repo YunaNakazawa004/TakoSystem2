@@ -569,8 +569,10 @@ void UpdatePlayer(void)
 			// 重力
 			pPlayer->move.y += SEA_GRAVITY;
 
-			// 渦潮
-			MoveOceanCurrents(&pPlayer->pos);
+			if (CollisionObjectArea(pPlayer->pos) == false)
+			{// 安地外のときに渦潮
+				MoveOceanCurrents(&pPlayer->pos);
+			}
 
 			if (pPlayer->state != PLAYERSTATE_APPEAR && pPlayer->state != PLAYERSTATE_DASH)
 			{// 出現状態以外

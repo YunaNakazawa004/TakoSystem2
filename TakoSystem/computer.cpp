@@ -596,8 +596,10 @@ void UpdateComputer(void)
 					WHITE_VTX, CYAN_VTX, &pComputer->aModel[(nCntTent + 1) * 4].mtxWorld);
 			}
 
-			// ‰Q’ª
-			MoveOceanCurrents(&pComputer->phys.pos);
+			if (CollisionObjectArea(pComputer->phys.pos) == false)
+			{// ‰Q’ª
+				MoveOceanCurrents(&pComputer->phys.pos);
+			}
 
 			if (pComputer->TentState == CPUTENTACLESTATE_NORMAL &&
 				D3DXVec3Length(&pComputer->phys.move) > 0.1f &&
