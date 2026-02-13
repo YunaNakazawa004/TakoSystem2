@@ -29,9 +29,12 @@
 LPDIRECT3DTEXTURE9 g_pTextureTitle[MAX_TITLE] = {};	// テクスチャへのポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffTitle = NULL;	// 頂点バッファへのポインタ
 
-float g_TitleDeley;	// タイトル移動表示時間
+float g_TitleDeley;		// タイトル移動表示時間
 int g_PressEnterDeley;	// PRESSENTER表示時間
 int g_PlayerSelect = 1;	// プレイヤーの人数
+
+//TITLECURSOR g_Cursor;
+int g_CursorPos;	// カーソルの位置情報
 
 // タイトルの初期化処理
 void InitTitle(void)
@@ -40,6 +43,8 @@ void InitTitle(void)
 
 	g_TitleDeley = 0.0f;	// ディレイの値を初期化
 	g_PressEnterDeley = 0;
+
+	g_CursorPos = 0;		// カーソルの位置を初期化
 
 	// メッシュシリンダーの初期化処理
 	InitMeshCylinder();
@@ -73,7 +78,7 @@ void InitTitle(void)
 	int nVecR = rand() % 5;		// カメラの角度設定
 
 	// カメラの位置設定
-	SetCameraPos(0, D3DXVECTOR3(0.0f, ((float)nCamera * 100.0f) + 600.0f, 0.0f), 
+	SetCameraPos(0, D3DXVECTOR3(0.0f, ((float)nCamera * 100.0f) + 600.0f, 0.0f),
 		D3DXVECTOR3(0.0f, (((float)nCamera * 100.0f) + 600.0f) + (((float)nVecR * 50.0f) - 100.0f), 0.0f),
 		CAMERATYPE_POINT);
 
@@ -161,10 +166,10 @@ void InitTitle(void)
 		}
 		else
 		{// カーソル
-			pVtx[0].pos = D3DXVECTOR3(400.0f, 480.0f, 0.0f);	// 右回りで設定する
-			pVtx[1].pos = D3DXVECTOR3(640.0f, 480.0f, 0.0f);	// 2Dの場合Zの値は0にする
-			pVtx[2].pos = D3DXVECTOR3(400.0f, 640.0f, 0.0f);
-			pVtx[3].pos = D3DXVECTOR3(640.0f, 640.0f, 0.0f);
+			pVtx[0].pos = D3DXVECTOR3(400.0f, 460.0f, 0.0f);	// 右回りで設定する
+			pVtx[1].pos = D3DXVECTOR3(640.0f, 460.0f, 0.0f);	// 2Dの場合Zの値は0にする
+			pVtx[2].pos = D3DXVECTOR3(400.0f, 620.0f, 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(640.0f, 620.0f, 0.0f);
 		}
 
 		// rhwの設定
@@ -276,23 +281,6 @@ void UpdateTitle(void)
 	}
 	g_PressEnterDeley++;
 
-	if ((GetKeyboardTrigger(DIK_A) || GetJoypadTrigger(0, JOYKEY_LEFT) ||
-		GetJoypadStick(0, JOYKEY_LEFTSTICK_LEFT, NULL, NULL) == true)
-		&& g_PlayerSelect > 1)
-	{
-		g_PlayerSelect--;
-		g_PressEnterDeley %= 100;	// ランキング移行までの時間を短縮
-		PlaySound(SOUND_SE_CURSORMOVE);
-	}
-	else if ((GetKeyboardTrigger(DIK_D) || GetJoypadTrigger(0, JOYKEY_RIGHT) ||
-		GetJoypadStick(0, JOYKEY_LEFTSTICK_RIGHT, NULL, NULL) == true)
-		&& g_PlayerSelect < MAX_PLAYER)
-	{
-		g_PlayerSelect++;
-		g_PressEnterDeley %= 100;	// ランキング移行までの時間を短縮
-		PlaySound(SOUND_SE_CURSORMOVE);
-	}
-
 	VERTEX_2D* pVtx;	// 頂点情報へのポインタ
 
 	// 頂点バッファをロックし、頂点情報へのポインタを取得
@@ -308,6 +296,23 @@ void UpdateTitle(void)
 			pVtx[2].pos = D3DXVECTOR3(160.0f, 0.0f + g_TitleDeley, 0.0f);
 			pVtx[3].pos = D3DXVECTOR3(1120.0f, 0.0f + g_TitleDeley, 0.0f);
 		}
+		else if (nCntTitle == 1)
+		{// タイトル：PRESS ENTER
+			if ((g_PressEnterDeley % 100) > CLEAR_DELEY && g_CursorPos == TITLECURSOR_PLAYER_SELECT)
+			{// 一定間隔で消滅
+				pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);	// 0~255の値を設定
+				pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
+				pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
+				pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
+			}
+			else
+			{// それ以外
+				pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);	// 0~255の値を設定
+				pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+				pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+				pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+			}
+		}
 		else if (nCntTitle == 2)
 		{// タイトル：PRESS ENTER
 			if (pFade == FADE_OUT && g_PressEnterDeley <= RANKING_DELEY)
@@ -317,7 +322,7 @@ void UpdateTitle(void)
 				pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f * (g_PressEnterDeley % 3));
 				pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f * (g_PressEnterDeley % 3));
 			}
-			else if ((g_PressEnterDeley % 100) > CLEAR_DELEY)
+			else if ((g_PressEnterDeley % 100) > CLEAR_DELEY && g_CursorPos == TITLECURSOR_PLAY_START)
 			{// 一定間隔で消滅
 				pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);	// 0~255の値を設定
 				pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
@@ -333,35 +338,91 @@ void UpdateTitle(void)
 			}
 		}
 		else if (nCntTitle == 3)
-		{
+		{// プレイ人数
 			pVtx[0].tex = D3DXVECTOR2((g_PlayerSelect * 0.1f), 0.0f);
 			pVtx[1].tex = D3DXVECTOR2(0.1f + (g_PlayerSelect * 0.1f), 0.0f);
 			pVtx[2].tex = D3DXVECTOR2((g_PlayerSelect * 0.1f), 1.0f);
 			pVtx[3].tex = D3DXVECTOR2(0.1f + (g_PlayerSelect * 0.1f), 1.0f);
 		}
+		else if (nCntTitle == 5)
+		{// カーソル
+			if (g_CursorPos == TITLECURSOR_PLAYER_SELECT)
+			{// 人数設定
+				pVtx[0].pos = D3DXVECTOR3(400.0f, 460.0f, 0.0f);	// 右回りで設定する
+				pVtx[1].pos = D3DXVECTOR3(640.0f, 460.0f, 0.0f);	// 2Dの場合Zの値は0にする
+				pVtx[2].pos = D3DXVECTOR3(400.0f, 620.0f, 0.0f);
+				pVtx[3].pos = D3DXVECTOR3(640.0f, 620.0f, 0.0f);
+			}
+			else if (g_CursorPos == TITLECURSOR_PLAY_START)
+			{// ゲームスタート
+				pVtx[0].pos = D3DXVECTOR3(400.0f, 540.0f, 0.0f);	// 右回りで設定する
+				pVtx[1].pos = D3DXVECTOR3(640.0f, 540.0f, 0.0f);	// 2Dの場合Zの値は0にする
+				pVtx[2].pos = D3DXVECTOR3(400.0f, 700.0f, 0.0f);
+				pVtx[3].pos = D3DXVECTOR3(640.0f, 700.0f, 0.0f);
+			}
+		}
 
 		pVtx += 4;		// 頂点データのポインタを4つ分進める
 	}
 
-	if ((GetKeyboardTrigger(DIK_RETURN) == true || 
-		GetJoypadTrigger(0, JOYKEY_START) == true ||
-		GetJoypadTrigger(0, JOYKEY_A) == true) &&
-		pFade == FADE_NONE && g_TitleDeley == TITLE_DELEY_MAX)
-	{// 決定キー（ENTERキー）が押された
-		// モード設定
-		PlaySound(SOUND_SE_DECISION);
-		SetFade(MODE_TUTORIAL);
+	if ((GetKeyboardTrigger(DIK_W) || GetJoypadTrigger(0, JOYKEY_UP) ||
+		GetJoypadStick(0, JOYKEY_LEFTSTICK_UP, NULL, NULL) == true))
+	{// カーソル下移動
+		g_CursorPos--;
+		if (g_CursorPos < 0) g_CursorPos = TITLECURSOR_MAX - 1;
+		PlaySound(SOUND_SE_CURSORMOVE);
+		g_PressEnterDeley = 0;
 	}
-	else if (pFade == FADE_NONE && g_PressEnterDeley > RANKING_DELEY)
-	{// 時間経過でランキングへ移行
-		SetFade(MODE_LOGO);
+	else if ((GetKeyboardTrigger(DIK_S) || GetJoypadTrigger(0, JOYKEY_DOWN) ||
+		GetJoypadStick(0, JOYKEY_LEFTSTICK_DOWN, NULL, NULL) == true))
+	{// カーソル上移動
+		g_CursorPos++;
+		if (g_CursorPos >= TITLECURSOR_MAX) g_CursorPos = TITLECURSOR_PLAYER_SELECT;
+		PlaySound(SOUND_SE_CURSORMOVE);
+		g_PressEnterDeley = 0;
 	}
 
-	if ((GetKeyboardTrigger(DIK_RETURN) == true ||
-		GetJoypadTrigger(0, JOYKEY_START) == true ||
-		GetJoypadTrigger(0, JOYKEY_A) == true))
-	{// 特定のキーを押すと即座に到着
-		g_TitleDeley = TITLE_DELEY_MAX;
+	if (g_CursorPos == TITLECURSOR_PLAYER_SELECT)
+	{
+		if ((GetKeyboardTrigger(DIK_A) || GetJoypadTrigger(0, JOYKEY_LEFT) ||
+			GetJoypadStick(0, JOYKEY_LEFTSTICK_LEFT, NULL, NULL) == true)
+			&& g_PlayerSelect > 1)
+		{
+			g_PlayerSelect--;
+			g_PressEnterDeley %= 100;	// ランキング移行までの時間を伸ばす
+			PlaySound(SOUND_SE_CURSORMOVE);
+		}
+		else if ((GetKeyboardTrigger(DIK_D) || GetJoypadTrigger(0, JOYKEY_RIGHT) ||
+			GetJoypadStick(0, JOYKEY_LEFTSTICK_RIGHT, NULL, NULL) == true)
+			&& g_PlayerSelect < MAX_PLAYER)
+		{
+			g_PlayerSelect++;
+			g_PressEnterDeley %= 100;	// ランキング移行までの時間を伸ばす
+			PlaySound(SOUND_SE_CURSORMOVE);
+		}
+	}
+	else if (g_CursorPos == TITLECURSOR_PLAY_START)
+	{
+		if ((GetKeyboardTrigger(DIK_RETURN) == true ||
+			GetJoypadTrigger(0, JOYKEY_START) == true ||
+			GetJoypadTrigger(0, JOYKEY_A) == true) &&
+			pFade == FADE_NONE && g_TitleDeley == TITLE_DELEY_MAX)
+		{// 決定キー（ENTERキー）が押された
+			// モード設定
+			PlaySound(SOUND_SE_DECISION);
+			SetFade(MODE_TUTORIAL);
+		}
+		else if (pFade == FADE_NONE && g_PressEnterDeley > RANKING_DELEY)
+		{// 時間経過でランキングへ移行
+			SetFade(MODE_LOGO);
+		}
+
+		if ((GetKeyboardTrigger(DIK_RETURN) == true ||
+			GetJoypadTrigger(0, JOYKEY_START) == true ||
+			GetJoypadTrigger(0, JOYKEY_A) == true))
+		{// 特定のキーを押すと即座に到着
+			g_TitleDeley = TITLE_DELEY_MAX;
+		}
 	}
 
 	// 頂点バッファをアンロックする
