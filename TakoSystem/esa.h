@@ -121,7 +121,7 @@ typedef struct
 
 // 基本処理 ================================
 
-void InitEsa(void);			// エサの初期化処理
+void InitEsa(bool bSet);	// エサの初期化処理
 void UninitEsa(void);		// エサの終了処理
 void UpdateEsa(void);		// エサの更新処理
 void DrawEsa(void);			// エサの描画処理
@@ -131,6 +131,10 @@ void DrawEsa(void);			// エサの描画処理
 int SetEsaData				// エサ情報の設定処理
 (EsaData *pEsaData,						// 設定する対象
  EsaData_info infoEsaData); 			// 設定するエサ情報,
+
+HRESULT SetEsaModel			// エサモデルの設定処理
+(const char *pFilename,
+ EsaModel *pEsaModel);
 
 int SetEsa					// エサの設定処理
 (int nEsaType,							// 設定するエサのタイプ, 

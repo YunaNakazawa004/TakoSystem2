@@ -72,7 +72,7 @@ Esa_info g_aEsaInfo[] =
 //========================================================================
 // エサの初期化処理
 //========================================================================
-void InitEsa(void)
+void InitEsa(bool bSet)
 {
 	// 変数宣言 ===========================================
 
@@ -109,38 +109,42 @@ void InitEsa(void)
 	// エサの種類別情報の読み取り
 	SetLoadEsaData(&g_aEsaData[0], "data/FILE/esa.txt");
 
-// エサの配置
+	// エサの配置
+	if(bSet == true)
+	{// 設定する場合
+
 #if 0	// Infoの設定
 
-	for (int nCntEsa = 0; nCntEsa < ESA_CALC_SIZEARRAY(g_aEsaInfo); nCntEsa++)
-	{// 配置する数だけ繰り返す
+		for (int nCntEsa = 0; nCntEsa < ESA_CALC_SIZEARRAY(g_aEsaInfo); nCntEsa++)
+		{// 配置する数だけ繰り返す
 
-		// エサの設定処理
-		SetEsa(g_aEsaInfo[nCntEsa].nidxType,
-			   g_aEsaInfo[nCntEsa].esaType, g_aEsaInfo[nCntEsa].nBehavior,
-			   g_aEsaInfo[nCntEsa].pos, g_aEsaInfo[nCntEsa].rot);
-	}
+			// エサの設定処理
+			SetEsa(g_aEsaInfo[nCntEsa].nidxType,
+				   g_aEsaInfo[nCntEsa].esaType, g_aEsaInfo[nCntEsa].nBehavior,
+				   g_aEsaInfo[nCntEsa].pos, g_aEsaInfo[nCntEsa].rot);
+		}
 
 #else	// ランダム設定
 
-	for (int nCntEsa = 0; nCntEsa < 20; nCntEsa++)
-	{// 配置する数だけ繰り返す
+		for (int nCntEsa = 0; nCntEsa < 20; nCntEsa++)
+		{// 配置する数だけ繰り返す
 
-		int nSetType = rand() % g_nNumEsatype;											// ランダムで種類を設定
-		float fRandRadius = rand() % (int)(OUTCYLINDER_RADIUS - 100.0f) + (int)INCYLINDER_RADIUS;	// 中心からの距離を設定
-		float fRandAngle = (float)(rand() % 629 - 314) / 1000.0f;						// 角度を設定
-		float fRandHeight = rand() % (int)CYLINDER_HEIGHT;								// 高さを設定
+			int nSetType = rand() % g_nNumEsatype;											// ランダムで種類を設定
+			float fRandRadius = rand() % (int)(OUTCYLINDER_RADIUS - 100.0f) + (int)INCYLINDER_RADIUS;	// 中心からの距離を設定
+			float fRandAngle = (float)(rand() % 629 - 314) / 1000.0f;						// 角度を設定
+			float fRandHeight = rand() % (int)CYLINDER_HEIGHT;								// 高さを設定
 
-		// 位置を設定
-		D3DXVECTOR3 setPos = D3DXVECTOR3(sinf(fRandAngle) * fRandRadius,
-										 fRandHeight,
-										 cosf(fRandAngle) * fRandRadius);
+			// 位置を設定
+			D3DXVECTOR3 setPos = D3DXVECTOR3(sinf(fRandAngle) * fRandRadius,
+											 fRandHeight,
+											 cosf(fRandAngle) * fRandRadius);
 
-		// エサの設定処理
-		SetEsa(nSetType, ESA_ACTTYPE_LAND, 0, setPos, D3DXVECTOR3(0.0f,0.0f,0.0f));
-	}
+			// エサの設定処理
+			SetEsa(nSetType, ESA_ACTTYPE_LAND, 0, setPos, D3DXVECTOR3(0.0f,0.0f,0.0f));
+		}
 
 #endif
+	}
 }
 
 //========================================================================
@@ -332,42 +336,18 @@ int SetEsaData(EsaData* pEsaData, EsaData_info infoEsaData)
 			return -1;	// 設定した場所がない事を返す
 		}
 
-		// Xファイルの読み込み
-		if(FAILED(D3DXLoadMeshFromX(&infoEsaData.aFilenameModel[0],
-								    D3DXMESH_SYSTEMMEM,
-								    pDevice,
-								    NULL,
-								    &pEsaData->model.pBuffMat,
-								    NULL,
-								    &pEsaData->model.dwNumMat,
-								    &pEsaData->model.pMesh)))
-		{// Xファイルの読み込みに失敗した場合
+		// エサモデルの読み込み
+		if(FAILED(SetEsaModel(&infoEsaData.aFilenameModel[0], &pEsaData->model)))
+		{// エサモデルの読み込みに失敗した場合
 
 			return -1;	// 設定した場所がない事を返す
-		}
-
-		D3DXMATERIAL* pMat;	// マテリアルのポインタを宣言
-
-		// マテリアルデータへのポインタを所得
-		pMat = (D3DXMATERIAL*)pEsaData->model.pBuffMat->GetBufferPointer();
-
-		// マテリアルの設定
-		for (int nCntMat = 0; nCntMat < (int)pEsaData->model.dwNumMat; nCntMat++)
-		{// マテリアルの数分繰り返す
-
-			if (pMat[nCntMat].pTextureFilename != NULL)
-			{// テクスチャファイルがある
-
-				// テクスチャの読み込み
-				D3DXCreateTextureFromFile(pDevice,								// Direct3Dデバイスへのポインタ
-										  pMat[nCntMat].pTextureFilename,		// 読み込むテクスチャ
-										  &pEsaData->model.apTexture[nCntMat]);	// テクスチャへのポインタ
-			}
 		}
 
 		pEsaData->fSpeed = infoEsaData.fSpeed;			// 移動速度を設定
 
 		pEsaData->fHitRadius = infoEsaData.fHitRadius;	// 当たり判定の大きさを設定
+		
+		pEsaData->nScore = infoEsaData.nScore;			// エサの獲得スコアを設定
 
 		pEsaData->bUse = true;							// 使用している状態に設定
 
@@ -376,6 +356,54 @@ int SetEsaData(EsaData* pEsaData, EsaData_info infoEsaData)
 
 	// 設定できる場所がなかった場合
 	return -1;		// 設定した場所がない事を返す
+}
+
+//========================================================================
+// エサのモデル設定処理
+//========================================================================
+HRESULT SetEsaModel(const char* pFilename, EsaModel* pEsaModel)
+{
+	// 変数宣言 ===========================================
+
+	// デバイスの所得
+	LPDIRECT3DDEVICE9 pDevice = GetDevice();
+
+	// ====================================================
+
+	// Xファイルの読み込み
+	if(FAILED(D3DXLoadMeshFromX(&pFilename[0],
+							    D3DXMESH_SYSTEMMEM,
+							    pDevice,
+							    NULL,
+							    &pEsaModel->pBuffMat,
+							    NULL,
+							    &pEsaModel->dwNumMat,
+							    &pEsaModel->pMesh)))
+	{// Xファイルの読み込みに失敗した場合
+
+		return E_FAIL;	// 設定に失敗した事を返す
+	}
+
+	D3DXMATERIAL* pMat;	// マテリアルのポインタを宣言
+
+	// マテリアルデータへのポインタを所得
+	pMat = (D3DXMATERIAL*)pEsaModel->pBuffMat->GetBufferPointer();
+
+	// マテリアルの設定
+	for (int nCntMat = 0; nCntMat < (int)pEsaModel->dwNumMat; nCntMat++)
+	{// マテリアルの数分繰り返す
+
+		if (pMat[nCntMat].pTextureFilename != NULL)
+		{// テクスチャファイルがある
+
+			// テクスチャの読み込み
+			D3DXCreateTextureFromFile(pDevice,								// Direct3Dデバイスへのポインタ
+									  pMat[nCntMat].pTextureFilename,		// 読み込むテクスチャ
+									  &pEsaModel->apTexture[nCntMat]);		// テクスチャへのポインタ
+		}
+	}
+
+	return S_OK;	// 設定に成功した事を返す
 }
 
 //========================================================================

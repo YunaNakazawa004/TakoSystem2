@@ -176,6 +176,7 @@
     <ClCompile Include="pot.cpp" />
     <ClCompile Include="ranking.cpp" />
     <ClCompile Include="result.cpp" />
+    <ClCompile Include="result2.cpp" />
     <ClCompile Include="screen.cpp" />
     <ClCompile Include="sound.cpp" />
     <ClCompile Include="stage.cpp" />
@@ -184,6 +185,7 @@
     <ClCompile Include="tutorial.cpp" />
     <ClCompile Include="ui_esa.cpp" />
     <ClCompile Include="ui_gaugeicon.cpp" />
+    <ClCompile Include="ui_result_getscore.cpp" />
     <ClCompile Include="watetrsurf.cpp" />
     <ClCompile Include="oceancurrents.cpp" />
   </ItemGroup>
@@ -216,6 +218,7 @@
     <ClInclude Include="pot.h" />
     <ClInclude Include="ranking.h" />
     <ClInclude Include="result.h" />
+    <ClInclude Include="result2.h" />
     <ClInclude Include="screen.h" />
     <ClInclude Include="sound.h" />
     <ClInclude Include="stage.h" />
@@ -224,6 +227,7 @@
     <ClInclude Include="tutorial.h" />
     <ClInclude Include="ui_esa.h" />
     <ClInclude Include="ui_gaugeicon.h" />
+    <ClInclude Include="ui_result_getscore.h" />
     <ClInclude Include="watersurf.h" />
     <ClInclude Include="oceancurrents.h" />
   </ItemGroup>
