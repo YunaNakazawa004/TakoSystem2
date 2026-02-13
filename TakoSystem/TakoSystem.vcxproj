@@ -182,6 +182,7 @@
     <ClCompile Include="time.cpp" />
     <ClCompile Include="title.cpp" />
     <ClCompile Include="tutorial.cpp" />
+    <ClCompile Include="tutorialtxt.cpp" />
     <ClCompile Include="ui_esa.cpp" />
     <ClCompile Include="ui_gaugeicon.cpp" />
     <ClCompile Include="watetrsurf.cpp" />
@@ -222,6 +223,7 @@
     <ClInclude Include="time.h" />
     <ClInclude Include="title.h" />
     <ClInclude Include="tutorial.h" />
+    <ClInclude Include="tutorialtxt.h" />
     <ClInclude Include="ui_esa.h" />
     <ClInclude Include="ui_gaugeicon.h" />
     <ClInclude Include="watersurf.h" />

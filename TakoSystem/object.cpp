@@ -8,6 +8,7 @@
 #include "pot.h"
 #include "player.h"
 #include "meshfield.h"
+#include "meshcylinder.h"
 #include "debugproc.h"
 #include "input.h"
 
@@ -571,6 +572,50 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 	}
 
 	return bLand;
+}
+
+//=============================================================================
+// 配置物の渦潮安地判定
+//=============================================================================
+bool CollisionObjectArea(D3DXVECTOR3 pos)
+{
+	Object* pObject = GetObjectAll();
+
+	for (int nCntObject = 0; nCntObject < MAX_OBJECT; nCntObject++, pObject++)
+	{
+		if (pObject->bUse == false)
+		{// 使用されてない
+			continue;
+		}
+
+		ObjectModel* pObjectModel = &g_aObjectModel[pObject->nType];
+
+		float fXLength = pObjectModel->VtxMax.x - pObjectModel->VtxMin.x;
+		float fZLength = pObjectModel->VtxMax.z - pObjectModel->VtxMin.z;
+		float fLength = sqrtf((fXLength * fXLength) + (fZLength * fZLength)) * 0.5f;	// 対角線の長さ = 半径
+
+		float fDistRadius = sqrtf(pObject->pos.x * pObject->pos.x + pObject->pos.z * pObject->pos.z);	// 中心からの距離
+
+		float fVerDist = sqrtf((fDistRadius * fDistRadius) - ((fLength / 2.0f) * (fLength / 2.0f)));
+		float fNowAngle = atan2f(pObject->pos.x, pObject->pos.z);
+		float fAngle = cosf(fVerDist / fDistRadius) * 0.2f;
+		fAngle += fNowAngle;
+		CorrectAngle(&fAngle, fAngle);
+
+		D3DXVECTOR3 SafePos;
+		SafePos.x = sinf(fAngle) * fDistRadius;
+		SafePos.y = pObject->pos.y + pObjectModel->VtxMin.y;
+		SafePos.z = cosf(fAngle) * fDistRadius;
+
+		D3DXVECTOR2 dist = D3DXVECTOR2(SafePos.x - pos.x, SafePos.z - pos.z);
+
+		if (D3DXVec2Length(&dist) <= fLength && pos.y >= SafePos.y && pos.y <= (pObject->pos.y + pObjectModel->VtxMax.y))
+		{// 安地の範囲内
+			return true;
+		}
+	}
+
+	return false;
 }
 
 //=============================================================================
