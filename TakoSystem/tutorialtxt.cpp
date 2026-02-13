@@ -151,6 +151,8 @@ void DrawTutorialTxt(void)
 	D3DXMATRIX mtxTrans;				// 計算用マトリックス
 	D3DXMATRIX mtxView;				// ビューマトリックス取得用
 
+	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+
 	// Zテストを無効にする
 	pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESS);
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
@@ -199,6 +201,8 @@ void DrawTutorialTxt(void)
 	// Zテストを有効にする
 	pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+
+	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
 }
 
 //=============================================================================
