@@ -226,7 +226,6 @@ void UpdateUiResultGetScore(void)
 
 	float fWidth, fHeight;	// ポリゴンの辺の長さ
 	float fAngle, fLength;	// 対角線の値
-#if 0
 	// ポリゴン情報の初期化
 	for (int nCntUiResultGS = 0; nCntUiResultGS < MAX_PLAYER + MAX_COMPUTER; nCntUiResultGS++)
 	{
@@ -236,14 +235,15 @@ void UpdateUiResultGetScore(void)
 			{
 				// 対角線の値を求める
 				fWidth = g_aResultGSPolygon[g_aResultGS[nCntUiResultGS].nIdxPolygon[nCntPolygon]].fSizeWidth * 2.0f;	// 幅の長さを求める
-				//fHeight = g_aResultPolygon[g_aResult[nCntResult].nIdx].fSizeHeight * 2.0f;								// 高さの長さを求める
+				fHeight = g_aResultGSPolygon[g_aResultGS[nCntUiResultGS].nIdxPolygon[nCntPolygon]].fSizeHeight * 2.0f;	// 高さの長さを求める
 				fLength = sqrtf(fWidth * fWidth + fHeight * fHeight) * 0.5f;											// 対角線の長さを求める
 				fAngle = atan2f(fWidth, fHeight);																		// 対角線の角度を求める
 
+#if 0
 				// 頂点バッファをロックし、頂点情報へのポインタを取得
-				g_pVtxBuffResult->Lock(0, 0, (void**)&pVtx, 0);
+				g_pVtxBuffUiResultGetScore->Lock(0, 0, (void**)&pVtx, 0);
 
-				pVtx += (g_aResult[nCntResult].nIdx * 4);	// 頂点バッファをインデックス分進める
+				pVtx += (g_aResultGS[nCntUiResultGS].nIdxPolygon[nCntPolygon] * 4);	// 頂点バッファをインデックス分進める
 
 				// 頂点座標の設定
 				pVtx[0].pos.x = g_aResult[nCntResult].pos.x - sinf(fAngle - g_aResult[nCntResult].rot.y) * fLength;
@@ -279,12 +279,12 @@ void UpdateUiResultGetScore(void)
 				pVtx[3].tex.y = g_aResultPolygon[g_aResult[nCntResult].nIdx].texPos.y + g_aResultPolygon[g_aResult[nCntResult].nIdx].texSize.y;
 
 				// 頂点バッファをアンロックする
-				g_pVtxBuffResult->Unlock();
+				g_pVtxBuffUiResultGetScore->Unlock();
+#endif
 			}
 		
 		}
 	}
-#endif
 }
 
 //========================================================================

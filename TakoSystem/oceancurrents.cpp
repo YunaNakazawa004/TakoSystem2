@@ -197,6 +197,7 @@ void InitOceanCurrents(void)
 	}
 
 	g_nCounterOceanCurrents = 0;							// カウンタの値を初期化
+	g_OceanCurrentsState = OCEANCURRENTSSTATE_NOMAL;		// 海流の状態を通常時に設定
 	g_fSpeedOceanCurrent = OCEANCURRECT_SPEED_NOMAL;		// 海流の速度を通常時の値で設定
 
 	g_nIdxOCWaning = -1;
