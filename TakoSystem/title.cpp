@@ -412,10 +412,6 @@ void UpdateTitle(void)
 			PlaySound(SOUND_SE_DECISION);
 			SetFade(MODE_TUTORIAL);
 		}
-		else if (pFade == FADE_NONE && g_PressEnterDeley > RANKING_DELEY)
-		{// 時間経過でランキングへ移行
-			SetFade(MODE_LOGO);
-		}
 
 		if ((GetKeyboardTrigger(DIK_RETURN) == true ||
 			GetJoypadTrigger(0, JOYKEY_START) == true ||
@@ -423,6 +419,11 @@ void UpdateTitle(void)
 		{// 特定のキーを押すと即座に到着
 			g_TitleDeley = TITLE_DELEY_MAX;
 		}
+	}
+
+	if (pFade == FADE_NONE && g_PressEnterDeley > RANKING_DELEY)
+	{// 時間経過でランキングへ移行
+		SetFade(MODE_LOGO);
 	}
 
 	// 頂点バッファをアンロックする
