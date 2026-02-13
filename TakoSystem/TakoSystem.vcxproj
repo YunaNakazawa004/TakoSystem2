@@ -175,6 +175,7 @@
     <ClCompile Include="player.cpp" />
     <ClCompile Include="pot.cpp" />
     <ClCompile Include="ranking.cpp" />
+    <ClCompile Include="readygo.cpp" />
     <ClCompile Include="result.cpp" />
     <ClCompile Include="result2.cpp" />
     <ClCompile Include="screen.cpp" />
@@ -219,6 +220,7 @@
     <ClInclude Include="player.h" />
     <ClInclude Include="pot.h" />
     <ClInclude Include="ranking.h" />
+    <ClInclude Include="readygo.h" />
     <ClInclude Include="result.h" />
     <ClInclude Include="result2.h" />
     <ClInclude Include="screen.h" />
