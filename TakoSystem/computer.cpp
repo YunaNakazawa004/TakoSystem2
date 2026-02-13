@@ -345,6 +345,14 @@ void UpdateComputer(void)
 					{// 閾値以下なら探索
 						pComputer->state = CPUSTATE_EXPLORE;
 					}
+
+					if (GetOceanCurrents() == OCEANCURRENTSSTATE_WAIT)
+					{// 渦潮が来そうなとき
+						if (pComputer->nFoodCount > 0)
+						{// エサを持っている
+							pComputer->state = CPUSTATE_HIDE;
+						}
+					}
 				}
 
 				// ノードの設置
@@ -459,6 +467,13 @@ void UpdateComputer(void)
 				PrintDebugProc("CPUの状態 : [ CPUSTATE_FINAL_COLLECT ]\n");
 
 				FinalCollect(pComputer);
+
+				break;
+
+			case CPUSTATE_HIDE:					// 隠れ状態
+				PrintDebugProc("CPUの状態 : [ CPUSTATE_HIDE ]\n");
+
+				Hide(pComputer);
 
 				break;
 
@@ -702,7 +717,7 @@ void UpdateComputer(void)
 				CorrectAngle(&pComputer->phys.rot.x, pComputer->phys.rot.x);
 			}
 
-			if (nCounter % (ONE_SECOND * 10) == 0 && GetTime() != ONE_GAME)
+			if (nCounter % (ONE_SECOND * 30) == 0 && GetTime() != ONE_GAME)
 			{// 持てるエサの最大値が増える
 				pComputer->nMaxFood++;
 			}
@@ -1123,6 +1138,21 @@ void FinalCollect(Computer* pComputer)
 }
 
 //=============================================================================
+// 物陰隠れ状態
+//=============================================================================
+void Hide(Computer* pComputer)
+{
+	D3DXVECTOR3 target = GetHidePosition(pComputer);
+	D3DXVECTOR3 dir = target - pComputer->phys.pos;
+	D3DXVec3Normalize(&dir, &dir);
+
+	// 慣性移動
+	pComputer->phys.move.x += dir.x * MOVEMENT.x;
+	pComputer->phys.move.y += dir.y * MOVEMENT.y;
+	pComputer->phys.move.z += dir.z * MOVEMENT.z;
+}
+
+//=============================================================================
 // エサの場所を取得
 //=============================================================================
 D3DXVECTOR3 GetFoodPosition(Computer* pComputer)
@@ -1256,6 +1286,62 @@ D3DXVECTOR3 GetNearestEnemy(Computer* pComputer)
 
 	return pEnemy->phys.pos;
 
+}
+
+//=============================================================================
+// 一番近い隠れ場所を取得
+//=============================================================================
+D3DXVECTOR3 GetHidePosition(Computer* pComputer)
+{
+	float fBestDist = 9999.9f;
+	D3DXVECTOR3 BestPos = FIRST_POS;
+	Object* pObject = GetObjectAll();
+
+	// 最も危険な敵を探す
+	for (int nCntObject = 0; nCntObject < MAX_COMPUTER; nCntObject++, pObject++)
+	{
+		if (pObject->bUse == false)
+		{// 使用していない
+			continue;
+		}
+
+		ObjectModel* pObjectModel = GetObjectModel();
+		pObjectModel = &pObjectModel[pObject->nType];
+
+		float fXLength = pObjectModel->VtxMax.x - pObjectModel->VtxMin.x;
+		float fZLength = pObjectModel->VtxMax.z - pObjectModel->VtxMin.z;
+		float fLength = sqrtf((fXLength * fXLength) + (fZLength * fZLength)) * 0.5f;	// 対角線の長さ = 半径
+
+		float fDistRadius = sqrtf(pObject->pos.x * pObject->pos.x + pObject->pos.z * pObject->pos.z);	// 中心からの距離
+
+		float fVerDist = sqrtf((fDistRadius * fDistRadius) - ((fLength / 2.0f) * (fLength / 2.0f)));
+		float fNowAngle = atan2f(pObject->pos.x, pObject->pos.z);
+		float fAngle = cosf(fVerDist / fDistRadius) * 0.2f;
+		fAngle += fNowAngle;
+		CorrectAngle(&fAngle, fAngle);
+
+		D3DXVECTOR3 SafePos;
+		SafePos.x = sinf(fAngle) * fDistRadius;
+		SafePos.y = pObject->pos.y + pObjectModel->VtxMin.y;
+		SafePos.z = cosf(fAngle) * fDistRadius;
+
+		D3DXVECTOR3 toSafePos = D3DXVECTOR3(SafePos.x - pComputer->phys.pos.x, SafePos.y, SafePos.z - pComputer->phys.pos.z);
+
+		float dist = D3DXVec3Length(&toSafePos);
+
+		if (dist > ((pComputer->bBlinded) ? ESCAPE_ENEMY_DIST * 0.5f : ESCAPE_ENEMY_DIST))
+		{// 遠すぎる場所は無視
+			continue;
+		}
+
+		if (fBestDist > dist)
+		{// より近い
+			fBestDist = dist;
+			BestPos = SafePos;
+		}
+	}
+
+	return BestPos;
 }
 
 //=============================================================================
