@@ -14,6 +14,7 @@
 #include "meshring.h"
 #include "meshorbit.h"
 
+#include "seadust.h"
 #include "player.h"
 #include "sound.h"
 #include "computer.h"
@@ -89,6 +90,9 @@ void InitGame(void)
 
 	// メッシュリングの初期化処理
 	InitMeshRing();
+
+	// 塵の初期化処理
+	InitSeaDust();
 		
 	// 3Dエフェクトの初期化処理
 	InitEffect3D();
@@ -178,6 +182,9 @@ void UninitGame(void)
 
 	// メッシュリングの終了処理
 	UninitMeshRing();
+
+	// 塵の終了処理
+	UninitSeaDust();
 
 	// 3Dエフェクトの終了処理
 	UninitEffect3D();
@@ -292,6 +299,9 @@ void UpdateGame(void)
 		// メッシュリングの更新処理
 		UpdateMeshRing();
 
+		// 塵の更新処理
+		UpdateSeaDust();
+
 		// 3Dエフェクトの更新処理
 		UpdateEffect3D();
 
@@ -365,6 +375,9 @@ void DrawGame(void)
 
 	// メッシュリングの描画処理
 	DrawMeshRing();
+
+	// 塵の描画処理
+	DrawSeaDust();
 
 	// 3Dエフェクトの描画処理
 	DrawEffect3D();

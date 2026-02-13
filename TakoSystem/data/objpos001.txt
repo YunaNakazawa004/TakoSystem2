@@ -20,23 +20,23 @@ TEXTURE_FILENAME = data/TEXTURE1/suna.png				# [1]砂テクスチャ
 #------------------------------------------------------------------------------
 # モデル数
 #------------------------------------------------------------------------------
-NUM_MODEL = 12
+NUM_MODEL = 13
 
 #------------------------------------------------------------------------------
 # モデルファイル名
 #------------------------------------------------------------------------------
 MODEL_FILENAME = data/MODEL/rock/iwa000.x						# [0]岩
 MODEL_FILENAME = data/MODEL/rock/iwa001.x						# [1]岩2
-MODEL_FILENAME = data/MODEL/rock/iwa002.x						# [1]岩3
-MODEL_FILENAME = data/MODEL/stage/StageReplica002.x				# [1]岩3
-MODEL_FILENAME = data/MODEL/Others_Object/ami000.x				# [2]網
-MODEL_FILENAME = data/MODEL/Others_Object/fishborn000.x			# [3]ステージ
-MODEL_FILENAME = data/MODEL/Others_Object/SangoSho.x			# [3]ステージ
-MODEL_FILENAME = data/MODEL/Others_Object/taru000half.x				# [3]ステージ
-MODEL_FILENAME = data/MODEL/rock/iwa003.x						# [3]岩4
-MODEL_FILENAME = data/MODEL/Others_Object/Takotsubo000.x			# [3]ステージ
-MODEL_FILENAME = data/MODEL/Others_Object/Takotsubo001.x			# [3]ステージ
-MODEL_FILENAME = data/MODEL/rock/iwa004.x						# [3]岩4
+MODEL_FILENAME = data/MODEL/rock/iwa002.x						# [2]岩3
+MODEL_FILENAME = data/MODEL/Others_Object/ami000.x				# [3]網
+MODEL_FILENAME = data/MODEL/Others_Object/fishborn000.x			# [4]魚の骨
+MODEL_FILENAME = data/MODEL/Others_Object/SangoSho.x			# [5]サンゴ礁
+MODEL_FILENAME = data/MODEL/Others_Object/taru000half.x			# [6]樽
+MODEL_FILENAME = data/MODEL/rock/iwa003.x						# [7]岩4
+MODEL_FILENAME = data/MODEL/Others_Object/Takotsubo000.x		# [8]たこつぼ(立ってる)
+MODEL_FILENAME = data/MODEL/Others_Object/Takotsubo001.x		# [9]たこつぼ(倒れてる)
+MODEL_FILENAME = data/MODEL/rock/iwa004.x						# [10]岩5
+MODEL_FILENAME = data/MODEL/Others_Object/wakame000.x			# [11]わかめ
 
 #------------------------------------------------------------------------------
 # カメラ情報
@@ -118,7 +118,6 @@ MODELSET
 	POS = 1025 0 205
 	ROT = 0 45 0
 	SHADOW = 0
-	COLLISION = 1
 END_MODELSET
 
 MODELSET
@@ -126,7 +125,6 @@ MODELSET
 	POS = 800 0 700
 	ROT = 0 315 0
 	SHADOW = 0
-	COLLISION = 1
 END_MODELSET
 
 MODELSET
@@ -134,7 +132,6 @@ MODELSET
 	POS = -90 0 -950
 	ROT = 0 180 0
 	SHADOW = 0
-	COLLISION = 1
 END_MODELSET
 
 MODELSET
@@ -142,38 +139,27 @@ MODELSET
 	POS = 50 0 -770
 	ROT = 0 180 0
 	SHADOW = 0
-	COLLISION = 1
 END_MODELSET
 
 MODELSET
 	TYPE = 4
-	POS = 630 0 900
+	POS = -650 0 1000
 	ROT = 0 180 0
 	SHADOW = 0
-	COLLISION = 0
 END_MODELSET
 
-#MODELSET
-#	TYPE = 3
-#	POS = 0 0 0
-#	ROT = 0 0 0
-#	SHADOW = 0
-#END_MODELSET
-
 MODELSET
-	TYPE = 2
+	TYPE = 11
 	POS = 120 0 1000
 	ROT = 0 180 0
 	SHADOW = 0
-	COLLISION = 1
 END_MODELSET
 
 MODELSET
 	TYPE = 5
-	POS = 600 0 750
-	ROT = 0 0 0
+	POS = 1250 0 220
+	ROT = 0 50 0
 	SHADOW = 0
-	COLLISION = 1
 END_MODELSET
 
 MODELSET
@@ -181,7 +167,6 @@ MODELSET
 	POS = 500 0 550
 	ROT = 0 180 0
 	SHADOW = 0
-	COLLISION = 0
 END_MODELSET
 
 MODELSET
@@ -189,7 +174,6 @@ MODELSET
 	POS = 675 0 -600
 	ROT = 0 180 0
 	SHADOW = 0
-	COLLISION = 1
 END_MODELSET
 
 MODELSET
@@ -197,7 +181,6 @@ MODELSET
 	POS = 1025 0 -525
 	ROT = 0 180 0
 	SHADOW = 0
-	COLLISION = 1
 END_MODELSET
 
 MODELSET
@@ -205,7 +188,6 @@ MODELSET
 	POS = 975 0 -875
 	ROT = 0 180 0
 	SHADOW = 0
-	COLLISION = 1
 END_MODELSET
 
 MODELSET
@@ -213,23 +195,48 @@ MODELSET
 	POS = -950 0 -100
 	ROT = 0 180 0
 	SHADOW = 0
-	COLLISION = 1
 END_MODELSET
 
 MODELSET
-	TYPE = 4
-	POS = 200 0 -1100
+	TYPE = 6
+	POS = 650 0 1000
 	ROT = 0 75 0
 	SHADOW = 0
-	COLLISION = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 12
+	POS = 500 0 -1100
+	ROT = 0 75 0
+	SHADOW = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 12
+	POS = 125 0 -1200
+	ROT = 0 175 0
+	SHADOW = 0
 END_MODELSET
 
 MODELSET
 	TYPE = 9
-	POS = 825 0 -750
-	ROT = 0 75 0
+	POS = 830 0 -700
+	ROT = 0 0 0
 	SHADOW = 0
-	COLLISION = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 9
+	POS = 830 0 -700
+	ROT = 0 0 0
+	SHADOW = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 10
+	POS = -930 0 -185
+	ROT = 0 0 0
+	SHADOW = 0
 END_MODELSET
 
 #------------------------------------------------------------------------------

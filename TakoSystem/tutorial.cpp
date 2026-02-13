@@ -29,10 +29,12 @@
 #include "ui_gaugeicon.h"
 #include "ui_esa.h"
 #include "oceancurrents.h"
+#include "seadust.h"
 #include "map.h"
 #include "effect_3d.h"
 #include "particle_3d.h"
 #include "title.h"
+#include "tutorialtxt.h"
 
 // マクロ定義
 #define	MAX_TUTORIAL	(2)	// タイトルで表示するテクスチャの最大数
@@ -45,9 +47,9 @@ LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffTutorial = NULL;	// 頂点バッファへのポインタ
 void InitTutorial(void)
 {
 	// ライトの設定
-	SetLightColor(0, D3DXCOLOR(0.8f, 0.9f, 1.0f, 1.0f));
-	SetLightColor(1, D3DXCOLOR(0.5f, 0.6f, 0.8f, 0.7f));
-	SetLightColor(2, D3DXCOLOR(0.3f, 0.3f, 0.5f, 0.3f));
+	SetLightColor(0, D3DXCOLOR(0.7f, 0.9f, 1.0f, 1.0f));
+	SetLightColor(1, D3DXCOLOR(0.4f, 0.5f, 0.7f, 0.7f));
+	SetLightColor(2, D3DXCOLOR(0.1f, 0.1f, 0.3f, 0.3f));
 
 	// カメラの初期化処理
 	SetNumCamera(GetPlayerSelect());
@@ -73,6 +75,9 @@ void InitTutorial(void)
 	// メッシュリングの初期化処理
 	InitMeshRing();
 
+	// 塵の初期化処理
+	InitSeaDust();
+
 	// 3Dエフェクトの初期化処理
 	InitEffect3D();
 
@@ -96,6 +101,9 @@ void InitTutorial(void)
 
 	// 配置物の初期化処理
 	InitObject("data\\objpos001.txt");
+
+	// チュートリアルテキストの初期化処理
+	InitTutorialTxt();
 
 	// クロスヘアの初期化処理
 	InitCrossHair();
@@ -208,6 +216,9 @@ void UninitTutorial(void)
 	// メッシュリングの終了処理
 	UninitMeshRing();
 
+	// 塵の終了処理
+	UninitSeaDust();
+
 	// 3Dエフェクトの終了処理
 	UninitEffect3D();
 
@@ -231,6 +242,9 @@ void UninitTutorial(void)
 
 	// 配置物の終了処理
 	UninitObject();
+
+	// チュートリアルテキストの終了処理
+	UninitTutorialTxt();
 
 	// クロスヘアの終了処理
 	UninitCrossHair();
@@ -286,6 +300,9 @@ void UpdateTutorial(void)
 	// メッシュリングの更新処理
 	UpdateMeshRing();
 
+	// 塵の更新処理
+	UpdateSeaDust();
+
 	// 3Dエフェクトの更新処理
 	UpdateEffect3D();
 
@@ -309,6 +326,9 @@ void UpdateTutorial(void)
 
 	// 配置物の更新処理
 	UpdateObject();
+
+	// チュートリアルテキストの更新処理
+	UpdateTutorialTxt();
 
 	// クロスヘアの更新処理
 	UpdateCrossHair();
@@ -358,6 +378,9 @@ void DrawTutorial(void)
 	// メッシュリングの描画処理
 	DrawMeshRing();
 
+	// 塵の描画処理
+	DrawSeaDust();
+
 	// 3Dエフェクトの描画処理
 	DrawEffect3D();
 
@@ -381,6 +404,9 @@ void DrawTutorial(void)
 
 	// 配置物の描画処理
 	DrawObject();
+
+	// チュートリアルテキストの描画処理
+	DrawTutorialTxt();
 
 	// クロスヘアの描画処理
 	DrawCrossHair();

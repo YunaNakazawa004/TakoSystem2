@@ -65,8 +65,10 @@ void DrawObject(void);
 void SetObject(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nIdx, bool bCollision);
 void SetObjectRandom(int nType, D3DXVECTOR3 posMin, D3DXVECTOR3 posMax, int nAmount);
 Object* GetObjectAll(void);
+ObjectModel* GetObjectModel(void);
 
 bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, float fRadius, float fHeight, bool bInsec);
+bool CollisionObjectArea(D3DXVECTOR3 pos);
 
 void LoadObject(const char* pStr);
 void LoadStage(const char* pStr);

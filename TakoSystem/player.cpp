@@ -415,7 +415,8 @@ void UpdatePlayer(void)
 						int nIdx = -1;
 
 						if (CollisionEsa(&nIdx, false, &tentaclePos, TENTACLE_RADIUS) == true &&
-							pPlayer->nFood < pPlayer->nMaxFood * PLAYER_TENTACLE)
+							pPlayer->nFood < pPlayer->nMaxFood * PLAYER_TENTACLE &&
+							pPlayer->motionType != MOTIONTYPE_OCEANCULLENT)
 						{// エサと接触した
 							Esa* pEsa = GetEsa();
 
@@ -518,16 +519,20 @@ void UpdatePlayer(void)
 				}
 			}
 
-			if (pPlayer->state != PLAYERSTATE_DASH && pPlayer->state != PLAYERSTATE_INK && pPlayer->state != PLAYERSTATE_BACKAREA
-				&& pPlayer->bMove == true && pPlayer->TentacleState == PLTENTACLESTATE_NORMAL)
-			{// 普通に移動しているとき
-				pPlayer->state = PLAYERSTATE_MOVE;
-				SetMotionPlayer(nCntPlayer, MOTIONTYPE_MOVE, true, 20);
-			}
-			else if (pPlayer->bMove == false && pPlayer->state != PLAYERSTATE_DASH &&
-				pPlayer->state != PLAYERSTATE_INK && pPlayer->TentacleState == PLTENTACLESTATE_NORMAL)
-			{// 待機モーション
-				SetMotionPlayer(nCntPlayer, MOTIONTYPE_NEUTRAL, true, 20);
+			if (GetOceanCurrents() != OCEANCURRENTSSTATE_WIRLPOOL ||
+				(GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL && CollisionObjectArea(pPlayer->pos) == true))
+			{
+				if (pPlayer->state != PLAYERSTATE_DASH && pPlayer->state != PLAYERSTATE_INK && pPlayer->state != PLAYERSTATE_BACKAREA
+					&& pPlayer->bMove == true && pPlayer->TentacleState == PLTENTACLESTATE_NORMAL)
+				{// 普通に移動しているとき
+					pPlayer->state = PLAYERSTATE_MOVE;
+					SetMotionPlayer(nCntPlayer, MOTIONTYPE_MOVE, true, 20);
+				}
+				else if (pPlayer->bMove == false && pPlayer->state != PLAYERSTATE_DASH &&
+					pPlayer->state != PLAYERSTATE_INK && pPlayer->TentacleState == PLTENTACLESTATE_NORMAL)
+				{// 待機モーション
+					SetMotionPlayer(nCntPlayer, MOTIONTYPE_NEUTRAL, true, 20);
+				}
 			}
 
 			PrintDebugProc("プレイヤーのpos ( %f %f %f )\n", pPlayer->pos.x, pPlayer->pos.y, pPlayer->pos.z);
@@ -569,8 +574,43 @@ void UpdatePlayer(void)
 			// 重力
 			pPlayer->move.y += SEA_GRAVITY;
 
-			// 渦潮
-			MoveOceanCurrents(&pPlayer->pos);
+			if (CollisionObjectArea(pPlayer->pos) == false)
+			{// 安地外のときに渦潮
+				MoveOceanCurrents(&pPlayer->pos);
+
+				if (GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL)
+				{// 安地外で渦潮
+					if (pPlayer->TentacleState == PLTENTACLESTATE_NORMAL && pPlayer->state != PLAYERSTATE_DASH && 
+						pPlayer->state != PLAYERSTATE_INK && pPlayer->state != PLAYERSTATE_BACKAREA)
+					{// 触手が通常状態のときだけ
+						SetMotionPlayer(nCntPlayer, MOTIONTYPE_OCEANCULLENT, true, 20);
+					}
+
+					if (pPlayer->nFood > 0 && nCounter % 15 == 0)
+					{// エサを持っている
+						pPlayer->nFood--;
+						int nIdx = Dequeue(&pPlayer->esaQueue);
+						SetSubUiEsa(nCntPlayer);
+
+						SetEsa(nIdx, ESA_ACTTYPE_SWIM, 0, pPlayer->pos, FIRST_POS);
+					}
+				}
+			}
+
+			if (GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL &&
+				CollisionObjectArea(pPlayer->pos) == true)
+			{// 渦潮中に安地にいたら
+				if (pPlayer->bMove == true)
+				{// 移動してる
+					pPlayer->state = PLAYERSTATE_MOVE;
+					SetMotionPlayer(nCntPlayer, MOTIONTYPE_MOVE, true, 20);
+				}
+				else
+				{// 移動してない
+					pPlayer->state = PLAYERSTATE_WAIT;
+					SetMotionPlayer(nCntPlayer, MOTIONTYPE_NEUTRAL, true, 20);
+				}
+			}
 
 			if (pPlayer->state != PLAYERSTATE_APPEAR && pPlayer->state != PLAYERSTATE_DASH)
 			{// 出現状態以外
@@ -681,7 +721,7 @@ void UpdatePlayer(void)
 				CorrectAngle(&pPlayer->rot.x, pPlayer->rot.x);
 			}
 
-			if (nCounter % (ONE_SECOND * 10) == 0 && GetTime() != ONE_GAME)
+			if (nCounter % (ONE_SECOND * 30) == 0 && GetTime() != ONE_GAME)
 			{// 持てるエサの最大値が増える
 				pPlayer->nMaxFood++;
 			}
@@ -765,7 +805,8 @@ void UpdatePlayer(void)
 			int nIdx = -1;
 
 			if (CollisionEsa(&nIdx, false, &pPlayer->pos, pPlayer->fRadius) == true &&
-				pPlayer->nFood < pPlayer->nMaxFood * PLAYER_TENTACLE)
+				pPlayer->nFood < pPlayer->nMaxFood * PLAYER_TENTACLE &&
+				pPlayer->motionType != MOTIONTYPE_OCEANCULLENT)
 			{// エサと接触した
 				Esa* pEsa = GetEsa();
 

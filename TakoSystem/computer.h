@@ -20,20 +20,21 @@
 //*****************************************************************************
 // CPUの状態
 //*****************************************************************************4
-typedef enum {
+typedef enum 
+{
 	CPUSTATE_APPEAR,				// 出現
 	CPUSTATE_EXPLORE,				// 探索
 	CPUSTATE_MOVE_TO_FOOD,			// エサを取りに行く
 	CPUSTATE_ESCAPE,				// 回避
 	CPUSTATE_ATTACK,				// 敵を追う
 	CPUSTATE_INK_ATTACK,			// 墨吐き
-	CPUSTATE_HIDE,					// 柱の裏に隠れる
 	CPUSTATE_WAIT,					// 待機
 	CPUSTATE_GO_TO_POT,				// タコつぼへ向かう
 	CPUSTATE_HIDE_FOOD,				// エサを隠す
 	CPUSTATE_STEAL_FOOD,			// 隠されたエサを奪う
 	CPUSTATE_FINAL_COLLECT,		    // 終盤の回収行動
 	CPUSTATE_BACKAREA,			    // エリア戻り状態
+	CPUSTATE_HIDE,					// 物陰隠れ状態
 	CPUCPUSTATE_MAX
 } CPUSTATE;
 
@@ -166,11 +167,13 @@ void GoToPot(Computer* pComputer);
 void HideFood(Computer* pComputer);
 void StealFood(Computer* pComputer);
 void FinalCollect(Computer* pComputer);
+void Hide(Computer* pComputer);
 
 // 行動管理の補助関数
 D3DXVECTOR3 GetFoodPosition(Computer* pComputer);
 D3DXVECTOR3 GetEnemyPosition(Computer* pComputer);
 D3DXVECTOR3 GetNearestEnemy(Computer* pComputer);
+D3DXVECTOR3 GetHidePosition(Computer* pComputer);
 
 // スコア計算
 void CalcFoodScore(Computer* pComputer);

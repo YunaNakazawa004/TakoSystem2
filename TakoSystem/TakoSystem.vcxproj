@@ -178,11 +178,13 @@
     <ClCompile Include="result.cpp" />
     <ClCompile Include="result2.cpp" />
     <ClCompile Include="screen.cpp" />
+    <ClCompile Include="seadust.cpp" />
     <ClCompile Include="sound.cpp" />
     <ClCompile Include="stage.cpp" />
     <ClCompile Include="time.cpp" />
     <ClCompile Include="title.cpp" />
     <ClCompile Include="tutorial.cpp" />
+    <ClCompile Include="tutorialtxt.cpp" />
     <ClCompile Include="ui_esa.cpp" />
     <ClCompile Include="ui_gaugeicon.cpp" />
     <ClCompile Include="ui_result_getscore.cpp" />
@@ -220,11 +222,13 @@
     <ClInclude Include="result.h" />
     <ClInclude Include="result2.h" />
     <ClInclude Include="screen.h" />
+    <ClInclude Include="seadust.h" />
     <ClInclude Include="sound.h" />
     <ClInclude Include="stage.h" />
     <ClInclude Include="time.h" />
     <ClInclude Include="title.h" />
     <ClInclude Include="tutorial.h" />
+    <ClInclude Include="tutorialtxt.h" />
     <ClInclude Include="ui_esa.h" />
     <ClInclude Include="ui_gaugeicon.h" />
     <ClInclude Include="ui_result_getscore.h" />

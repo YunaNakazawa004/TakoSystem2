@@ -345,6 +345,14 @@ void UpdateComputer(void)
 					{// 閾値以下なら探索
 						pComputer->state = CPUSTATE_EXPLORE;
 					}
+
+					if (GetOceanCurrents() == OCEANCURRENTSSTATE_WAIT)
+					{// 渦潮が来そうなとき
+						if (pComputer->nFoodCount > 0)
+						{// エサを持っている
+							pComputer->state = CPUSTATE_HIDE;
+						}
+					}
 				}
 
 				// ノードの設置
@@ -462,6 +470,13 @@ void UpdateComputer(void)
 
 				break;
 
+			case CPUSTATE_HIDE:					// 隠れ状態
+				PrintDebugProc("CPUの状態 : [ CPUSTATE_HIDE ]\n");
+
+				Hide(pComputer);
+
+				break;
+
 			case CPUSTATE_BACKAREA:				// エリア戻り状態
 				PrintDebugProc("CPUの状態 : [ CPUSTATE_BACKAREA ]\n");
 
@@ -499,7 +514,8 @@ void UpdateComputer(void)
 						int nIdx = -1;
 
 						if (CollisionEsa(&nIdx, false, &tentaclePos, pComputer->phys.fRadius) == true &&
-							pComputer->nFoodCount < pComputer->nMaxFood * CPU_TENTACLE)
+							pComputer->nFoodCount < pComputer->nMaxFood * CPU_TENTACLE && 
+							pComputer->motionType != MOTIONTYPE_OCEANCULLENT)
 						{// エサと接触した
 							Esa* pEsa = GetEsa();
 							pEsa[nIdx].bUse = false;
@@ -596,20 +612,50 @@ void UpdateComputer(void)
 					WHITE_VTX, CYAN_VTX, &pComputer->aModel[(nCntTent + 1) * 4].mtxWorld);
 			}
 
-			// 渦潮
-			MoveOceanCurrents(&pComputer->phys.pos);
+			if (CollisionObjectArea(pComputer->phys.pos) == false)
+			{// 渦潮
+				MoveOceanCurrents(&pComputer->phys.pos);
+
+				if (GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL)
+				{// 安地外で渦潮
+					if (pComputer->TentState == PLTENTACLESTATE_NORMAL && 
+						(pComputer->motionType != MOTIONTYPE_DASH || pComputer->motionTypeBlend != MOTIONTYPE_DASH) &&
+						pComputer->state != CPUSTATE_INK_ATTACK && pComputer->state != CPUSTATE_BACKAREA)
+					{// 触手が通常状態のときだけ
+						SetMotionComputer(nCntComputer, MOTIONTYPE_OCEANCULLENT, true, 20);
+					}
+
+					if (pComputer->nFoodCount > 0 && nCounter % 15 == 0)
+					{// エサを持っている
+						pComputer->nFoodCount--;
+						int nIdx = Dequeue(&pComputer->esaQueue);
+
+						SetEsa(nIdx, ESA_ACTTYPE_SWIM, 0, pComputer->phys.pos, FIRST_POS);
+					}
+				}
+			}
+
+			if (GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL &&
+				CollisionObjectArea(pComputer->phys.pos) == true)
+			{// 渦潮中に安地にいたら
+				SetMotionComputer(nCntComputer, MOTIONTYPE_NEUTRAL, true, 20);
+			}
 
 			if (pComputer->TentState == CPUTENTACLESTATE_NORMAL &&
 				D3DXVec3Length(&pComputer->phys.move) > 0.1f &&
 				pComputer->state != CPUSTATE_INK_ATTACK && pComputer->state != CPUSTATE_BACKAREA &&
-				(pComputer->motionType != MOTIONTYPE_DASH || pComputer->motionTypeBlend != MOTIONTYPE_DASH))
+				(pComputer->motionType != MOTIONTYPE_DASH || pComputer->motionTypeBlend != MOTIONTYPE_DASH) && 
+				(GetOceanCurrents() != OCEANCURRENTSSTATE_WIRLPOOL ||
+					(GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL && CollisionObjectArea(pComputer->phys.pos) == true)))
 			{// 移動モーション
 				SetMotionComputer(nCntComputer, MOTIONTYPE_MOVE, true, 20);
 			}
 			else if (pComputer->TentState == CPUTENTACLESTATE_NORMAL &&
 				D3DXVec3Length(&pComputer->phys.move) < 0.1f &&
 				pComputer->state != CPUSTATE_INK_ATTACK &&
-				(pComputer->motionType != MOTIONTYPE_DASH || pComputer->motionTypeBlend != MOTIONTYPE_DASH))
+				(pComputer->motionType != MOTIONTYPE_DASH || pComputer->motionTypeBlend != MOTIONTYPE_DASH) && 
+				(GetOceanCurrents() != OCEANCURRENTSSTATE_WIRLPOOL ||
+					(GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL && CollisionObjectArea(pComputer->phys.pos) == true)))
 			{// 待機モーション
 				SetMotionComputer(nCntComputer, MOTIONTYPE_NEUTRAL, true, 20);
 			}
@@ -689,14 +735,9 @@ void UpdateComputer(void)
 				CorrectAngle(&pComputer->phys.rot.x, pComputer->phys.rot.x);
 			}
 
-			if (nCounter % (ONE_SECOND * 10) == 0 && GetTime() != ONE_GAME)
+			if (nCounter % (ONE_SECOND * 30) == 0 && GetTime() != ONE_GAME)
 			{// 持てるエサの最大値が増える
 				pComputer->nMaxFood++;
-			}
-
-			if (pComputer->nFoodCount < 0)
-			{// 最小値0
-				pComputer->nFoodCount = 0;
 			}
 
 			//PrintDebugProc("ENEMY : pos ( %f %f %f )\n",
@@ -709,19 +750,34 @@ void UpdateComputer(void)
 			//PrintDebugProc("ENEMY : ノード ( %f %f %f )\n",
 			//	pComputer->extarget.x, pComputer->extarget.y, pComputer->extarget.z);
 
-			//D3DXVECTOR3 posAway;
-			//posAway.x = pComputer->phys.pos.x + sinf(D3DX_PI + pComputer->phys.rot.y) * 10000.0f;
-			//posAway.y = pComputer->phys.pos.y;
-			//posAway.z = pComputer->phys.pos.z + cosf(D3DX_PI - pComputer->phys.rot.y) * 10000.0f;
-
-			//CollisionMeshCylinder(&posAway, &pComputer->phys.pos, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, true);
-			//CollisionObject(&posAway, &pComputer->phys.pos, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, true);
-
 			// 当たり判定
 			CollisionObject(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, false);
 			CollisionPot(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius);
-			CollisionPotArea(pComputer->phys.pos, pComputer->phys.fRadius, NULL, pComputer, false);
 			CollisionMeshCylinder(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, false);
+
+			int nIdx = -1;
+
+			if (CollisionEsa(&nIdx, false, &pComputer->phys.pos, pComputer->phys.fRadius) == true &&
+				pComputer->nFoodCount < pComputer->nMaxFood * CPU_TENTACLE &&
+				pComputer->motionType != MOTIONTYPE_OCEANCULLENT)
+			{// エサと接触した
+				Esa* pEsa = GetEsa();
+
+				if (pEsa[nIdx].esaType != ESA_ACTTYPE_GOTO_POT)
+				{// タコつぼに入れてる最中じゃない
+					pEsa[nIdx].bUse = false;
+
+					pComputer->nFoodCount++;
+					Enqueue(&pComputer->esaQueue, pEsa[nIdx].nIdxModel);
+				}
+			}
+
+			if (pComputer->nFoodCount < 0)
+			{// 最小値0
+				pComputer->nFoodCount = 0;
+			}
+
+			CollisionPotArea(pComputer->phys.pos, pComputer->phys.fRadius, NULL, pComputer, false);
 
 			nCounter++;
 
@@ -845,22 +901,6 @@ void MoveToFood(Computer* pComputer)
 	pComputer->phys.move.x += dir.x * MOVEMENT.x;
 	pComputer->phys.move.y += dir.y * MOVEMENT.y;
 	pComputer->phys.move.z += dir.z * MOVEMENT.z;
-
-	int nIdx = -1;
-
-	if (CollisionEsa(&nIdx, false, &pComputer->phys.pos, pComputer->phys.fRadius) == true &&
-		pComputer->nFoodCount < pComputer->nMaxFood * CPU_TENTACLE)
-	{// エサと接触した
-		Esa* pEsa = GetEsa();
-
-		if (pEsa[nIdx].esaType != ESA_ACTTYPE_GOTO_POT)
-		{// タコつぼに入れてる最中じゃない
-			pEsa[nIdx].bUse = false;
-
-			pComputer->nFoodCount++;
-			Enqueue(&pComputer->esaQueue, pEsa[nIdx].nIdxModel);
-		}
-	}
 }
 
 //=============================================================================
@@ -1118,6 +1158,21 @@ void FinalCollect(Computer* pComputer)
 }
 
 //=============================================================================
+// 物陰隠れ状態
+//=============================================================================
+void Hide(Computer* pComputer)
+{
+	D3DXVECTOR3 target = GetHidePosition(pComputer);
+	D3DXVECTOR3 dir = target - pComputer->phys.pos;
+	D3DXVec3Normalize(&dir, &dir);
+
+	// 慣性移動
+	pComputer->phys.move.x += dir.x * MOVEMENT.x;
+	pComputer->phys.move.y += dir.y * MOVEMENT.y;
+	pComputer->phys.move.z += dir.z * MOVEMENT.z;
+}
+
+//=============================================================================
 // エサの場所を取得
 //=============================================================================
 D3DXVECTOR3 GetFoodPosition(Computer* pComputer)
@@ -1251,6 +1306,62 @@ D3DXVECTOR3 GetNearestEnemy(Computer* pComputer)
 
 	return pEnemy->phys.pos;
 
+}
+
+//=============================================================================
+// 一番近い隠れ場所を取得
+//=============================================================================
+D3DXVECTOR3 GetHidePosition(Computer* pComputer)
+{
+	float fBestDist = 9999.9f;
+	D3DXVECTOR3 BestPos = FIRST_POS;
+	Object* pObject = GetObjectAll();
+
+	// 最も危険な敵を探す
+	for (int nCntObject = 0; nCntObject < MAX_COMPUTER; nCntObject++, pObject++)
+	{
+		if (pObject->bUse == false)
+		{// 使用していない
+			continue;
+		}
+
+		ObjectModel* pObjectModel = GetObjectModel();
+		pObjectModel = &pObjectModel[pObject->nType];
+
+		float fXLength = pObjectModel->VtxMax.x - pObjectModel->VtxMin.x;
+		float fZLength = pObjectModel->VtxMax.z - pObjectModel->VtxMin.z;
+		float fLength = sqrtf((fXLength * fXLength) + (fZLength * fZLength)) * 0.5f;	// 対角線の長さ = 半径
+
+		float fDistRadius = sqrtf(pObject->pos.x * pObject->pos.x + pObject->pos.z * pObject->pos.z);	// 中心からの距離
+
+		float fVerDist = sqrtf((fDistRadius * fDistRadius) - ((fLength / 2.0f) * (fLength / 2.0f)));
+		float fNowAngle = atan2f(pObject->pos.x, pObject->pos.z);
+		float fAngle = cosf(fVerDist / fDistRadius) * 0.2f;
+		fAngle += fNowAngle;
+		CorrectAngle(&fAngle, fAngle);
+
+		D3DXVECTOR3 SafePos;
+		SafePos.x = sinf(fAngle) * fDistRadius;
+		SafePos.y = pObject->pos.y + pObjectModel->VtxMin.y;
+		SafePos.z = cosf(fAngle) * fDistRadius;
+
+		D3DXVECTOR3 toSafePos = D3DXVECTOR3(SafePos.x - pComputer->phys.pos.x, SafePos.y, SafePos.z - pComputer->phys.pos.z);
+
+		float dist = D3DXVec3Length(&toSafePos);
+
+		if (dist > ((pComputer->bBlinded) ? ESCAPE_ENEMY_DIST * 0.5f : ESCAPE_ENEMY_DIST))
+		{// 遠すぎる場所は無視
+			continue;
+		}
+
+		if (fBestDist > dist)
+		{// より近い
+			fBestDist = dist;
+			BestPos = SafePos;
+		}
+	}
+
+	return BestPos;
 }
 
 //=============================================================================
@@ -1649,7 +1760,7 @@ void CalcEscapeScore(Computer* pComputer)
 			score += ESCAPE_TENTACLE_SCORE;
 		}
 
-		if (pPlayer->nInkCooldown < ESCAPE_INK_COUNT)
+		if (pPlayer->nInkCooldown > INK_CT - ESCAPE_INK_COUNT)
 		{// 敵が墨を吐いた直後
 			score += ESCAPE_INK_SCORE;
 		}
@@ -1850,11 +1961,6 @@ void CalcPotScore(Computer* pComputer)
 		// 自分のエサを隠したい
 		score += pComputer->nFoodCount * POT_ESA_SCORE;
 
-		if (pComputer->nFoodCount == 0)
-		{// エサを持っていない
-			score -= POT_NO_ESA_SCORE;
-		}
-
 		// タコつぼが近い
 		score += (((pComputer->bBlinded) ? POT_DISTANCE * 0.5f : POT_DISTANCE) - dist) * DISTANCE_SCORE;
 
@@ -1867,11 +1973,15 @@ void CalcPotScore(Computer* pComputer)
 		if (GetTime() < POT_PHASE_1)
 		{
 			score += POT_PHASE_1_SCORE;
-		}
 
-		if (GetTime() < POT_PHASE_2)
-		{
-			score += POT_PHASE_2_SCORE;
+			if (GetTime() < POT_PHASE_2)
+			{
+				score += POT_PHASE_2_SCORE;
+			}
+		}
+		else if (pComputer->nFoodCount == 0)
+		{// エサを持っていない
+			score -= POT_NO_ESA_SCORE;
 		}
 
 		if (score > bestScore)
@@ -1954,10 +2064,10 @@ bool IsNearWall(D3DXVECTOR3 pos)
 {
 	float r = sqrtf(pos.x * pos.x + pos.z * pos.z);
 
-	if (fabs(r - OUTCYLINDER_RADIUS) < NEAR_WALL_DISTANCE)
-	{// 外周
-		return true;
-	}
+	//if (fabs(r - OUTCYLINDER_RADIUS) < NEAR_WALL_DISTANCE)
+	//{// 外周
+	//	return true;
+	//}
 
 	if (fabs(r - INCYLINDER_RADIUS) < NEAR_WALL_DISTANCE)
 	{// 中央柱
@@ -2539,7 +2649,7 @@ bool CollisionOcto(int nIdx, bool bCPU, D3DXVECTOR3 pos)
 
 			int nEsaIdx = Dequeue(&pPlayer->esaQueue);
 			pPlayer->nFood--;
-			SetSubUiEsa(nEsaIdx);
+			SetSubUiEsa(pPlayer->nIdx);
 
 			if (bCPU == true)
 			{// CPUが奪った
