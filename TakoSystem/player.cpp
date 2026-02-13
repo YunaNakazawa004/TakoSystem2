@@ -415,7 +415,8 @@ void UpdatePlayer(void)
 						int nIdx = -1;
 
 						if (CollisionEsa(&nIdx, false, &tentaclePos, TENTACLE_RADIUS) == true &&
-							pPlayer->nFood < pPlayer->nMaxFood * PLAYER_TENTACLE)
+							pPlayer->nFood < pPlayer->nMaxFood * PLAYER_TENTACLE &&
+							GetOceanCurrents() != OCEANCURRENTSSTATE_WIRLPOOL)
 						{// エサと接触した
 							Esa* pEsa = GetEsa();
 
@@ -572,6 +573,18 @@ void UpdatePlayer(void)
 			if (CollisionObjectArea(pPlayer->pos) == false)
 			{// 安地外のときに渦潮
 				MoveOceanCurrents(&pPlayer->pos);
+
+				if (GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL)
+				{// 安地外で渦潮
+					if (pPlayer->nFood > 0 && nCounter % 15 == 0)
+					{// エサを持っている
+						pPlayer->nFood--;
+						int nIdx = Dequeue(&pPlayer->esaQueue);
+						SetSubUiEsa(nCntPlayer);
+
+						SetEsa(nIdx, ESA_ACTTYPE_SWIM, 0, pPlayer->pos, FIRST_POS);
+					}
+				}
 			}
 
 			if (pPlayer->state != PLAYERSTATE_APPEAR && pPlayer->state != PLAYERSTATE_DASH)
@@ -767,7 +780,8 @@ void UpdatePlayer(void)
 			int nIdx = -1;
 
 			if (CollisionEsa(&nIdx, false, &pPlayer->pos, pPlayer->fRadius) == true &&
-				pPlayer->nFood < pPlayer->nMaxFood * PLAYER_TENTACLE)
+				pPlayer->nFood < pPlayer->nMaxFood * PLAYER_TENTACLE &&
+				GetOceanCurrents() != OCEANCURRENTSSTATE_WIRLPOOL)
 			{// エサと接触した
 				Esa* pEsa = GetEsa();
 

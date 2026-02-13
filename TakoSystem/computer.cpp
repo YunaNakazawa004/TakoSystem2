@@ -599,6 +599,17 @@ void UpdateComputer(void)
 			if (CollisionObjectArea(pComputer->phys.pos) == false)
 			{// ‰Q’ª
 				MoveOceanCurrents(&pComputer->phys.pos);
+
+				if (GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL)
+				{// ˆÀ’nŠO‚Å‰Q’ª
+					if (pComputer->nFoodCount > 0 && nCounter % 15 == 0)
+					{// ƒGƒT‚ðŽ‚Á‚Ä‚¢‚é
+						pComputer->nFoodCount--;
+						int nIdx = Dequeue(&pComputer->esaQueue);
+
+						SetEsa(nIdx, ESA_ACTTYPE_SWIM, 0, pComputer->phys.pos, FIRST_POS);
+					}
+				}
 			}
 
 			if (pComputer->TentState == CPUTENTACLESTATE_NORMAL &&
@@ -2532,7 +2543,7 @@ bool CollisionOcto(int nIdx, bool bCPU, D3DXVECTOR3 pos)
 
 			int nEsaIdx = Dequeue(&pPlayer->esaQueue);
 			pPlayer->nFood--;
-			SetSubUiEsa(nEsaIdx);
+			SetSubUiEsa(pPlayer->nIdx);
 
 			if (bCPU == true)
 			{// CPU‚ª’D‚Á‚½
