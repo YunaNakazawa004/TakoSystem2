@@ -26,7 +26,7 @@ SET_ESADATA
 		
 		SPEED		= 0.0003	# 移動速度
 		HIT_RADIUS  = 10.0		# 当たり判定の大きさ
-		GET_SCORE   = 10		# 獲得スコア
+		GET_SCORE   = 15		# 獲得スコア
 	END_ESA  
 	
 	SET_ESA		# [2]貝
@@ -35,7 +35,7 @@ SET_ESADATA
 		
 		SPEED		= 0.0001	# 移動速度
 		HIT_RADIUS  = 10.0		# 当たり判定の大きさ
-		GET_SCORE   = 10		# 獲得スコア
+		GET_SCORE   = 20		# 獲得スコア
 	END_ESA
 	
 	SET_ESA		# [3]ヤドカリ
@@ -44,7 +44,7 @@ SET_ESADATA
 		
 		SPEED		= 0.005		# 移動速度
 		HIT_RADIUS  = 10.0		# 当たり判定の大きさ
-		GET_SCORE   = 10		# 獲得スコア
+		GET_SCORE   = 25		# 獲得スコア
 	END_ESA
 	
 	SET_ESA		# [4]伊勢エビ
@@ -53,7 +53,7 @@ SET_ESADATA
 		
 		SPEED		= 0.005		# 移動速度
 		HIT_RADIUS  = 10.0		# 当たり判定の大きさ
-		GET_SCORE   = 10		# 獲得スコア
+		GET_SCORE   = 50		# 獲得スコア
 	END_ESA
 	
 END_ESADATA

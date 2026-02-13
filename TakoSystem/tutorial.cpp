@@ -91,7 +91,7 @@ void InitTutorial(void)
 	InitPot();
 
 	// エサの初期化処理
-	InitEsa();
+	InitEsa(true);
 
 	// メッシュオービットの初期化処理
 	InitMeshOrbit();

@@ -5,7 +5,7 @@
 // 
 //=============================================================================
 #include "main.h"
-#include "result.h"
+#include "result2.h"
 #include "ranking.h"
 #include "fade.h"
 
@@ -19,13 +19,11 @@
 #include "input.h"
 #include "sound.h"
 
-
-
 // マクロ関数 ==================================================
 
-#define	MAX_TEX_RESULT		(32)	// リザルトのテクスチャの最大数
-#define	MAX_NUM_RESULT		(32)	// リザルトのポリゴンの最大数
-#define	MAX_SET_RESULT		(64)	// リザルトの最大数
+#define	MAX_TEX_RESULT2		(32)	// リザルトのテクスチャの最大数
+#define	MAX_NUM_RESULT2		(32)	// リザルトのポリゴンの最大数
+#define	MAX_SET_RESULT2		(64)	// リザルトの最大数
 
 #define MAX_DROWLEVEL		(5)		// 描画順位の最大値
 
@@ -48,7 +46,7 @@ typedef struct
 
 	bool bUse;					// 使用状態
 
-}ResultPolygon;
+}ResultPolygon2;
 
 // リザルトの情報
 typedef struct
@@ -64,7 +62,7 @@ typedef struct
 	bool bDisp;					// 表示状態
 	bool bUse;					// 使用状態
 
-}Result;
+}Result2;
 
 // リザルトポリゴンの情報
 typedef struct
@@ -80,11 +78,11 @@ typedef struct
 
 	D3DXCOLOR col;				// 色
 
-}ResultPolygon_info;
+}ResultPolygon_info2;
 
 typedef struct
 {
-	bool bPolygon;				// ポリゴンかモデルか
+	bool b3D;					// 3Dか
 	int nIdx;					// インデックス
 	int nDrowLevel;				// 描画順位
 
@@ -92,34 +90,34 @@ typedef struct
 	D3DXVECTOR3 rot;			// 角度
 
 
-}Result_info;
+}Result_info2;
 
 // プロトタイプ宣言 ============================================
 
-void DrawResultPolygon(int nIdx);			// リザルトのポリゴンの描画
-void DrawResultModel(Result* pResult);		// リザルトのモデルの描画
+void DrawResultPolygon2(int nIdx);			// リザルトのポリゴンの描画
+void DrawResultModel2(Result2* pResult);	// リザルトのモデルの描画
 
 // グローバル変数 ==============================================
 
-LPDIRECT3DTEXTURE9 g_apTextureResult[MAX_TEX_RESULT] = {};		// テクスチャへのポインタ
-LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffResult = NULL;				// 頂点バッファへのポインタ
+LPDIRECT3DTEXTURE9 g_apTextureResult2[MAX_TEX_RESULT2] = {};		// テクスチャへのポインタ
+LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffResult2 = NULL;				// 頂点バッファへのポインタ
 
-ResultPolygon g_aResultPolygon[MAX_NUM_RESULT];					// リザルトのポリゴン情報
+ResultPolygon2 g_aResultPolygon2[MAX_NUM_RESULT2];					// リザルトのポリゴン情報
 
-Result g_aResult[MAX_SET_RESULT];
+Result2 g_aResult2[MAX_SET_RESULT2];
 
 // リザルトの状態
-RESULTSTATE g_resultState = RESULTSTATE_BEGIN;					// リザルトの状態
-int g_nCounterResultState;										// リザルトの状態カウンター
+RESULTSTATE g_resultState2 = RESULTSTATE_BEGIN;					// リザルトの状態
+int g_nCounterResultState2;										// リザルトの状態カウンター
 
 // ゲームの情報
-int g_nMaxPlayer;													// プレイヤーの総数
-int g_nMaxEsaType;													// エサの種類の総数
-WORD g_aEsaScore[MAX_ESATYPE] = {};									// エサのスコア
-WORD g_aNumHaveEsa[MAX_PLAYER + MAX_COMPUTER][MAX_ESATYPE] = {};	// 持っているエサの数
+int g_nMaxPlayer2;													// プレイヤーの総数
+int g_nMaxEsaType2;													// エサの種類の総数
+WORD g_aEsaScore2[MAX_ESATYPE] = {};									// エサのスコア
+WORD g_aNumHaveEsa2[MAX_PLAYER + MAX_COMPUTER][MAX_ESATYPE] = {};	// 持っているエサの数
 
 // ファイル名
-const char* c_apFilenameResult[] =
+const char* c_apFilenameResult2[] =
 {
 	"data/TEXTURE/In_the_sea.png",		// [0]背景
 	"data/TEXTURE/RESULT.png",			// [1]RESULTテキスト
@@ -127,28 +125,28 @@ const char* c_apFilenameResult[] =
 	"data/TEXTURE/tex_alpha001.jpg",	// [3]スコア背景
 };
 
-ResultPolygon_info g_aResultPolygonInfo[] =
+ResultPolygon_info2 g_aResultPolygonInfo2[] =
 {// {テクスチャインデックス, aブレンドをするか, 幅, 高さ, テクスチャ座標, テクスチャサイズ, 色}
 
 	{0, true, SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, D3DXVECTOR2(0.0f,0.0f), D3DXVECTOR2(1.0f,1.0f), D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)},	// [0]背景情報
 	{3, true, 95.0f, 20.0f, D3DXVECTOR2(0.0f,0.0f), D3DXVECTOR2(1.0f,1.0f), D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)},								// [1]スコア背景情報
 };
 
-Result_info g_aResultInfo[] =
+Result_info2 g_aResultInfo2[] =
 {// {ポリゴンか, セットインデックス, 描画順位, 位置, 角度}
 
 	{true, 0, 2, D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f), D3DXVECTOR3(0.0f,0.0f,0.0f)},
 	{true, 1, 2, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f,0.0f,0.0f)},
 };
 
-int g_nSelectNum = 0;
+int g_nSelectNum2 = 0;
 
-bool g_bScreenTransGame = false;
+bool g_bScreenTransGame2 = false;
 
 //========================================================================
 // リザルトの初期化処理
 //========================================================================
-void InitResult(void)
+void InitResult2(void)
 {
 	LPDIRECT3DDEVICE9 pDevice;	// デバイスへのポインタ
 
@@ -174,73 +172,73 @@ void InitResult(void)
 	
 
 	// ゲームからの設定がされていない場合の設定
-	if (g_bScreenTransGame == false)
+	if (g_bScreenTransGame2 == false)
 	{// エサを初期化してモデル情報を獲得
 
-		g_nMaxEsaType = GetNumEsaType();		// エサの種類の総数を獲得
+		g_nMaxEsaType2 = GetNumEsaType();		// エサの種類の総数を獲得
 
 		EsaData* pEsaData = GetEsaData(0);		// エサの種類の情報を獲得
 		const int nMaxHave = 10;
 
 		int aHaveNum[MAX_PLAYER][nMaxHave] = {};
 
-		ReceiveResult(false,&*aHaveNum[0], MAX_PLAYER, nMaxHave, &pEsaData[0], g_nMaxEsaType);
+		ReceiveResult2(false,&*aHaveNum[0], MAX_PLAYER, nMaxHave, &pEsaData[0], g_nMaxEsaType2);
 
 		
 	}
 
-	g_bScreenTransGame = false;
+	g_bScreenTransGame2 = false;
 
 	// テクスチャの読み込み
-	for (nCntResult = 0; nCntResult < sizeof c_apFilenameResult / sizeof(c_apFilenameResult[0]); nCntResult++)
+	for (nCntResult = 0; nCntResult < sizeof c_apFilenameResult2 / sizeof(c_apFilenameResult2[0]); nCntResult++)
 	{
 		D3DXCreateTextureFromFile(pDevice,								// デバイス
-								  c_apFilenameResult[nCntResult],		// テクスチャファイル名
-								  &g_apTextureResult[nCntResult]);		// テクスチャポインタ
+								  c_apFilenameResult2[nCntResult],		// テクスチャファイル名
+								  &g_apTextureResult2[nCntResult]);		// テクスチャポインタ
 	}
 
 	// リザルトのポリゴン情報を初期化
-	for (nCntResult = 0; nCntResult < MAX_NUM_RESULT; nCntResult++)
+	for (nCntResult = 0; nCntResult < MAX_NUM_RESULT2; nCntResult++)
 	{
-		g_aResultPolygon[nCntResult].nIdxTexture = -1;							// テクスチャインデックスを初期化
-		g_aResultPolygon[nCntResult].fSizeWidth = 0.0f;							// 大きさ(幅)を初期化
-		g_aResultPolygon[nCntResult].fSizeHeight = 0.0f;						// 大きさ(高さ)を初期化
-		g_aResultPolygon[nCntResult].col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);	// 色を初期化
-		g_aResultPolygon[nCntResult].texPos = D3DXVECTOR2(0.0f, 0.0f);			// テクスチャ座標を初期化
-		g_aResultPolygon[nCntResult].texSize = D3DXVECTOR2(0.0f, 0.0f);			// テクスチャサイズを初期化
-		g_aResultPolygon[nCntResult].bAlphaBlend = false;						// aブレンドをしない状態に設定
-		g_aResultPolygon[nCntResult].bUse = false;								// 使用しない状態に設定
+		g_aResultPolygon2[nCntResult].nIdxTexture = -1;							// テクスチャインデックスを初期化
+		g_aResultPolygon2[nCntResult].fSizeWidth = 0.0f;							// 大きさ(幅)を初期化
+		g_aResultPolygon2[nCntResult].fSizeHeight = 0.0f;						// 大きさ(高さ)を初期化
+		g_aResultPolygon2[nCntResult].col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);	// 色を初期化
+		g_aResultPolygon2[nCntResult].texPos = D3DXVECTOR2(0.0f, 0.0f);			// テクスチャ座標を初期化
+		g_aResultPolygon2[nCntResult].texSize = D3DXVECTOR2(0.0f, 0.0f);			// テクスチャサイズを初期化
+		g_aResultPolygon2[nCntResult].bAlphaBlend = false;						// aブレンドをしない状態に設定
+		g_aResultPolygon2[nCntResult].bUse = false;								// 使用しない状態に設定
 	}
 
 	// リザルトの情報を初期化
-	for (nCntResult = 0; nCntResult < MAX_SET_RESULT; nCntResult++)
+	for (nCntResult = 0; nCntResult < MAX_SET_RESULT2; nCntResult++)
 	{
-		g_aResult[nCntResult].bPolygon = true;							// ポリゴンに設定
-		g_aResult[nCntResult].nIdx = -1;								// インデックスを初期化
-		g_aResult[nCntResult].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 位置を初期化
-		g_aResult[nCntResult].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 角度を初期化
-		g_aResult[nCntResult].nDrowLevel = 0;							// 描画順位を初期化
-		g_aResult[nCntResult].bDisp = false;							// 表示しない状態に設定
-		g_aResult[nCntResult].bUse = false;								// 使用しない状態に設定
+		g_aResult2[nCntResult].bPolygon = true;							// ポリゴンに設定
+		g_aResult2[nCntResult].nIdx = -1;								// インデックスを初期化
+		g_aResult2[nCntResult].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 位置を初期化
+		g_aResult2[nCntResult].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 角度を初期化
+		g_aResult2[nCntResult].nDrowLevel = 0;							// 描画順位を初期化
+		g_aResult2[nCntResult].bDisp = false;							// 表示しない状態に設定
+		g_aResult2[nCntResult].bUse = false;								// 使用しない状態に設定
 	}
 
-	g_resultState = RESULTSTATE_BEGIN;	// リザルトの状態を開始状態に設定
-	g_nCounterResultState = 0;			// リザルトの状態カウンターを初期化
+	g_resultState2 = RESULTSTATE_BEGIN;	// リザルトの状態を開始状態に設定
+	g_nCounterResultState2 = 0;			// リザルトの状態カウンターを初期化
 
 	// 頂点バッファの生成
-	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4 * MAX_NUM_RESULT,
+	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4 * MAX_NUM_RESULT2,
 								D3DUSAGE_WRITEONLY,
 								FVF_VERTEX_2D,
 								D3DPOOL_MANAGED,
-								&g_pVtxBuffResult,
+								&g_pVtxBuffResult2,
 								NULL);
 
 	VERTEX_2D* pVtx;	// 頂点情報へのポインタ
 
 	// 頂点バッファをロックし、頂点情報へのポインタを取得
-	g_pVtxBuffResult->Lock(0, 0, (void**)&pVtx, 0);
+	g_pVtxBuffResult2->Lock(0, 0, (void**)&pVtx, 0);
 
-	for (nCntResult = 0; nCntResult < MAX_NUM_RESULT; nCntResult++)
+	for (nCntResult = 0; nCntResult < MAX_NUM_RESULT2; nCntResult++)
 	{
 		// 頂点座標の設定
 		pVtx[0].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 右回りで設定する
@@ -270,14 +268,14 @@ void InitResult(void)
 	}
 
 	// 頂点バッファをアンロックする
-	g_pVtxBuffResult->Unlock();
+	g_pVtxBuffResult2->Unlock();
 
 
 
 	// リザルトの設定
-	for (nCntResult = 0; nCntResult < (sizeof g_aResultInfo / sizeof(g_aResultInfo[0])); nCntResult++)
+	for (nCntResult = 0; nCntResult < (sizeof g_aResultInfo2 / sizeof(g_aResultInfo2[0])); nCntResult++)
 	{
-		SetResult(g_aResultInfo[nCntResult].bPolygon, g_aResultInfo[nCntResult].nIdx, g_aResultInfo[nCntResult].nDrowLevel, g_aResultInfo[nCntResult].pos, g_aResultInfo[nCntResult].rot);
+		SetResult2(g_aResultInfo2[nCntResult].b3D, g_aResultInfo2[nCntResult].nIdx, g_aResultInfo2[nCntResult].nDrowLevel, g_aResultInfo2[nCntResult].pos, g_aResultInfo2[nCntResult].rot);
 	}
 
 	// サウンドの再生
@@ -287,7 +285,7 @@ void InitResult(void)
 //========================================================================
 // リザルトの終了処理
 //========================================================================
-void UninitResult(void)
+void UninitResult2(void)
 {
 	int nCntResult;	// カウンター
 
@@ -295,37 +293,35 @@ void UninitResult(void)
 	for (nCntResult = 0; nCntResult < MAX_PLAYER + MAX_COMPUTER; nCntResult++)
 	{// プレイヤーの最大数分繰り返す
 
-		memset(&g_aNumHaveEsa[nCntResult][0], 0, MAX_ESATYPE);	// エサの種類別所持数を初期化
+		memset(&g_aNumHaveEsa2[nCntResult][0], 0, MAX_ESATYPE);	// エサの種類別所持数を初期化
 	}
 
-	memset(&g_aEsaScore[0], 0, MAX_ESATYPE);					// エサの種類別獲得スコアを初期化
+	memset(&g_aEsaScore2[0], 0, MAX_ESATYPE);					// エサの種類別獲得スコアを初期化
 
-	g_nMaxEsaType = 0;											// エサの種類の総数を初期化
-	g_nMaxPlayer = 0;											// プレイヤーの総数を初期化
+	g_nMaxEsaType2 = 0;											// エサの種類の総数を初期化
+	g_nMaxPlayer2 = 0;											// プレイヤーの総数を初期化
 
 	
 	// エサの終了
 	UninitEsa();
 
-
-
 	// テクスチャの破棄
-	for (nCntResult = 0; nCntResult < MAX_TEX_RESULT; nCntResult++)
+	for (nCntResult = 0; nCntResult < MAX_TEX_RESULT2; nCntResult++)
 	{// タイトルの数だけ確認する
 
 		// テクスチャの破棄
-		if (g_apTextureResult[nCntResult] != NULL)
+		if (g_apTextureResult2[nCntResult] != NULL)
 		{
-			g_apTextureResult[nCntResult]->Release();
-			g_apTextureResult[nCntResult] = NULL;
+			g_apTextureResult2[nCntResult]->Release();
+			g_apTextureResult2[nCntResult] = NULL;
 		}
 	}
 
 	// 頂点バッファの破棄
-	if (g_pVtxBuffResult != NULL)
+	if (g_pVtxBuffResult2 != NULL)
 	{
-		g_pVtxBuffResult->Release();
-		g_pVtxBuffResult = NULL;
+		g_pVtxBuffResult2->Release();
+		g_pVtxBuffResult2 = NULL;
 	}
 
 	// サウンドの停止
@@ -335,7 +331,7 @@ void UninitResult(void)
 //========================================================================
 // リザルトの更新処理
 //========================================================================
-void UpdateResult(void)
+void UpdateResult2(void)
 {
 	// フェード情報の取得
 	FADE pFade = GetFade();
@@ -347,43 +343,43 @@ void UpdateResult(void)
 
 	if (GetKeyboardTrigger(DIK_L))
 	{
-		g_aResult[g_nSelectNum].bPolygon = (g_aResult[g_nSelectNum].bPolygon == true) ? false : true;
+		g_aResult2[g_nSelectNum2].bPolygon = (g_aResult2[g_nSelectNum2].bPolygon == true) ? false : true;
 
-		if (g_aResult[g_nSelectNum].bPolygon == true)
+		if (g_aResult2[g_nSelectNum2].bPolygon == true)
 		{
-			g_aResult[g_nSelectNum].pos = D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f);
+			g_aResult2[g_nSelectNum2].pos = D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f);
 		}
 		else
 		{
-			g_aResult[g_nSelectNum].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+			g_aResult2[g_nSelectNum2].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		}
 	}
 
 	if (GetKeyboardTrigger(DIK_0))
 	{
-		g_nSelectNum++;
+		g_nSelectNum2++;
 	}
 	if (GetKeyboardTrigger(DIK_9))
 	{
-		g_nSelectNum--;
+		g_nSelectNum2--;
 	}
 
 	if (GetKeyboardTrigger(DIK_8))
 	{
-		g_aResult[g_nSelectNum].nDrowLevel++;
+		g_aResult2[g_nSelectNum2].nDrowLevel++;
 	}
 	if (GetKeyboardTrigger(DIK_7))
 	{
-		g_aResult[g_nSelectNum].nDrowLevel--;
+		g_aResult2[g_nSelectNum2].nDrowLevel--;
 	}
 
-	FileMovePosion("data/FILE/tmpPosionResult.txt",&g_aResult[g_nSelectNum].pos, 1.0f, DIK_RIGHT, DIK_LEFT, DIK_DOWN, DIK_UP, NULL, NULL);
+	FileMovePosion("data/FILE/tmpPosionResult.txt",&g_aResult2[g_nSelectNum2].pos, 1.0f, DIK_RIGHT, DIK_LEFT, DIK_DOWN, DIK_UP, NULL, NULL);
 	
-	PrintDebugProc("\nIDXSELECT %d[9,0]", g_nSelectNum);
-	PrintDebugProc("\nDRAWLEVEL %d[7,8]", g_aResult[g_nSelectNum].nDrowLevel);
-	PrintDebugProc("\nPOS %f %f %f", g_aResult[g_nSelectNum].pos.x, g_aResult[g_nSelectNum].pos.y, g_aResult[g_nSelectNum].pos.z);
+	PrintDebugProc("\nIDXSELECT %d[9,0]", g_nSelectNum2);
+	PrintDebugProc("\nDRAWLEVEL %d[7,8]", g_aResult2[g_nSelectNum2].nDrowLevel);
+	PrintDebugProc("\nPOS %f %f %f", g_aResult2[g_nSelectNum2].pos.x, g_aResult2[g_nSelectNum2].pos.y, g_aResult2[g_nSelectNum2].pos.z);
 
-	if (g_aResult[g_nSelectNum].bPolygon == true)
+	if (g_aResult2[g_nSelectNum2].bPolygon == true)
 	{
 		PrintDebugProc("\nTYPE POLYGON[L]");
 	}
@@ -395,32 +391,32 @@ void UpdateResult(void)
 
 
 	// ポリゴンの更新
-	for (int nCntResult = 0; nCntResult < MAX_SET_RESULT; nCntResult++)
+	for (int nCntResult = 0; nCntResult < MAX_SET_RESULT2; nCntResult++)
 	{
-		if (g_aResult[nCntResult].bUse == true && g_aResult[nCntResult].bPolygon == true)
+		if (g_aResult2[nCntResult].bUse == true && g_aResult2[nCntResult].bPolygon == true)
 		{// 使用している場合
 
 			// 対角線の値を求める
-			fWidth = g_aResultPolygon[g_aResult[nCntResult].nIdx].fSizeWidth * 2.0f;	// 幅の長さを求める
-			fHeight = g_aResultPolygon[g_aResult[nCntResult].nIdx].fSizeHeight * 2.0f;	// 高さの長さを求める
+			fWidth = g_aResultPolygon2[g_aResult2[nCntResult].nIdx].fSizeWidth * 2.0f;	// 幅の長さを求める
+			fHeight = g_aResultPolygon2[g_aResult2[nCntResult].nIdx].fSizeHeight * 2.0f;	// 高さの長さを求める
 			fLength = sqrtf(fWidth * fWidth + fHeight * fHeight) * 0.5f;				// 対角線の長さを求める
 			fAngle = atan2f(fWidth, fHeight);											// 対角線の角度を求める
 
 			// 頂点バッファをロックし、頂点情報へのポインタを取得
-			g_pVtxBuffResult->Lock(0, 0, (void**)&pVtx, 0);
+			g_pVtxBuffResult2->Lock(0, 0, (void**)&pVtx, 0);
 
-			pVtx += (g_aResult[nCntResult].nIdx * 4);	// 頂点バッファをインデックス分進める
+			pVtx += (g_aResult2[nCntResult].nIdx * 4);	// 頂点バッファをインデックス分進める
 
 			// 頂点座標の設定
-			pVtx[0].pos.x = g_aResult[nCntResult].pos.x - sinf(fAngle - g_aResult[nCntResult].rot.y) * fLength;
-			pVtx[1].pos.x = g_aResult[nCntResult].pos.x + sinf(fAngle + g_aResult[nCntResult].rot.y) * fLength;
-			pVtx[2].pos.x = g_aResult[nCntResult].pos.x - sinf(fAngle + g_aResult[nCntResult].rot.y) * fLength;
-			pVtx[3].pos.x = g_aResult[nCntResult].pos.x + sinf(fAngle - g_aResult[nCntResult].rot.y) * fLength;
+			pVtx[0].pos.x = g_aResult2[nCntResult].pos.x - sinf(fAngle - g_aResult2[nCntResult].rot.y) * fLength;
+			pVtx[1].pos.x = g_aResult2[nCntResult].pos.x + sinf(fAngle + g_aResult2[nCntResult].rot.y) * fLength;
+			pVtx[2].pos.x = g_aResult2[nCntResult].pos.x - sinf(fAngle + g_aResult2[nCntResult].rot.y) * fLength;
+			pVtx[3].pos.x = g_aResult2[nCntResult].pos.x + sinf(fAngle - g_aResult2[nCntResult].rot.y) * fLength;
 
-			pVtx[0].pos.y = g_aResult[nCntResult].pos.y - cosf(fAngle - g_aResult[nCntResult].rot.y) * fLength;
-			pVtx[1].pos.y = g_aResult[nCntResult].pos.y - cosf(fAngle + g_aResult[nCntResult].rot.y) * fLength;
-			pVtx[2].pos.y = g_aResult[nCntResult].pos.y + cosf(fAngle + g_aResult[nCntResult].rot.y) * fLength;
-			pVtx[3].pos.y = g_aResult[nCntResult].pos.y + cosf(fAngle - g_aResult[nCntResult].rot.y) * fLength;
+			pVtx[0].pos.y = g_aResult2[nCntResult].pos.y - cosf(fAngle - g_aResult2[nCntResult].rot.y) * fLength;
+			pVtx[1].pos.y = g_aResult2[nCntResult].pos.y - cosf(fAngle + g_aResult2[nCntResult].rot.y) * fLength;
+			pVtx[2].pos.y = g_aResult2[nCntResult].pos.y + cosf(fAngle + g_aResult2[nCntResult].rot.y) * fLength;
+			pVtx[3].pos.y = g_aResult2[nCntResult].pos.y + cosf(fAngle - g_aResult2[nCntResult].rot.y) * fLength;
 
 			pVtx[0].pos.z = 0.0f;
 			pVtx[1].pos.z = 0.0f;
@@ -428,29 +424,29 @@ void UpdateResult(void)
 			pVtx[3].pos.z = 0.0f;
 
 			// 頂点カラーの設定
-			pVtx[0].col = g_aResultPolygon[g_aResult[nCntResult].nIdx].col;	
-			pVtx[1].col = g_aResultPolygon[g_aResult[nCntResult].nIdx].col;
-			pVtx[2].col = g_aResultPolygon[g_aResult[nCntResult].nIdx].col;
-			pVtx[3].col = g_aResultPolygon[g_aResult[nCntResult].nIdx].col;
+			pVtx[0].col = g_aResultPolygon2[g_aResult2[nCntResult].nIdx].col;	
+			pVtx[1].col = g_aResultPolygon2[g_aResult2[nCntResult].nIdx].col;
+			pVtx[2].col = g_aResultPolygon2[g_aResult2[nCntResult].nIdx].col;
+			pVtx[3].col = g_aResultPolygon2[g_aResult2[nCntResult].nIdx].col;
 
 			// UV座標設定
-			pVtx[0].tex.x = g_aResultPolygon[g_aResult[nCntResult].nIdx].texPos.x;
-			pVtx[1].tex.x = g_aResultPolygon[g_aResult[nCntResult].nIdx].texPos.x + g_aResultPolygon[g_aResult[nCntResult].nIdx].texSize.x;
-			pVtx[2].tex.x = g_aResultPolygon[g_aResult[nCntResult].nIdx].texPos.x;
-			pVtx[3].tex.x = g_aResultPolygon[g_aResult[nCntResult].nIdx].texPos.x + g_aResultPolygon[g_aResult[nCntResult].nIdx].texSize.x;
+			pVtx[0].tex.x = g_aResultPolygon2[g_aResult2[nCntResult].nIdx].texPos.x;
+			pVtx[1].tex.x = g_aResultPolygon2[g_aResult2[nCntResult].nIdx].texPos.x + g_aResultPolygon2[g_aResult2[nCntResult].nIdx].texSize.x;
+			pVtx[2].tex.x = g_aResultPolygon2[g_aResult2[nCntResult].nIdx].texPos.x;
+			pVtx[3].tex.x = g_aResultPolygon2[g_aResult2[nCntResult].nIdx].texPos.x + g_aResultPolygon2[g_aResult2[nCntResult].nIdx].texSize.x;
 
-			pVtx[0].tex.y = g_aResultPolygon[g_aResult[nCntResult].nIdx].texPos.y;
-			pVtx[1].tex.y = g_aResultPolygon[g_aResult[nCntResult].nIdx].texPos.y;
-			pVtx[2].tex.y = g_aResultPolygon[g_aResult[nCntResult].nIdx].texPos.y + g_aResultPolygon[g_aResult[nCntResult].nIdx].texSize.y;
-			pVtx[3].tex.y = g_aResultPolygon[g_aResult[nCntResult].nIdx].texPos.y + g_aResultPolygon[g_aResult[nCntResult].nIdx].texSize.y;
+			pVtx[0].tex.y = g_aResultPolygon2[g_aResult2[nCntResult].nIdx].texPos.y;
+			pVtx[1].tex.y = g_aResultPolygon2[g_aResult2[nCntResult].nIdx].texPos.y;
+			pVtx[2].tex.y = g_aResultPolygon2[g_aResult2[nCntResult].nIdx].texPos.y + g_aResultPolygon2[g_aResult2[nCntResult].nIdx].texSize.y;
+			pVtx[3].tex.y = g_aResultPolygon2[g_aResult2[nCntResult].nIdx].texPos.y + g_aResultPolygon2[g_aResult2[nCntResult].nIdx].texSize.y;
 
 			// 頂点バッファをアンロックする
-			g_pVtxBuffResult->Unlock();
+			g_pVtxBuffResult2->Unlock();
 		}
 	}
 	
 	// 次のモードへの移動処理
-	if (pFade == FADE_NONE && g_resultState == RESULTSTAE_WAIT 
+	if (pFade == FADE_NONE && g_resultState2 == RESULTSTAE_WAIT 
 	    || (GetKeyboardTrigger(DIK_RETURN) == true || GetJoypadTrigger(0, JOYKEY_START) == true || GetJoypadTrigger(0, JOYKEY_A) == true))
 	{// 決定キー（ENTERキー）が押された
 		
@@ -462,36 +458,36 @@ void UpdateResult(void)
 //========================================================================
 // リザルトの描画処理
 //========================================================================
-void DrawResult(void)
+void DrawResult2(void)
 {
 	//DrawBG();
 
 	for (int nCntLevel = 0; nCntLevel < MAX_DROWLEVEL; nCntLevel++)
 	{// 描画レベル分繰り返す
 
-		for (int nCntResult = 0; nCntResult < MAX_SET_RESULT; nCntResult++)
+		for (int nCntResult = 0; nCntResult < MAX_SET_RESULT2; nCntResult++)
 		{// リザルトの最大数だけ繰り返す
 
-			if (g_aResult[nCntResult].bUse == true && g_aResult[nCntResult].bDisp == true)
+			if (g_aResult2[nCntResult].bUse == true && g_aResult2[nCntResult].bDisp == true)
 			{// 使用されている && 表示されている
 
-				if (g_aResult[nCntResult].nDrowLevel != nCntLevel)
+				if (g_aResult2[nCntResult].nDrowLevel != nCntLevel)
 				{// 描画レベルが同じでない場合
 
 					continue;	// 処理の始めに戻る
 				}
 
-				if (g_aResult[nCntResult].bPolygon == true)
+				if (g_aResult2[nCntResult].bPolygon == true)
 				{// 種類がポリゴンの場合
 
 					// ポリゴンの描画処理
-					DrawResultPolygon(g_aResult[nCntResult].nIdx);
+					DrawResultPolygon2(g_aResult2[nCntResult].nIdx);
 				}
 				else
 				{// 種類がモデルの場合
 
 					// モデルの描画処理
-					DrawResultModel(&g_aResult[nCntResult]);
+					DrawResultModel2(&g_aResult2[nCntResult]);
 				}
 				
 			}
@@ -504,7 +500,7 @@ void DrawResult(void)
 //========================================================================
 // リザルトのポリゴンの描画処理
 //========================================================================
-void DrawResultPolygon(int nIdx)
+void DrawResultPolygon2(int nIdx)
 {
 	LPDIRECT3DDEVICE9 pDevice;	// デバイスへのポインタ
 
@@ -512,7 +508,7 @@ void DrawResultPolygon(int nIdx)
 	pDevice = GetDevice();
 
 	// 頂点バッファをデータストリームに設定
-	pDevice->SetStreamSource(0, g_pVtxBuffResult, 0, sizeof(VERTEX_2D));
+	pDevice->SetStreamSource(0, g_pVtxBuffResult2, 0, sizeof(VERTEX_2D));
 
 	// 頂点フォーマットの設定
 	pDevice->SetFVF(FVF_VERTEX_2D);
@@ -521,7 +517,7 @@ void DrawResultPolygon(int nIdx)
 	if (nIdx != -1)
 	{// テクスチャがある場合
 
-		pDevice->SetTexture(0, g_apTextureResult[g_aResultPolygon[nIdx].nIdxTexture]);
+		pDevice->SetTexture(0, g_apTextureResult2[g_aResultPolygon2[nIdx].nIdxTexture]);
 	}
 	else
 	{// テクスチャがない場合
@@ -529,7 +525,7 @@ void DrawResultPolygon(int nIdx)
 		pDevice->SetTexture(0, NULL);
 	}
 
-	if (g_aResultPolygon[nIdx].bAlphaBlend == true)
+	if (g_aResultPolygon2[nIdx].bAlphaBlend == true)
 	{// aブレンドをする場合
 
 		// 減算合成の設定
@@ -543,7 +539,7 @@ void DrawResultPolygon(int nIdx)
 						   nIdx * 4,			// インデックス
 						   2);					// ポリゴン数
 
-	if (g_aResultPolygon[nIdx].bAlphaBlend == true)
+	if (g_aResultPolygon2[nIdx].bAlphaBlend == true)
 	{// aブレンドをする場合
 
 		// 減算合成の設定を元に戻す 
@@ -556,7 +552,7 @@ void DrawResultPolygon(int nIdx)
 //========================================================================
 // リザルトのモデルの描画処理
 //========================================================================
-void DrawResultModel(Result* pResult)
+void DrawResultModel2(Result2* pResult)
 {
 	// 変数宣言 ===========================================
 
@@ -616,41 +612,41 @@ void DrawResultModel(Result* pResult)
 //========================================================================
 // リザルトの設定処理
 //========================================================================
-int SetResult(bool bPolygon, int nIdx, int nDrowLevel, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
+int SetResult2(bool bPolygon, int nIdx, int nDrowLevel, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 {
 	EsaData* pEsaData = GetEsaData(0);
 
-	for (int nCntResult = 0; nCntResult < MAX_NUM_RESULT; nCntResult++)
+	for (int nCntResult = 0; nCntResult < MAX_NUM_RESULT2; nCntResult++)
 	{
-		if (g_aResultPolygon[nCntResult].bUse == false)
+		if (g_aResultPolygon2[nCntResult].bUse == false)
 		{// 使用していない場合
 
-			g_aResult[nCntResult].bPolygon = bPolygon;
-			g_aResult[nCntResult].nDrowLevel = nDrowLevel;
-			g_aResult[nCntResult].pos = pos;
-			g_aResult[nCntResult].rot = rot;
-			g_aResult[nCntResult].bDisp = true;
-			g_aResult[nCntResult].bUse = true;
+			g_aResult2[nCntResult].bPolygon = bPolygon;
+			g_aResult2[nCntResult].nDrowLevel = nDrowLevel;
+			g_aResult2[nCntResult].pos = pos;
+			g_aResult2[nCntResult].rot = rot;
+			g_aResult2[nCntResult].bDisp = true;
+			g_aResult2[nCntResult].bUse = true;
 			
-			if (g_aResult[nCntResult].bPolygon == true)
+			if (g_aResult2[nCntResult].bPolygon == true)
 			{// ポリゴンの場合
 
 				// ポリゴンの設定
-				g_aResult[nCntResult].nIdx = SetResultPolygon(g_aResultPolygonInfo[nIdx].nIdxTexture, g_aResultPolygonInfo[nIdx].bAlphaBlend,	// インデックステクスチャ, aブレンドをするか
-															  g_aResultPolygonInfo[nIdx].fSizeWidth, g_aResultPolygonInfo[nIdx].fSizeHeight,	// 幅, 高さ
-															  g_aResultPolygonInfo[nIdx].texPos, g_aResultPolygonInfo[nIdx].texSize, 			// テクスチャ座標, テクスチャサイズ
-															  g_aResultPolygonInfo[nIdx].col);													// 色
+				g_aResult2[nCntResult].nIdx = SetResultPolygon2(g_aResultPolygonInfo2[nIdx].nIdxTexture, g_aResultPolygonInfo2[nIdx].bAlphaBlend,	// インデックステクスチャ, aブレンドをするか
+															  g_aResultPolygonInfo2[nIdx].fSizeWidth, g_aResultPolygonInfo2[nIdx].fSizeHeight,	// 幅, 高さ
+															  g_aResultPolygonInfo2[nIdx].texPos, g_aResultPolygonInfo2[nIdx].texSize, 			// テクスチャ座標, テクスチャサイズ
+															  g_aResultPolygonInfo2[nIdx].col);													// 色
 			}
 			else
 			{// モデルの場合
 
 				if (pEsaData[nIdx].bUse == true)
 				{
-					g_aResult[nCntResult].nIdx = nIdx;
+					g_aResult2[nCntResult].nIdx = nIdx;
 				}
 			}
 
-			g_nSelectNum = nCntResult;
+			g_nSelectNum2 = nCntResult;
 
 			return nCntResult;
 		}
@@ -662,23 +658,23 @@ int SetResult(bool bPolygon, int nIdx, int nDrowLevel, D3DXVECTOR3 pos, D3DXVECT
 //========================================================================
 // リザルトのポリゴンの設定処理
 //========================================================================
-int SetResultPolygon(int nIdxTexture, bool bAlphaBlend, float fSizeWidth, float fSizeHeight,
+int SetResultPolygon2(int nIdxTexture, bool bAlphaBlend, float fSizeWidth, float fSizeHeight,
 					  D3DXVECTOR2 texPos, D3DXVECTOR2 texSize, D3DXCOLOR col)
 {
-	for (int nCntResult = 0; nCntResult < MAX_NUM_RESULT; nCntResult++)
+	for (int nCntResult = 0; nCntResult < MAX_NUM_RESULT2; nCntResult++)
 	{
-		if (g_aResultPolygon[nCntResult].bUse == false)
+		if (g_aResultPolygon2[nCntResult].bUse == false)
 		{// 使用していない場合
 
 			// ポリゴンの情報を設定
-			g_aResultPolygon[nCntResult].nIdxTexture = nIdxTexture;		// テクスチャインデックスを設定
-			g_aResultPolygon[nCntResult].fSizeWidth = fSizeWidth;		// 幅の大きさを設定
-			g_aResultPolygon[nCntResult].fSizeHeight = fSizeHeight;		// 高さの大きさを設定
-			g_aResultPolygon[nCntResult].col = col;						// 色を設定
-			g_aResultPolygon[nCntResult].texPos = texPos;				// 位置を設定
-			g_aResultPolygon[nCntResult].texSize = texSize;				// テクスチャ座標を設定
-			g_aResultPolygon[nCntResult].bAlphaBlend = bAlphaBlend;		// aブレンドの状態を設定
-			g_aResultPolygon[nCntResult].bUse = true;					// 使用している状態に設定
+			g_aResultPolygon2[nCntResult].nIdxTexture = nIdxTexture;		// テクスチャインデックスを設定
+			g_aResultPolygon2[nCntResult].fSizeWidth = fSizeWidth;		// 幅の大きさを設定
+			g_aResultPolygon2[nCntResult].fSizeHeight = fSizeHeight;		// 高さの大きさを設定
+			g_aResultPolygon2[nCntResult].col = col;						// 色を設定
+			g_aResultPolygon2[nCntResult].texPos = texPos;				// 位置を設定
+			g_aResultPolygon2[nCntResult].texSize = texSize;				// テクスチャ座標を設定
+			g_aResultPolygon2[nCntResult].bAlphaBlend = bAlphaBlend;		// aブレンドの状態を設定
+			g_aResultPolygon2[nCntResult].bUse = true;					// 使用している状態に設定
 
 			return nCntResult;	// 設定した場所のインデックスを返す
 		}
@@ -690,7 +686,7 @@ int SetResultPolygon(int nIdxTexture, bool bAlphaBlend, float fSizeWidth, float 
 //========================================================================
 // リザルトの情報を貰う処理
 //========================================================================
-void ReceiveResult(bool bGame,
+void ReceiveResult2(bool bGame,
 				   int* pHaveEsa, int nMaxPlayer, int nMaxHave,
 				   EsaData* pEsaData, int nMaxEsaType)
 {
@@ -700,20 +696,20 @@ void ReceiveResult(bool bGame,
 
 	// ====================================================
 
-	g_bScreenTransGame = bGame;		// ゲームから情報を貰ったかを設定
+	g_bScreenTransGame2 = bGame;		// ゲームから情報を貰ったかを設定
 
-	g_nMaxPlayer = nMaxPlayer;		// プレイヤーの総数を設定
-	g_nMaxEsaType = nMaxEsaType;	// エサの種類の総数を設定
+	g_nMaxPlayer2 = nMaxPlayer;		// プレイヤーの総数を設定
+	g_nMaxEsaType2 = nMaxEsaType;	// エサの種類の総数を設定
 
 	// エサの種類別所持数を初期化
-	for (nCntResult = 0; nCntResult < g_nMaxPlayer; nCntResult++)
+	for (nCntResult = 0; nCntResult < g_nMaxPlayer2; nCntResult++)
 	{
 		
-		memset(&g_aNumHaveEsa[nCntResult][0], 0, MAX_ESATYPE);
+		memset(&g_aNumHaveEsa2[nCntResult][0], 0, MAX_ESATYPE);
 	}
 
 	// 持っているエサの数の集計
-	for (nCntResult = 0; nCntResult < g_nMaxPlayer; nCntResult++)
+	for (nCntResult = 0; nCntResult < g_nMaxPlayer2; nCntResult++)
 	{// プレイヤーの総数分繰り返す
 
 		int *pHave = &pHaveEsa[nCntResult];	// nCnt目のプレイヤーの所持情報を設定
@@ -728,17 +724,17 @@ void ReceiveResult(bool bGame,
 				continue;	// 処理の始めに戻る
 			}
 
-			g_aNumHaveEsa[nCntResult][*pHave]++;	// 所持しているプレイヤーのエサの種類の場所の値を増やす
+			g_aNumHaveEsa2[nCntResult][*pHave]++;	// 所持しているプレイヤーのエサの種類の場所の値を増やす
 		}
 	}
 
 	// リザルト用のエサモデルの設定
-	for (nCntResult = 0; nCntResult < g_nMaxEsaType; nCntResult++)
+	for (nCntResult = 0; nCntResult < g_nMaxEsaType2; nCntResult++)
 	{// エサの種類の数だけ繰り返す
 
 		//g_aEsaModelResult[nCntResult] = pEsaData->model;	// モデルの情報をリザルト用のモデル情報に代入
 
-		g_aEsaScore[nCntResult] = pEsaData->nScore;			// スコアを設定
+		g_aEsaScore2[nCntResult] = pEsaData->nScore;			// スコアを設定
 
 		pEsaData++;	// モデルのポインタを進める
 	}
