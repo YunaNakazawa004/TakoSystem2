@@ -16,7 +16,7 @@
 
 #define MAX_READY				(2)										// レディの最大オブジェクト数
 #define MAX_READY_TEX			(2)										// レディの最大テクスチャ数
-#define SetTexReady(nIdx)		(pVtx[0].tex = {1 / 3.0f * nIdx, 0.0f}, pVtx[1].tex = {1 / 3.0f * (nIdx+1), 0.0f}, pVtx[2].tex ={1 / 3.0f * nIdx, 0.5f}, pVtx[3].tex = {1 / 3.0f * (nIdx+1), 0.5f})
+#define SetTexReady(nIdx)		(pVtx[0].tex = {1 / 3.0f * nIdx, 0.0f}, pVtx[1].tex = {1 / 3.0f * (nIdx+1), 0.0f}, pVtx[2].tex ={1 / 3.0f * nIdx, 1.0f}, pVtx[3].tex = {1 / 3.0f * (nIdx+1), 1.0f})
 
 //=======================================
 // 構造体の定義
