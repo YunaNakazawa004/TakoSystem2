@@ -274,9 +274,6 @@ void DrawObject(void)
 //=============================================================================
 void SetObject(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nIdx, bool bCollision)
 {
-	float fPosX = 0.0f;
-	float fPosZ = 0.0f;
-
 	for (int nCntObject = 0; nCntObject < MAX_OBJECT; nCntObject++)
 	{
 		if (g_aObject[nCntObject].bUse == false)
@@ -417,7 +414,6 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 #else
 		for (int nCnt = 0; nCnt < 4; nCnt++)
 		{
-			//if (bInsec == false)PrintDebugProc("[ %d ]\n", nCnt);
 			ObjectModel* pObjectModel = &g_aObjectModel[pObject->nType];
 
 			D3DXVECTOR3 start, end;
@@ -446,25 +442,15 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 			start.y = 0.0f;
 			start.z = pObject->pos.z + fZS;
 
-			//if (bInsec == false)PrintDebugProc("始点( %f %f %f )\n", start.x, start.y, start.z);
-
 			// 終点
 			end.x = pObject->pos.x + fXE;
 			end.y = 0.0f;
 			end.z = pObject->pos.z + fZE;
 
-			//if (bInsec == false)PrintDebugProc("終点( %f %f %f )\n", end.x, end.y, end.z);
-
-			//if (bInsec == false)SetLine(nCnt + nCntObject * 8, start, end);
-			//if (bInsec == false)SetLine(nCnt + 4 + nCntObject * 8, D3DXVECTOR3(start.x, start.y + pObjectModel->VtxMax.y, start.z),
-			//	D3DXVECTOR3(end.x, end.y + pObjectModel->VtxMax.y, end.z));
-
 			// 境界線ベクトル
 			vecLine.x = (end.x) - (start.x);
 			vecLine.y = 0.0f;
 			vecLine.z = (end.z) - (start.z);
-
-			//PrintDebugProc("境界線ベクトル( %f %f %f )\n", vecLine.x, vecLine.y, vecLine.z);
 
 			// 移動ベクトル
 			vecMove.x = pPos->x - pPosOld->x;
@@ -485,8 +471,6 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 			vecNor.z = (vecLine.x * sinf(D3DX_PI * 0.5f)) - (vecLine.z * cosf(D3DX_PI * 0.5f));
 			D3DXVec3Normalize(&vecNor, &vecNor);		// ベクトルを正規化する
 
-			//PrintDebugProc("法線ベクトル( %f %f %f )\n", vecNor.x, vecNor.y, vecNor.z);
-
 			// 内積
 			fDot = (-vecMove.x * vecNor.x) + (-vecMove.z * vecNor.z);
 
@@ -497,8 +481,6 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 			fRate = ((vecToPos.z * vecMove.x) - (vecToPos.x * vecMove.z)) /
 				((vecLine.z * vecMove.x) - (vecLine.x * vecMove.z));
 
-			//PrintDebugProc("fRate : %f\n", fRate);
-
 			float fAngle;
 
 			// 角度
@@ -508,8 +490,6 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 			fAngle = D3DX_PI - fAngle;
 			fAngle -= D3DX_PI * 0.5f;
 			CorrectAngle(&fAngle, fAngle);
-
-			//if (bInsec == false)PrintDebugProc("入射角 : %f\n", fAngle);
 
 			// 反射後の移動ベクトル
 			vecMoveRef.x = vecMove.x + ((vecNor.x * fDot) * 2);
@@ -528,33 +508,10 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 						insec.x = start.x + (vecLine.x * (fRate));
 						insec.y = pPos->y;
 						insec.z = start.z + (vecLine.z * (fRate));
-
-						//PrintDebugProc("交点( %f %f %f )\n", insec.x, insec.y, insec.z);
 					}
 					else if ((pObject->posOff.y + pObjectModel->VtxMin.y - fHeight <= pPos->y) &&
 						(pObject->posOff.y + pObjectModel->VtxMax.y >= pPos->y))
 					{
-						//D3DXVECTOR3 vecPosDiff;
-						//vecPosDiff.x = -(insec.x - pPos->x);
-						//vecPosDiff.y = 0.0f;
-						//vecPosDiff.z = -(insec.z - pPos->z);
-						//D3DXVec3Normalize(&vecPosDiff, &vecPosDiff);		// ベクトルを正規化する
-
-						////PrintDebugProc("めり込みベクトル( %f %f %f )\n", vecPosDiff.x, vecPosDiff.y, vecPosDiff.z);
-
-						//if (fAngle < 0)
-						//{// 壁に対して右側から
-						//	vecMoveDest.x = (vecPosDiff.x * cosf(-(D3DX_PI * 0.5f) - fAngle)) + (vecPosDiff.z * sinf(-(D3DX_PI * 0.5f) - fAngle));
-						//	vecMoveDest.y = 0.0f;
-						//	vecMoveDest.z = (vecPosDiff.x * sinf((D3DX_PI * 0.5f) - fAngle)) - (vecPosDiff.z * cosf((D3DX_PI * 0.5f) - fAngle));
-						//}
-						//else
-						//{// 左側から
-						//	vecMoveDest.x = (vecPosDiff.x * cosf((D3DX_PI * 0.5f) - fAngle)) + (vecPosDiff.z * sinf((D3DX_PI * 0.5f) - fAngle));
-						//	vecMoveDest.y = 0.0f;
-						//	vecMoveDest.z = (vecPosDiff.x * sinf(-(D3DX_PI * 0.5f) - fAngle)) - (vecPosDiff.z * cosf(-(D3DX_PI * 0.5f) - fAngle));
-						//}
-
 						D3DXVECTOR3 move = vecMove;
 						move.y = 0.0f;
 						D3DXVec3Normalize(&move, &move);
@@ -565,8 +522,6 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 						{// 壁に向かっているときだけ法線成分を消す
 							vecMoveDest = move - (vecNor * fDotN);
 						}
-
-						//PrintDebugProc("壁刷りベクトル( %f %f %f )\n", vecMoveDest.x, vecMoveDest.y, vecMoveDest.z);
 
 						pPos->x = start.x + (vecLine.x * fRate) + vecMoveDest.x;
 						pPos->z = start.z + (vecLine.z * fRate) + vecMoveDest.z;

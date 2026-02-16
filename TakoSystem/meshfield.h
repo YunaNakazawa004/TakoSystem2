@@ -16,7 +16,6 @@ typedef enum
 {
 	MESHFIELDTYPE_ROAD = 0,					// ìπ
 	MESHFIELDTYPE_SNOW,						// ê·
-	MESHFIELDTYPE_ICE,						// ïX
 	MESHFIELDTYPE_MAX
 }MESHFIELDTYPE;
 
