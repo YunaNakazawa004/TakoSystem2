@@ -97,6 +97,7 @@ void InitPlayer(void)
 		pPlayer->bUse = false;
 		pPlayer->bBlind = false;
 		pPlayer->nBlindCounter = 0;
+		memset(&pPlayer->nOrbitIdx, -1, sizeof(int[8]));
 		pPlayer->nFood = 0;
 		pPlayer->esaQueue.nTail = -1;
 		memset(&pPlayer->esaQueue.nData, -1, sizeof(int[MAX_QUEUE]));
@@ -615,7 +616,7 @@ void UpdatePlayer(void)
 			// ãOê’
 			for (int nCntTent = 0; nCntTent < PLAYER_TENTACLE; nCntTent++)
 			{
-				SetMeshOrbit(D3DXVECTOR3(pPlayer->aModel[(nCntTent + 1) * 4].posOff.x, pPlayer->aModel[(nCntTent + 1) * 4].posOff.y, pPlayer->aModel[(nCntTent + 1) * 4].posOff.z),
+				SetMeshOrbitPos(pPlayer->nOrbitIdx[nCntTent], D3DXVECTOR3(pPlayer->aModel[(nCntTent + 1) * 4].posOff.x, pPlayer->aModel[(nCntTent + 1) * 4].posOff.y, pPlayer->aModel[(nCntTent + 1) * 4].posOff.z),
 					D3DXVECTOR3(pPlayer->aModel[(nCntTent + 1) * 4].posOff.x, pPlayer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pPlayer->aModel[(nCntTent + 1) * 4].posOff.z),
 					WHITE_VTX, CYAN_VTX, &pPlayer->aModel[(nCntTent + 1) * 4].mtxWorld);
 			}
@@ -984,6 +985,17 @@ void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType
 	pPlayer[nIdx].nMaxFood = 1;
 	pPlayer[nIdx].nTentacleCooldown = 0;
 	pPlayer[nIdx].nInkCooldown = 0;
+
+	for (int nCntTent = 0; nCntTent < PLAYER_TENTACLE; nCntTent++)
+	{
+		pPlayer[nIdx].nOrbitIdx[nCntTent] = SetMeshOrbit(D3DXVECTOR3(pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.x, pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.y, pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.z),
+			D3DXVECTOR3(pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.x, pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.z),
+			WHITE_VTX, CYAN_VTX, &pPlayer[nIdx].aModel[(nCntTent + 1) * 4].mtxWorld);
+
+		SetMeshOrbitPos(pPlayer[nIdx].nOrbitIdx[nCntTent], D3DXVECTOR3(pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.x, pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.y, pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.z),
+			D3DXVECTOR3(pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.x, pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.z),
+			WHITE_VTX, CYAN_VTX, &pPlayer[nIdx].aModel[(nCntTent + 1) * 4].mtxWorld);
+	}
 
 	pPlayer[nIdx].motionType = MOTIONTYPE_NEUTRAL;
 	pPlayer[nIdx].bLoopMotion = pPlayer[nIdx].aMotionInfo[MOTIONTYPE_NEUTRAL].bLoop;

@@ -110,6 +110,8 @@ typedef struct
 	POTSTATE Potstate;			// 状態
 	int nMaxFood;				// 一本の足にもてるエサの最大数
 
+	int nOrbitIdx[8];			// メッシュオービットのインデックス
+
 	// ナビゲーション
 	int nCurrentNode;			// 今いるノード
 	int nNextNode;				// 次に向かうノード

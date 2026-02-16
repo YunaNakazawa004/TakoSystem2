@@ -69,6 +69,9 @@ void InitGame(void)
 	SetCameraPos(0, FIRST_POS, FIRST_POS, CAMERATYPE_PLAYER);
 	SetCameraPos(1, FIRST_POS, FIRST_POS, CAMERATYPE_PLAYER);
 
+	// メッシュオービットの初期化処理
+	InitMeshOrbit();
+
 	// プレイヤーの初期化処理
 	InitPlayer();
 
@@ -94,7 +97,7 @@ void InitGame(void)
 
 	// 塵の初期化処理
 	InitSeaDust();
-		
+
 	// 3Dエフェクトの初期化処理
 	InitEffect3D();
 
@@ -109,9 +112,6 @@ void InitGame(void)
 
 	// エサの初期化処理
 	InitEsa(true);
-
-	// メッシュオービットの初期化処理
-	InitMeshOrbit();
 
 	// 水面の初期化処理
 	InitWaterSurf();
