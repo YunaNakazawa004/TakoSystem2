@@ -13,8 +13,11 @@
 typedef enum
 {
 	RESULTSTATE_BEGIN = 0,	// [0]開始状態
-	RESULTSTAE_WAIT,		// [1]待機状態
-
+	
+	RESULTSTATE_SETING,		// [1]設定状態
+	RESULTSTATE_WAIT,		// [2]待機状態
+	RESULTSTATE_COMPLETE,	// [3]完了状態
+	
 	RESULTSTAE_MAX			// 最大値
 
 }RESULTSTATE;
@@ -45,9 +48,7 @@ int SetResultPolygon		// リザルトのポリゴンの設定処理
  D3DXCOLOR col);										// 色
 
 void ReceiveResult			// リザルトの情報を貰う処理
-(bool bGame,									// ゲームから情報を渡しているか
- int* nHaveEsa, int nMaxPlayer, int nMaxHave,	// 持っているエサ, プレイヤーの総数, 所持できる数
- EsaData *pEsaData, int nMaxEsaType				// エサの情報, エサの種類の総数
+(int pHaveEsa[], int nMaxPlayer, int nMaxHave			// エサの情報, エサの種類の総数
  );
 
 #endif
