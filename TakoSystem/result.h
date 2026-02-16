@@ -22,7 +22,7 @@ typedef enum
 typedef enum
 {
 	RESULTTYPE_RADIATION = 0,	// [0]放射線
-	RESULTTYPE_,
+	RESULTTYPE_PLAYER,
 
 	RESULTTYPE_MAX
 }RESULTTYPE;
@@ -34,15 +34,15 @@ void UninitResult(void);	// リザルトの終了処理
 void UpdateResult(void);	// リザルトの更新処理
 void DrawResult(void);		// リザルトの描画処理
 
-int SetResultPolygon		// リザルトのポリゴンの設定処理
-(int nIdxTexture, bool bAlphaBlend,			// テクスチャインデックス, aブレンドをするか
- float fSizeWidth, float fSizeHeight,		// 大きさ(幅, 高さ)
- D3DXVECTOR2 texPos, D3DXVECTOR2 texSize,	// テクスチャ座標, テクスチャサイズ
- D3DXCOLOR col);							// 色
+void SetResult
+(RESULTTYPE type, D3DXVECTOR3 pos);
 
-int SetResult
-(bool bPolygon, int nIdx, int nDrowLevel,	// ポリゴンか, インデックス, 描画順位
- D3DXVECTOR3 pos, D3DXVECTOR3 rot);			// 位置, 角度
+int SetResultPolygon		// リザルトのポリゴンの設定処理
+(int nIdxTexture, bool bAlphaBlend, int nDrowLevel,		// テクスチャインデックス, aブレンドをするか
+ D3DXVECTOR3 pos, D3DXVECTOR3 rot,						// 位置, 角度
+ float fSizeWidth, float fSizeHeight,					// 大きさ(幅, 高さ)
+ D3DXVECTOR2 texPos, D3DXVECTOR2 texSize,				// テクスチャ座標, テクスチャサイズ
+ D3DXCOLOR col);										// 色
 
 void ReceiveResult			// リザルトの情報を貰う処理
 (bool bGame,									// ゲームから情報を渡しているか
