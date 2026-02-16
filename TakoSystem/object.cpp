@@ -820,9 +820,13 @@ void LoadObject(const char* pStr)
 					}
 				}
 
-				if (nIdx == 8 || nIdx == 9)
+				if (nIdx == 8)
 				{// タコつぼ
-					SetPot(pos, D3DXVECTOR3(D3DX_PI * rot.x / 180.0f, D3DX_PI * rot.y / 180.0f, D3DX_PI * rot.z / 180.0f));
+					SetPot(pos, D3DXVECTOR3(D3DX_PI * rot.x / 180.0f, D3DX_PI * rot.y / 180.0f, D3DX_PI * rot.z / 180.0f), POTTYPE_NORMAL);
+				}
+				else if (nIdx == 9)
+				{// タコつぼ
+					SetPot(pos, D3DXVECTOR3(D3DX_PI * rot.x / 180.0f, D3DX_PI * rot.y / 180.0f, D3DX_PI * rot.z / 180.0f), POTTYPE_LIE);
 				}
 				else
 				{// タコつぼ以外

@@ -14,7 +14,6 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define MAX_POTMODEL		(1)										// タコつぼモデルの最大数
 #define POT_RADIUS			(50.0f)									// タコつぼ周辺の球判定の半径
 
 //*****************************************************************************
@@ -32,15 +31,16 @@ typedef struct
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
-PotModel g_aPotModel[MAX_POTMODEL];						// タコつぼモデルの情報
+PotModel g_aPotModel[POTTYPE_MAX];						// タコつぼモデルの情報
 Pot g_aPot[MAX_POT];									// タコつぼの情報
 
 //*****************************************************************************
 // ファイル名
 //*****************************************************************************
-const char* c_apFilenamePot[MAX_POTMODEL] =
+const char* c_apFilenamePot[POTTYPE_MAX] =
 {
 	"data\\MODEL\\Others_Object\\takotsubo000.x",
+	"data\\MODEL\\Others_Object\\takotsubo001.x",
 };
 
 //=============================================================================
@@ -63,11 +63,12 @@ void InitPot(void)
 		g_aPot[nCntPot].nFood = 0;
 		g_aPot[nCntPot].esaQueue.nTail = -1;
 		memset(&g_aPot[nCntPot].esaQueue.nData, -1, sizeof(int[MAX_QUEUE]));
+		g_aPot[nCntPot].type = POTTYPE_NORMAL;
 		g_aPot[nCntPot].bUse = false;
 	}
 
 	// タコつぼモデルの情報の初期化
-	for (int nCntPot = 0; nCntPot < MAX_POTMODEL; nCntPot++)
+	for (int nCntPot = 0; nCntPot < POTTYPE_MAX; nCntPot++)
 	{
 		// 最大値最小値の初期化
 		g_aPotModel[nCntPot].VtxMax = D3DXVECTOR3(-10000.0f, -10000.0f, -10000.0f);
@@ -153,7 +154,7 @@ void InitPot(void)
 //=============================================================================
 void UninitPot(void)
 {
-	for (int nCntPotModel = 0; nCntPotModel < MAX_POTMODEL; nCntPotModel++)
+	for (int nCntPotModel = 0; nCntPotModel < POTTYPE_MAX; nCntPotModel++)
 	{
 		// メッシュの破棄
 		if (g_aPotModel[nCntPotModel].pMesh != NULL)
@@ -251,18 +252,18 @@ void DrawPot(void)
 			pDevice->GetMaterial(&matDef);
 
 			// マテリアルデータへのポインタを取得
-			pMat = (D3DXMATERIAL*)g_aPotModel[0].pBuffMat->GetBufferPointer();
+			pMat = (D3DXMATERIAL*)g_aPotModel[g_aPot[nCntPot].type].pBuffMat->GetBufferPointer();
 
-			for (int nCntMat = 0; nCntMat < (int)g_aPotModel[0].dwNumMat; nCntMat++)
+			for (int nCntMat = 0; nCntMat < (int)g_aPotModel[g_aPot[nCntPot].type].dwNumMat; nCntMat++)
 			{
 				// マテリアルの設定
 				pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
 
 				// テクスチャの設定
-				pDevice->SetTexture(0, g_aPotModel[0].apTexture[nCntMat]);
+				pDevice->SetTexture(0, g_aPotModel[g_aPot[nCntPot].type].apTexture[nCntMat]);
 
 				// モデルパーツの描画
-				g_aPotModel[0].pMesh->DrawSubset(nCntMat);
+				g_aPotModel[g_aPot[nCntPot].type].pMesh->DrawSubset(nCntMat);
 			}
 
 			// 保存していたマテリアルを戻す
@@ -274,7 +275,7 @@ void DrawPot(void)
 //=============================================================================
 // タコつぼの設定処理
 //=============================================================================
-void SetPot(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
+void SetPot(D3DXVECTOR3 pos, D3DXVECTOR3 rot, POTTYPE type)
 {
 	for (int nCntPot = 0; nCntPot < MAX_POT; nCntPot++)
 	{
@@ -285,6 +286,7 @@ void SetPot(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 			g_aPot[nCntPot].nFood = 0;
 			g_aPot[nCntPot].esaQueue.nTail = -1;
 			memset(&g_aPot[nCntPot].esaQueue.nData, -1, sizeof(int[MAX_QUEUE]));
+			g_aPot[nCntPot].type = type;
 			g_aPot[nCntPot].bUse = true;		// 使用している状態にする
 
 			break;
@@ -307,7 +309,7 @@ void SetRandomPot(int nAmount)
 		pos.y = 0.0f;
 		pos.z = cosf(fAngle) * (INCYLINDER_RADIUS + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) + 1))));
 
-		SetPot(pos, FIRST_POS);
+		SetPot(pos, FIRST_POS, POTTYPE_NORMAL);
 	}
 }
 
