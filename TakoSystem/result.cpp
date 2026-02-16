@@ -29,7 +29,11 @@
 
 #define MAX_DROWLEVEL		(5)		// 描画順位の最大値
 
-#define SETARIA_PLAYER	(220.0f)
+#define SETPOS_PLAYER		(D3DXVECTOR3(-167.0f, 85.0f, 0.0f))
+#define SETARIA_PLAYER		(33.0f)
+
+#define WAIT_SETING			(60 * 5)
+
 
 // 構造体の定義 ================================================
 
@@ -101,10 +105,13 @@ ResultPolygon g_aResultPolygon[MAX_NUM_RESULT];					// リザルトのポリゴン情報
 // リザルトの状態
 RESULTSTATE g_resultState = RESULTSTATE_BEGIN;					// リザルトの状態
 int g_nCounterResultState;										// リザルトの状態カウンター
+int g_nNowEsaType;
+
+int g_aIdxUiResultGS[MAX_PLAYER + MAX_COMPUTER] = {};			
 
 // ゲームの情報
 int g_nMaxPlayer;													// プレイヤーの総数
-//int g_nMaxEsaType;													// エサの種類の総数
+int g_nIdxSetEsa;													// エサの種類の総数
 //WORD g_aEsaScore[MAX_ESATYPE] = {};									// エサのスコア
 WORD g_aNumHaveEsa[MAX_PLAYER + MAX_COMPUTER][MAX_ESATYPE] = {};	// 持っているエサの数
 
@@ -112,18 +119,22 @@ WORD g_aNumHaveEsa[MAX_PLAYER + MAX_COMPUTER][MAX_ESATYPE] = {};	// 持っているエ
 const char* c_apFilenameResult[] =
 {
 	"data/TEXTURE/In_the_sea.png",		// [0]背景
-	"data/TEXTURE/RESULT.png",			// [1]RESULTテキスト
-	"data/TEXTURE/RESULT_LINE.png",		// [2]放射線
-	"data/TEXTURE/text_player.png",		// [3]プレイヤーテキスト
-	"data/TEXTURE/number000.png",		// [4]数字
+	"data/TEXTURE/tex_alpha001.jpg",	// [1]スコア背景
+	"data/TEXTURE/RESULT.png",			// [2]RESULTテキスト
+	"data/TEXTURE/RESULT_LINE.png",		// [3]放射線
+	"data/TEXTURE/text_player.png",		// [4]プレイヤーテキスト
+	"data/TEXTURE/number000.png",		// [5]数字
 };
 
 ResultPolygon_info g_aResultPolygonInfo[] =
 {// {テクスチャインデックス, aブレンドをするか,描画順位, オフセット, 角度,  幅, 高さ, テクスチャ座標, テクスチャサイズ, 色}
 
 	{0, false, 0, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, D3DXVECTOR2(0.0f,0.0f), D3DXVECTOR2(1.0f,1.0f), D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)},	// [0]背景情報
-	{3, false, 1, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 50.0f, 13.0f, D3DXVECTOR2(0.0f,0.0f), D3DXVECTOR2(1.0f,1.0f), D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)},								// [1]プレイヤー
-	{4, false, 0, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 10.0f, 13.0f, D3DXVECTOR2(0.0f,0.0f), D3DXVECTOR2(0.1f,1.0f), D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)},								// [2]プレイヤーナンバー
+	{1, true, 0, D3DXVECTOR3(0.0f, 112.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 250.0f, 13.0f, D3DXVECTOR2(0.0f,0.0f), D3DXVECTOR2(1.0f,1.0f), D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)},							// [1]リザルトテキスト背景
+	{2, false, 0, D3DXVECTOR3(-176.0f, 112.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 50.0f, 33.0f, D3DXVECTOR2(0.0f,0.0f), D3DXVECTOR2(1.0f,1.0f), D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)},							// [2]リザルトテキスト
+	{3, false, 0, D3DXVECTOR3(134.0f,11.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 70.0f, 70.0f, D3DXVECTOR2(0.0f,0.0f), D3DXVECTOR2(1.0f,1.0f), D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)},								// [3]放射線
+	{4, false, 0, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 45.0f, 10.0f, D3DXVECTOR2(0.0f,0.0f), D3DXVECTOR2(1.0f,1.0f), D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)},								// [4]プレイヤーテキスト
+	{5, false, 0, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 10.0f, 10.0f, D3DXVECTOR2(0.0f,0.0f), D3DXVECTOR2(0.1f,1.0f), D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)},								// [5]プレイヤーナンバー
 };
 
 
@@ -188,6 +199,12 @@ void InitResult(void)
 	g_resultState = RESULTSTATE_BEGIN;	// リザルトの状態を開始状態に設定
 	g_nCounterResultState = 0;			// リザルトの状態カウンターを初期化
 
+	g_nNowEsaType = -1;
+
+	g_nIdxSetEsa = -1;
+
+	memset(&g_aIdxUiResultGS[0], -1, MAX_PLAYER + MAX_COMPUTER);
+
 	// 頂点バッファの生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * 4 * MAX_NUM_RESULT,
 								D3DUSAGE_WRITEONLY,
@@ -238,10 +255,32 @@ void InitResult(void)
 					 g_aResultPolygonInfo[0].pos, g_aResultPolygonInfo[0].rot, g_aResultPolygonInfo[0].fSizeWidth, g_aResultPolygonInfo[0].fSizeHeight,		// 
 					 g_aResultPolygonInfo[0].texPos, g_aResultPolygonInfo[0].texSize, g_aResultPolygonInfo[0].col);											// 
 
+	// リザルトポリゴンの設定(リザルトテキスト背景)
+	SetResultPolygon(g_aResultPolygonInfo[1].nIdxTexture, g_aResultPolygonInfo[1].bAlphaBlend, g_aResultPolygonInfo[1].nDrowLevel,							// 
+					 g_aResultPolygonInfo[1].pos, g_aResultPolygonInfo[1].rot, g_aResultPolygonInfo[1].fSizeWidth, g_aResultPolygonInfo[1].fSizeHeight,		// 
+					 g_aResultPolygonInfo[1].texPos, g_aResultPolygonInfo[1].texSize, g_aResultPolygonInfo[1].col);											// 
 
-	g_nMaxPlayer = 7;
+	// リザルトポリゴンの設定(リザルトテキスト)
+	SetResultPolygon(g_aResultPolygonInfo[2].nIdxTexture, g_aResultPolygonInfo[2].bAlphaBlend, g_aResultPolygonInfo[2].nDrowLevel,							// 
+					 g_aResultPolygonInfo[2].pos, g_aResultPolygonInfo[2].rot, g_aResultPolygonInfo[2].fSizeWidth, g_aResultPolygonInfo[2].fSizeHeight,		// 
+					 g_aResultPolygonInfo[2].texPos, g_aResultPolygonInfo[2].texSize, g_aResultPolygonInfo[2].col);											// 
 
-	SetResult(RESULTTYPE_PLAYER, D3DXVECTOR3(-167.0f, 85.0f, 0.0f));
+	//  リザルトポリゴンの設定(放射線)
+	SetResultPolygon(g_aResultPolygonInfo[3].nIdxTexture, g_aResultPolygonInfo[3].bAlphaBlend, g_aResultPolygonInfo[3].nDrowLevel,							// 
+					 g_aResultPolygonInfo[3].pos, g_aResultPolygonInfo[3].rot, g_aResultPolygonInfo[3].fSizeWidth, g_aResultPolygonInfo[3].fSizeHeight,		// 
+					 g_aResultPolygonInfo[3].texPos, g_aResultPolygonInfo[3].texSize, g_aResultPolygonInfo[3].col);											// 
+
+	int aTmpHaveEsa[3][5] =
+	{
+		{0, 1, 2, 3, 4},
+		{0, 0, 0, 0, 0},
+		{1, 0, 0, 0, -1}
+	};
+
+	//ReceiveResult(&aTmpHaveEsa[0][0], 3, 5);
+
+	// リザルトの設定
+	SetResult(RESULTTYPE_PLAYER, SETPOS_PLAYER);
 
 
 	// サウンドの再生
@@ -306,6 +345,10 @@ void UpdateResult(void)
 	// フェード情報の取得
 	FADE pFade = GetFade();
 
+	EsaData* pEsaData = GetEsaData(0);
+	Esa* pEsa = GetEsa();
+
+
 	// リザルトの獲得スコアUIの更新
 	UpdateUiResultGetScore();
 
@@ -325,9 +368,96 @@ void UpdateResult(void)
 		PrintDebugProc("\nSELECT_POLYGON %d[1,2]", g_nSelectNum);
 		PrintDebugProc("\nDRAWLEVEL %d", g_aResultPolygon[g_nSelectNum].nDrowLevel);
 		PrintDebugProc("\nPOS %f %f %f", g_aResultPolygon[g_nSelectNum].pos.x, g_aResultPolygon[g_nSelectNum].pos.y, g_aResultPolygon[g_nSelectNum].pos.z);
+		PrintDebugProc("\nCOUNTER %d", g_nCounterResultState);
 	}
 
 #endif
+
+	switch(g_resultState)
+	{
+	case RESULTSTATE_BEGIN:
+
+		if (GetKeyboardTrigger(DIK_RETURN))
+		{
+			g_resultState = RESULTSTATE_SETING;
+		}
+	
+		break;
+
+	case RESULTSTATE_WAIT:
+	
+		g_nCounterResultState--;
+
+		if (g_nCounterResultState <= 0)
+		{// カウンタが0になった
+
+			g_resultState = RESULTSTATE_SETING;
+			
+			if (g_nIdxSetEsa != -1)
+			{// エサのインデックスがある
+
+				pEsa[g_nIdxSetEsa].bUse = false;	// インデックスのエサを使用していない状態に設定
+			
+				g_nIdxSetEsa = -1;					// インデックスがない状態に設定
+			}
+
+			for (int nCntPlayer = 0; nCntPlayer < g_nMaxPlayer; nCntPlayer++)
+			{
+				// // リザルトスコアUIの削除
+				DelUiResultGetScore(g_aIdxUiResultGS[nCntPlayer]);
+			}
+		}
+		else
+		{// カウントが0になっていない
+
+			// 表示されているエサの角度の更新
+			pEsa[g_nIdxSetEsa].rot.y += 0.01f;
+
+			if		(pEsa[g_nIdxSetEsa].rot.y < -D3DX_PI)
+			{// -3.14を超えた場合
+
+				pEsa[g_nIdxSetEsa].rot.y + D3DX_PI * 2.0f;
+			}
+			else if (pEsa[g_nIdxSetEsa].rot.y < -D3DX_PI)
+			{// 3.14を超えた場合
+
+				pEsa[g_nIdxSetEsa].rot.y - D3DX_PI * 2.0f;
+			}
+		}
+
+		break;
+	
+	case RESULTSTATE_SETING:
+	
+		g_nCounterResultState = WAIT_SETING;
+
+		g_resultState = RESULTSTATE_WAIT;
+
+		g_nNowEsaType++;
+
+		if (g_nNowEsaType < GetNumEsaType())
+		{
+			for (int nCntPlayer = 0; nCntPlayer < g_nMaxPlayer; nCntPlayer++)
+			{
+				if (g_aNumHaveEsa[nCntPlayer][g_nNowEsaType] > 0)
+				{// 1個でも獲得していた場合
+
+					// リザルトスコアUIの設定
+					g_aIdxUiResultGS[nCntPlayer] = SetUiResultGetScore(SETPOS_PLAYER - D3DXVECTOR3(-70.0f, SETARIA_PLAYER * nCntPlayer, 0.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f),
+																	   pEsaData[g_nNowEsaType].nScore, g_aNumHaveEsa[nCntPlayer][g_nNowEsaType]);
+				}
+			}
+
+			// エサの設定
+			g_nIdxSetEsa = SetEsa(g_nNowEsaType, ESA_ACTTYPE_NONE, 0, D3DXVECTOR3(134.0f, 11.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+		}
+		else
+		{
+			g_resultState = RESULTSTATE_COMPLETE;
+		}
+
+		break;
+	}
 
 	for (int nCntResult = 0; nCntResult < MAX_NUM_RESULT; nCntResult++)
 	{
@@ -365,21 +495,19 @@ void UpdateResult(void)
 			// 頂点バッファをアンロックする
 			g_pVtxBuffResult->Unlock();
 
-			PrintDebugProc("\n========================");
-			PrintDebugProc("\nPOLYGON[%d]_POS %f %f %f", nCntResult, g_aResultPolygon[nCntResult].pos.x, g_aResultPolygon[nCntResult].pos.y, g_aResultPolygon[nCntResult].pos.z);
-			PrintDebugProc("\nPOLYGON[%d]_SIZE %f %f", nCntResult, g_aResultPolygon[nCntResult].fSizeWidth, g_aResultPolygon[nCntResult].fSizeHeight);
-			PrintDebugProc("\nPOLYGON[%d]_COL %f %f %f %f", nCntResult, g_aResultPolygon[nCntResult].col.r, g_aResultPolygon[nCntResult].col.g, g_aResultPolygon[nCntResult].col.b, g_aResultPolygon[nCntResult].col.a);
 		}
 	}
 
 	// 次のモードへの移動処理
-	if (pFade == FADE_NONE && g_resultState == RESULTSTAE_WAIT 
-	    || (GetKeyboardTrigger(DIK_RETURN) == true || GetJoypadTrigger(0, JOYKEY_START) == true || GetJoypadTrigger(0, JOYKEY_A) == true))
+#if 1
+	if (pFade == FADE_NONE && g_resultState == RESULTSTATE_COMPLETE 
+	    || (/*GetKeyboardTrigger(DIK_RETURN) == true ||*/ GetJoypadTrigger(0, JOYKEY_START) == true || GetJoypadTrigger(0, JOYKEY_A) == true))
 	{// 決定キー（ENTERキー）が押された
 		
 		// モード設定
 		SetFade(MODE_RANKING);
 	}
+#endif
 }
 
 //========================================================================
@@ -511,7 +639,7 @@ void SetResult(RESULTTYPE type, D3DXVECTOR3 pos)
 	{
 	case RESULTTYPE_PLAYER:
 
-		int aIdxInfo[] = { 1, 2 };
+		int aIdxInfo[] = { 4, 5 };
 
 		for (int nCntPlayer = 0; nCntPlayer < g_nMaxPlayer; nCntPlayer++)
 		{
@@ -521,7 +649,7 @@ void SetResult(RESULTTYPE type, D3DXVECTOR3 pos)
 			{// プレイヤーと数字の設定
 
 				setPos.x = pos.x + g_aResultPolygonInfo[aIdxInfo[nCntNum]].pos.x + setShiftPos.x + ((nCntNum > 0) ? g_aResultPolygonInfo[aIdxInfo[nCntNum]].fSizeWidth : 0);
-				setPos.y = pos.y + g_aResultPolygonInfo[aIdxInfo[nCntNum]].pos.y - (SETARIA_PLAYER / g_nMaxPlayer) * nCntPlayer;
+				setPos.y = pos.y + g_aResultPolygonInfo[aIdxInfo[nCntNum]].pos.y - SETARIA_PLAYER * nCntPlayer;
 				setPos.z = pos.z + g_aResultPolygonInfo[aIdxInfo[nCntNum]].pos.z;
 
 				if (nCntNum > 0)
@@ -591,7 +719,7 @@ int SetResultPolygon(int nIdxTexture, bool bAlphaBlend, int nDrowLevel,
 //========================================================================
 // リザルトの情報を貰う処理
 //========================================================================
-void ReceiveResult(int* pHaveEsa, int nMaxPlayer, int nMaxHave)
+void ReceiveResult(int pHaveEsa[], int nMaxPlayer, int nMaxHave)
 {
 	// 変数宣言 ===========================================
 
@@ -611,10 +739,10 @@ void ReceiveResult(int* pHaveEsa, int nMaxPlayer, int nMaxHave)
 	for (nCntResult = 0; nCntResult < g_nMaxPlayer; nCntResult++)
 	{// プレイヤーの総数分繰り返す
 
-		int *pHave = &pHaveEsa[nCntResult];	// nCnt目のプレイヤーの所持情報を設定
+		int *pHave = &pHaveEsa[nMaxHave * nCntResult];	// nCntResult目の先頭の所持情報を設定
 
 		// 持っているエサの所持数を増やす
-		for (int nCntHave = 0; nCntHave < nMaxHave; nCntHave++)
+		for (int nCntHave = 0; nCntHave < nMaxHave; nCntHave++, pHave++)
 		{// 所持数の総数分繰り返す
 
 			if (*pHave == -1)

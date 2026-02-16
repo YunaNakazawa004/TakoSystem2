@@ -17,6 +17,16 @@
 #define MAX_POT				(128)									// タコつぼの最大数
 
 //*****************************************************************************
+// タコつぼの種類
+//*****************************************************************************
+typedef enum
+{
+	POTTYPE_NORMAL = 0,			// 直立
+	POTTYPE_LIE,				// 倒れてる
+	POTTYPE_MAX
+}POTTYPE;
+
+//*****************************************************************************
 // タコつぼの構造体
 //*****************************************************************************
 typedef struct
@@ -26,6 +36,7 @@ typedef struct
 	D3DXMATRIX mtxWorld;		// ワールドマトリックス
 	int nFood;					// 入っているエサの数
 	EsaQueue esaQueue;			// エサのインデックス
+	POTTYPE type;				// 種類
 	bool bUse;					// 使用しているかどうか
 }Pot;
 
@@ -36,7 +47,7 @@ void InitPot(void);
 void UninitPot(void);
 void UpdatePot(void);
 void DrawPot(void);
-void SetPot(D3DXVECTOR3 pos, D3DXVECTOR3 rot);
+void SetPot(D3DXVECTOR3 pos, D3DXVECTOR3 rot, POTTYPE type);
 void SetRandomPot(int nAmount);
 Pot* GetPot(void);
 
