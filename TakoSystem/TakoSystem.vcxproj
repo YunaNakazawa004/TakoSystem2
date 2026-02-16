@@ -177,7 +177,6 @@
     <ClCompile Include="ranking.cpp" />
     <ClCompile Include="readygo.cpp" />
     <ClCompile Include="result.cpp" />
-    <ClCompile Include="result2.cpp" />
     <ClCompile Include="screen.cpp" />
     <ClCompile Include="seadust.cpp" />
     <ClCompile Include="sound.cpp" />
@@ -222,7 +221,6 @@
     <ClInclude Include="ranking.h" />
     <ClInclude Include="readygo.h" />
     <ClInclude Include="result.h" />
-    <ClInclude Include="result2.h" />
     <ClInclude Include="screen.h" />
     <ClInclude Include="seadust.h" />
     <ClInclude Include="sound.h" />

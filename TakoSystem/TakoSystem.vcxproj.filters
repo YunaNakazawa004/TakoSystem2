@@ -88,9 +88,6 @@
     <ClCompile Include="result.cpp">
       <Filter>cppファイル</Filter>
     </ClCompile>
-    <ClCompile Include="result2.cpp">
-      <Filter>cppファイル</Filter>
-    </ClCompile>
     <ClCompile Include="screen.cpp">
       <Filter>cppファイル</Filter>
     </ClCompile>
@@ -217,9 +214,6 @@
       <Filter>hファイル</Filter>
     </ClInclude>
     <ClInclude Include="result.h">
-      <Filter>hファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="result2.h">
       <Filter>hファイル</Filter>
     </ClInclude>
     <ClInclude Include="screen.h">
