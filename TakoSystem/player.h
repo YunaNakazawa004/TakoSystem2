@@ -103,6 +103,8 @@ typedef struct
 	int nPotIdx;								// 近づいていたタコつぼのインデックス
 	int nMaxFood;								// 一本の腕に一度に持てるエサの数
 
+	int nOrbitIdx[8];							// メッシュオービットのインデックス
+
 	int nTentacleCooldown;						// 触手のクールダウン
 	int nInkCooldown;							// 墨吐きのクールダウン
 

@@ -94,11 +94,11 @@ void InitTitle(void)
 		&g_pTextureTitle[0]);
 
 	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/PLAYER_SELECT000.png",
+		"data/TEXTURE/PLAYER_SELECT001.png",
 		&g_pTextureTitle[1]);
 
 	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/START002.png",
+		"data/TEXTURE/START003.png",
 		&g_pTextureTitle[2]);
 
 	D3DXCreateTextureFromFile(pDevice,
@@ -138,10 +138,10 @@ void InitTitle(void)
 		}
 		else if (nCntTitle == 1)
 		{// タイトル：プレイ人数
-			pVtx[0].pos = D3DXVECTOR3(640.0f, 460.0f, 0.0f);	// 右回りで設定する
-			pVtx[1].pos = D3DXVECTOR3(1000.0f, 460.0f, 0.0f);	// 2Dの場合Zの値は0にする
-			pVtx[2].pos = D3DXVECTOR3(640.0f, 640.0f, 0.0f);
-			pVtx[3].pos = D3DXVECTOR3(1000.0f, 640.0f, 0.0f);
+			pVtx[0].pos = D3DXVECTOR3(620.0f, 460.0f, 0.0f);	// 右回りで設定する
+			pVtx[1].pos = D3DXVECTOR3(980.0f, 460.0f, 0.0f);	// 2Dの場合Zの値は0にする
+			pVtx[2].pos = D3DXVECTOR3(620.0f, 640.0f, 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(980.0f, 640.0f, 0.0f);
 		}
 		else if (nCntTitle == 2)
 		{// タイトル：START
@@ -305,12 +305,19 @@ void UpdateTitle(void)
 				pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
 				pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
 			}
-			else
-			{// それ以外
+			else if (g_CursorPos == TITLECURSOR_PLAYER_SELECT)
+			{// カーソルが合った時
 				pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);	// 0~255の値を設定
 				pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 				pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 				pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+			}
+			else
+			{// それ以外
+				pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f);	// 0~255の値を設定
+				pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f);
+				pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f);
+				pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f);
 			}
 		}
 		else if (nCntTitle == 2)
@@ -329,12 +336,19 @@ void UpdateTitle(void)
 				pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
 				pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
 			}
-			else
-			{// それ以外
+			else if (g_CursorPos == TITLECURSOR_PLAY_START)
+			{// カーソルが合った時
 				pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);	// 0~255の値を設定
 				pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 				pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 				pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+			}
+			else
+			{// それ以外
+				pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f);	// 0~255の値を設定
+				pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f);
+				pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f);
+				pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f);
 			}
 		}
 		else if (nCntTitle == 3)
