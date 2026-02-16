@@ -599,7 +599,7 @@ void UpdatePlayer(void)
 						int nIdx = Dequeue(&pPlayer->esaQueue);
 						SetSubUiEsa(nCntPlayer);
 
-						SetEsa(nIdx, ESA_ACTTYPE_SWIM, 0, pPlayer->pos, FIRST_POS);
+						SetEsa(nIdx, true, ESA_ACTTYPE_SWIM, 0, pPlayer->pos, FIRST_POS);
 					}
 				}
 			}

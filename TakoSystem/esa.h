@@ -139,7 +139,7 @@ HRESULT SetEsaModel			// エサモデルの設定処理
  EsaModel *pEsaModel);
 
 int SetEsa					// エサの設定処理
-(int nEsaType,							// 設定するエサのタイプ, 
+(int nEsaType, bool SetOrbit,			// 設定するエサのタイプ, 
  ESA_ACTTYPE esaType, int nBehavior,	// エサの挙動, 挙動の値
  D3DXVECTOR3 pos, D3DXVECTOR3 rot);		// 位置, 角度
 

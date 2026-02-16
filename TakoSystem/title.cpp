@@ -20,9 +20,10 @@
 #include "computer.h"
 
 // マクロ定義
-#define	MAX_TITLE	(6)	// タイトルで表示するテクスチャの最大数
+#define	MAX_TITLE	(8)	// タイトルで表示するテクスチャの最大数
 #define	RANKING_DELEY	(1500)	// ランキング移行に掛かる時間（25秒）
 #define	CLEAR_DELEY	(60)	// 消滅にかかる時間
+#define	ENTRY_DELEY	(90)	// 消滅→再登場までにかかる時間
 #define	TITLE_DELEY_MAX	(500.0f)	// タイトルの最大数
 
 // グローバル変数
@@ -113,6 +114,14 @@ void InitTitle(void)
 		"data/TEXTURE/CURSOR.png",
 		&g_pTextureTitle[5]);
 
+	D3DXCreateTextureFromFile(pDevice,
+		"data/TEXTURE/SELECT_CURSOR.png",
+		&g_pTextureTitle[6]);
+
+	D3DXCreateTextureFromFile(pDevice,
+		"data/TEXTURE/SELECT_CURSOR.png",
+		&g_pTextureTitle[7]);
+
 	// 頂点バッファの生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4 * MAX_TITLE,
 		D3DUSAGE_WRITEONLY,
@@ -138,24 +147,24 @@ void InitTitle(void)
 		}
 		else if (nCntTitle == 1)
 		{// タイトル：プレイ人数
-			pVtx[0].pos = D3DXVECTOR3(620.0f, 460.0f, 0.0f);	// 右回りで設定する
-			pVtx[1].pos = D3DXVECTOR3(980.0f, 460.0f, 0.0f);	// 2Dの場合Zの値は0にする
-			pVtx[2].pos = D3DXVECTOR3(620.0f, 640.0f, 0.0f);
-			pVtx[3].pos = D3DXVECTOR3(980.0f, 640.0f, 0.0f);
+			pVtx[0].pos = D3DXVECTOR3(300.0f, 460.0f, 0.0f);	// 右回りで設定する
+			pVtx[1].pos = D3DXVECTOR3(600.0f, 460.0f, 0.0f);	// 2Dの場合Zの値は0にする
+			pVtx[2].pos = D3DXVECTOR3(300.0f, 640.0f, 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(600.0f, 640.0f, 0.0f);
 		}
 		else if (nCntTitle == 2)
 		{// タイトル：START
-			pVtx[0].pos = D3DXVECTOR3(640.0f, 540.0f, 0.0f);	// 右回りで設定する
-			pVtx[1].pos = D3DXVECTOR3(1280.0f, 540.0f, 0.0f);	// 2Dの場合Zの値は0にする
-			pVtx[2].pos = D3DXVECTOR3(640.0f, 720.0f, 0.0f);
-			pVtx[3].pos = D3DXVECTOR3(1280.0f, 720.0f, 0.0f);
+			pVtx[0].pos = D3DXVECTOR3(320.0f, 540.0f, 0.0f);	// 右回りで設定する
+			pVtx[1].pos = D3DXVECTOR3(960.0f, 540.0f, 0.0f);	// 2Dの場合Zの値は0にする
+			pVtx[2].pos = D3DXVECTOR3(320.0f, 720.0f, 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(960.0f, 720.0f, 0.0f);
 		}
 		else if (nCntTitle == 3)
 		{// タイトル：プレイ数値
-			pVtx[0].pos = D3DXVECTOR3(1080.0f, 480.0f, 0.0f);	// 右回りで設定する
-			pVtx[1].pos = D3DXVECTOR3(1150.0f, 480.0f, 0.0f);	// 2Dの場合Zの値は0にする
-			pVtx[2].pos = D3DXVECTOR3(1080.0f, 620.0f, 0.0f);
-			pVtx[3].pos = D3DXVECTOR3(1150.0f, 620.0f, 0.0f);
+			pVtx[0].pos = D3DXVECTOR3(730.0f, 480.0f, 0.0f);	// 右回りで設定する
+			pVtx[1].pos = D3DXVECTOR3(800.0f, 480.0f, 0.0f);	// 2Dの場合Zの値は0にする
+			pVtx[2].pos = D3DXVECTOR3(730.0f, 620.0f, 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(800.0f, 620.0f, 0.0f);
 		}
 		else if (nCntTitle == 4)
 		{// タイトル：(C)WPO
@@ -164,12 +173,26 @@ void InitTitle(void)
 			pVtx[2].pos = D3DXVECTOR3(0.0f, 720.0f, 0.0f);
 			pVtx[3].pos = D3DXVECTOR3(310.0f, 720.0f, 0.0f);
 		}
-		else
+		else if (nCntTitle == 5)
 		{// カーソル
-			pVtx[0].pos = D3DXVECTOR3(400.0f, 460.0f, 0.0f);	// 右回りで設定する
-			pVtx[1].pos = D3DXVECTOR3(640.0f, 460.0f, 0.0f);	// 2Dの場合Zの値は0にする
-			pVtx[2].pos = D3DXVECTOR3(400.0f, 620.0f, 0.0f);
-			pVtx[3].pos = D3DXVECTOR3(640.0f, 620.0f, 0.0f);
+			pVtx[0].pos = D3DXVECTOR3(200.0f, 460.0f, 0.0f);	// 右回りで設定する
+			pVtx[1].pos = D3DXVECTOR3(440.0f, 460.0f, 0.0f);	// 2Dの場合Zの値は0にする
+			pVtx[2].pos = D3DXVECTOR3(200.0f, 620.0f, 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(440.0f, 620.0f, 0.0f);
+		}
+		else if (nCntTitle == 6)
+		{// 左人数カーソル
+			pVtx[0].pos = D3DXVECTOR3(640.0f, 530.0f, 0.0f);	// 右回りで設定する
+			pVtx[1].pos = D3DXVECTOR3(700.0f, 530.0f, 0.0f);	// 2Dの場合Zの値は0にする
+			pVtx[2].pos = D3DXVECTOR3(640.0f, 590.0f, 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(700.0f, 590.0f, 0.0f);
+		}
+		else
+		{// 右人数カーソル
+			pVtx[0].pos = D3DXVECTOR3(830.0f, 530.0f, 0.0f);	// 右回りで設定する
+			pVtx[1].pos = D3DXVECTOR3(890.0f, 530.0f, 0.0f);	// 2Dの場合Zの値は0にする
+			pVtx[2].pos = D3DXVECTOR3(830.0f, 590.0f, 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(890.0f, 590.0f, 0.0f);
 		}
 
 		// rhwの設定
@@ -191,6 +214,20 @@ void InitTitle(void)
 			pVtx[1].tex = D3DXVECTOR2(0.1f + (g_PlayerSelect * 0.1f), 0.0f);
 			pVtx[2].tex = D3DXVECTOR2((g_PlayerSelect * 0.1f), 1.0f);
 			pVtx[3].tex = D3DXVECTOR2(0.1f + (g_PlayerSelect * 0.1f), 1.0f);
+		}
+		else if (nCntTitle == 6)
+		{// 左人数カーソル
+			pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
+			pVtx[1].tex = D3DXVECTOR2(0.5f, 0.0f);
+			pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
+			pVtx[3].tex = D3DXVECTOR2(0.5f, 1.0f);
+		}
+		else if (nCntTitle == 7)
+		{// 右人数カーソル
+			pVtx[0].tex = D3DXVECTOR2(0.5f, 0.0f);
+			pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
+			pVtx[2].tex = D3DXVECTOR2(0.5f, 1.0f);
+			pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
 		}
 		else
 		{
@@ -298,7 +335,7 @@ void UpdateTitle(void)
 		}
 		else if (nCntTitle == 1)
 		{// タイトル：PRESS ENTER
-			if ((g_PressEnterDeley % 100) > CLEAR_DELEY && g_CursorPos == TITLECURSOR_PLAYER_SELECT)
+			if ((g_PressEnterDeley % ENTRY_DELEY) > CLEAR_DELEY && g_CursorPos == TITLECURSOR_PLAYER_SELECT)
 			{// 一定間隔で消滅
 				pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);	// 0~255の値を設定
 				pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
@@ -329,7 +366,7 @@ void UpdateTitle(void)
 				pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f * (g_PressEnterDeley % 3));
 				pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f * (g_PressEnterDeley % 3));
 			}
-			else if ((g_PressEnterDeley % 100) > CLEAR_DELEY && g_CursorPos == TITLECURSOR_PLAY_START)
+			else if ((g_PressEnterDeley % ENTRY_DELEY) > CLEAR_DELEY && g_CursorPos == TITLECURSOR_PLAY_START)
 			{// 一定間隔で消滅
 				pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);	// 0~255の値を設定
 				pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
@@ -357,22 +394,92 @@ void UpdateTitle(void)
 			pVtx[1].tex = D3DXVECTOR2(0.1f + (g_PlayerSelect * 0.1f), 0.0f);
 			pVtx[2].tex = D3DXVECTOR2((g_PlayerSelect * 0.1f), 1.0f);
 			pVtx[3].tex = D3DXVECTOR2(0.1f + (g_PlayerSelect * 0.1f), 1.0f);
+
+			if ((g_PressEnterDeley % ENTRY_DELEY) > CLEAR_DELEY && g_CursorPos == TITLECURSOR_PLAYER_SELECT)
+			{// 一定間隔で消滅
+				pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);	// 0~255の値を設定
+				pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
+				pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
+				pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
+			}
+			else if (g_CursorPos == TITLECURSOR_PLAYER_SELECT)
+			{// カーソルが合った時
+				pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);	// 0~255の値を設定
+				pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+				pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+				pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+			}
+			else
+			{// それ以外
+				pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f);	// 0~255の値を設定
+				pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f);
+				pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f);
+				pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f);
+			}
 		}
 		else if (nCntTitle == 5)
 		{// カーソル
 			if (g_CursorPos == TITLECURSOR_PLAYER_SELECT)
 			{// 人数設定
-				pVtx[0].pos = D3DXVECTOR3(400.0f, 460.0f, 0.0f);	// 右回りで設定する
-				pVtx[1].pos = D3DXVECTOR3(640.0f, 460.0f, 0.0f);	// 2Dの場合Zの値は0にする
-				pVtx[2].pos = D3DXVECTOR3(400.0f, 620.0f, 0.0f);
-				pVtx[3].pos = D3DXVECTOR3(640.0f, 620.0f, 0.0f);
+				pVtx[0].pos = D3DXVECTOR3(100.0f, 460.0f, 0.0f);	// 右回りで設定する
+				pVtx[1].pos = D3DXVECTOR3(340.0f, 460.0f, 0.0f);	// 2Dの場合Zの値は0にする
+				pVtx[2].pos = D3DXVECTOR3(100.0f, 620.0f, 0.0f);
+				pVtx[3].pos = D3DXVECTOR3(340.0f, 620.0f, 0.0f);
 			}
 			else if (g_CursorPos == TITLECURSOR_PLAY_START)
 			{// ゲームスタート
-				pVtx[0].pos = D3DXVECTOR3(400.0f, 540.0f, 0.0f);	// 右回りで設定する
-				pVtx[1].pos = D3DXVECTOR3(640.0f, 540.0f, 0.0f);	// 2Dの場合Zの値は0にする
-				pVtx[2].pos = D3DXVECTOR3(400.0f, 700.0f, 0.0f);
-				pVtx[3].pos = D3DXVECTOR3(640.0f, 700.0f, 0.0f);
+				pVtx[0].pos = D3DXVECTOR3(100.0f, 540.0f, 0.0f);	// 右回りで設定する
+				pVtx[1].pos = D3DXVECTOR3(340.0f, 540.0f, 0.0f);	// 2Dの場合Zの値は0にする
+				pVtx[2].pos = D3DXVECTOR3(100.0f, 700.0f, 0.0f);
+				pVtx[3].pos = D3DXVECTOR3(340.0f, 700.0f, 0.0f);
+			}
+		}
+		else if (nCntTitle == 6)
+		{// 左カーソル
+			if ((g_PressEnterDeley % ENTRY_DELEY) > CLEAR_DELEY && g_CursorPos == TITLECURSOR_PLAYER_SELECT)
+			{// 一定間隔で消滅
+				pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);	// 0~255の値を設定
+				pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
+				pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
+				pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
+			}
+			else if (g_PlayerSelect == MAX_PLAYER && g_CursorPos == TITLECURSOR_PLAYER_SELECT)
+			{// プレイ人数1人
+				pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);	// 0~255の値を設定
+				pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+				pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+				pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+			}
+			else
+			{// それ以外
+				pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f);	// 0~255の値を設定
+				pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f);
+				pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f);
+				pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f);
+			}
+		}
+		else if (nCntTitle == 7)
+		{// 左カーソル
+			if ((g_PressEnterDeley % ENTRY_DELEY) > CLEAR_DELEY && g_CursorPos == TITLECURSOR_PLAYER_SELECT)
+			{// 一定間隔で消滅
+				pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);	// 0~255の値を設定
+				pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
+				pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
+				pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
+			}
+			else if (g_PlayerSelect == 1 && g_CursorPos == TITLECURSOR_PLAYER_SELECT)
+			{// プレイ人数2人
+				pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);	// 0~255の値を設定
+				pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+				pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+				pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+			}
+			else
+			{// それ以外
+				pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f);	// 0~255の値を設定
+				pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f);
+				pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f);
+				pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f);
 			}
 		}
 
@@ -384,16 +491,16 @@ void UpdateTitle(void)
 	{// カーソル下移動
 		g_CursorPos--;
 		if (g_CursorPos < 0) g_CursorPos = TITLECURSOR_PLAYER_SELECT;
-		PlaySound(SOUND_SE_CURSORMOVE);
-		g_PressEnterDeley = 0;
+		PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
+		if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 	}
 	else if ((GetKeyboardTrigger(DIK_S) || GetJoypadTrigger(0, JOYKEY_DOWN) ||
 		GetJoypadStick(0, JOYKEY_LEFTSTICK_DOWN, NULL, NULL) == true))
 	{// カーソル上移動
 		g_CursorPos++;
 		if (g_CursorPos >= TITLECURSOR_MAX) g_CursorPos = TITLECURSOR_PLAY_START;
-		PlaySound(SOUND_SE_CURSORMOVE);
-		g_PressEnterDeley = 0;
+		PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
+		if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 	}
 
 	if (g_CursorPos == TITLECURSOR_PLAYER_SELECT)
@@ -403,16 +510,16 @@ void UpdateTitle(void)
 			&& g_PlayerSelect > 1)
 		{
 			g_PlayerSelect--;
-			g_PressEnterDeley %= 100;	// ランキング移行までの時間を伸ばす
-			PlaySound(SOUND_SE_CURSORMOVE);
+			PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
+			if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 		}
 		else if ((GetKeyboardTrigger(DIK_D) || GetJoypadTrigger(0, JOYKEY_RIGHT) ||
 			GetJoypadStick(0, JOYKEY_LEFTSTICK_RIGHT, NULL, NULL) == true)
 			&& g_PlayerSelect < MAX_PLAYER)
 		{
 			g_PlayerSelect++;
-			g_PressEnterDeley %= 100;	// ランキング移行までの時間を伸ばす
-			PlaySound(SOUND_SE_CURSORMOVE);
+			PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
+			if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 		}
 	}
 	else if (g_CursorPos == TITLECURSOR_PLAY_START)

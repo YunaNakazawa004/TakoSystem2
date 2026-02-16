@@ -315,6 +315,12 @@ void DrawMeshOrbit(void)
 //=============================================================================
 void SetMeshOrbitPos(int nIdx, D3DXVECTOR3 Offset0, D3DXVECTOR3 Offset1, D3DXCOLOR col0, D3DXCOLOR col1, D3DMATRIX* pMtxParent)
 {
+	if (nIdx == -1)
+	{// インデックスがない場合は無視
+
+		return;
+	}
+
 	MeshOrbit* pMeshOrbit = &g_aMeshOrbit[nIdx];
 
 	if (pMeshOrbit->bUse == false)

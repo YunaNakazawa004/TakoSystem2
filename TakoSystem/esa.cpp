@@ -141,7 +141,7 @@ void InitEsa(bool bSet)
 											 cosf(fRandAngle) * fRandRadius);
 
 			// エサの設定処理
-			SetEsa(nSetType, ESA_ACTTYPE_LAND, 0, setPos, D3DXVECTOR3(0.0f,0.0f,0.0f));
+			SetEsa(nSetType, true, ESA_ACTTYPE_LAND, 0, setPos, D3DXVECTOR3(0.0f,0.0f,0.0f));
 		}
 
 #endif
@@ -411,7 +411,7 @@ HRESULT SetEsaModel(const char* pFilename, EsaModel* pEsaModel)
 //========================================================================
 // エサの設定処理
 //========================================================================
-int SetEsa(int nEsaType, ESA_ACTTYPE esaType, int nBehavior, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
+int SetEsa(int nEsaType, bool bSetOrbit, ESA_ACTTYPE esaType, int nBehavior, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 {
 	// 設定したいモデルがない場合
 	if (g_aIdxEsaData[nEsaType] == -1) return -1;	// 処理を抜ける
@@ -422,9 +422,6 @@ int SetEsa(int nEsaType, ESA_ACTTYPE esaType, int nBehavior, D3DXVECTOR3 pos, D3
 		{// 使用していない場合
 
 			g_aEsa[nCntEsa].nIdxModel = g_aIdxEsaData[nEsaType];	// 種類を設定
-			g_aEsa[nCntEsa].nOrbitIdx =
-				SetMeshOrbit(FIRST_POS, D3DXVECTOR3(FIRST_POS.x, FIRST_POS.y + 10.0f, FIRST_POS.z),
-					WHITE_VTX, CYAN_VTX, &g_aEsa[nCntEsa].mtxWorld);
 			g_aEsa[nCntEsa].pos = pos;								// 位置を設定
 			g_aEsa[nCntEsa].rot = rot;								// 角度を設定
 			g_aEsa[nCntEsa].fMoveAngle = 0.0f;						// 移動角度を初期化
@@ -432,6 +429,13 @@ int SetEsa(int nEsaType, ESA_ACTTYPE esaType, int nBehavior, D3DXVECTOR3 pos, D3
 			g_aEsa[nCntEsa].nNumBehavior = 0;						// 挙動の値を初期化
 			g_aEsa[nCntEsa].bDisp = true;							// 表示している状態に設定
 			g_aEsa[nCntEsa].bUse = true;							// 使用している状態に設定
+
+			if (bSetOrbit == true)
+			{// オービットを設定する場合
+
+				g_aEsa[nCntEsa].nOrbitIdx = SetMeshOrbit(FIRST_POS, D3DXVECTOR3(FIRST_POS.x, FIRST_POS.y + 10.0f, FIRST_POS.z),
+														 WHITE_VTX, CYAN_VTX, &g_aEsa[nCntEsa].mtxWorld);
+			}
 
 			return nCntEsa;	// 設定した場所を返す
 		}
