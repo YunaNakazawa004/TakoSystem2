@@ -260,6 +260,12 @@ void UpdateReady(void)
 				SetReady(1, 0);
 
 			}
+			if (g_aReady[nCntReady].Idx == 2 && bfrag[99] == false)
+			{
+				// ƒTƒEƒ“ƒh‚ÌÄ¶
+				PlaySound(SOUND_SE_COUNTDOWN);
+				bfrag[99] = true;
+			}
 
 		}
 		if (g_aReady[nCntReady].TexIdx == 1)
