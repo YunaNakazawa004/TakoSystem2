@@ -94,11 +94,11 @@ void InitTitle(void)
 		&g_pTextureTitle[0]);
 
 	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/PLAYER_SELECT000.png",
+		"data/TEXTURE/PLAYER_SELECT001.png",
 		&g_pTextureTitle[1]);
 
 	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/START002.png",
+		"data/TEXTURE/START003.png",
 		&g_pTextureTitle[2]);
 
 	D3DXCreateTextureFromFile(pDevice,
