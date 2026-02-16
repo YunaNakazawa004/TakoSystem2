@@ -631,7 +631,7 @@ void UpdateComputer(void)
 						pComputer->nFoodCount--;
 						int nIdx = Dequeue(&pComputer->esaQueue);
 
-						SetEsa(nIdx, ESA_ACTTYPE_SWIM, 0, pComputer->phys.pos, FIRST_POS);
+						SetEsa(nIdx, true, ESA_ACTTYPE_SWIM, 0, pComputer->phys.pos, FIRST_POS);
 					}
 				}
 			}

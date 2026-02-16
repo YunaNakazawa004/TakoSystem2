@@ -42,13 +42,13 @@ void SetResult
 
 int SetResultPolygon		// リザルトのポリゴンの設定処理
 (int nIdxTexture, bool bAlphaBlend, int nDrowLevel,		// テクスチャインデックス, aブレンドをするか
- D3DXVECTOR3 pos, D3DXVECTOR3 rot,						// 位置, 角度
+ D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 addRot,	// 位置, 角度
  float fSizeWidth, float fSizeHeight,					// 大きさ(幅, 高さ)
  D3DXVECTOR2 texPos, D3DXVECTOR2 texSize,				// テクスチャ座標, テクスチャサイズ
  D3DXCOLOR col);										// 色
 
 void ReceiveResult			// リザルトの情報を貰う処理
-(int pHaveEsa[], int nMaxPlayer, int nMaxHave			// エサの情報, エサの種類の総数
- );
+(int pHaveEsa[], int nMaxPlayer, int nMaxHave);			// エサの情報, エサの種類の総数
+ 
 
 #endif
