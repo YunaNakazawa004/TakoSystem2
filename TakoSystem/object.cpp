@@ -827,6 +827,7 @@ void LoadObject(const char* pStr)
 				else
 				{// ƒ^ƒR‚Â‚ÚˆÈŠO
 					SetObject(pos, D3DXVECTOR3(D3DX_PI * rot.x / 180.0f, D3DX_PI * rot.y / 180.0f, D3DX_PI * rot.z / 180.0f), nIdx, bCollision);
+					bCollision = true;
 				}
 			}
 
