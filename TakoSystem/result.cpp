@@ -407,6 +407,23 @@ void UpdateResult(void)
 				DelUiResultGetScore(g_aIdxUiResultGS[nCntPlayer]);
 			}
 		}
+		else
+		{// カウントが0になっていない
+
+			// 表示されているエサの角度の更新
+			pEsa[g_nIdxSetEsa].rot.y += 0.01f;
+
+			if		(pEsa[g_nIdxSetEsa].rot.y < -D3DX_PI)
+			{// -3.14を超えた場合
+
+				pEsa[g_nIdxSetEsa].rot.y + D3DX_PI * 2.0f;
+			}
+			else if (pEsa[g_nIdxSetEsa].rot.y < -D3DX_PI)
+			{// 3.14を超えた場合
+
+				pEsa[g_nIdxSetEsa].rot.y - D3DX_PI * 2.0f;
+			}
+		}
 
 		break;
 	
