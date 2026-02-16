@@ -311,6 +311,25 @@ void DrawMeshOrbit(void)
 }
 
 //=============================================================================
+// メッシュオービットの場所設定処理
+//=============================================================================
+void SetMeshOrbitPos(int nIdx, D3DXVECTOR3 Offset0, D3DXVECTOR3 Offset1, D3DXCOLOR col0, D3DXCOLOR col1, D3DMATRIX* pMtxParent)
+{
+	MeshOrbit* pMeshOrbit = &g_aMeshOrbit[nIdx];
+
+	if (pMeshOrbit->bUse == false)
+	{// 使ってなかったら無視
+		return;
+	}
+
+	pMeshOrbit->aOffset[0] = Offset0;
+	pMeshOrbit->aOffset[1] = Offset1;
+	pMeshOrbit->aCol[0] = col0;
+	pMeshOrbit->aCol[1] = col1;
+	pMeshOrbit->pMtxParent = pMtxParent;
+}
+
+//=============================================================================
 // メッシュオービットの設定処理
 //=============================================================================
 int SetMeshOrbit(D3DXVECTOR3 Offset0, D3DXVECTOR3 Offset1, D3DXCOLOR col0, D3DXCOLOR col1, D3DMATRIX* pMtxParent)
@@ -323,12 +342,12 @@ int SetMeshOrbit(D3DXVECTOR3 Offset0, D3DXVECTOR3 Offset1, D3DXCOLOR col0, D3DXC
 
 		if (pMeshOrbit->bUse == false)
 		{// 使用していない
+			pMeshOrbit->bUse = true;
 			pMeshOrbit->aOffset[0] = Offset0;
 			pMeshOrbit->aOffset[1] = Offset1;
 			pMeshOrbit->aCol[0] = col0;
 			pMeshOrbit->aCol[1] = col1;
 			pMeshOrbit->pMtxParent = pMtxParent;
-			pMeshOrbit->bUse = true;
 
 			D3DXMATRIX mtxParent = *pMeshOrbit->pMtxParent;
 

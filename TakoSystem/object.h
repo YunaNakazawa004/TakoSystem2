@@ -53,6 +53,7 @@ typedef struct
 	int nIdxShadow;							// ‰e
 	bool bUse;								// Žg—p‚µ‚Ä‚¢‚é‚©‚Ç‚¤‚©
 	bool bCollision;						// “–‚½‚è”»’è‚·‚é‚©‚Ç‚¤‚©
+	char sFileName[128];					// ƒ‚ƒfƒ‹–¼
 }Object;
 
 //*****************************************************************************

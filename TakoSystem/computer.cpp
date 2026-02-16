@@ -173,6 +173,7 @@ void InitComputer(void)
 		memset(&pComputer->esaQueue.nData, -1, sizeof(int[MAX_QUEUE]));
 		pComputer->Potstate = POTSTATE_NONE;
 		pComputer->nMaxFood = 1;
+		memset(&pComputer->nOrbitIdx, -1, sizeof(int[8]));
 
 		pComputer->nCurrentNode = 0;
 		pComputer->nNextNode = 0;
@@ -607,7 +608,7 @@ void UpdateComputer(void)
 			// ãOê’
 			for (int nCntTent = 0; nCntTent < CPU_TENTACLE; nCntTent++)
 			{
-				SetMeshOrbit(D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
+				SetMeshOrbitPos(pComputer->nOrbitIdx[nCntTent], D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
 					D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
 					WHITE_VTX, CYAN_VTX, &pComputer->aModel[(nCntTent + 1) * 4].mtxWorld);
 			}
@@ -907,8 +908,6 @@ void AttackEnemy(Computer* pComputer)
 		return;
 	}
 
-	Camera* pCamera = GetCamera();
-
 	D3DXVECTOR3 target = GetEnemyPosition(pComputer);
 	D3DXVECTOR3 dir = target - pComputer->phys.pos;
 	D3DXVec3Normalize(&dir, &dir);
@@ -1140,8 +1139,7 @@ void FinalCollect(Computer* pComputer)
 
 	if (dist < POT_CLOSE_DISTANCE)
 	{// ìûíBÇµÇΩÇÁë¶âÒé˚
-		Pot* pPot = GetPot();
-		pPot = &pPot[pComputer->nTargetPotIdx];
+		pPot = GetPot();
 
 		pComputer->targetWall = pPot[pComputer->nTargetPotIdx].pos;
 		UseTentacle(pComputer);
@@ -2471,6 +2469,17 @@ void SetComputer(D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType)
 			memset(&pComputer->esaQueue.nData, -1, sizeof(int[MAX_QUEUE]));
 			pComputer->Potstate = POTSTATE_NONE;
 			pComputer->nMaxFood = 1;
+
+			for (int nCntTent = 0; nCntTent < CPU_TENTACLE; nCntTent++)
+			{
+				pComputer->nOrbitIdx[nCntTent] = SetMeshOrbit(D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
+					D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
+					WHITE_VTX, CYAN_VTX, &pComputer->aModel[(nCntTent + 1) * 4].mtxWorld);
+
+				SetMeshOrbitPos(pComputer->nOrbitIdx[nCntTent], D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
+					D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
+					WHITE_VTX, CYAN_VTX, &pComputer->aModel[(nCntTent + 1) * 4].mtxWorld);
+			}
 
 			pComputer->nCurrentNode = 0;
 			pComputer->nNextNode = 0;

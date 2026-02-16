@@ -182,6 +182,34 @@ void UninitObject(void)
 void UpdateObject(void)
 {
 	//PrintDebugProc("配置したオブジェクト数 : %d\n", g_nNumObject);
+	static bool nFrag = false;
+
+	for (int nCntObject = 0; nCntObject < MAX_OBJECT; nCntObject++)
+	{
+		if (g_aObject[nCntObject].bUse == true)
+		{
+			if (strcmp(g_aObject[nCntObject].sFileName, "data/MODEL/Others_Object/wakame000.x") == 0)
+			{  // ワカメならユラユラする
+
+				if (g_aObject[nCntObject].rot.x > 0.1f)
+				{
+					nFrag = false;
+				}
+				if (g_aObject[nCntObject].rot.x < -0.1f)
+				{
+					nFrag = true;
+				}
+				if (nFrag == true)
+				{
+					g_aObject[nCntObject].rot.x += 0.002f;
+				}
+				else
+				{
+					g_aObject[nCntObject].rot.x -= 0.002f;
+				}
+			}
+		}
+	}
 }
 
 //=============================================================================
@@ -264,6 +292,7 @@ void SetObject(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nIdx, bool bCollision)
 			g_aObject[nCntObject].nIdxShadow = -1;
 			g_aObject[nCntObject].bCollision = bCollision;
 			g_aObject[nCntObject].bUse = true;		// 使用している状態にする
+			strcpy(g_aObject[nCntObject].sFileName, g_apFilenameObject[nIdx]);
 
 			g_nNumObject++;
 

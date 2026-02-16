@@ -93,6 +93,7 @@ void InitEsa(bool bSet)
 	for (nCntEsa = 0; nCntEsa < MAX_SET_ESA; nCntEsa++)
 	{
 		g_aEsa[nCntEsa].nIdxModel = -1;							// モデルのインデックスを初期化
+		g_aEsa[nCntEsa].nOrbitIdx = -1;							// 軌跡のインデックスを初期化
 		g_aEsa[nCntEsa].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 位置を初期化
 		g_aEsa[nCntEsa].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 角度を初期化
 		g_aEsa[nCntEsa].fMoveAngle = 0.0f;						// 移動角度を初期化
@@ -232,7 +233,8 @@ void UpdateEsa(void)
 
 			SetEffect3D(70, g_aEsa[nCntEsa].pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0.0f, 30.0f, -0.1f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f),EFFECTTYPE_NORMAL);
 
-			SetMeshOrbit(FIRST_POS, D3DXVECTOR3(FIRST_POS.x, FIRST_POS.y + 10.0f, FIRST_POS.z), WHITE_VTX, CYAN_VTX, &g_aEsa[nCntEsa].mtxWorld);
+			SetMeshOrbitPos(g_aEsa[nCntEsa].nOrbitIdx, FIRST_POS, D3DXVECTOR3(FIRST_POS.x, FIRST_POS.y + 10.0f, FIRST_POS.z), 
+				WHITE_VTX, CYAN_VTX, &g_aEsa[nCntEsa].mtxWorld);
 #if 0
 			PrintDebugProc("\nESA[%d]_POS %s", nCntEsa, (g_aEsa[nCntEsa].bUse == true ? "true":"false"));
 			PrintDebugProc("\nESA[%d]_POS %f %f %f", nCntEsa, g_aEsa[nCntEsa].pos.x, g_aEsa[nCntEsa].pos.y, g_aEsa[nCntEsa].pos.z);
@@ -420,6 +422,9 @@ int SetEsa(int nEsaType, ESA_ACTTYPE esaType, int nBehavior, D3DXVECTOR3 pos, D3
 		{// 使用していない場合
 
 			g_aEsa[nCntEsa].nIdxModel = g_aIdxEsaData[nEsaType];	// 種類を設定
+			g_aEsa[nCntEsa].nOrbitIdx =
+				SetMeshOrbit(FIRST_POS, D3DXVECTOR3(FIRST_POS.x, FIRST_POS.y + 10.0f, FIRST_POS.z),
+					WHITE_VTX, CYAN_VTX, &g_aEsa[nCntEsa].mtxWorld);
 			g_aEsa[nCntEsa].pos = pos;								// 位置を設定
 			g_aEsa[nCntEsa].rot = rot;								// 角度を設定
 			g_aEsa[nCntEsa].fMoveAngle = 0.0f;						// 移動角度を初期化

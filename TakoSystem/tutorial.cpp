@@ -56,6 +56,9 @@ void InitTutorial(void)
 	SetCameraPos(0, FIRST_POS, FIRST_POS, CAMERATYPE_PLAYER);
 	SetCameraPos(1, FIRST_POS, FIRST_POS, CAMERATYPE_PLAYER);
 
+	// メッシュオービットの初期化処理
+	InitMeshOrbit();
+
 	// プレイヤーの初期化処理
 	InitPlayer();
 
@@ -92,9 +95,6 @@ void InitTutorial(void)
 
 	// エサの初期化処理
 	InitEsa(true);
-
-	// メッシュオービットの初期化処理
-	InitMeshOrbit();
 
 	// 水面の初期化処理
 	InitWaterSurf();
@@ -366,6 +366,9 @@ void DrawTutorial(void)
 	// CPUの描画処理
 	DrawComputer();
 
+	// 配置物の描画処理
+	DrawObject();
+
 	// メッシュシリンダーの描画処理
 	DrawMeshCylinder();
 
@@ -401,9 +404,6 @@ void DrawTutorial(void)
 
 	// 水面の描画処理
 	DrawWaterSurf();
-
-	// 配置物の描画処理
-	DrawObject();
 
 	// チュートリアルテキストの描画処理
 	DrawTutorialTxt();

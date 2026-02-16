@@ -12,7 +12,7 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define MAX_SEADUST				(20000)							// 塵の最大数
+#define MAX_SEADUST				(10000)							// 塵の最大数
 #define SEADUST_SIZE			(1.0f)							// サイズ
 #define SEADUST_FILENAME		"data\\TEXTURE\\shadow000.png"	// 使用する塵のファイル名
 
@@ -95,7 +95,7 @@ void InitSeaDust(void)
 	// ▲頂点バッファをアンロックする
 	g_pVtxBuffSeaDust->Unlock();
 
-	SetRandomSeaDust(3000);
+	SetRandomSeaDust(5000);
 }
 
 //======================================================================== 
@@ -219,9 +219,9 @@ void SetRandomSeaDust(int nAmount)
 		float fAngle = (D3DX_PI * 2.0f) * ((float)((nCntDust + 1) * (360.0f / nAmount)) / 360.0f);
 		float fsin = sinf(fAngle);
 
-		pos.x = sinf(fAngle) * (INCYLINDER_RADIUS + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) + 1))));
+		pos.x = sinf(fAngle) * (INCYLINDER_RADIUS + (((float)(rand() % (int)((OUTCYLINDER_RADIUS * 2) - INCYLINDER_RADIUS) + 1))));
 		pos.y = (float)(rand() % (int)(CYLINDER_HEIGHT));
-		pos.z = cosf(fAngle) * (INCYLINDER_RADIUS + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) + 1))));
+		pos.z = cosf(fAngle) * (INCYLINDER_RADIUS + (((float)(rand() % (int)((OUTCYLINDER_RADIUS * 2) - INCYLINDER_RADIUS) + 1))));
 
 		SetSeaDust(pos);
 	}

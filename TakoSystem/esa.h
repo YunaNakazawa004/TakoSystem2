@@ -102,6 +102,8 @@ typedef struct
 {
 	int nIdxModel;			// モデルのインデックス
 
+	int nOrbitIdx;			// 軌跡のインデックス
+
 	D3DXVECTOR3 pos;		// 位置
 	D3DXVECTOR3 rot;		// 角度
 
