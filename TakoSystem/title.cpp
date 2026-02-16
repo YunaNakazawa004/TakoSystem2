@@ -443,7 +443,7 @@ void UpdateTitle(void)
 				pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
 				pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
 			}
-			else if (g_PlayerSelect == 1 && g_CursorPos == TITLECURSOR_PLAYER_SELECT)
+			else if (g_PlayerSelect == MAX_PLAYER && g_CursorPos == TITLECURSOR_PLAYER_SELECT)
 			{// プレイ人数1人
 				pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);	// 0~255の値を設定
 				pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
@@ -467,7 +467,7 @@ void UpdateTitle(void)
 				pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
 				pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
 			}
-			else if (g_PlayerSelect == MAX_PLAYER && g_CursorPos == TITLECURSOR_PLAYER_SELECT)
+			else if (g_PlayerSelect == 1 && g_CursorPos == TITLECURSOR_PLAYER_SELECT)
 			{// プレイ人数2人
 				pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);	// 0~255の値を設定
 				pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
@@ -491,16 +491,16 @@ void UpdateTitle(void)
 	{// カーソル下移動
 		g_CursorPos--;
 		if (g_CursorPos < 0) g_CursorPos = TITLECURSOR_PLAYER_SELECT;
-		PlaySound(SOUND_SE_CURSORMOVE);
-		g_PressEnterDeley = 0;
+		PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
+		if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 	}
 	else if ((GetKeyboardTrigger(DIK_S) || GetJoypadTrigger(0, JOYKEY_DOWN) ||
 		GetJoypadStick(0, JOYKEY_LEFTSTICK_DOWN, NULL, NULL) == true))
 	{// カーソル上移動
 		g_CursorPos++;
 		if (g_CursorPos >= TITLECURSOR_MAX) g_CursorPos = TITLECURSOR_PLAY_START;
-		PlaySound(SOUND_SE_CURSORMOVE);
-		g_PressEnterDeley = 0;
+		PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
+		if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 	}
 
 	if (g_CursorPos == TITLECURSOR_PLAYER_SELECT)
@@ -510,16 +510,16 @@ void UpdateTitle(void)
 			&& g_PlayerSelect > 1)
 		{
 			g_PlayerSelect--;
-			g_PressEnterDeley = 0;
-			PlaySound(SOUND_SE_CURSORMOVE);
+			PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
+			if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 		}
 		else if ((GetKeyboardTrigger(DIK_D) || GetJoypadTrigger(0, JOYKEY_RIGHT) ||
 			GetJoypadStick(0, JOYKEY_LEFTSTICK_RIGHT, NULL, NULL) == true)
 			&& g_PlayerSelect < MAX_PLAYER)
 		{
 			g_PlayerSelect++;
-			g_PressEnterDeley = 0;
-			PlaySound(SOUND_SE_CURSORMOVE);
+			PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
+			if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 		}
 	}
 	else if (g_CursorPos == TITLECURSOR_PLAY_START)
