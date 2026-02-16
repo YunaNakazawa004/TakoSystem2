@@ -72,6 +72,8 @@ typedef struct
 	D3DXVECTOR3 pos;								// 位置
 	D3DXCOLOR col;									// 色
 
+	int nUseTimer;									// 使用時間
+
 	bool bUse;										// 使用状態
 
 }UiResultGS;
@@ -96,12 +98,12 @@ const char* c_apFilenameResultGS[] =
 // リザルトの獲得スコアUIの設定情報(テンプレ)
 UiResultGSPolygon_info g_aUiResultGSPolygonInfo[] =
 {
-	{UI_RESULTGSPOLYGONTYPE_BG, 0, true, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 110.0f, 20.0f, 0.0f, 0.0f, D3DXVECTOR2(0.0f, 0.0f),D3DXVECTOR2(1.0f, 1.0f)},				// スコア背景
-	{UI_RESULTGSPOLYGONTYPE_NONE, 2, false, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 20.0f, 20.0f, 0.0f, 0.0f, D3DXVECTOR2(0.0f, 0.0f),D3DXVECTOR2(1.0f, 1.0f)},			// プラス記号
-	{UI_RESULTGSPOLYGONTYPE_NUM_SCORE, 1, false, D3DXVECTOR3(-10.0f, 2.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 17.0f, 18.0f, 0.0f, 0.0f, D3DXVECTOR2(0.0f, 0.0f),D3DXVECTOR2(0.090f, 1.0f)},	// 獲得スコア
-	{UI_RESULTGSPOLYGONTYPE_NONE, 1, false, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 17.0f, 18.0f, 0.0f, 0.0f, D3DXVECTOR2(0.909f, 0.0f),D3DXVECTOR2(0.090f, 1.0f)},		// ポイント
-	{UI_RESULTGSPOLYGONTYPE_NONE, 3, false, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 18.0f, 20.0f, 0.0f, 0.0f, D3DXVECTOR2(0.0f, 0.0f),D3DXVECTOR2(1.0f, 1.0f)},			// 掛ける記号
-	{UI_RESULTGSPOLYGONTYPE_NUM_GET, 1, false, D3DXVECTOR3(0.0f, 2.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 17.0f, 18.0f, 0.0f, 0.0f, D3DXVECTOR2(0.0f, 0.0f),D3DXVECTOR2(0.090f, 1.0f)},	// 獲得数
+	{UI_RESULTGSPOLYGONTYPE_BG,			0, true, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 170.0f, 10.0f, 0.0f, 0.0f, D3DXVECTOR2(0.0f, 0.0f),D3DXVECTOR2(1.0f, 1.0f)},				// スコア背景
+	{UI_RESULTGSPOLYGONTYPE_NONE,		2, false, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 23.0f, 10.0f, 0.0f, 0.0f, D3DXVECTOR2(0.0f, 0.0f),D3DXVECTOR2(1.0f, 1.0f)},			// プラス記号
+	{UI_RESULTGSPOLYGONTYPE_NUM_SCORE,	1, false, D3DXVECTOR3(-2.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 23.0f, 10.0f, 0.0f, 0.0f, D3DXVECTOR2(0.0f, 0.0f),D3DXVECTOR2(0.090f, 1.0f)},	// 獲得スコア
+	{UI_RESULTGSPOLYGONTYPE_NONE,		1, false, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 23.0f, 10.0f, 0.0f, 0.0f, D3DXVECTOR2(0.909f, 0.0f),D3DXVECTOR2(0.090f, 1.0f)},		// ポイント
+	{UI_RESULTGSPOLYGONTYPE_NONE,		3, false, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 23.0f, 10.0f, 0.0f, 0.0f, D3DXVECTOR2(0.0f, 0.0f),D3DXVECTOR2(1.0f, 1.0f)},			// 掛ける記号
+	{UI_RESULTGSPOLYGONTYPE_NUM_GET,	1, false, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 23.0f, 10.0f, 0.0f, 0.0f, D3DXVECTOR2(0.0f, 0.0f),D3DXVECTOR2(0.090f, 1.0f)},	// 獲得数
 
 };
 
@@ -151,19 +153,21 @@ void InitUiResultGetScore(void)
 		
 		g_aResultGS[nCntUiResultGS].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		g_aResultGS[nCntUiResultGS].col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+
+		g_aResultGS[nCntUiResultGS].nUseTimer = 0;
 		
 		g_aResultGS[nCntUiResultGS].bUse = false;
 	}
 
 	// 頂点バッファの生成
-	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4 * MAX_NUM_UI_RESULTGETSCORE,
+	pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * 4 * MAX_NUM_UI_RESULTGETSCORE,
 								D3DUSAGE_WRITEONLY,
-								FVF_VERTEX_2D,
+								FVF_VERTEX_3D,
 								D3DPOOL_MANAGED,
 								&g_pVtxBuffUiResultGetScore,
 								NULL);
 
-	VERTEX_2D* pVtx;	// 頂点情報へのポインタ
+	VERTEX_3D* pVtx;	// 頂点情報へのポインタ
 
 	// ▼頂点バッファをロックし、頂点情報へのポインタを取得
 	g_pVtxBuffUiResultGetScore->Lock(0, 0, (void**)&pVtx, 0);
@@ -177,10 +181,10 @@ void InitUiResultGetScore(void)
 		pVtx[3].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
 		// rhwの設定
-		pVtx[0].rhw = DEFAULT_RHW;	// 値は1.0fで固定
-		pVtx[1].rhw = DEFAULT_RHW;
-		pVtx[2].rhw = DEFAULT_RHW;
-		pVtx[3].rhw = DEFAULT_RHW;
+		pVtx[0].nor = D3DXVECTOR3(0.0f, 0.0f, 1.0f);	// 値は1.0fで固定
+		pVtx[1].nor = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+		pVtx[2].nor = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+		pVtx[3].nor = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
 
 		// 頂点カラーの設定
 		pVtx[0].col = WHITE_VTX;	// 0~255の値を設定
@@ -200,7 +204,7 @@ void InitUiResultGetScore(void)
 	// ▲頂点バッファをアンロックする
 	g_pVtxBuffUiResultGetScore->Unlock();
 
-	//SetUiResultGetScore(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 10, 9);
+	//SetUiResultGetScore(D3DXVECTOR3(0.0f,  0.0f, 0.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 10, 9);
 }
 
 //========================================================================
@@ -233,7 +237,7 @@ void UninitUiResultGetScore(void)
 //========================================================================
 void UpdateUiResultGetScore(void)
 {
-	VERTEX_2D* pVtx;	// 頂点情報へのポインタ
+	VERTEX_3D* pVtx;	// 頂点情報へのポインタ
 
 	D3DXVECTOR3 setPos, setSize;
 	float fWidth, fHeight;	// ポリゴンの辺の長さ
@@ -256,11 +260,11 @@ void UpdateUiResultGetScore(void)
 				}
 
 				// 対角線の値を求める
-				fWidth = g_aResultGSPolygon[nIdx].fSizeWidth * 2.0f;	// 幅の長さを求める
-				fHeight = g_aResultGSPolygon[nIdx].fSizeHeight * 2.0f;	// 高さの長さを求める
+				fWidth = g_aResultGSPolygon[nIdx].fSizeWidth;	// 幅の長さを求める
+				fHeight = g_aResultGSPolygon[nIdx].fSizeHeight;	// 高さの長さを求める
 
-				setPos.x = g_aResultGS[nCntUiResultGS].pos.x + g_aResultGSPolygon[nIdx].pos.x;
-				setPos.y = g_aResultGS[nCntUiResultGS].pos.y + g_aResultGSPolygon[nIdx].pos.y;
+				setPos.x = g_aResultGSPolygon[nIdx].pos.x;
+				setPos.y = g_aResultGSPolygon[nIdx].pos.y;
 				setPos.z = 0.0f;
 #if 1
 
@@ -275,10 +279,10 @@ void UpdateUiResultGetScore(void)
 				pVtx[2].pos.x = setPos.x;
 				pVtx[3].pos.x = setPos.x + fWidth;
 
-				pVtx[0].pos.y = setPos.y;
-				pVtx[1].pos.y = setPos.y;
-				pVtx[2].pos.y = setPos.y + fHeight;
-				pVtx[3].pos.y = setPos.y + fHeight;
+				pVtx[0].pos.y = setPos.y + fHeight;
+				pVtx[1].pos.y = setPos.y + fHeight;
+				pVtx[2].pos.y = setPos.y - fHeight;
+				pVtx[3].pos.y = setPos.y - fHeight;
 
 				pVtx[0].pos.z = setPos.z;
 				pVtx[1].pos.z = setPos.z;
@@ -316,16 +320,19 @@ void UpdateUiResultGetScore(void)
 //========================================================================
 void DrawUiResultGetScore(void)
 {
+	// 変数宣言 ===========================================
+
 	LPDIRECT3DDEVICE9 pDevice;	// デバイスへのポインタ
 
 	// デバイスの取得
 	pDevice = GetDevice();
 
-	// 頂点バッファをデータストリームに設定
-	pDevice->SetStreamSource(0, g_pVtxBuffUiResultGetScore, 0, sizeof(VERTEX_2D));
+	D3DXMATRIX mtxWorld;
+	D3DXMATRIX mtxRot, mtxTrans;	// 計算用マトリックス
+	D3DMATERIAL9 matDef;			// 現在のマテリアル保存用
+	D3DXMATERIAL* pMat;				// マテリアルのポインタ
 
-	// 頂点フォーマットの設定
-	pDevice->SetFVF(FVF_VERTEX_2D);
+	// ====================================================
 	
 	// ポリゴンの描画
 	for (int nCntUiResultGS = 0; nCntUiResultGS < MAX_PLAYER + MAX_COMPUTER; nCntUiResultGS++)
@@ -335,6 +342,8 @@ void DrawUiResultGetScore(void)
 
 			continue;	// 処理の始めに戻る
 		}
+
+		
 
 		// インデックスのポリゴンを描画
 		for (int nCntPolygon = 0; nCntPolygon < MAX_GLOUP_UI_RESULTGETSCORE; nCntPolygon++)
@@ -346,6 +355,30 @@ void DrawUiResultGetScore(void)
 			{
 				continue;	// 処理の始めに戻る
 			}
+
+			// ワールドマトリックスの初期化
+			D3DXMatrixIdentity(&mtxWorld);	// ワールドマトリックスの初期値を設定
+
+			// 向きの反映
+			D3DXMatrixRotationYawPitchRoll(&mtxRot,
+										   g_aResultGSPolygon[nIdx].rot.y, g_aResultGSPolygon[nIdx].rot.x, g_aResultGSPolygon[nIdx].rot.z);
+
+			D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);
+
+			// 位置を設定
+			D3DXMatrixTranslation(&mtxTrans,
+								  g_aResultGS[nCntUiResultGS].pos.x, g_aResultGS[nCntUiResultGS].pos.y, g_aResultGS[nCntUiResultGS].pos.z);
+
+			D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxTrans);
+
+			// ワールドマトリックスの設定
+			pDevice->SetTransform(D3DTS_WORLD, &mtxWorld);
+
+			// 頂点バッファをデータストリームに設定
+			pDevice->SetStreamSource(0, g_pVtxBuffUiResultGetScore, 0, sizeof(VERTEX_3D));
+
+			// 頂点フォーマットの設定
+			pDevice->SetFVF(FVF_VERTEX_3D);
 
 			// テクスチャの設定
 			if (g_aResultGSPolygon[nIdx].nIdxTexture != -1)
@@ -505,7 +538,7 @@ int SetUiResultGetScore(D3DXVECTOR3 pos, D3DXCOLOR col, int nScore, int nHaveNum
 																												g_aUiResultGSPolygonInfo[nCntPolygon].texSize,
 																												col);
 
-					setPos.x += g_aUiResultGSPolygonInfo[nCntPolygon].pos.x + g_aUiResultGSPolygonInfo[nCntPolygon].fSizeWidth * 2.0f;
+					setPos.x += g_aUiResultGSPolygonInfo[nCntPolygon].pos.x + g_aUiResultGSPolygonInfo[nCntPolygon].fSizeWidth;
 					
 
 					nAddSet++;	// 追加で設定した分を加算
@@ -529,7 +562,7 @@ int SetUiResultGetScore(D3DXVECTOR3 pos, D3DXCOLOR col, int nScore, int nHaveNum
 				if (g_aUiResultGSPolygonInfo[nCntPolygon].type != UI_RESULTGSPOLYGONTYPE_BG)
 				{// 種類が背景でない場合
 
-					setPos.x += g_aUiResultGSPolygonInfo[nCntPolygon].pos.x + g_aUiResultGSPolygonInfo[nCntPolygon].fSizeWidth * 2.0f;
+					setPos.x += g_aUiResultGSPolygonInfo[nCntPolygon].pos.x + g_aUiResultGSPolygonInfo[nCntPolygon].fSizeWidth;
 				}
 			}
 
