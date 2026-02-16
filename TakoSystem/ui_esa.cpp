@@ -221,7 +221,7 @@ void UpdateUiEsa(void)
 
 #endif
 
-	for (int nCntParent = 0; nCntParent < MAX_PLAYER; nCntParent++)
+	for (int nCntParent = 0; nCntParent < GetNumCamera(); nCntParent++)
 	{
 		if (g_aUiEsaParent[nCntParent].bUse == false)
 		{// 使用していない場合
@@ -300,7 +300,7 @@ void DrawUiEsa(void)
 	// 頂点フォーマットの設定
 	pDevice->SetFVF(FVF_VERTEX_2D);
 
-	for (int nCntParent = 0; nCntParent < MAX_PLAYER; nCntParent++)
+	for (int nCntParent = 0; nCntParent < GetNumCamera(); nCntParent++)
 	{
 		if (g_aUiEsaParent[nCntParent].bUse == false)
 		{// 親が使用されていない場合
@@ -342,7 +342,7 @@ void DrawUiEsa(void)
 //========================================================================
 int SetUiEsaParent(D3DXVECTOR3 pos, int nNumNewLine, D3DXVECTOR2 space, float fEsaWidth, float fEsaHeight)
 {
-	for (int nCntParent = 0; nCntParent < MAX_PLAYER; nCntParent++)
+	for (int nCntParent = 0; nCntParent < GetNumCamera(); nCntParent++)
 	{
 		if (g_aUiEsaParent[nCntParent].bUse == false)
 		{// 使用していない場合

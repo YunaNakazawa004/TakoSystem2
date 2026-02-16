@@ -635,12 +635,6 @@ void UpdateComputer(void)
 				}
 			}
 
-			if (GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL &&
-				CollisionObjectArea(pComputer->phys.pos) == true)
-			{// ‰Q’ª’†‚ÉˆÀ’n‚É‚¢‚½‚ç
-				SetMotionComputer(nCntComputer, MOTIONTYPE_NEUTRAL, true, 20);
-			}
-
 			if (pComputer->TentState == CPUTENTACLESTATE_NORMAL &&
 				D3DXVec3Length(&pComputer->phys.move) > 0.1f &&
 				pComputer->state != CPUSTATE_INK_ATTACK && pComputer->state != CPUSTATE_BACKAREA &&
@@ -919,10 +913,10 @@ void AttackEnemy(Computer* pComputer)
 	D3DXVECTOR3 dir = target - pComputer->phys.pos;
 	D3DXVec3Normalize(&dir, &dir);
 
-	// Šµ«ˆÚ“®
-	pComputer->phys.move.x += dir.x * MOVEMENT.x;
-	pComputer->phys.move.y += dir.y * MOVEMENT.y;
-	pComputer->phys.move.z += dir.z * MOVEMENT.z;
+	//// Šµ«ˆÚ“®
+	//pComputer->phys.move.x += dir.x * MOVEMENT.x;
+	//pComputer->phys.move.y += dir.y * MOVEMENT.y;
+	//pComputer->phys.move.z += dir.z * MOVEMENT.z;
 
 	D3DXVECTOR3 posDiff = target - pComputer->phys.pos;
 

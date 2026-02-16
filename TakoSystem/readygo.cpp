@@ -9,14 +9,15 @@
 #include "fade.h"
 #include "game.h"
 #include "sound.h"
+#include "time.h"
 
 //========================================
 // マクロ定義 
 //========================================
 
-#define MAX_READY				(2)										// レディの最大オブジェクト数
-#define MAX_READY_TEX			(2)										// レディの最大テクスチャ数
-#define SetTexReady(nIdx)		(pVtx[0].tex = {1 / 3.0f * nIdx, 0.0f}, pVtx[1].tex = {1 / 3.0f * (nIdx+1), 0.0f}, pVtx[2].tex ={1 / 3.0f * nIdx, 0.5f}, pVtx[3].tex = {1 / 3.0f * (nIdx+1), 0.5f})
+#define MAX_READY				(3)										// レディの最大オブジェクト数
+#define MAX_READY_TEX			(3)										// レディの最大テクスチャ数
+#define SetTexReady(nIdx)		(pVtx[0].tex = {1 / 3.0f * nIdx, 0.0f}, pVtx[1].tex = {1 / 3.0f * (nIdx+1), 0.0f}, pVtx[2].tex ={1 / 3.0f * nIdx, 1.0f}, pVtx[3].tex = {1 / 3.0f * (nIdx+1), 1.0f})
 
 //=======================================
 // 構造体の定義
@@ -72,6 +73,8 @@ ReadyTexInfo g_aReadyTex[] =
 	{{"data\\TEXTURE\\go.png"},
 	1},
 
+	{{"data\\TEXTURE\\timeup00.png"},
+	2},
 };
 
 Ready g_aReady[] =
@@ -90,6 +93,15 @@ Ready g_aReady[] =
 	{ 500.0f, 100.0f, 0.0f },
 	false,
 	1,
+	0,
+	0,
+	0,
+	false},
+
+	{{ 640.0f, 360.0f, 0.0f },
+	{ 100.0f, 100.0f, 0.0f },
+	false,
+	2,
 	0,
 	0,
 	0,
@@ -169,6 +181,7 @@ void InitReady(void)
 	// 頂点バッファをアンロックする
 	g_pVtxBuffReady->Unlock();
 	
+	ResetReady();
 	SetReadyMove(0, { 500.0f, 360.0f, 0.0f }, { 640.0f, 360.0f, 0.0f }, 18, false);
 	SetReady(0, 4); 
 }
@@ -204,6 +217,7 @@ void UpdateReady(void)
 	// ローカル変数宣言 -----------------
 
 	VERTEX_2D* pVtx;					//頂点情報へのポインタ
+	int nTime = GetTime();
 	static bool bfrag[100] = {};
 
 	if (GetKeyboardTrigger(DIK_I) == true)
@@ -258,6 +272,24 @@ void UpdateReady(void)
 
 				bGameStart = true;
 			}
+		}
+		if (g_aReady[nCntReady].TexIdx == 2)
+		{ // TimeUpテクスチャなら
+
+			if (nTime < 0 && g_aReady[nCntReady].bDisp == false)
+			{
+				SetReady(2, 1);
+
+				bGameStart = false;
+			}
+
+			// 時間切れ
+			if (nTime < 0 && bGameStart == false && g_aReady[nCntReady].Idx == -1)
+			{
+				SetFade(MODE_RESULT);
+				PlaySound(SOUND_SE_TIMEUP);	// カウントダウン
+			}
+
 		}
 
 		if (bfrag[nCntReady] == false && g_aReady[nCntReady].bMove == true)
@@ -350,15 +382,28 @@ void ResetReady(void)
 		0,
 		0,
 		true
-	},
+	};
 
-		g_aReady[1] =
+	g_aReady[1] =
 	{  // POS,SIZE,Disp,TexIdx,Idx,
 
 		{ 640.0f, 360.0f, 0.0f },
-		{ 80.0f, 100.0f, 0.0f },
+		{ 500.0f, 100.0f, 0.0f },
 		false,
 		1,
+		0,
+		0,
+		0,
+		false
+	};
+
+	g_aReady[2] =
+	{  // POS,SIZE,Disp,TexIdx,Idx,
+
+		{ 640.0f, 360.0f, 0.0f },
+		{ 100.0f, 100.0f, 0.0f },
+		false,
+		2,
 		0,
 		0,
 		0,

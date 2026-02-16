@@ -89,6 +89,8 @@ void InitFishes(void)
 		pFishes->nCounterBlend = 0;
 	}
 
+	g_aFishes[0].nUseNum = 0;
+
 	for (int nCntFishes = 0; nCntFishes < FISHES_CALC_SIZEARRAY(g_aFishInfo); nCntFishes++, pFishesModel++)
 	{
 		LoadFishes(nCntFishes);
