@@ -20,7 +20,7 @@ TEXTURE_FILENAME = data/TEXTURE/suna.png				# [1]砂テクスチャ
 #------------------------------------------------------------------------------
 # モデル数
 #------------------------------------------------------------------------------
-NUM_MODEL = 12
+NUM_MODEL = 14
 
 #------------------------------------------------------------------------------
 # モデルファイル名
@@ -37,13 +37,15 @@ MODEL_FILENAME = data/MODEL/Others_Object/Takotsubo000.x		# [8]たこつぼ(立ってる
 MODEL_FILENAME = data/MODEL/Others_Object/Takotsubo001.x		# [9]たこつぼ(倒れてる)
 MODEL_FILENAME = data/MODEL/rock/iwa004.x						# [10]岩5
 MODEL_FILENAME = data/MODEL/Others_Object/wakame000.x			# [11]わかめ
+MODEL_FILENAME = data/MODEL/stage/stage000.x					# [12]ステージの柱
+MODEL_FILENAME = data/MODEL/Others_Object/taru001.x				# [13]倒れてる樽
 
 #------------------------------------------------------------------------------
 # カメラ情報
 #------------------------------------------------------------------------------
 CAMERASET
-	POS = 0.0 180.0 -720.0			# 視点
-	REF = 0.0 0.0 0.0				# 注視点
+	POS = 0.0 180.0 0.0			# 視点
+	REF = 700.0 0.0 0.0				# 注視点
 END_CAMERASET
 
 #------------------------------------------------------------------------------
@@ -121,7 +123,7 @@ MODELSET
 END_MODELSET
 
 MODELSET
-	TYPE = 1
+	TYPE = 8
 	POS = 800 0 700
 	ROT = 0 315 0
 	SHADOW = 0
@@ -146,6 +148,7 @@ MODELSET
 	POS = -650 0 1000
 	ROT = 0 180 0
 	SHADOW = 0
+	COLLISION = 0
 END_MODELSET
 
 MODELSET
@@ -228,8 +231,36 @@ MODELSET
 END_MODELSET
 
 MODELSET
+	TYPE = 8
+	POS = 225 0 -1400
+	ROT = 0 0 0
+	SHADOW = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 8
+	POS = 1200 0 300
+	ROT = 0 0 0
+	SHADOW = 0
+END_MODELSET
+
+MODELSET
 	TYPE = 9
 	POS = -930 0 -185
+	ROT = 0 0 0
+	SHADOW = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 9
+	POS = -230 0 -735
+	ROT = 0 0 0
+	SHADOW = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 9
+	POS = -640 0 1000
 	ROT = 0 0 0
 	SHADOW = 0
 END_MODELSET
