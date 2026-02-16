@@ -13,7 +13,7 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define MAX_SEADUST				(10000)							// 塵の最大数
+#define MAX_SEADUST				(5000)							// 塵の最大数
 #define SEADUST_SIZE			(1.0f)							// サイズ
 #define SEADUST_FILENAME		"data\\TEXTURE\\shadow000.png"	// 使用する塵のファイル名
 
@@ -131,13 +131,13 @@ void UpdateSeaDust(void)
 			continue;
 		}
 
-		float fAngleMove = (rand() % 100 + 1) / 100000.0f;
+		//float fAngleMove = (rand() % 100 + 1) / 100000.0f;
 
-		static float fAngle = 0.0f;
-		fAngle += fAngleMove * 0.01f;
-		CorrectAngle(&fAngle, fAngle);
+		//static float fAngle = 0.0f;
+		//fAngle += fAngleMove * 0.01f;
+		//CorrectAngle(&fAngle, fAngle);
 
-		g_aSeaDust[nCntDust].pos.y += cosf(fAngle);
+		//g_aSeaDust[nCntDust].pos.y += cosf(fAngle);
 	}
 }
 
