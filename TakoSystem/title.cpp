@@ -79,9 +79,11 @@ void InitTitle(void)
 	int nVecR = rand() % 5;		// カメラの角度設定
 
 	// カメラの位置設定
-	SetCameraPos(0, D3DXVECTOR3(0.0f, ((float)nCamera * 100.0f) + 600.0f, 0.0f),
-		D3DXVECTOR3(0.0f, (((float)nCamera * 100.0f) + 600.0f) + (((float)nVecR * 50.0f) - 100.0f), 0.0f),
-		CAMERATYPE_POINT);
+	SetCameraPos(0, 
+				 D3DXVECTOR3(0.0f, ((float)nCamera * 100.0f) + 600.0f, 0.0f),
+				 D3DXVECTOR3(0.0f, (((float)nCamera * 100.0f) + 600.0f) + (((float)nVecR * 50.0f) - 100.0f), 0.0f),
+				 D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				 CAMERATYPE_POINT);
 
 	// 配置物の初期化処理
 	InitObject("data\\objpos001.txt");
