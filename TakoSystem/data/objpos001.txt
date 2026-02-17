@@ -33,12 +33,12 @@ MODEL_FILENAME = data/MODEL/Others_Object/fishborn000.x			# [4]魚の骨
 MODEL_FILENAME = data/MODEL/Others_Object/SangoSho.x			# [5]サンゴ礁
 MODEL_FILENAME = data/MODEL/Others_Object/taru000half.x			# [6]樽
 MODEL_FILENAME = data/MODEL/rock/iwa003.x						# [7]岩4
-MODEL_FILENAME = data/MODEL/Others_Object/Takotsubo000.x		# [8]たこつぼ(立ってる)
-MODEL_FILENAME = data/MODEL/Others_Object/Takotsubo001.x		# [9]たこつぼ(倒れてる)
-MODEL_FILENAME = data/MODEL/rock/iwa004.x						# [10]岩5
-MODEL_FILENAME = data/MODEL/Others_Object/wakame000.x			# [11]わかめ
-MODEL_FILENAME = data/MODEL/stage/stage000.x					# [12]ステージの柱
-MODEL_FILENAME = data/MODEL/Others_Object/taru001.x				# [13]倒れてる樽
+MODEL_FILENAME = data/MODEL/Others_Object/Takotsubo_light001.x	# [8]たこつぼ(立ってる)
+MODEL_FILENAME = data/MODEL/rock/iwa004.x						# [9]岩5
+MODEL_FILENAME = data/MODEL/Others_Object/wakame000.x			# [10]わかめ
+MODEL_FILENAME = data/MODEL/stage/stage000.x					# [11]ステージの柱
+MODEL_FILENAME = data/MODEL/Others_Object/taru002.x				# [12]倒れてる樽
+MODEL_FILENAME = data/MODEL/Others_Object/taru003.x				# [13]少し回転している樽
 
 #------------------------------------------------------------------------------
 # カメラ情報
@@ -152,7 +152,7 @@ MODELSET
 END_MODELSET
 
 MODELSET
-	TYPE = 10
+	TYPE = 9
 	POS = 120 0 1000
 	ROT = 0 180 0
 	SHADOW = 0
@@ -210,7 +210,7 @@ MODELSET
 END_MODELSET
 
 MODELSET
-	TYPE = 11
+	TYPE = 10
 	POS = 500 0 -1100
 	ROT = 0 75 0
 	SHADOW = 0
@@ -218,7 +218,7 @@ MODELSET
 END_MODELSET
 
 MODELSET
-	TYPE = 11
+	TYPE = 10
 	POS = 125 0 -1200
 	ROT = 0 175 0
 	SHADOW = 0
@@ -247,23 +247,30 @@ MODELSET
 END_MODELSET
 
 MODELSET
-	TYPE = 9
-	POS = -930 0 -185
-	ROT = 0 0 0
+	TYPE = 8
+	POS = -230 20 -735
+	ROT = 90 0 0
 	SHADOW = 0
 END_MODELSET
 
 MODELSET
-	TYPE = 9
-	POS = -230 0 -735
-	ROT = 0 0 0
+	TYPE = 8
+	POS = -640 20 1000
+	ROT = 90 0 0
 	SHADOW = 0
 END_MODELSET
 
 MODELSET
-	TYPE = 9
-	POS = -640 0 1000
-	ROT = 0 0 0
+	TYPE = 12
+	POS = -700 0 -800
+	ROT = 0 200 0
+	SHADOW = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 13
+	POS = -513 50 -860
+	ROT = -45 110 0
 	SHADOW = 0
 END_MODELSET
 

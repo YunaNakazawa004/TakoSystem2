@@ -22,7 +22,7 @@
 typedef enum
 {
 	POTTYPE_NORMAL = 0,			// ’¼—§
-	POTTYPE_LIE,				// “|‚ê‚Ä‚é
+	//POTTYPE_LIE,				// “|‚ê‚Ä‚é
 	POTTYPE_MAX
 }POTTYPE;
 
