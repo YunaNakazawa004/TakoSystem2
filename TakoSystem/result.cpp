@@ -200,7 +200,7 @@ void InitResult(void)
 
 	g_nIdxSetEsa = -1;
 
-	memset(&g_aIdxUiResultGS[0], -1, MAX_PLAYER + MAX_COMPUTER);
+	memset(&g_aIdxUiResultGS[0], -1, sizeof (int) * (MAX_PLAYER + MAX_COMPUTER));
 
 	// 頂点バッファの生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * 4 * MAX_NUM_RESULT,
@@ -295,7 +295,7 @@ void UninitResult(void)
 	for (nCntResult = 0; nCntResult < MAX_PLAYER + MAX_COMPUTER; nCntResult++)
 	{// プレイヤーの最大数分繰り返す
 
-		memset(&g_aNumHaveEsa[nCntResult][0], 0, MAX_ESATYPE);	// エサの種類別所持数を初期化
+		memset(&g_aNumHaveEsa[nCntResult][0], 0, sizeof (WORD) * MAX_ESATYPE);	// エサの種類別所持数を初期化
 	}
 
 	//memset(&g_aEsaScore[0], 0, MAX_ESATYPE);					// エサの種類別獲得スコアを初期化
@@ -426,7 +426,7 @@ void UpdateResult(void)
 	
 	case RESULTSTATE_SETING:
 	
-		g_nCounterResultState = WAIT_SETING;
+		g_nCounterResultState = WAIT_SETING;	// 待機時間を設定
 
 		g_resultState = RESULTSTATE_WAIT;
 
@@ -745,7 +745,7 @@ void ReceiveResult(int pHaveEsa[], int nMaxPlayer, int nMaxHave)
 	// エサの種類別所持数を初期化
 	for (nCntResult = 0; nCntResult < g_nMaxPlayer; nCntResult++)
 	{		
-		memset(&g_aNumHaveEsa[nCntResult][0], 0, MAX_ESATYPE);
+		memset(&g_aNumHaveEsa[nCntResult][0], 0, sizeof (WORD) * MAX_ESATYPE);
 	}
 
 	// 持っているエサの数の集計
