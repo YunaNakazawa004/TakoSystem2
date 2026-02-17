@@ -32,7 +32,7 @@
 #define SETPOS_PLAYER		(D3DXVECTOR3(-167.0f, 85.0f, 0.0f))
 #define SETARIA_PLAYER		(33.0f)
 
-#define WAIT_SETING			(60 * 5)
+#define WAIT_SETING			(60 * 3.5f)
 
 
 // 構造体の定義 ================================================
@@ -159,7 +159,7 @@ void InitResult(void)
 	SetNumCamera(1);
 
 	// カメラの位置設定
-	SetCameraPos(0, D3DXVECTOR3(0.0f, 0.0f, 100.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CAMERATYPE_STOP);
+	SetCameraPos(0, D3DXVECTOR3(0.0f, 0.0f, 100.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CAMERATYPE_STOP);
 	
 	// エサの初期化
 	InitEsa(false);	
@@ -200,7 +200,7 @@ void InitResult(void)
 
 	g_nIdxSetEsa = -1;
 
-	memset(&g_aIdxUiResultGS[0], -1, MAX_PLAYER + MAX_COMPUTER);
+	memset(&g_aIdxUiResultGS[0], -1, sizeof (int) * (MAX_PLAYER + MAX_COMPUTER));
 
 	// 頂点バッファの生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * 4 * MAX_NUM_RESULT,
@@ -295,7 +295,7 @@ void UninitResult(void)
 	for (nCntResult = 0; nCntResult < MAX_PLAYER + MAX_COMPUTER; nCntResult++)
 	{// プレイヤーの最大数分繰り返す
 
-		memset(&g_aNumHaveEsa[nCntResult][0], 0, MAX_ESATYPE);	// エサの種類別所持数を初期化
+		memset(&g_aNumHaveEsa[nCntResult][0], 0, sizeof (WORD) * MAX_ESATYPE);	// エサの種類別所持数を初期化
 	}
 
 	//memset(&g_aEsaScore[0], 0, MAX_ESATYPE);					// エサの種類別獲得スコアを初期化
@@ -374,7 +374,7 @@ void UpdateResult(void)
 	{
 	case RESULTSTATE_BEGIN:
 
-		if (GetKeyboardTrigger(DIK_RETURN))
+		if (GetKeyboardTrigger(DIK_RETURN) || GetJoypadTrigger(0, JOYKEY_A) == true)
 		{
 			g_resultState = RESULTSTATE_SETING;
 		}
@@ -426,7 +426,7 @@ void UpdateResult(void)
 	
 	case RESULTSTATE_SETING:
 	
-		g_nCounterResultState = WAIT_SETING;
+		g_nCounterResultState = (int)WAIT_SETING;	// 待機時間を設定
 
 		g_resultState = RESULTSTATE_WAIT;
 
@@ -511,9 +511,8 @@ void UpdateResult(void)
 
 	// 次のモードへの移動処理
 #if 1
-	if (pFade == FADE_NONE && g_resultState == RESULTSTATE_COMPLETE 
-	    || (/*GetKeyboardTrigger(DIK_RETURN) == true ||*/ GetJoypadTrigger(0, JOYKEY_START) == true || GetJoypadTrigger(0, JOYKEY_A) == true))
-	{// 決定キー（ENTERキー）が押された
+	if (pFade == FADE_NONE && g_resultState == RESULTSTATE_COMPLETE)
+	{
 		
 		// モード設定
 		SetFade(MODE_RANKING);
@@ -569,8 +568,6 @@ void DrawResultPolygon(int nIdx)
 
 	D3DXMATRIX mtxWorld;
 	D3DXMATRIX mtxRot, mtxTrans;	// 計算用マトリックス
-	D3DMATERIAL9 matDef;			// 現在のマテリアル保存用
-	D3DXMATERIAL* pMat;				// マテリアルのポインタ
 
 	// ====================================================
 
@@ -640,7 +637,7 @@ void DrawResultPolygon(int nIdx)
 void SetResult(RESULTTYPE type, D3DXVECTOR3 pos)
 {
 	D3DXVECTOR3 setPos, setShiftPos;
-	float fSetWidth, fSetHeight;
+
 	D3DXVECTOR2 setTexPos, setTexSize;
 	D3DXCOLOR setCol;
 
@@ -745,7 +742,7 @@ void ReceiveResult(int pHaveEsa[], int nMaxPlayer, int nMaxHave)
 	// エサの種類別所持数を初期化
 	for (nCntResult = 0; nCntResult < g_nMaxPlayer; nCntResult++)
 	{		
-		memset(&g_aNumHaveEsa[nCntResult][0], 0, MAX_ESATYPE);
+		memset(&g_aNumHaveEsa[nCntResult][0], 0, sizeof (WORD) * MAX_ESATYPE);
 	}
 
 	// 持っているエサの数の集計

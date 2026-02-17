@@ -53,8 +53,8 @@ void InitTutorial(void)
 
 	// カメラの初期化処理
 	SetNumCamera(GetPlayerSelect());
-	SetCameraPos(0, FIRST_POS, FIRST_POS, CAMERATYPE_PLAYER);
-	SetCameraPos(1, FIRST_POS, FIRST_POS, CAMERATYPE_PLAYER);
+	SetCameraPos(0, FIRST_POS, FIRST_POS, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CAMERATYPE_PLAYER);
+	SetCameraPos(1, FIRST_POS, FIRST_POS, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CAMERATYPE_PLAYER);
 
 	// メッシュオービットの初期化処理
 	InitMeshOrbit();

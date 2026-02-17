@@ -27,4 +27,9 @@ void DrawGame(void);
 void SetEnablePause(bool bPause);
 bool GetPause(void);
 
+void SetGameState(GAMESTATE setState);	// ゲームの状態を設定する処理
+GAMESTATE GetGameState(void);			// ゲームの状態を返す処理
+
+void GiveResultForGame(void);	// リザルトに情報を渡す処理
+
 #endif
