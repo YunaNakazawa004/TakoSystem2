@@ -78,7 +78,7 @@ void InitObject(const char* pStr)
 			&g_aObjectModel[nCntObject].dwNumMat,
 			&g_aObjectModel[nCntObject].pMesh)))
 		{
-			return;
+			continue;
 		}
 
 		// マテリアルデータへのポインタを取得
