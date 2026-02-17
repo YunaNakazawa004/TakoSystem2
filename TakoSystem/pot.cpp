@@ -431,7 +431,7 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 						pPlayer->nFood--;
 						pPlayer->nPotIdx = nCntPot;
 						SetSubUiEsa(pPlayer->nIdx);
-						SetEsa(nIdx, ESA_ACTTYPE_GOTO_POT, 0, pPlayer->pos, FIRST_POS);
+						SetEsa(nIdx, true, ESA_ACTTYPE_GOTO_POT, 0, pPlayer->pos, FIRST_POS);
 
 						Enqueue(&pPot->esaQueue, nIdx);
 						pPot->nFood++;
@@ -451,7 +451,7 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 							{// Ž‚Ä‚é”‚¾‚¯Ž‚Â
 								int nIdx = Dequeue(&pPot->esaQueue);
 								pPot->nFood--;
-								SetEsa(nIdx, ESA_ACTTYPE_GOTO_PLAYER, 0, pPot->pos, FIRST_POS);
+								SetEsa(nIdx, true,ESA_ACTTYPE_GOTO_PLAYER, 0, pPot->pos, FIRST_POS);
 
 								//SetAddUiEsa(pPlayer->nIdx, nIdx);
 								//Enqueue(&pPlayer->esaQueue, nIdx);

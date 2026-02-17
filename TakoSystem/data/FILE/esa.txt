@@ -56,6 +56,17 @@ SET_ESADATA
 		GET_SCORE   = 50		# 獲得スコア
 	END_ESA
 	
+	SET_ESA		# [5]アジ
+		TEXTURE = data/TEXTURE/esa_tmp_texture/esa_tmp_horse-mackerel.png	# テクスチャ
+		MODEL	= data/MODEL/esa/Azi.x                                  	# モデル
+		
+		SPEED		= 0.005		# 移動速度
+		HIT_RADIUS  = 10.0		# 当たり判定の大きさ
+		GET_SCORE   = 10		# 獲得スコア
+	END_ESA
+	
+	
+	
 END_ESADATA
 
 END_SCRIPT	# 読み取り終了

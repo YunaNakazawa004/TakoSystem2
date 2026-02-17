@@ -79,9 +79,11 @@ void InitTitle(void)
 	int nVecR = rand() % 5;		// カメラの角度設定
 
 	// カメラの位置設定
-	SetCameraPos(0, D3DXVECTOR3(0.0f, ((float)nCamera * 100.0f) + 600.0f, 0.0f),
-		D3DXVECTOR3(0.0f, (((float)nCamera * 100.0f) + 600.0f) + (((float)nVecR * 50.0f) - 100.0f), 0.0f),
-		CAMERATYPE_POINT);
+	SetCameraPos(0, 
+				 D3DXVECTOR3(0.0f, ((float)nCamera * 100.0f) + 600.0f, 0.0f),
+				 D3DXVECTOR3(0.0f, (((float)nCamera * 100.0f) + 600.0f) + (((float)nVecR * 50.0f) - 100.0f), 0.0f),
+				 D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				 CAMERATYPE_POINT);
 
 	// 配置物の初期化処理
 	InitObject("data\\objpos001.txt");
@@ -175,10 +177,10 @@ void InitTitle(void)
 		}
 		else if (nCntTitle == 5)
 		{// カーソル
-			pVtx[0].pos = D3DXVECTOR3(200.0f, 460.0f, 0.0f);	// 右回りで設定する
-			pVtx[1].pos = D3DXVECTOR3(440.0f, 460.0f, 0.0f);	// 2Dの場合Zの値は0にする
-			pVtx[2].pos = D3DXVECTOR3(200.0f, 620.0f, 0.0f);
-			pVtx[3].pos = D3DXVECTOR3(440.0f, 620.0f, 0.0f);
+			pVtx[0].pos = D3DXVECTOR3(180.0f, 500.0f, 0.0f);	// 右回りで設定する
+			pVtx[1].pos = D3DXVECTOR3(300.0f, 500.0f, 0.0f);	// 2Dの場合Zの値は0にする
+			pVtx[2].pos = D3DXVECTOR3(180.0f, 580.0f, 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(300.0f, 580.0f, 0.0f);
 		}
 		else if (nCntTitle == 6)
 		{// 左人数カーソル
@@ -421,17 +423,17 @@ void UpdateTitle(void)
 		{// カーソル
 			if (g_CursorPos == TITLECURSOR_PLAYER_SELECT)
 			{// 人数設定
-				pVtx[0].pos = D3DXVECTOR3(100.0f, 460.0f, 0.0f);	// 右回りで設定する
-				pVtx[1].pos = D3DXVECTOR3(340.0f, 460.0f, 0.0f);	// 2Dの場合Zの値は0にする
-				pVtx[2].pos = D3DXVECTOR3(100.0f, 620.0f, 0.0f);
-				pVtx[3].pos = D3DXVECTOR3(340.0f, 620.0f, 0.0f);
+				pVtx[0].pos = D3DXVECTOR3(180.0f, 500.0f, 0.0f);	// 右回りで設定する
+				pVtx[1].pos = D3DXVECTOR3(300.0f, 500.0f, 0.0f);	// 2Dの場合Zの値は0にする
+				pVtx[2].pos = D3DXVECTOR3(180.0f, 580.0f, 0.0f);
+				pVtx[3].pos = D3DXVECTOR3(300.0f, 580.0f, 0.0f);
 			}
 			else if (g_CursorPos == TITLECURSOR_PLAY_START)
 			{// ゲームスタート
-				pVtx[0].pos = D3DXVECTOR3(100.0f, 540.0f, 0.0f);	// 右回りで設定する
-				pVtx[1].pos = D3DXVECTOR3(340.0f, 540.0f, 0.0f);	// 2Dの場合Zの値は0にする
-				pVtx[2].pos = D3DXVECTOR3(100.0f, 700.0f, 0.0f);
-				pVtx[3].pos = D3DXVECTOR3(340.0f, 700.0f, 0.0f);
+				pVtx[0].pos = D3DXVECTOR3(180.0f, 580.0f, 0.0f);	// 右回りで設定する
+				pVtx[1].pos = D3DXVECTOR3(300.0f, 580.0f, 0.0f);	// 2Dの場合Zの値は0にする
+				pVtx[2].pos = D3DXVECTOR3(180.0f, 660.0f, 0.0f);
+				pVtx[3].pos = D3DXVECTOR3(300.0f, 660.0f, 0.0f);
 			}
 		}
 		else if (nCntTitle == 6)
@@ -443,7 +445,7 @@ void UpdateTitle(void)
 				pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
 				pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
 			}
-			else if (g_PlayerSelect == 1 && g_CursorPos == TITLECURSOR_PLAYER_SELECT)
+			else if (g_PlayerSelect == MAX_PLAYER && g_CursorPos == TITLECURSOR_PLAYER_SELECT)
 			{// プレイ人数1人
 				pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);	// 0~255の値を設定
 				pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
@@ -467,7 +469,7 @@ void UpdateTitle(void)
 				pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
 				pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
 			}
-			else if (g_PlayerSelect == MAX_PLAYER && g_CursorPos == TITLECURSOR_PLAYER_SELECT)
+			else if (g_PlayerSelect == 1 && g_CursorPos == TITLECURSOR_PLAYER_SELECT)
 			{// プレイ人数2人
 				pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);	// 0~255の値を設定
 				pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
@@ -491,16 +493,16 @@ void UpdateTitle(void)
 	{// カーソル下移動
 		g_CursorPos--;
 		if (g_CursorPos < 0) g_CursorPos = TITLECURSOR_PLAYER_SELECT;
-		PlaySound(SOUND_SE_CURSORMOVE);
-		g_PressEnterDeley = 0;
+		PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
+		if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 	}
 	else if ((GetKeyboardTrigger(DIK_S) || GetJoypadTrigger(0, JOYKEY_DOWN) ||
 		GetJoypadStick(0, JOYKEY_LEFTSTICK_DOWN, NULL, NULL) == true))
 	{// カーソル上移動
 		g_CursorPos++;
 		if (g_CursorPos >= TITLECURSOR_MAX) g_CursorPos = TITLECURSOR_PLAY_START;
-		PlaySound(SOUND_SE_CURSORMOVE);
-		g_PressEnterDeley = 0;
+		PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
+		if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 	}
 
 	if (g_CursorPos == TITLECURSOR_PLAYER_SELECT)
@@ -510,16 +512,16 @@ void UpdateTitle(void)
 			&& g_PlayerSelect > 1)
 		{
 			g_PlayerSelect--;
-			g_PressEnterDeley = 0;
-			PlaySound(SOUND_SE_CURSORMOVE);
+			PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
+			if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 		}
 		else if ((GetKeyboardTrigger(DIK_D) || GetJoypadTrigger(0, JOYKEY_RIGHT) ||
 			GetJoypadStick(0, JOYKEY_LEFTSTICK_RIGHT, NULL, NULL) == true)
 			&& g_PlayerSelect < MAX_PLAYER)
 		{
 			g_PlayerSelect++;
-			g_PressEnterDeley = 0;
-			PlaySound(SOUND_SE_CURSORMOVE);
+			PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
+			if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 		}
 	}
 	else if (g_CursorPos == TITLECURSOR_PLAY_START)

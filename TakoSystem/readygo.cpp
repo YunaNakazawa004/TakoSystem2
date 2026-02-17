@@ -292,7 +292,12 @@ void UpdateReady(void)
 			// 時間切れ
 			if (nTime < 0 && bGameStart == false && g_aReady[nCntReady].Idx == -1)
 			{
-				SetFade(MODE_RESULT);
+				// ゲームの状態を設定
+				if (GetGameState() != GAMESTATE_END)
+				{
+					SetGameState(GAMESTATE_TIMEOVER);	// 時間切れ状態に設定
+				}
+
 				PlaySound(SOUND_SE_TIMEUP);	// カウントダウン
 			}
 

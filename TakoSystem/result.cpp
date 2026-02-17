@@ -32,7 +32,7 @@
 #define SETPOS_PLAYER		(D3DXVECTOR3(-167.0f, 85.0f, 0.0f))
 #define SETARIA_PLAYER		(33.0f)
 
-#define WAIT_SETING			(60 * 5)
+#define WAIT_SETING			(60 * 3.5f)
 
 
 // 構造体の定義 ================================================
@@ -44,6 +44,7 @@ typedef struct
 
 	D3DXVECTOR3 pos;			// 位置
 	D3DXVECTOR3 rot;			// 角度
+	D3DXVECTOR3 addRot;			// 加算角度
 
 	float fSizeWidth;			// 大きさ(幅)
 	float fSizeHeight;			// 大きさ(高さ)
@@ -72,6 +73,7 @@ typedef struct
 
 	D3DXVECTOR3 pos;			// 位置
 	D3DXVECTOR3 rot;			// 角度
+	D3DXVECTOR3 addRot;			// 加算角度
 
 	float fSizeWidth;			// 大きさ(幅)
 	float fSizeHeight;			// 大きさ(高さ)
@@ -83,12 +85,6 @@ typedef struct
 
 }ResultPolygon_info;
 
-typedef struct
-{
-	
-	int nIdxPolygon[5];					// インデックス
-
-}Result_info;
 
 // プロトタイプ宣言 ============================================
 
@@ -120,7 +116,7 @@ const char* c_apFilenameResult[] =
 {
 	"data/TEXTURE/In_the_sea.png",		// [0]背景
 	"data/TEXTURE/tex_alpha001.jpg",	// [1]スコア背景
-	"data/TEXTURE/RESULT.png",			// [2]RESULTテキスト
+	"data/TEXTURE/RESULT001.png",		// [2]RESULTテキスト
 	"data/TEXTURE/RESULT_LINE.png",		// [3]放射線
 	"data/TEXTURE/text_player.png",		// [4]プレイヤーテキスト
 	"data/TEXTURE/number000.png",		// [5]数字
@@ -129,12 +125,12 @@ const char* c_apFilenameResult[] =
 ResultPolygon_info g_aResultPolygonInfo[] =
 {// {テクスチャインデックス, aブレンドをするか,描画順位, オフセット, 角度,  幅, 高さ, テクスチャ座標, テクスチャサイズ, 色}
 
-	{0, false, 0, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, D3DXVECTOR2(0.0f,0.0f), D3DXVECTOR2(1.0f,1.0f), D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)},	// [0]背景情報
-	{1, true, 0, D3DXVECTOR3(0.0f, 112.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 250.0f, 13.0f, D3DXVECTOR2(0.0f,0.0f), D3DXVECTOR2(1.0f,1.0f), D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)},							// [1]リザルトテキスト背景
-	{2, false, 0, D3DXVECTOR3(-176.0f, 112.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 50.0f, 33.0f, D3DXVECTOR2(0.0f,0.0f), D3DXVECTOR2(1.0f,1.0f), D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)},							// [2]リザルトテキスト
-	{3, false, 0, D3DXVECTOR3(134.0f,11.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 70.0f, 70.0f, D3DXVECTOR2(0.0f,0.0f), D3DXVECTOR2(1.0f,1.0f), D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)},								// [3]放射線
-	{4, false, 0, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 45.0f, 10.0f, D3DXVECTOR2(0.0f,0.0f), D3DXVECTOR2(1.0f,1.0f), D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)},								// [4]プレイヤーテキスト
-	{5, false, 0, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 10.0f, 10.0f, D3DXVECTOR2(0.0f,0.0f), D3DXVECTOR2(0.1f,1.0f), D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)},								// [5]プレイヤーナンバー
+	{0, false, 0, D3DXVECTOR3(0.0f, 0.0f, 50.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, D3DXVECTOR2(0.0f,0.0f), D3DXVECTOR2(1.0f,1.0f), D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)},	// [0]背景情報
+	{1, true, 0, D3DXVECTOR3(0.0f, 112.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 250.0f, 13.0f, D3DXVECTOR2(0.0f,0.0f), D3DXVECTOR2(1.0f,1.0f), D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)},							// [1]リザルトテキスト背景
+	{2, false, 0, D3DXVECTOR3(-176.0f, 112.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 50.0f, 33.0f, D3DXVECTOR2(0.0f,0.0f), D3DXVECTOR2(1.0f,1.0f), D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)},							// [2]リザルトテキスト
+	{3, false, 0, D3DXVECTOR3(155.0f,15.0f, 50.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.01f), 70.0f, 70.0f, D3DXVECTOR2(0.0f,0.0f), D3DXVECTOR2(1.0f,1.0f), D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)},								// [3]放射線
+	{4, false, 0, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 45.0f, 10.0f, D3DXVECTOR2(0.0f,0.0f), D3DXVECTOR2(1.0f,1.0f), D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)},								// [4]プレイヤーテキスト
+	{5, false, 0, D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 10.0f, 10.0f, D3DXVECTOR2(0.0f,0.0f), D3DXVECTOR2(0.1f,1.0f), D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)},								// [5]プレイヤーナンバー
 };
 
 
@@ -163,7 +159,7 @@ void InitResult(void)
 	SetNumCamera(1);
 
 	// カメラの位置設定
-	SetCameraPos(0, D3DXVECTOR3(0.0f, 0.0f, 100.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CAMERATYPE_STOP);
+	SetCameraPos(0, D3DXVECTOR3(0.0f, 0.0f, 100.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CAMERATYPE_STOP);
 	
 	// エサの初期化
 	InitEsa(false);	
@@ -175,8 +171,9 @@ void InitResult(void)
 	for (int nCntTexture = 0; nCntTexture < sizeof c_apFilenameResult / sizeof(c_apFilenameResult[0]); nCntTexture++)
 	{
 		D3DXCreateTextureFromFile(pDevice,								// デバイス
-								  c_apFilenameResult[nCntTexture],		// テクスチャファイル名
-								  &g_apTextureResult[nCntTexture]);		// テクスチャポインタ
+			c_apFilenameResult[nCntTexture],		// テクスチャファイル名
+			&g_apTextureResult[nCntTexture]);		// テクスチャポインタ
+		
 	}
 
 	// リザルトのポリゴン情報を初期化
@@ -203,7 +200,7 @@ void InitResult(void)
 
 	g_nIdxSetEsa = -1;
 
-	memset(&g_aIdxUiResultGS[0], -1, MAX_PLAYER + MAX_COMPUTER);
+	memset(&g_aIdxUiResultGS[0], -1, sizeof (int) * (MAX_PLAYER + MAX_COMPUTER));
 
 	// 頂点バッファの生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * 4 * MAX_NUM_RESULT,
@@ -252,22 +249,22 @@ void InitResult(void)
 
 	// リザルトポリゴンの設定(背景)
 	SetResultPolygon(g_aResultPolygonInfo[0].nIdxTexture, g_aResultPolygonInfo[0].bAlphaBlend, g_aResultPolygonInfo[0].nDrowLevel,							// 
-					 g_aResultPolygonInfo[0].pos, g_aResultPolygonInfo[0].rot, g_aResultPolygonInfo[0].fSizeWidth, g_aResultPolygonInfo[0].fSizeHeight,		// 
+					 g_aResultPolygonInfo[0].pos, g_aResultPolygonInfo[0].rot, g_aResultPolygonInfo[0].addRot, g_aResultPolygonInfo[0].fSizeWidth, g_aResultPolygonInfo[0].fSizeHeight,		// 
 					 g_aResultPolygonInfo[0].texPos, g_aResultPolygonInfo[0].texSize, g_aResultPolygonInfo[0].col);											// 
 
 	// リザルトポリゴンの設定(リザルトテキスト背景)
 	SetResultPolygon(g_aResultPolygonInfo[1].nIdxTexture, g_aResultPolygonInfo[1].bAlphaBlend, g_aResultPolygonInfo[1].nDrowLevel,							// 
-					 g_aResultPolygonInfo[1].pos, g_aResultPolygonInfo[1].rot, g_aResultPolygonInfo[1].fSizeWidth, g_aResultPolygonInfo[1].fSizeHeight,		// 
+					 g_aResultPolygonInfo[1].pos, g_aResultPolygonInfo[1].rot, g_aResultPolygonInfo[1].addRot, g_aResultPolygonInfo[1].fSizeWidth, g_aResultPolygonInfo[1].fSizeHeight,		// 
 					 g_aResultPolygonInfo[1].texPos, g_aResultPolygonInfo[1].texSize, g_aResultPolygonInfo[1].col);											// 
 
 	// リザルトポリゴンの設定(リザルトテキスト)
 	SetResultPolygon(g_aResultPolygonInfo[2].nIdxTexture, g_aResultPolygonInfo[2].bAlphaBlend, g_aResultPolygonInfo[2].nDrowLevel,							// 
-					 g_aResultPolygonInfo[2].pos, g_aResultPolygonInfo[2].rot, g_aResultPolygonInfo[2].fSizeWidth, g_aResultPolygonInfo[2].fSizeHeight,		// 
+					 g_aResultPolygonInfo[2].pos, g_aResultPolygonInfo[2].rot, g_aResultPolygonInfo[2].addRot, g_aResultPolygonInfo[2].fSizeWidth, g_aResultPolygonInfo[2].fSizeHeight,		// 
 					 g_aResultPolygonInfo[2].texPos, g_aResultPolygonInfo[2].texSize, g_aResultPolygonInfo[2].col);											// 
 
 	//  リザルトポリゴンの設定(放射線)
 	SetResultPolygon(g_aResultPolygonInfo[3].nIdxTexture, g_aResultPolygonInfo[3].bAlphaBlend, g_aResultPolygonInfo[3].nDrowLevel,							// 
-					 g_aResultPolygonInfo[3].pos, g_aResultPolygonInfo[3].rot, g_aResultPolygonInfo[3].fSizeWidth, g_aResultPolygonInfo[3].fSizeHeight,		// 
+					 g_aResultPolygonInfo[3].pos, g_aResultPolygonInfo[3].rot, g_aResultPolygonInfo[3].addRot, g_aResultPolygonInfo[3].fSizeWidth, g_aResultPolygonInfo[3].fSizeHeight,		// 
 					 g_aResultPolygonInfo[3].texPos, g_aResultPolygonInfo[3].texSize, g_aResultPolygonInfo[3].col);											// 
 
 	int aTmpHaveEsa[3][5] =
@@ -298,7 +295,7 @@ void UninitResult(void)
 	for (nCntResult = 0; nCntResult < MAX_PLAYER + MAX_COMPUTER; nCntResult++)
 	{// プレイヤーの最大数分繰り返す
 
-		memset(&g_aNumHaveEsa[nCntResult][0], 0, MAX_ESATYPE);	// エサの種類別所持数を初期化
+		memset(&g_aNumHaveEsa[nCntResult][0], 0, sizeof (WORD) * MAX_ESATYPE);	// エサの種類別所持数を初期化
 	}
 
 	//memset(&g_aEsaScore[0], 0, MAX_ESATYPE);					// エサの種類別獲得スコアを初期化
@@ -377,7 +374,7 @@ void UpdateResult(void)
 	{
 	case RESULTSTATE_BEGIN:
 
-		if (GetKeyboardTrigger(DIK_RETURN))
+		if (GetKeyboardTrigger(DIK_RETURN) || GetJoypadTrigger(0, JOYKEY_A) == true)
 		{
 			g_resultState = RESULTSTATE_SETING;
 		}
@@ -416,12 +413,12 @@ void UpdateResult(void)
 			if		(pEsa[g_nIdxSetEsa].rot.y < -D3DX_PI)
 			{// -3.14を超えた場合
 
-				pEsa[g_nIdxSetEsa].rot.y + D3DX_PI * 2.0f;
+				pEsa[g_nIdxSetEsa].rot.y += D3DX_PI * 2.0f;
 			}
-			else if (pEsa[g_nIdxSetEsa].rot.y < -D3DX_PI)
+			else if (pEsa[g_nIdxSetEsa].rot.y > D3DX_PI)
 			{// 3.14を超えた場合
 
-				pEsa[g_nIdxSetEsa].rot.y - D3DX_PI * 2.0f;
+				pEsa[g_nIdxSetEsa].rot.y -= D3DX_PI * 2.0f;
 			}
 		}
 
@@ -429,7 +426,7 @@ void UpdateResult(void)
 	
 	case RESULTSTATE_SETING:
 	
-		g_nCounterResultState = WAIT_SETING;
+		g_nCounterResultState = (int)WAIT_SETING;	// 待機時間を設定
 
 		g_resultState = RESULTSTATE_WAIT;
 
@@ -449,7 +446,7 @@ void UpdateResult(void)
 			}
 
 			// エサの設定
-			g_nIdxSetEsa = SetEsa(g_nNowEsaType, ESA_ACTTYPE_NONE, 0, D3DXVECTOR3(134.0f, 11.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+			g_nIdxSetEsa = SetEsa(g_nNowEsaType, false, ESA_ACTTYPE_NONE, 0, D3DXVECTOR3(134.0f, 11.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 		}
 		else
 		{
@@ -463,6 +460,20 @@ void UpdateResult(void)
 	{
 		if (g_aResultPolygon[nCntResult].bUse == true)
 		{// 使用している場合
+
+			// 加算角度を加算
+			g_aResultPolygon[nCntResult].rot += g_aResultPolygon[nCntResult].addRot;
+
+			// 角度の修正
+			if		(g_aResultPolygon[nCntResult].rot.x < -D3DX_PI) { g_aResultPolygon[nCntResult].rot.x += D3DX_PI * 2.0f; }
+			else if (g_aResultPolygon[nCntResult].rot.x >  D3DX_PI) { g_aResultPolygon[nCntResult].rot.x -= D3DX_PI * 2.0f; }
+
+			if		(g_aResultPolygon[nCntResult].rot.y < -D3DX_PI) { g_aResultPolygon[nCntResult].rot.y += D3DX_PI * 2.0f; }
+			else if (g_aResultPolygon[nCntResult].rot.y >  D3DX_PI) { g_aResultPolygon[nCntResult].rot.y -= D3DX_PI * 2.0f; }
+
+			if		(g_aResultPolygon[nCntResult].rot.z < -D3DX_PI) { g_aResultPolygon[nCntResult].rot.z += D3DX_PI * 2.0f; }
+			else if (g_aResultPolygon[nCntResult].rot.z >  D3DX_PI) { g_aResultPolygon[nCntResult].rot.z -= D3DX_PI * 2.0f; }
+
 
 			// 頂点バッファをロックし、頂点情報へのポインタを取得
 			g_pVtxBuffResult->Lock(0, 0, (void**)&pVtx, 0);
@@ -500,9 +511,8 @@ void UpdateResult(void)
 
 	// 次のモードへの移動処理
 #if 1
-	if (pFade == FADE_NONE && g_resultState == RESULTSTATE_COMPLETE 
-	    || (/*GetKeyboardTrigger(DIK_RETURN) == true ||*/ GetJoypadTrigger(0, JOYKEY_START) == true || GetJoypadTrigger(0, JOYKEY_A) == true))
-	{// 決定キー（ENTERキー）が押された
+	if (pFade == FADE_NONE && g_resultState == RESULTSTATE_COMPLETE)
+	{
 		
 		// モード設定
 		SetFade(MODE_RANKING);
@@ -558,8 +568,6 @@ void DrawResultPolygon(int nIdx)
 
 	D3DXMATRIX mtxWorld;
 	D3DXMATRIX mtxRot, mtxTrans;	// 計算用マトリックス
-	D3DMATERIAL9 matDef;			// 現在のマテリアル保存用
-	D3DXMATERIAL* pMat;				// マテリアルのポインタ
 
 	// ====================================================
 
@@ -629,7 +637,7 @@ void DrawResultPolygon(int nIdx)
 void SetResult(RESULTTYPE type, D3DXVECTOR3 pos)
 {
 	D3DXVECTOR3 setPos, setShiftPos;
-	float fSetWidth, fSetHeight;
+
 	D3DXVECTOR2 setTexPos, setTexSize;
 	D3DXCOLOR setCol;
 
@@ -669,6 +677,7 @@ void SetResult(RESULTTYPE type, D3DXVECTOR3 pos)
 								 g_aResultPolygonInfo[aIdxInfo[nCntNum]].nDrowLevel,
 								 setPos,
 								 g_aResultPolygonInfo[aIdxInfo[nCntNum]].rot,
+								 g_aResultPolygonInfo[aIdxInfo[nCntNum]].addRot,
 								 g_aResultPolygonInfo[aIdxInfo[nCntNum]].fSizeWidth,
 								 g_aResultPolygonInfo[aIdxInfo[nCntNum]].fSizeHeight, 
 								 setTexPos,
@@ -687,7 +696,7 @@ void SetResult(RESULTTYPE type, D3DXVECTOR3 pos)
 // リザルトのポリゴンの設定処理
 //========================================================================
 int SetResultPolygon(int nIdxTexture, bool bAlphaBlend, int nDrowLevel, 
-					 D3DXVECTOR3 pos, D3DXVECTOR3 rot, float fSizeWidth, float fSizeHeight,
+					 D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 addRot, float fSizeWidth, float fSizeHeight,
 					 D3DXVECTOR2 texPos, D3DXVECTOR2 texSize, D3DXCOLOR col)
 {
 	for (int nCntResult = 0; nCntResult < MAX_NUM_RESULT; nCntResult++)
@@ -699,6 +708,7 @@ int SetResultPolygon(int nIdxTexture, bool bAlphaBlend, int nDrowLevel,
 			g_aResultPolygon[nCntResult].nIdxTexture = nIdxTexture;		// テクスチャインデックスを設定
 			g_aResultPolygon[nCntResult].pos = pos;						// 位置を設定
 			g_aResultPolygon[nCntResult].rot = rot;						// 角度を設定
+			g_aResultPolygon[nCntResult].addRot = addRot;				// 加算角度を設定
 			g_aResultPolygon[nCntResult].fSizeWidth = fSizeWidth;		// 幅の大きさを設定
 			g_aResultPolygon[nCntResult].fSizeHeight = fSizeHeight;		// 高さの大きさを設定
 			g_aResultPolygon[nCntResult].col = col;						// 色を設定
@@ -732,7 +742,7 @@ void ReceiveResult(int pHaveEsa[], int nMaxPlayer, int nMaxHave)
 	// エサの種類別所持数を初期化
 	for (nCntResult = 0; nCntResult < g_nMaxPlayer; nCntResult++)
 	{		
-		memset(&g_aNumHaveEsa[nCntResult][0], 0, MAX_ESATYPE);
+		memset(&g_aNumHaveEsa[nCntResult][0], 0, sizeof (WORD) * MAX_ESATYPE);
 	}
 
 	// 持っているエサの数の集計

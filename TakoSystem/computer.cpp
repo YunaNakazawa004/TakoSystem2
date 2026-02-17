@@ -240,7 +240,7 @@ void UninitComputer(void)
 {
 	Computer* pComputer = GetComputer();
 
-	for (int nCntModel = 0; nCntModel < pComputer->nNumModel; nCntModel++)
+	for (int nCntModel = 0; nCntModel < pComputer->nNumModel; nCntModel++, pComputer++)
 	{
 		// ƒƒbƒVƒ…‚Ì”jŠü
 		if (pComputer->aModel[nCntModel].pMesh != NULL)
@@ -273,7 +273,6 @@ void UninitComputer(void)
 //=============================================================================
 void UpdateComputer(void)
 {
-	Camera* pCamera = GetCamera();
 	Computer* pComputer = GetComputer();
 	float fmoveAngle = 0.0f;
 
@@ -631,7 +630,7 @@ void UpdateComputer(void)
 						pComputer->nFoodCount--;
 						int nIdx = Dequeue(&pComputer->esaQueue);
 
-						SetEsa(nIdx, ESA_ACTTYPE_SWIM, 0, pComputer->phys.pos, FIRST_POS);
+						SetEsa(nIdx, true, ESA_ACTTYPE_SWIM, 0, pComputer->phys.pos, FIRST_POS);
 					}
 				}
 			}

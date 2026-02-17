@@ -168,7 +168,7 @@ void UninitPlayer(void)
 {
 	Player* pPlayer = GetPlayer();
 
-	for (int nCntModel = 0; nCntModel < pPlayer->nNumModel; nCntModel++)
+	for (int nCntModel = 0; nCntModel < pPlayer->nNumModel; nCntModel++, pPlayer++)
 	{
 		// メッシュの破棄
 		if (pPlayer->aModel[nCntModel].pMesh != NULL)
@@ -599,7 +599,7 @@ void UpdatePlayer(void)
 						int nIdx = Dequeue(&pPlayer->esaQueue);
 						SetSubUiEsa(nCntPlayer);
 
-						SetEsa(nIdx, ESA_ACTTYPE_SWIM, 0, pPlayer->pos, FIRST_POS);
+						SetEsa(nIdx, true, ESA_ACTTYPE_SWIM, 0, pPlayer->pos, FIRST_POS);
 					}
 				}
 			}
@@ -838,9 +838,8 @@ void DrawPlayer(void)
 	D3DMATERIAL9 matDef;				// 現在のマテリアル保存用
 	D3DXMATERIAL* pMat;					// マテリアルデータへのポインタ
 	Player* pPlayer = GetPlayer();
-	Camera* pCamera = GetCamera();
 
-	for (int nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++, pPlayer++, pCamera++)
+	for (int nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++, pPlayer++)
 	{
 		if (pPlayer->bUse == true)
 		{// 使用しているとき
@@ -850,39 +849,6 @@ void DrawPlayer(void)
 			// 向きを反映
 			D3DXMatrixRotationYawPitchRoll(&mtxRot, pPlayer->rot.y, pPlayer->rot.x, pPlayer->rot.z);
 			D3DXMatrixMultiply(&pPlayer->mtxWorld, &pPlayer->mtxWorld, &mtxRot);
-
-			//D3DXVECTOR3 rotX, rotY, rotZ;
-			//rotZ = pPlayer->posX - pPlayer->pos;
-			//D3DXVec3Normalize(&rotZ, &rotZ);
-
-			//rotX = D3DXVECTOR3((rotZ.y * pCamera->vecU.z) - (rotZ.z * pCamera->vecU.y),
-			//	(rotZ.z * pCamera->vecU.x) - (rotZ.x * pCamera->vecU.z),
-			//	(rotZ.x * pCamera->vecU.y) - (rotZ.y * pCamera->vecU.x));
-			//D3DXVec3Normalize(&rotX, &rotX);
-
-			//rotY = D3DXVECTOR3((rotX.y * rotZ.z) - (rotX.z * rotZ.y),
-			//	(rotX.z * rotZ.x) - (rotX.x * rotZ.z),
-			//	(rotX.x * rotZ.y) - (rotX.y * rotZ.x));
-			//D3DXVec3Normalize(&rotY, &rotY);
-
-			//// ビューマトリックスを取得
-			//pDevice->GetTransform(D3DTS_VIEW, &mtxView);
-			//pPlayer->mtxWorld._11 = rotX.x;
-			//pPlayer->mtxWorld._12 = rotY.x;
-			//pPlayer->mtxWorld._13 = rotZ.x;
-			//pPlayer->mtxWorld._14 = pPlayer->pos.x;
-			//pPlayer->mtxWorld._21 = rotX.y;
-			//pPlayer->mtxWorld._22 = rotY.y;
-			//pPlayer->mtxWorld._23 = rotZ.y;
-			//pPlayer->mtxWorld._24 = pPlayer->pos.y;
-			//pPlayer->mtxWorld._31 = rotX.z;
-			//pPlayer->mtxWorld._32 = rotY.z;
-			//pPlayer->mtxWorld._33 = rotZ.z;
-			//pPlayer->mtxWorld._34 = pPlayer->pos.z;
-			//pPlayer->mtxWorld._41 = 0.0f;
-			//pPlayer->mtxWorld._42 = 0.0f;
-			//pPlayer->mtxWorld._43 = 0.0f;
-			//pPlayer->mtxWorld._44 = 1.0f;
 
 			// 位置を反映
 			D3DXMatrixTranslation(&mtxTrans, pPlayer->pos.x, pPlayer->pos.y, pPlayer->pos.z);
