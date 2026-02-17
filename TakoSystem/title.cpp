@@ -175,10 +175,10 @@ void InitTitle(void)
 		}
 		else if (nCntTitle == 5)
 		{// カーソル
-			pVtx[0].pos = D3DXVECTOR3(200.0f, 460.0f, 0.0f);	// 右回りで設定する
-			pVtx[1].pos = D3DXVECTOR3(440.0f, 460.0f, 0.0f);	// 2Dの場合Zの値は0にする
-			pVtx[2].pos = D3DXVECTOR3(200.0f, 620.0f, 0.0f);
-			pVtx[3].pos = D3DXVECTOR3(440.0f, 620.0f, 0.0f);
+			pVtx[0].pos = D3DXVECTOR3(180.0f, 500.0f, 0.0f);	// 右回りで設定する
+			pVtx[1].pos = D3DXVECTOR3(300.0f, 500.0f, 0.0f);	// 2Dの場合Zの値は0にする
+			pVtx[2].pos = D3DXVECTOR3(180.0f, 580.0f, 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(300.0f, 580.0f, 0.0f);
 		}
 		else if (nCntTitle == 6)
 		{// 左人数カーソル
@@ -421,17 +421,17 @@ void UpdateTitle(void)
 		{// カーソル
 			if (g_CursorPos == TITLECURSOR_PLAYER_SELECT)
 			{// 人数設定
-				pVtx[0].pos = D3DXVECTOR3(100.0f, 460.0f, 0.0f);	// 右回りで設定する
-				pVtx[1].pos = D3DXVECTOR3(340.0f, 460.0f, 0.0f);	// 2Dの場合Zの値は0にする
-				pVtx[2].pos = D3DXVECTOR3(100.0f, 620.0f, 0.0f);
-				pVtx[3].pos = D3DXVECTOR3(340.0f, 620.0f, 0.0f);
+				pVtx[0].pos = D3DXVECTOR3(180.0f, 500.0f, 0.0f);	// 右回りで設定する
+				pVtx[1].pos = D3DXVECTOR3(300.0f, 500.0f, 0.0f);	// 2Dの場合Zの値は0にする
+				pVtx[2].pos = D3DXVECTOR3(180.0f, 580.0f, 0.0f);
+				pVtx[3].pos = D3DXVECTOR3(300.0f, 580.0f, 0.0f);
 			}
 			else if (g_CursorPos == TITLECURSOR_PLAY_START)
 			{// ゲームスタート
-				pVtx[0].pos = D3DXVECTOR3(100.0f, 540.0f, 0.0f);	// 右回りで設定する
-				pVtx[1].pos = D3DXVECTOR3(340.0f, 540.0f, 0.0f);	// 2Dの場合Zの値は0にする
-				pVtx[2].pos = D3DXVECTOR3(100.0f, 700.0f, 0.0f);
-				pVtx[3].pos = D3DXVECTOR3(340.0f, 700.0f, 0.0f);
+				pVtx[0].pos = D3DXVECTOR3(180.0f, 580.0f, 0.0f);	// 右回りで設定する
+				pVtx[1].pos = D3DXVECTOR3(300.0f, 580.0f, 0.0f);	// 2Dの場合Zの値は0にする
+				pVtx[2].pos = D3DXVECTOR3(180.0f, 660.0f, 0.0f);
+				pVtx[3].pos = D3DXVECTOR3(300.0f, 660.0f, 0.0f);
 			}
 		}
 		else if (nCntTitle == 6)
