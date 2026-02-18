@@ -131,7 +131,7 @@ void InitTutorial(void)
 		&g_pTextureTutorial[0]);
 
 	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/TUTORIAL001.png",
+		"data/TEXTURE/TUTORIAL002.png",
 		&g_pTextureTutorial[1]);
 
 	// 頂点バッファの生成
