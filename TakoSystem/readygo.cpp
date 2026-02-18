@@ -61,6 +61,7 @@ typedef struct
 //=======================================
 
 bool bGameStart = false;
+bool bfrag[100] = {};
 LPDIRECT3DTEXTURE9 g_apTextureReady[MAX_READY] = {};
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffReady = NULL;
 
@@ -125,6 +126,10 @@ void InitReady(void)
 
 	bGameStart = false;
 
+	for (int nCntReady = 0; nCntReady < 100; nCntReady++)
+	{
+		bfrag[nCntReady] = false;
+	}
 	for (int nCntReady = 0; nCntReady < MAX_READY; nCntReady++)
 	{
 		//　テクスチャの読み込み
@@ -218,7 +223,6 @@ void UpdateReady(void)
 
 	VERTEX_2D* pVtx;					//頂点情報へのポインタ
 	int nTime = GetTime();
-	static bool bfrag[100] = {};
 
 	if (GetKeyboardTrigger(DIK_I) == true)
 	{

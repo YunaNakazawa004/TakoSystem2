@@ -117,7 +117,7 @@ const char* c_apFilenameResult[] =
 {
 	"data/TEXTURE/In_the_sea.png",		// [0]背景
 	"data/TEXTURE/tex_alpha001.jpg",	// [1]スコア背景
-	"data/TEXTURE/RESULT001.png",		// [2]RESULTテキスト
+	"data/TEXTURE/RESULT002.png",		// [2]RESULTテキスト
 	"data/TEXTURE/RESULT_LINE.png",		// [3]放射線
 	"data/TEXTURE/text_player.png",		// [4]プレイヤーテキスト
 	"data/TEXTURE/number000.png",		// [5]数字
