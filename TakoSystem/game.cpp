@@ -305,7 +305,7 @@ void UpdateGame(void)
 	}
 
 	// レディの更新処理
-	UpdateReady();
+	UpdateReady(); FileLogPass("ready");
 
 	if (bGameStart == true)
 	{
@@ -335,30 +335,30 @@ void UpdateGame(void)
 		{
 
 			// ポーズの更新処理
-			UpdatePause();
+			UpdatePause(); FileLogPass("pause");
 		}
 		else
 		{
 			// CPUの更新処理
-			UpdateComputer();
+			UpdateComputer(); FileLogPass("computer");
 
 			// 水面の更新処理
-			UpdateWaterSurf();
+			UpdateWaterSurf(); FileLogPass("waterserf");
 
 			// クロスヘアの更新処理
-			UpdateCrossHair();
+			UpdateCrossHair(); FileLogPass("crosshair");
 
 			// UIゲージアイコンの更新処理
-			UpdateUiGaugeIcon();
+			UpdateUiGaugeIcon(); FileLogPass("gaugeicon");
 
 			// エサUIの更新処理
-			UpdateUiEsa();
+			UpdateUiEsa(); FileLogPass("uiesa");
 
 			// 時間の更新処理
-			UpdateTime();
+			UpdateTime(); FileLogPass("time");
 
 			// 海流の更新処理
-			UpdateOceanCurrents();
+			UpdateOceanCurrents(); FileLogPass("ocean_c");
 		}
 
 	}
@@ -367,54 +367,55 @@ void UpdateGame(void)
 	{// ポーズしてない場合
 	
 		// プレイヤーの更新処理
-		UpdatePlayer();
+		UpdatePlayer(); FileLogPass("player");
 
 		// ステージの更新処理
 		//UpdateStage();
 
 		// 配置物の更新処理
-		UpdateObject();
+		UpdateObject(); FileLogPass("object");
 
 		// メッシュシリンダーの更新処理
-		UpdateMeshCylinder();
+		UpdateMeshCylinder(); FileLogPass("mesh_cy");
 
 		// メッシュドームの更新処理
-		UpdateMeshRing();
+		UpdateMeshDome(); FileLogPass("mesh_do");
 
 		// メッシュフィールドの更新処理
-		UpdateMeshField();
+		UpdateMeshField(); FileLogPass("mesh_fi");
 
 		// メッシュリングの更新処理
-		UpdateMeshRing();
+		UpdateMeshRing(); FileLogPass("mesh_ri");
 
 		// 塵の更新処理
-		UpdateSeaDust();
+		UpdateSeaDust(); FileLogPass("setdest");
 
 		// 3Dエフェクトの更新処理
-		UpdateEffect3D();
+		UpdateEffect3D(); FileLogPass("effect");
 
 		// 3Dパーティクルの更新処理
-		UpdateParticle3D();
+		UpdateParticle3D(); FileLogPass("particle");
 
 		// 生き物の更新処理
-		UpdateFishes();
+		UpdateFishes(); FileLogPass("fishee");
 
 		// タコつぼの更新処理
-		UpdatePot();
+		UpdatePot(); FileLogPass("pot");
 
 		// エサの更新処理
-		UpdateEsa();
+		UpdateEsa(); FileLogPass("esa");
 
 		// マップの更新処理
-		UpdateMap();
+		UpdateMap(); FileLogPass("map");
 
 		// メッシュオービットの更新処理
-		UpdateMeshOrbit();
+		UpdateMeshOrbit(); FileLogPass("obit");
 	}
 
 	// 画面の更新処理
-	UpdateScreen();
+	UpdateScreen(); FileLogPass("screen");
 
+	FileLogPass("game=====");
 }
 
 //===================================================================
@@ -542,28 +543,38 @@ GAMESTATE GetGameState(void)
 //===================================================================
 void GiveResultForGame(void)
 {
+	// 変数宣言 ===========================================
+
 	// リザルトで渡す時の情報
 	Player* pPlayer = GetPlayer();								// プレイヤーの情報
 	Computer* pComputer = GetComputer();						// コンピューターの情報
 	int aHaveQueue[MAX_PLAYER + MAX_COMPUTER][MAX_QUEUE] = {};	// 全員のキュー情報
 	int nCntPlayer, nCntComputer;								// カウンター(人数)
+	
+	RESULT_TYPEPLAYER aTypePlayer[MAX_PLAYER + MAX_COMPUTER];	// プレイヤーの種類
+	
+	// ====================================================
+
+	memset(&aTypePlayer[0], RESULT_PLAYER_NONE, sizeof aTypePlayer);	// プレイヤーの種類を初期化
 
 	// プレイヤーのエサの獲得状況を獲得
 	for (nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++)
 	{
 		// エサキューの中身をコピー
 		memcpy(&aHaveQueue[nCntPlayer][0], &pPlayer[nCntPlayer].esaQueue.nData[0], sizeof (int) * MAX_QUEUE);
+
+		aTypePlayer[nCntPlayer] = RESULT_PLAYER_PLAYER;		// 種類をプレイヤーに設定
 	}
 
-#if 1
 	// コンピューターのエサの獲得状況を獲得
 	for (nCntComputer = 0; nCntComputer < ALL_OCTO - GetNumCamera(); nCntComputer++)
 	{
 		// エサキューの中身をコピー
 		memcpy(&aHaveQueue[nCntPlayer + nCntComputer][0], &pComputer[nCntComputer].esaQueue.nData[0], sizeof (int) * MAX_QUEUE);
+
+		aTypePlayer[nCntPlayer] = RESULT_PLAYER_COMPUTER;	// 種類をコンピューターに設定
 	}
-#endif
 
 	// リザルトに値を渡す
-	ReceiveResult(&aHaveQueue[0][0], nCntPlayer + nCntComputer, MAX_QUEUE);
+	ReceiveResult(&aTypePlayer[0], &aHaveQueue[0][0], nCntPlayer + nCntComputer, MAX_QUEUE);
 }
