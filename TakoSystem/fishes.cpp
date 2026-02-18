@@ -121,8 +121,7 @@ void InitFishes(void)
 	}
 
 	// どのモデルをどれだけ呼び出すか
-	SetFishes(0, 0);
-	SetFishes(1, 3);
+	//SetFishes(0, 0,true);
 
 	for (int nCntFishes = 0; nCntFishes < g_aFishes[0].nUseNum; nCntFishes++)
 	{
@@ -395,7 +394,7 @@ Fishes_Model* GetFishesModel(void)
 //=============================================================================
 // 生き物の設定処理
 //=============================================================================
-void SetFishes(int ModelIdx, int nNumSet)
+void SetFishes(int ModelIdx, int nNumSet, bool bMove, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 {
 	// ローカル変数宣言
 	Fishes* pFishes = GetFishes();
@@ -414,8 +413,10 @@ void SetFishes(int ModelIdx, int nNumSet)
 		{
 			pFishes->bUse = true;
 			pFishes->nModelIdx = ModelIdx;
-			pFishes->bMoving = true;
+			pFishes->bMoving = bMove;
 
+			pFishes->pos = pos;
+			pFishes->rot = rot;
 			pFishes->bLoopMotion = pFishesModel[ModelIdx].aMotionInfo->bLoop;		// ループするかどうか
 			pFishes->fRadius = pFishesModel[ModelIdx].fRadius;						// 半径
 			pFishes->fHeight = pFishesModel[ModelIdx].fHeight;						// 高さ

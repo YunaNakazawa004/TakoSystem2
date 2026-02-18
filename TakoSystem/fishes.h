@@ -121,7 +121,7 @@ void DrawFishes(void);
 void CollisionFishes(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, float fWidth, float fDepth);
 Fishes* GetFishes(void);
 Fishes_Model* GetFishesModel(void);
-void SetFishes(int ModelIdx, int nNumSet);
+void SetFishes(int ModelIdx, int nNumSet, bool bMove, D3DXVECTOR3 pos, D3DXVECTOR3 rot);
 void LoadFishes(int Idx);
 void UpdateMotionFishes(void);
 void SetMotionFishes(int nIdx, MOTIONTYPE motionType, bool bBlendMotion, int nFrameBlend);
