@@ -42,7 +42,7 @@ void InitRanking(void)
 		&g_pTextureRanking[0]);
 
 	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/RANKING001.png",
+		"data/TEXTURE/RANKING002.png",
 		&g_pTextureRanking[1]);
 
 	D3DXCreateTextureFromFile(pDevice,
