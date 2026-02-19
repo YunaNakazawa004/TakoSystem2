@@ -78,7 +78,7 @@ void InitRanking(void)
 	SetLightColor(2, D3DXCOLOR(1.1f, 1.1f, 1.3f, 0.3f));
 
 	// カメラの初期化処理
-	SetNumCamera(GetPlayerSelect());
+	SetNumCamera(1);
 	SetCameraPos(0, { 0.0f,1000.0f,0.0f }, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,0.0f }, CAMERATYPE_STOP);
 
 	// メッシュシリンダーの初期化処理

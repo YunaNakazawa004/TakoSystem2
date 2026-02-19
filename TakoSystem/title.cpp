@@ -548,7 +548,7 @@ void UpdateTitle(void)
 
 	if (pFade == FADE_NONE && g_PressEnterDeley > RANKING_DELEY)
 	{// 時間経過でランキングへ移行
-		SetFade(MODE_TITLE);
+		SetFade(MODE_LOGO);
 	}
 }
 
