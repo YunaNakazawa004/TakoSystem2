@@ -52,10 +52,9 @@ GAMESTATE g_gamerState = GAMESTATE_BEGIN;		// ゲームの状態
 LPDIRECT3DTEXTURE9 g_pTextureRank[MAX_RANK_TEX] = {};	// テクスチャへのポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffRank2D = NULL;		// 頂点バッファへのポインタ2D
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffRank3D = NULL;		// 頂点バッファへのポインタ3D
-RankingOBJ g_aRank[MAX_RANKING2D + MAX_RANKING3D] =		// ランキングオブジェクト
+RankingOBJ g_aRank[MAX_RANK] =		// ランキングオブジェクト
 {// Pos,Size,ワールドマトリックス,bUse,nType,TexIdx
 
-	{{0.0f,0.0f,160.0f},{SCREEN_WIDTH,SCREEN_HEIGHT,0.0f},{},{true},{RANKTYPE_3D},{0} },
 	{{0.0f,0.0f,0.0f},{20.0f,20.0f,0.0f},{},{true},{RANKTYPE_3D},{1} },
 };
 
