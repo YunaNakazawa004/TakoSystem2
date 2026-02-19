@@ -561,7 +561,7 @@ void GiveResultForGame(void)
 	for (nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++)
 	{
 		// エサキューの中身をコピー
-		memcpy(&aHaveQueue[nCntPlayer][0], &pPlayer[nCntPlayer].esaQueue.nData[0], sizeof (int) * MAX_QUEUE);
+		memcpy(&aHaveQueue[nCntPlayer][0], &pPlayer[nCntPlayer].esaQueue.nData[0], sizeof(int) * MAX_QUEUE);
 
 		aTypePlayer[nCntPlayer] = RESULT_PLAYER_PLAYER;		// 種類をプレイヤーに設定
 	}
@@ -570,9 +570,9 @@ void GiveResultForGame(void)
 	for (nCntComputer = 0; nCntComputer < ALL_OCTO - GetNumCamera(); nCntComputer++)
 	{
 		// エサキューの中身をコピー
-		memcpy(&aHaveQueue[nCntPlayer + nCntComputer][0], &pComputer[nCntComputer].esaQueue.nData[0], sizeof (int) * MAX_QUEUE);
+		memcpy(&aHaveQueue[nCntPlayer + nCntComputer][0], &pComputer[nCntComputer].esaQueue.nData[0], sizeof(int) * MAX_QUEUE);
 
-		aTypePlayer[nCntPlayer] = RESULT_PLAYER_COMPUTER;	// 種類をコンピューターに設定
+		aTypePlayer[nCntPlayer + nCntComputer] = RESULT_PLAYER_COMPUTER;	// 種類をコンピューターに設定
 	}
 
 	// リザルトに値を渡す

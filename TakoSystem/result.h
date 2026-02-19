@@ -77,8 +77,8 @@ void ReceiveResult							// リザルトの情報を貰う処理
 (RESULT_TYPEPLAYER* pTypePlayer, int pHaveEsa[], 			// プレイヤーの種類, エサの情報
  int nMaxPlayer, int nMaxHave);								// プレイヤーの種類の大きさ, プレイヤーの総数, エサの種類の総数 
  
-GiveResultPlayer* GetRankingForResult	// リザルトからランキングに情報を渡す処理
-(RESULT_TYPEPLAYER *pTypePlayer,int nDataSizeTypePlayer,	// プレイヤーの種類情報(情報を入れる場所, その場所の大きさ)
- int *pTotalScore, int nDataSizeTotalScore);				// スコアのトータル情報(情報を入れる場所, その場所の大きさ)
+int GetRankingForResult	// リザルトからランキングに情報を渡す処理
+(GiveResultPlayer* pTypePlayer, int nNumPlayer);			// プレイヤーの種類情報(情報を入れる場所, その場所の大きさ)
+
 
 #endif

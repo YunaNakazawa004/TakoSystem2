@@ -247,6 +247,46 @@ void InitResult(void)
 	// 頂点バッファをアンロックする
 	g_pVtxBuffResult->Unlock();
 
+
+#if 0	// 渡す値の確認用 *************************************************************
+
+	// 変数宣言 =================================
+
+	// 設定情報
+	const int c_nNumPlayer = 4;						// プレイヤーの数
+	const int c_nMaxHave = 10;						// エサの所持出来る最大数
+
+	RESULT_TYPEPLAYER aPlayer[c_nNumPlayer] =
+	{// プレイヤーの種類
+
+		RESULT_PLAYER_PLAYER,				// [0]番目のプレイヤーは「プレイヤー」。
+		RESULT_PLAYER_COMPUTER,				// [1]番目のプレイヤーは「コンピューター」。
+		RESULT_PLAYER_COMPUTER,				// [2]番目のプレイヤーは「コンピューター」。
+		RESULT_PLAYER_COMPUTER,				// [3]番目のプレイヤーは「コンピューター」。
+	};
+
+	int aHaveEsa[c_nNumPlayer][c_nMaxHave] =
+	{// エサの種類情報
+
+		{0, 1,-1,-1,-1,-1,-1,-1,-1,-1},	// [0]番目のプレイヤーのエサの所持状況
+		{0, 2,-1,-1,-1,-1,-1,-1,-1,-1},	// [1]番目のプレイヤーのエサの所持状況
+		{0, 3,-1,-1,-1,-1,-1,-1,-1,-1},	// [2]番目のプレイヤーのエサの所持状況
+		{0, 4,-1,-1,-1,-1,-1,-1,-1,-1},	// [3]番目のプレイヤーのエサの所持状況
+	};
+	
+	// 貰う場所
+	GiveResultPlayer aResultPlayer[c_nNumPlayer];	// 判定したプレイヤーの情報を貰う場所
+	
+	// ==========================================
+
+	// リザルトに情報を渡す処理
+	ReceiveResult(&aPlayer[0], &aHaveEsa[0][0], c_nNumPlayer, c_nMaxHave);
+
+	// リザルトの情報を渡す処理
+	GetRankingForResult(&aResultPlayer[0], c_nNumPlayer);
+
+#endif // *****************************************************************************
+
 	// リザルトポリゴンの設定(背景)
 	SetResultPolygon(g_aResultPolygonInfo[0].nIdxTexture, g_aResultPolygonInfo[0].bAlphaBlend, g_aResultPolygonInfo[0].nDrowLevel,							// 
 					 g_aResultPolygonInfo[0].pos, g_aResultPolygonInfo[0].rot, g_aResultPolygonInfo[0].addRot, g_aResultPolygonInfo[0].fSizeWidth, g_aResultPolygonInfo[0].fSizeHeight,		// 
@@ -773,28 +813,18 @@ void ReceiveResult(RESULT_TYPEPLAYER* pTypePlayer, int pHaveEsa[], int nMaxPlaye
 //========================================================================
 // リザルトからランキングに情報を渡す処理
 //========================================================================
-GiveResultPlayer* GetRankingForResult(RESULT_TYPEPLAYER* pTypePlayer, int nDataSizeTypePlayer, int* pTotalScore, int nDataSizeTotalScore)
+int GetRankingForResult(GiveResultPlayer* pResultPlayer, int nNumPlayer)
 {
-	if (pTypePlayer)
+	if (pResultPlayer)
 	{// プレイヤーのタイプ情報を入れる場所がある場合
 
-		for (int nCntPlayer = 0; nCntPlayer < nDataSizeTypePlayer; nCntPlayer++, pTypePlayer++)
+		for (int nCntPlayer = 0; nCntPlayer < nNumPlayer; nCntPlayer++, pResultPlayer++)
 		{// 
 
-			*pTypePlayer = g_aGiveRforR[nCntPlayer].typePlayer;		// プレイヤーのタイプ情報を設定
+			pResultPlayer->typePlayer = g_aGiveRforR[nCntPlayer].typePlayer;		// プレイヤーのタイプ情報を設定
+			pResultPlayer->nTotalScore = g_aGiveRforR[nCntPlayer].nTotalScore;		// プレイヤートータルスコア情報を設定
 		}
 	}
 
-	if (pTotalScore)
-	{// トータルスコアを入れる場所がある場合
-
-		for (int nCntPlayer = 0; nCntPlayer < nDataSizeTotalScore; nCntPlayer++, pTotalScore++)
-		{
-
-			*pTotalScore = g_aGiveRforR[nCntPlayer].nTotalScore;	// プレイヤーのタイプ情報を設定
-		}
-
-	}
-
-	return &g_aGiveRforR[0];
+	return g_nMaxPlayer;	// プレイヤーの総数を返す
 }
