@@ -4,24 +4,23 @@
 // Author : 井上 祐一
 // 
 //=============================================================================
-#include "main.h"
 #include "title.h"
 #include "input.h"
 #include "sound.h"
 #include "light.h"
 #include "fade.h"
 #include "camera.h"
-#include "game.h"
+
 #include "object.h"
 #include "meshcylinder.h"
 #include "meshfield.h"
-#include "meshorbit.h"
+#include "meshorbit.h"	// 消えない
 #include "waterSurf.h"
 #include "computer.h"
 
 // マクロ定義
 #define	MAX_TITLE	(8)	// タイトルで表示するテクスチャの最大数
-#define	RANKING_DELEY	(1500)	// ランキング移行に掛かる時間（25秒）
+#define	RANKING_DELEY	(100)	// ランキング移行に掛かる時間（25秒）
 #define	CLEAR_DELEY	(60)	// 消滅にかかる時間
 #define	ENTRY_DELEY	(90)	// 消滅→再登場までにかかる時間
 #define	TITLE_DELEY_MAX	(500.0f)	// タイトルの最大数
@@ -488,6 +487,9 @@ void UpdateTitle(void)
 		pVtx += 4;		// 頂点データのポインタを4つ分進める
 	}
 
+	// 頂点バッファをアンロックする
+	g_pVtxBuffTitle->Unlock();
+
 	if ((GetKeyboardTrigger(DIK_W) || GetJoypadTrigger(0, JOYKEY_UP) ||
 		GetJoypadStick(0, JOYKEY_LEFTSTICK_UP, NULL, NULL) == true))
 	{// カーソル下移動
@@ -546,12 +548,8 @@ void UpdateTitle(void)
 
 	if (pFade == FADE_NONE && g_PressEnterDeley > RANKING_DELEY)
 	{// 時間経過でランキングへ移行
-		SetFade(MODE_LOGO);
+		SetFade(MODE_TITLE);
 	}
-
-	// 頂点バッファをアンロックする
-	g_pVtxBuffTitle->Unlock();
-
 }
 
 // タイトルの描画処理
