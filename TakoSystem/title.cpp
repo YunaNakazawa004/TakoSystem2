@@ -4,18 +4,17 @@
 // Author : 井上 祐一
 // 
 //=============================================================================
-#include "main.h"
 #include "title.h"
 #include "input.h"
 #include "sound.h"
 #include "light.h"
 #include "fade.h"
 #include "camera.h"
-#include "game.h"
+
 #include "object.h"
 #include "meshcylinder.h"
 #include "meshfield.h"
-#include "meshorbit.h"
+#include "meshorbit.h"	// 消えない
 #include "waterSurf.h"
 #include "computer.h"
 
@@ -488,6 +487,9 @@ void UpdateTitle(void)
 		pVtx += 4;		// 頂点データのポインタを4つ分進める
 	}
 
+	// 頂点バッファをアンロックする
+	g_pVtxBuffTitle->Unlock();
+
 	if ((GetKeyboardTrigger(DIK_W) || GetJoypadTrigger(0, JOYKEY_UP) ||
 		GetJoypadStick(0, JOYKEY_LEFTSTICK_UP, NULL, NULL) == true))
 	{// カーソル下移動
@@ -548,10 +550,6 @@ void UpdateTitle(void)
 	{// 時間経過でランキングへ移行
 		SetFade(MODE_LOGO);
 	}
-
-	// 頂点バッファをアンロックする
-	g_pVtxBuffTitle->Unlock();
-
 }
 
 // タイトルの描画処理
