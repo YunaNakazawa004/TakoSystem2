@@ -15,7 +15,7 @@
 #define MOVEMENT				(D3DXVECTOR3(1.0f, 1.0f, 1.0f))			// 移動量
 #define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// 向き移動量
 #define FIRST_SIZE				(D3DXVECTOR2(0.0f, 0.0f))				// 初期サイズ
-#define MESHDOME_TEX			"data\\TEXTURE\\sky000.png"				// メッシュドームのテクスチャ
+#define MESHDOME_TEX			"data\\TEXTURE\\Sky_Texture.jpg"		// メッシュドームのテクスチャ
 
 //*****************************************************************************
 // メッシュドームの構造体
