@@ -118,6 +118,10 @@ void InitRanking(void)
 
 	GetRankingForResult(&g_aGRP[0], MAX_RANK);
 
+	for (int nCntRank = 0; nCntRank < MAX_RANKING3D; nCntRank++)
+	{
+		g_aRank[nCntRank].pos = { 0.0f,0.0f,0.0f };
+	}
 	for (int nCntRank = 0; nCntRank < MAX_RANK; nCntRank++)
 	{
 		g_aRank_Info[nCntRank].nCharaIdx = g_aGRP[nCntRank].typePlayer;
