@@ -21,6 +21,6 @@ void FileMovePosion				// pos‚ÌˆÚ“®+•Û‘¶ˆ—
  int nForKey, int nBackKey);				// z•ûŒüˆÚ“®ƒL[(+,-)
 
 
-void FileLogPass
+void FileLogPass				// ’Ê‰ß‚µ‚½êŠ‚Æ‚©‚©‚Á‚½ŠÔ‚ğ‹L˜^‚·‚éˆ—
 (const char* pPassPointName);
 #endif

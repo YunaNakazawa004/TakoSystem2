@@ -18,11 +18,13 @@
 typedef struct
 {
 	D3DXVECTOR3 pos;			// 位置
-	D3DXVECTOR3 size;			// 位置
+	D3DXCOLOR col;				// 色
+	D3DXVECTOR3 size;			// サイズ
 	D3DXMATRIX mtxWorld;		// ワールドマトリックス
 	bool bUse;					// 使用しているか
 	int nType;					// タイプ
 	int TexIdx;					// 使用する画像のインデックス
+	int NumIdx;					// 数字系テクスチャのインデックス
 } RankingOBJ;
 
 // ランキング情報 ---------------------

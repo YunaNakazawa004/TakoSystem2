@@ -15,7 +15,7 @@
 #define MOVEMENT				(D3DXVECTOR3(1.0f, 1.0f, 1.0f))			// 移動量
 #define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// 向き移動量
 #define FIRST_SIZE				(D3DXVECTOR2(0.0f, 0.0f))				// 初期サイズ
-#define MESHDOME_TEX			"data\\TEXTURE\\sky000.png"				// メッシュドームのテクスチャ
+#define MESHDOME_TEX			"data\\TEXTURE\\Sky_Texture.jpg"		// メッシュドームのテクスチャ
 
 //*****************************************************************************
 // メッシュドームの構造体
@@ -234,7 +234,8 @@ void SetMeshDome(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, float fRad
 					pVtx[0].col = WHITE_VTX;
 
 					// テクスチャ座標の設定
-					pVtx[0].tex = D3DXVECTOR2((float)nCntMeshDome2, (float)nCntMeshDome1);
+					pVtx[0].tex.x = (float)(1.0f / g_aMeshDome[nCntMeshDome].block.x * nCntMeshDome2);
+					pVtx[0].tex.y = (float)(1.0f / g_aMeshDome[nCntMeshDome].block.y * nCntMeshDome1);
 
 					pVtx++;
 				}

@@ -22,7 +22,7 @@ void InitScreen(void)
 {
 	LPDIRECT3DDEVICE9 pDevice;	// デバイスへのポインタ
 
-	g_colorScreen = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);	// 黒いポリゴン（不透明）にしておく
+	g_colorScreen = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);	// 黒いポリゴン（不透明）にしておく
 	g_ScreenStock = 0.0f;
 	g_bPinchScreen = true;
 

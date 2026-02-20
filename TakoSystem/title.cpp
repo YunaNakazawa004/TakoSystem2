@@ -46,6 +46,30 @@ void InitTitle(void)
 
 	g_CursorPos = 0;		// カーソルの位置を初期化
 
+	// 乱数の種を設定
+	srand((unsigned int)time(0));
+
+	int nCamera = rand() % 6;	// カメラの位置設定
+	int nVecR = rand() % 5;		// カメラの角度設定
+
+	// カメラの数の設定
+	SetNumCamera(1);
+
+	// カメラの位置設定
+	SetCameraPos(0, 
+				 D3DXVECTOR3(0.0f, ((float)nCamera * 100.0f) + 600.0f, 0.0f),
+				 D3DXVECTOR3(0.0f, (((float)nCamera * 100.0f) + 600.0f) + (((float)nVecR * 50.0f) - 100.0f), 0.0f),
+				 D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				 CAMERATYPE_POINT);
+
+	// ライトの設定
+	SetLightColor(0, D3DXCOLOR(0.8f, 0.9f, 1.0f, 1.0f));
+	SetLightColor(1, D3DXCOLOR(0.5f, 0.6f, 0.8f, 0.7f));
+	SetLightColor(2, D3DXCOLOR(0.3f, 0.3f, 0.5f, 0.3f));
+
+	// 配置物の初期化処理
+	InitObject("data\\objpos001.txt");
+
 	// メッシュシリンダーの初期化処理
 	InitMeshCylinder();
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 2.0f), D3DXVECTOR2(INCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, MESHCYLINDERTYPE_ROCK);
@@ -62,30 +86,6 @@ void InitTitle(void)
 
 	// CPUの初期化処理
 	InitComputer();
-
-	// ライトの設定
-	SetLightColor(0, D3DXCOLOR(0.8f, 0.9f, 1.0f, 1.0f));
-	SetLightColor(1, D3DXCOLOR(0.5f, 0.6f, 0.8f, 0.7f));
-	SetLightColor(2, D3DXCOLOR(0.3f, 0.3f, 0.5f, 0.3f));
-
-	// カメラの数の設定
-	SetNumCamera(1);
-
-	// 乱数の種を設定
-	srand((unsigned int)time(0));
-
-	int nCamera = rand() % 6;	// カメラの位置設定
-	int nVecR = rand() % 5;		// カメラの角度設定
-
-	// カメラの位置設定
-	SetCameraPos(0, 
-				 D3DXVECTOR3(0.0f, ((float)nCamera * 100.0f) + 600.0f, 0.0f),
-				 D3DXVECTOR3(0.0f, (((float)nCamera * 100.0f) + 600.0f) + (((float)nVecR * 50.0f) - 100.0f), 0.0f),
-				 D3DXVECTOR3(0.0f, 0.0f, 0.0f),
-				 CAMERATYPE_POINT);
-
-	// 配置物の初期化処理
-	InitObject("data\\objpos001.txt");
 
 	// デバイスの取得
 	pDevice = GetDevice();
@@ -494,6 +494,7 @@ void UpdateTitle(void)
 		GetJoypadStick(0, JOYKEY_LEFTSTICK_UP, NULL, NULL) == true))
 	{// カーソル下移動
 		g_CursorPos--;
+
 		if (g_CursorPos < 0) g_CursorPos = TITLECURSOR_PLAYER_SELECT;
 		PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
 		if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
