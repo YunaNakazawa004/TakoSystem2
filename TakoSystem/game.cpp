@@ -93,7 +93,7 @@ void InitGame(void)
 
 	// メッシュドームの初期化処理
 	InitMeshDome();
-	SetMeshDome(FIRST_POS, FIRST_POS, D3DXVECTOR2(16.0f,5.0f), OUTCYLINDER_RADIUS * 3.0f);
+	SetMeshDome(FIRST_POS, FIRST_POS, D3DXVECTOR2(16.0f,5.0f), OUTCYLINDER_RADIUS * 2.5f);
 
 	// メッシュフィールドの初期化処理
 	InitMeshField();
@@ -278,6 +278,16 @@ void UpdateGame(void)
 
 	case GAMESTATE_NONE:		// 通常状態
 
+		if (GetTime() < PINCH_TIME)
+		{// 残り時間がピンチ時間を下回った
+
+			g_gameState = GAMESTATE_LITTLETIME;	// 残り時間が少ない状態に設定
+		}
+
+		break;
+
+	case GAMESTATE_LITTLETIME:	// 残り時間が少ない状態
+
 		break;
 
 	case GAMESTATE_TIMEOVER:	// 時間切れ状態
@@ -302,7 +312,7 @@ void UpdateGame(void)
 	if (g_gameState == GAMESTATE_BEGIN)
 	{// ゲームの状態が開始状態の場合
 
-		//return;	// 処理しない
+		return;	// 処理しない
 	}
 
 	// レディの更新処理
@@ -364,6 +374,7 @@ void UpdateGame(void)
 
 	}
 
+
 	if (g_bPause == false)
 	{// ポーズしてない場合
 	
@@ -415,6 +426,7 @@ void UpdateGame(void)
 
 	// 画面の更新処理
 	UpdateScreen(); FileLogPass("screen");
+	
 
 	FileLogPass("game=====");
 }

@@ -234,7 +234,8 @@ void SetMeshDome(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, float fRad
 					pVtx[0].col = WHITE_VTX;
 
 					// テクスチャ座標の設定
-					pVtx[0].tex = D3DXVECTOR2((float)nCntMeshDome2, (float)nCntMeshDome1);
+					pVtx[0].tex.x = (float)(1.0f / g_aMeshDome[nCntMeshDome].block.x * nCntMeshDome2);
+					pVtx[0].tex.y = (float)(1.0f / g_aMeshDome[nCntMeshDome].block.y * nCntMeshDome1);
 
 					pVtx++;
 				}
