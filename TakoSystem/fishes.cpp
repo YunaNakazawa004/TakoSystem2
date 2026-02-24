@@ -140,29 +140,32 @@ void UninitFishes(void)
 	Fishes* pFishes = GetFishes();
 	Fishes_Model* pFishesModel = GetFishesModel();
 
-	for (int nCntModel = 0; nCntModel < FISHES_CALC_SIZEARRAY(g_aFishInfo); nCntModel++, pFishesModel++)
+	for (int nCntFishes = 0; nCntFishes < FISHES_MAX_NUM; nCntFishes++, pFishes++, pFishesModel++)
 	{
-		// メッシュの破棄
-		if (pFishesModel->aModel[nCntModel].pMesh != NULL)
+		for (int nCntModel = 0; nCntModel < pFishesModel->nNumModel; nCntModel++)
 		{
-			pFishesModel->aModel[nCntModel].pMesh->Release();
-			pFishesModel->aModel[nCntModel].pMesh = NULL;
-		}
-
-		// マテリアルの破棄
-		if (pFishesModel->aModel[nCntModel].pBuffMat != NULL)
-		{
-			pFishesModel->aModel[nCntModel].pBuffMat->Release();
-			pFishesModel->aModel[nCntModel].pBuffMat = NULL;
-		}
-
-		// テクスチャの破棄
-		for (int nCntFishes = 0; nCntFishes < (int)pFishesModel->aModel[nCntModel].dwNumMat; nCntFishes++)
-		{
-			if (pFishesModel->aModel[nCntModel].apTexture[nCntFishes] != NULL)
+			// メッシュの破棄
+			if (pFishesModel->aModel[nCntModel].pMesh != NULL)
 			{
-				pFishesModel->aModel[nCntModel].apTexture[nCntFishes]->Release();
-				pFishesModel->aModel[nCntModel].apTexture[nCntFishes] = NULL;
+				pFishesModel->aModel[nCntModel].pMesh->Release();
+				pFishesModel->aModel[nCntModel].pMesh = NULL;
+			}
+
+			// マテリアルの破棄
+			if (pFishesModel->aModel[nCntModel].pBuffMat != NULL)
+			{
+				pFishesModel->aModel[nCntModel].pBuffMat->Release();
+				pFishesModel->aModel[nCntModel].pBuffMat = NULL;
+			}
+
+			// テクスチャの破棄
+			for (int nCntTex = 0; nCntTex < (int)pFishesModel->aModel[nCntModel].dwNumMat; nCntTex++)
+			{
+				if (pFishesModel->aModel[nCntModel].apTexture[nCntTex] != NULL)
+				{
+					pFishesModel->aModel[nCntModel].apTexture[nCntTex]->Release();
+					pFishesModel->aModel[nCntModel].apTexture[nCntTex] = NULL;
+				}
 			}
 		}
 	}

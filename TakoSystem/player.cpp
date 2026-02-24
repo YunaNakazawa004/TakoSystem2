@@ -168,29 +168,32 @@ void UninitPlayer(void)
 {
 	Player* pPlayer = GetPlayer();
 
-	for (int nCntModel = 0; nCntModel < pPlayer->nNumModel; nCntModel++, pPlayer++)
+	for (int nCntPlayer = 0; nCntPlayer < MAX_PLAYER; nCntPlayer++, pPlayer++)
 	{
-		// メッシュの破棄
-		if (pPlayer->aModel[nCntModel].pMesh != NULL)
+		for (int nCntModel = 0; nCntModel < MAX_NUMMODEL; nCntModel++)
 		{
-			pPlayer->aModel[nCntModel].pMesh->Release();
-			pPlayer->aModel[nCntModel].pMesh = NULL;
-		}
-
-		// マテリアルの破棄
-		if (pPlayer->aModel[nCntModel].pBuffMat != NULL)
-		{
-			pPlayer->aModel[nCntModel].pBuffMat->Release();
-			pPlayer->aModel[nCntModel].pBuffMat = NULL;
-		}
-
-		// テクスチャの破棄
-		for (int nCntPlayer = 0; nCntPlayer < (int)pPlayer->aModel[nCntModel].dwNumMat; nCntPlayer++)
-		{
-			if (pPlayer->aModel[nCntModel].apTexture[nCntPlayer] != NULL)
+			// メッシュの破棄
+			if (pPlayer->aModel[nCntModel].pMesh != NULL)
 			{
-				pPlayer->aModel[nCntModel].apTexture[nCntPlayer]->Release();
-				pPlayer->aModel[nCntModel].apTexture[nCntPlayer] = NULL;
+				pPlayer->aModel[nCntModel].pMesh->Release();
+				pPlayer->aModel[nCntModel].pMesh = NULL;
+			}
+
+			// マテリアルの破棄
+			if (pPlayer->aModel[nCntModel].pBuffMat != NULL)
+			{
+				pPlayer->aModel[nCntModel].pBuffMat->Release();
+				pPlayer->aModel[nCntModel].pBuffMat = NULL;
+			}
+
+			// テクスチャの破棄
+			for (int nCntTex = 0; nCntTex < MAX_TEXTURE; nCntTex++)
+			{
+				if (pPlayer->aModel[nCntModel].apTexture[nCntTex] != NULL)
+				{
+					pPlayer->aModel[nCntModel].apTexture[nCntTex]->Release();
+					pPlayer->aModel[nCntModel].apTexture[nCntTex] = NULL;
+				}
 			}
 		}
 	}
@@ -430,6 +433,8 @@ void UpdatePlayer(void)
 							if (pEsa[nIdx].esaType != ESA_ACTTYPE_GOTO_POT)
 							{// タコつぼに入れてる最中じゃない
 								pEsa[nIdx].bUse = false;
+								pEsa[nIdx].nOrbitIdx = -1;
+								pEsa[nIdx].bOrbit = false;
 								SetAddUiEsa(nCntPlayer, pEsa[nIdx].nIdxModel);
 
 								pPlayer->nFood++;
@@ -611,14 +616,6 @@ void UpdatePlayer(void)
 				pPlayer->move.x += (0.0f - pPlayer->move.x) * INERTIA_MOVE;
 				pPlayer->move.y += (0.0f - pPlayer->move.y) * INERTIA_MOVE;
 				pPlayer->move.z += (0.0f - pPlayer->move.z) * INERTIA_MOVE;
-			}
-
-			// 軌跡
-			for (int nCntTent = 0; nCntTent < PLAYER_TENTACLE; nCntTent++)
-			{
-				SetMeshOrbitPos(pPlayer->nOrbitIdx[nCntTent], D3DXVECTOR3(pPlayer->aModel[(nCntTent + 1) * 4].posOff.x, pPlayer->aModel[(nCntTent + 1) * 4].posOff.y, pPlayer->aModel[(nCntTent + 1) * 4].posOff.z),
-					D3DXVECTOR3(pPlayer->aModel[(nCntTent + 1) * 4].posOff.x, pPlayer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pPlayer->aModel[(nCntTent + 1) * 4].posOff.z),
-					WHITE_VTX, CYAN_VTX, &pPlayer->aModel[(nCntTent + 1) * 4].mtxWorld);
 			}
 
 			D3DXVECTOR2 XZdist = D3DXVECTOR2(pPlayer->pos.x, pPlayer->pos.z);
@@ -805,6 +802,8 @@ void UpdatePlayer(void)
 				if (pEsa[nIdx].esaType != ESA_ACTTYPE_GOTO_POT)
 				{// タコつぼに入れてる最中じゃない
 					pEsa[nIdx].bUse = false;
+					pEsa[nIdx].bOrbit = false;
+					pEsa[nIdx].nOrbitIdx = -1;
 					SetAddUiEsa(nCntPlayer, pEsa[nIdx].nIdxModel);
 
 					pPlayer->nFood++;
@@ -820,11 +819,11 @@ void UpdatePlayer(void)
 			CollisionPotArea(pPlayer->pos, pPlayer->fRadius, pPlayer, NULL, false);
 
 			nCounter++;
-
-			// モーションの更新処理
-			UpdateMotionPlayer();
 		}
 	}
+
+	// モーションの更新処理
+	UpdateMotionPlayer();
 }
 
 //=============================================================================
@@ -917,6 +916,20 @@ void DrawPlayer(void)
 
 			// 保存していたマテリアルを戻す
 			pDevice->SetMaterial(&matDef);
+
+			for (int nCntTent = 0; nCntTent < PLAYER_TENTACLE; nCntTent++)
+			{
+				if (pPlayer->nOrbitIdx[nCntTent] == -1)
+				{// 初回
+					pPlayer->nOrbitIdx[nCntTent] = SetMeshOrbit(D3DXVECTOR3(pPlayer->aModel[(nCntTent + 1) * 4].posOff.x, pPlayer->aModel[(nCntTent + 1) * 4].posOff.y, pPlayer->aModel[(nCntTent + 1) * 4].posOff.z),
+						D3DXVECTOR3(pPlayer->aModel[(nCntTent + 1) * 4].posOff.x, pPlayer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pPlayer->aModel[(nCntTent + 1) * 4].posOff.z),
+						WHITE_VTX, CYAN_VTX, &pPlayer->aModel[(nCntTent + 1) * 4].mtxWorld);
+				}
+
+				SetMeshOrbitPos(pPlayer->nOrbitIdx[nCntTent], D3DXVECTOR3(pPlayer->aModel[(nCntTent + 1) * 4].posOff.x, pPlayer->aModel[(nCntTent + 1) * 4].posOff.y, pPlayer->aModel[(nCntTent + 1) * 4].posOff.z),
+					D3DXVECTOR3(pPlayer->aModel[(nCntTent + 1) * 4].posOff.x, pPlayer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pPlayer->aModel[(nCntTent + 1) * 4].posOff.z),
+					WHITE_VTX, CYAN_VTX, &pPlayer->aModel[(nCntTent + 1) * 4].mtxWorld);
+			}
 		}
 	}
 }
@@ -951,17 +964,6 @@ void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType
 	pPlayer[nIdx].nMaxFood = 1;
 	pPlayer[nIdx].nTentacleCooldown = 0;
 	pPlayer[nIdx].nInkCooldown = 0;
-
-	for (int nCntTent = 0; nCntTent < PLAYER_TENTACLE; nCntTent++)
-	{
-		pPlayer[nIdx].nOrbitIdx[nCntTent] = SetMeshOrbit(D3DXVECTOR3(pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.x, pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.y, pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.z),
-			D3DXVECTOR3(pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.x, pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.z),
-			WHITE_VTX, CYAN_VTX, &pPlayer[nIdx].aModel[(nCntTent + 1) * 4].mtxWorld);
-
-		SetMeshOrbitPos(pPlayer[nIdx].nOrbitIdx[nCntTent], D3DXVECTOR3(pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.x, pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.y, pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.z),
-			D3DXVECTOR3(pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.x, pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.z),
-			WHITE_VTX, CYAN_VTX, &pPlayer[nIdx].aModel[(nCntTent + 1) * 4].mtxWorld);
-	}
 
 	pPlayer[nIdx].motionType = MOTIONTYPE_NEUTRAL;
 	pPlayer[nIdx].bLoopMotion = pPlayer[nIdx].aMotionInfo[MOTIONTYPE_NEUTRAL].bLoop;

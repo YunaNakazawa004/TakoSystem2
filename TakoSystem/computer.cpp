@@ -240,29 +240,32 @@ void UninitComputer(void)
 {
 	Computer* pComputer = GetComputer();
 
-	for (int nCntModel = 0; nCntModel < pComputer->nNumModel; nCntModel++, pComputer++)
+	for (int nCntComputer = 0; nCntComputer < MAX_COMPUTER; nCntComputer++, pComputer++)
 	{
-		// メッシュの破棄
-		if (pComputer->aModel[nCntModel].pMesh != NULL)
+		for (int nCntModel = 0; nCntModel < MAX_NUMMODEL; nCntModel++)
 		{
-			pComputer->aModel[nCntModel].pMesh->Release();
-			pComputer->aModel[nCntModel].pMesh = NULL;
-		}
-
-		// マテリアルの破棄
-		if (pComputer->aModel[nCntModel].pBuffMat != NULL)
-		{
-			pComputer->aModel[nCntModel].pBuffMat->Release();
-			pComputer->aModel[nCntModel].pBuffMat = NULL;
-		}
-
-		// テクスチャの破棄
-		for (int nCntComputer = 0; nCntComputer < (int)pComputer->aModel[nCntModel].dwNumMat; nCntComputer++)
-		{
-			if (pComputer->aModel[nCntModel].apTexture[nCntComputer] != NULL)
+			// メッシュの破棄
+			if (pComputer->aModel[nCntModel].pMesh != NULL)
 			{
-				pComputer->aModel[nCntModel].apTexture[nCntComputer]->Release();
-				pComputer->aModel[nCntModel].apTexture[nCntComputer] = NULL;
+				pComputer->aModel[nCntModel].pMesh->Release();
+				pComputer->aModel[nCntModel].pMesh = NULL;
+			}
+
+			// マテリアルの破棄
+			if (pComputer->aModel[nCntModel].pBuffMat != NULL)
+			{
+				pComputer->aModel[nCntModel].pBuffMat->Release();
+				pComputer->aModel[nCntModel].pBuffMat = NULL;
+			}
+
+			// テクスチャの破棄
+			for (int nCntTex = 0; nCntTex < MAX_TEXTURE; nCntTex++)
+			{
+				if (pComputer->aModel[nCntModel].apTexture[nCntTex] != NULL)
+				{
+					pComputer->aModel[nCntModel].apTexture[nCntTex]->Release();
+					pComputer->aModel[nCntModel].apTexture[nCntTex] = NULL;
+				}
 			}
 		}
 	}
@@ -519,6 +522,8 @@ void UpdateComputer(void)
 						{// エサと接触した
 							Esa* pEsa = GetEsa();
 							pEsa[nIdx].bUse = false;
+							pEsa[nIdx].bOrbit = false;
+							pEsa[nIdx].nOrbitIdx = -1;
 
 							pComputer->nFoodCount++;
 							Enqueue(&pComputer->esaQueue, pEsa[nIdx].nIdxModel);
@@ -602,14 +607,6 @@ void UpdateComputer(void)
 				pComputer->phys.move.x += (0.0f - pComputer->phys.move.x) * INERTIA_MOVE;
 				pComputer->phys.move.y += (0.0f - pComputer->phys.move.y) * INERTIA_MOVE;
 				pComputer->phys.move.z += (0.0f - pComputer->phys.move.z) * INERTIA_MOVE;
-			}
-
-			// 軌跡
-			for (int nCntTent = 0; nCntTent < CPU_TENTACLE; nCntTent++)
-			{
-				SetMeshOrbitPos(pComputer->nOrbitIdx[nCntTent], D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
-					D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
-					WHITE_VTX, CYAN_VTX, &pComputer->aModel[(nCntTent + 1) * 4].mtxWorld);
 			}
 
 			if (CollisionObjectArea(pComputer->phys.pos) == false)
@@ -760,6 +757,8 @@ void UpdateComputer(void)
 				if (pEsa[nIdx].esaType != ESA_ACTTYPE_GOTO_POT)
 				{// タコつぼに入れてる最中じゃない
 					pEsa[nIdx].bUse = false;
+					pEsa[nIdx].bOrbit = false;
+					pEsa[nIdx].nOrbitIdx = -1;
 
 					pComputer->nFoodCount++;
 					Enqueue(&pComputer->esaQueue, pEsa[nIdx].nIdxModel);
@@ -871,6 +870,30 @@ void DrawComputer(void)
 
 			// 保存していたマテリアルを戻す
 			pDevice->SetMaterial(&matDef);
+
+			for (int nCntTent = 0; nCntTent < CPU_TENTACLE; nCntTent++)
+			{
+				int nIdx = pComputer->nOrbitIdx[nCntTent];
+
+				if (nIdx == -1)
+				{// 初回
+					nIdx = SetMeshOrbit(D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
+						D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
+						WHITE_VTX, CYAN_VTX, &pComputer->aModel[(nCntTent + 1) * 4].mtxWorld);
+
+					if (nIdx < 0)
+					{// 範囲外
+						pComputer->nOrbitIdx[nCntTent] = -1;
+						continue;
+					}
+
+					pComputer->nOrbitIdx[nCntTent] = nIdx;
+				}
+
+				SetMeshOrbitPos(pComputer->nOrbitIdx[nCntTent], D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
+					D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
+					WHITE_VTX, CYAN_VTX, &pComputer->aModel[(nCntTent + 1) * 4].mtxWorld);
+			}
 		}
 	}
 }
@@ -2468,17 +2491,6 @@ void SetComputer(D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType)
 			memset(&pComputer->esaQueue.nData, -1, sizeof(int[MAX_QUEUE]));
 			pComputer->Potstate = POTSTATE_NONE;
 			pComputer->nMaxFood = 1;
-
-			for (int nCntTent = 0; nCntTent < CPU_TENTACLE; nCntTent++)
-			{
-				pComputer->nOrbitIdx[nCntTent] = SetMeshOrbit(D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
-					D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
-					WHITE_VTX, CYAN_VTX, &pComputer->aModel[(nCntTent + 1) * 4].mtxWorld);
-
-				SetMeshOrbitPos(pComputer->nOrbitIdx[nCntTent], D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
-					D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
-					WHITE_VTX, CYAN_VTX, &pComputer->aModel[(nCntTent + 1) * 4].mtxWorld);
-			}
 
 			pComputer->nCurrentNode = 0;
 			pComputer->nNextNode = 0;

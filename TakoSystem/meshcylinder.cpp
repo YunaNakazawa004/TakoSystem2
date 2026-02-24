@@ -312,11 +312,11 @@ int SetMeshCylinder(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVEC
 			// インデックスバッファをアンロックする
 			g_aMeshCylinder[nCntMeshCylinder].pIdxBuff->Unlock();
 
-			break;
+			return nCntMeshCylinder;
 		}
 	}
 
-	return nCntMeshCylinder;
+	return -1;
 }
 
 //=============================================================================

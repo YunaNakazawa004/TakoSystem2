@@ -41,7 +41,6 @@
 #include "fade.h"
 #include "screen.h"
 #include "title.h"
-#include "result.h"
 
 #include "game.h"
 
@@ -52,8 +51,6 @@ bool g_bPause = false;						// ポーズ状態のON/OFF
 int g_Stage = 0;		// 現在のステージ
 
 int g_nPointOld[3];	// 前回のポイント
-
-GAMESTATE g_gameState = GAMESTATE_BEGIN;	// ゲームの状態
 
 //===================================================================
 // ゲーム画面の初期化処理
@@ -71,8 +68,6 @@ void InitGame(void)
 	SetNumCamera(GetPlayerSelect());
 	SetCameraPos(0, FIRST_POS, FIRST_POS, CAMERATYPE_PLAYER);
 	SetCameraPos(1, FIRST_POS, FIRST_POS, CAMERATYPE_PLAYER);
-
-	g_gameState = GAMESTATE_BEGIN;	// ゲームの状態を開始状態に設定
 
 	// メッシュオービットの初期化処理
 	InitMeshOrbit();
@@ -165,8 +160,11 @@ void InitGame(void)
 //===================================================================
 void UninitGame(void)
 {
-	// サウンドの停止
-	StopSound();
+	//// サウンドの停止
+	//StopSound();
+
+	// メッシュオービットの終了処理
+	UninitMeshOrbit();
 
 	// プレイヤーの終了処理
 	UninitPlayer();
@@ -209,9 +207,6 @@ void UninitGame(void)
 
 	// エサの終了処理
 	UninitEsa();
-
-	// メッシュオービットの終了処理
-	UninitMeshOrbit();
 
 	// 水面の終了処理
 	UninitWaterSurf();
@@ -261,34 +256,6 @@ void UpdateGame(void)
 	// フェード情報の取得
 	FADE pFade = GetFade();
 	bool bGameStart = GetGameStart();
-	//int aHaveNum[MAX_PLAYER + MAX_COMPUTER][] = {};
-
-	// ゲームの状態による処理
-	switch (g_gameState)
-	{
-	case GAMESTATE_BEGIN:		// 開始状態
-
-		break;
-
-	case GAMESTATE_NONE:		// 通常状態
-
-		break;
-
-	case GAMESTATE_TIMEOVER:	// 時間切れ状態
-
-		// リザルトに値を渡す
-		//ReceiveResult(&aHaveNum[0][0],);
-
-		g_gameState = GAMESTATE_END;
-
-		break;
-
-	case GAMESTATE_END:			// 終了状態
-
-
-
-		break;
-	}
 
 	if (pFade == FADE_NONE)
 	{// フェードが何もしていない状態のみ発動
@@ -298,6 +265,7 @@ void UpdateGame(void)
 
 		if (bGameStart == true)
 		{
+			SetFade(MODE_GAME);
 			if (GetKeyboardTrigger(DIK_P) || GetJoypadTrigger(0, JOYKEY_START) == true)
 			{// ポーズの確認
 				if (g_bPause == true)
@@ -365,9 +333,9 @@ void UpdateGame(void)
 		UpdateMeshCylinder();
 
 		// メッシュドームの更新処理
-		UpdateMeshRing();
+		UpdateMeshDome();
 
-		// メッシュフィールドの更新処理
+		// メッシュフィールドの更新処理*draw
 		UpdateMeshField();
 
 		// メッシュリングの更新処理
@@ -428,7 +396,7 @@ void DrawGame(void)
 	// メッシュドームの描画処理
 	DrawMeshDome();
 
-	// メッシュフィールドの描画処理
+	// メッシュフィールドの描画処理*
 	DrawMeshField();
 
 	// メッシュリングの描画処理
@@ -452,7 +420,7 @@ void DrawGame(void)
 	// エサの描画処理
 	DrawEsa();
 
-	// メッシュオービットの描画処理
+	// メッシュオービットの描画処理*
 	DrawMeshOrbit();
 
 	// 水面の描画処理

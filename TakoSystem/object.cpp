@@ -165,7 +165,7 @@ void UninitObject(void)
 		}
 
 		// テクスチャの破棄
-		for (int nCntObject = 0; nCntObject < (int)g_aObjectModel[nCntObjectModel].dwNumMat; nCntObject++)
+		for (int nCntObject = 0; nCntObject < MAX_TEXTURE; nCntObject++)
 		{
 			if (g_aObjectModel[nCntObjectModel].apTexture[nCntObject] != NULL)
 			{

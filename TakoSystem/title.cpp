@@ -21,7 +21,7 @@
 
 // マクロ定義
 #define	MAX_TITLE	(8)	// タイトルで表示するテクスチャの最大数
-#define	RANKING_DELEY	(1500)	// ランキング移行に掛かる時間（25秒）
+#define	RANKING_DELEY	(10)	// ランキング移行に掛かる時間（25秒）
 #define	CLEAR_DELEY	(60)	// 消滅にかかる時間
 #define	ENTRY_DELEY	(90)	// 消滅→再登場までにかかる時間
 #define	TITLE_DELEY_MAX	(500.0f)	// タイトルの最大数
@@ -47,6 +47,9 @@ void InitTitle(void)
 
 	g_CursorPos = 0;		// カーソルの位置を初期化
 
+	// CPUの初期化処理
+	InitComputer();
+
 	// メッシュシリンダーの初期化処理
 	InitMeshCylinder();
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 2.0f), D3DXVECTOR2(INCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, MESHCYLINDERTYPE_ROCK);
@@ -60,9 +63,6 @@ void InitTitle(void)
 
 	// 水面の初期化処理
 	InitWaterSurf();
-
-	// CPUの初期化処理
-	InitComputer();
 
 	// ライトの設定
 	SetLightColor(0, D3DXCOLOR(0.8f, 0.9f, 1.0f, 1.0f));
@@ -255,6 +255,9 @@ void UninitTitle(void)
 	// 配置物の終了処理
 	UninitObject();
 
+	// CPUの終了処理
+	UninitComputer();
+
 	// メッシュシリンダーの終了処理
 	UninitMeshCylinder();
 
@@ -266,9 +269,6 @@ void UninitTitle(void)
 
 	// 水面の終了処理
 	UninitWaterSurf();
-
-	// CPUの終了処理
-	UninitComputer();
 
 	// テクスチャの破棄
 	for (int nCntTitle = 0; nCntTitle < MAX_TITLE; nCntTitle++)
@@ -486,6 +486,9 @@ void UpdateTitle(void)
 		pVtx += 4;		// 頂点データのポインタを4つ分進める
 	}
 
+	// 頂点バッファをアンロックする
+	g_pVtxBuffTitle->Unlock();
+
 	if ((GetKeyboardTrigger(DIK_W) || GetJoypadTrigger(0, JOYKEY_UP) ||
 		GetJoypadStick(0, JOYKEY_LEFTSTICK_UP, NULL, NULL) == true))
 	{// カーソル下移動
@@ -546,10 +549,6 @@ void UpdateTitle(void)
 	{// 時間経過でランキングへ移行
 		SetFade(MODE_LOGO);
 	}
-
-	// 頂点バッファをアンロックする
-	g_pVtxBuffTitle->Unlock();
-
 }
 
 // タイトルの描画処理
@@ -567,6 +566,9 @@ void DrawTitle(void)
 	// 配置物の描画処理
 	DrawObject();
 
+	// CPUの描画処理
+	DrawComputer();
+
 	// メッシュシリンダーの描画処理
 	DrawMeshCylinder();
 
@@ -578,9 +580,6 @@ void DrawTitle(void)
 
 	// 水面の描画処理
 	DrawWaterSurf();
-
-	// CPUの描画処理
-	DrawComputer();
 
 	// デバイスの取得
 	pDevice = GetDevice();
