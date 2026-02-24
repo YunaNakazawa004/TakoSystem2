@@ -251,6 +251,7 @@ void UninitComputer(void)
 {
 	Computer* pComputer = GetComputer();
 
+	for (int nCntComputer = 0; nCntComputer < MAX_COMPUTER; nCntComputer++, pComputer++)
 	{
 
 		for (int nCntModel = 0; nCntModel < MAX_NUMMODEL; nCntModel++)
@@ -262,11 +263,17 @@ void UninitComputer(void)
 				pComputer->aModel[nCntModel].pMesh = NULL;
 			}
 
-		// テクスチャの破棄
+			// マテリアルの破棄
+			if (pComputer->aModel[nCntModel].pBuffMat != NULL)
+			{
+				pComputer->aModel[nCntModel].pBuffMat->Release();
+				pComputer->aModel[nCntModel].pBuffMat = NULL;
+			}
+
+			// テクスチャの破棄
 			for (int nCntTex = 0; nCntTex < MAX_TEXTURE; nCntTex++)
 			{
-				pComputer->aModel[nCntModel].apTexture[nCntComputer]->Release();
-				pComputer->aModel[nCntModel].apTexture[nCntComputer] = NULL;
+			
 				if (pComputer->aModel[nCntModel].apTexture[nCntTex] != NULL)
 				{
 					pComputer->aModel[nCntModel].apTexture[nCntTex]->Release();
@@ -2704,7 +2711,7 @@ void LoadComputer(void)
 	Computer* pComputer = GetComputer();
 	char aString[512] = {};				// ファイルのテキスト読み込み
 	char aTrash[512] = {};				// ごみ箱
-
+	char aModelName[128][512] = {};
 
 	// テクスチャ読み込み用の変数
 	int nNumTexture = 0;
@@ -2731,6 +2738,8 @@ void LoadComputer(void)
 	int nFrame = 0;			// 再生フレーム数
 	int nCntMotion = 0;		// モーション番号
 	KEY key = {};			// キー要素
+
+	
 
 	pFile = fopen(CPU_FILE, "r");
 
