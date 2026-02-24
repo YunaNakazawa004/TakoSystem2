@@ -41,7 +41,7 @@ typedef enum
 
 typedef struct
 {
-	int nUseNum;								// 使用数
+	
 	D3DXVECTOR3 pos;							// 現在の位置
 	D3DXVECTOR3 posOld;							// 前回の位置
 	D3DXVECTOR3 move;							// 移動量

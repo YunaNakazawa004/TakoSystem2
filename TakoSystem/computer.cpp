@@ -185,52 +185,64 @@ void InitComputer(void)
 	pComputer = GetComputer();
 
 	for (int nCntComputer = 0; nCntComputer < MAX_COMPUTER; nCntComputer++, pComputer++)
-	{
-		pComputer->motionType = MOTIONTYPE_NEUTRAL;
-		pComputer->bLoopMotion = pComputer->aMotionInfo[0].bLoop;
-		pComputer->nNumKey = pComputer->aMotionInfo[0].nNumKey;
-		pComputer->nKey = 0;
-		pComputer->nCounterMotion = 0;
-		pComputer->bFinishMotion = false;
-		pComputer->bBlendMotion = false;
-		pComputer->motionTypeBlend = MOTIONTYPE_NEUTRAL;
-		pComputer->bLoopMotionBlend = pComputer->aMotionInfo[0].bLoop;
-		pComputer->nNumKeyBlend = pComputer->aMotionInfo[0].nNumKey;
-		pComputer->nKeyBlend = 0;
-		pComputer->nCounterMotionBlend = 0;
-		pComputer->nFrameBlend = 0;
-		pComputer->nCounterBlend = 0;
+	{// コンピューターの総数分繰り返す
 
+		pComputer->motionType = MOTIONTYPE_NEUTRAL;							// モーションの種類をニュートラルに設定
+		pComputer->bLoopMotion = pComputer->aMotionInfo[0].bLoop;			// ニュートラルモーションのループ状態を設定
+		pComputer->nNumKey = pComputer->aMotionInfo[0].nNumKey;				// ニュートラルモーションのキーの総数を設定
+		pComputer->nKey = 0;												// 現在のキーを初期化
+		pComputer->nCounterMotion = 0;										// モーションカウンタを初期化
+		pComputer->bFinishMotion = false;									// モーションを終了していない状態に設定
+		pComputer->bBlendMotion = false;									// ブレンドしない状態に設定
+		pComputer->motionTypeBlend = MOTIONTYPE_NEUTRAL;					// ブレンド時のモーションをニュートラルに設定
+		pComputer->bLoopMotionBlend = pComputer->aMotionInfo[0].bLoop;		// ニュートラルモーションのループ状態を設定
+		pComputer->nNumKeyBlend = pComputer->aMotionInfo[0].nNumKey;		// ニュートラルモーションのキーの総数を設定 
+		pComputer->nKeyBlend = 0;											// ブレンド時のキーを初期化
+		pComputer->nCounterMotionBlend = 0;									// ブレンド時のモーションカウンタを初期化
+		pComputer->nFrameBlend = 0;											// ブレンドフレーム数を初期化
+		pComputer->nCounterBlend = 0;										// ブレンドカウンタを初期化
+
+		// モデルの読み込み
 		for (int nCntModel = 0; nCntModel < pComputer->nNumModel; nCntModel++)
-		{
+		{// タコのパーツの総数分繰り返す
+
 			// Xファイルの読み込み
 			if (FAILED(D3DXLoadMeshFromX(g_apFilenameComputer[pComputer->aModel[nCntModel].nIdx],
-				D3DXMESH_SYSTEMMEM,
-				pDevice,
-				NULL,
-				&pComputer->aModel[nCntModel].pBuffMat,
-				NULL,
-				&pComputer->aModel[nCntModel].dwNumMat,
-				&pComputer->aModel[nCntModel].pMesh)))
-			{
+										 D3DXMESH_SYSTEMMEM,
+										 pDevice,
+										 NULL,
+										 &pComputer->aModel[nCntModel].pBuffMat,
+										 NULL,
+										 &pComputer->aModel[nCntModel].dwNumMat,
+										 &pComputer->aModel[nCntModel].pMesh)))
+			{// モデルの読み込みに失敗した場合
+
 				return;
 			}
 
 			// マテリアルデータへのポインタを取得
 			pMat = (D3DXMATERIAL*)pComputer->aModel[nCntModel].pBuffMat->GetBufferPointer();
 
+			// マテリアルの読み込み
 			for (int nCntMat = 0; nCntMat < (int)pComputer->aModel[nCntModel].dwNumMat; nCntMat++)
 			{
 				if (pMat[nCntMat].pTextureFilename != NULL)
 				{// テクスチャファイルが存在する
-					D3DXCreateTextureFromFile(pDevice, pMat[nCntMat].pTextureFilename, &pComputer->aModel[nCntModel].apTexture[nCntMat]);
-				}
-			}
-		}
-	}
 
+					D3DXCreateTextureFromFile(pDevice,
+											  pMat[nCntMat].pTextureFilename,
+											  &pComputer->aModel[nCntModel].apTexture[nCntMat]);
+				}
+
+			}
+		
+		}
+
+	}
+#if 1
 	// ランダムな位置に設定
 	SetRandomComputer(ALL_OCTO - GetNumCamera());
+#endif
 }
 
 //=============================================================================
@@ -240,29 +252,34 @@ void UninitComputer(void)
 {
 	Computer* pComputer = GetComputer();
 
-	for (int nCntModel = 0; nCntModel < pComputer->nNumModel; nCntModel++, pComputer++)
-	{
-		// メッシュの破棄
-		if (pComputer->aModel[nCntModel].pMesh != NULL)
-		{
-			pComputer->aModel[nCntModel].pMesh->Release();
-			pComputer->aModel[nCntModel].pMesh = NULL;
-		}
+	for (int nCntComputer = 0; nCntComputer < MAX_COMPUTER; nCntComputer++, pComputer++)
+	{// コンピューターの数分繰り返す
 
-		// マテリアルの破棄
-		if (pComputer->aModel[nCntModel].pBuffMat != NULL)
-		{
-			pComputer->aModel[nCntModel].pBuffMat->Release();
-			pComputer->aModel[nCntModel].pBuffMat = NULL;
-		}
+		for (int nCntModel = 0; nCntModel < MAX_NUMMODEL; nCntModel++)
+		{// モデルの数分繰り返す
 
-		// テクスチャの破棄
-		for (int nCntComputer = 0; nCntComputer < (int)pComputer->aModel[nCntModel].dwNumMat; nCntComputer++)
-		{
-			if (pComputer->aModel[nCntModel].apTexture[nCntComputer] != NULL)
+			// メッシュの破棄
+			if (pComputer->aModel[nCntModel].pMesh != NULL)
 			{
-				pComputer->aModel[nCntModel].apTexture[nCntComputer]->Release();
-				pComputer->aModel[nCntModel].apTexture[nCntComputer] = NULL;
+				pComputer->aModel[nCntModel].pMesh->Release();
+				pComputer->aModel[nCntModel].pMesh = NULL;
+			}
+
+			// マテリアルの破棄
+			if (pComputer->aModel[nCntModel].pBuffMat != NULL)
+			{
+				pComputer->aModel[nCntModel].pBuffMat->Release();
+				pComputer->aModel[nCntModel].pBuffMat = NULL;
+			}
+
+			// テクスチャの破棄
+			for (int nCntTexture = 0; nCntTexture < (int)pComputer->aModel[nCntModel].dwNumMat; nCntTexture++)
+			{
+				if (pComputer->aModel[nCntModel].apTexture[nCntTexture] != NULL)
+				{
+					pComputer->aModel[nCntModel].apTexture[nCntTexture]->Release();
+					pComputer->aModel[nCntModel].apTexture[nCntTexture] = NULL;
+				}
 			}
 		}
 	}
@@ -2684,7 +2701,7 @@ void LoadComputer(void)
 	Computer* pComputer = GetComputer();
 	char aString[512] = {};				// ファイルのテキスト読み込み
 	char aTrash[512] = {};				// ごみ箱
-	char aModelName[128][512] = {};		// モデルの名前
+	char aModelName[128][256] = {};		// モデルの名前
 
 	// テクスチャ読み込み用の変数
 	int nNumTexture = 0;

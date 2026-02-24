@@ -203,72 +203,75 @@ void UpdatePause(void)
 {
 	//頂点座標の更新
 	VERTEX_2D* pVtx;			//頂点情報へのポインタ
-	static int nCoolTime = 0;
 
 	//頂点バッファをロックし,頂点情報へのポインタを取得
 	g_pVtxBuffPause->Lock(0, 0, (void**)&pVtx, 0);
 
-	if (nCoolTime > 0)
-	{
-		nCoolTime--;
-	}
-
 	if (GetKeyboardTrigger(DIK_W) ||
 		GetJoypadTrigger(0, JOYKEY_UP) == true ||
 		GetJoypadStick(0, JOYKEY_LEFTSTICK_UP, NULL, NULL) == true)
-	{
-		if (nCoolTime == 0)
+	{// 上入力がされた
+
+		g_nSelect--;
+
+		PlaySound(SOUND_SE_MUD);
+
+		if (g_nSelect < PAUSE_MENU_CONTINUE)
 		{
-			g_nSelect--;
-			PlaySound(SOUND_SE_MUD);
-			if (g_nSelect < PAUSE_MENU_CONTINUE)
-			{
-				g_nSelect = PAUSE_MENU_QUIT;
-			}
-			nCoolTime = 28;
+			g_nSelect = PAUSE_MENU_QUIT;
 		}
+
 	}
 	else if (GetKeyboardTrigger(DIK_S) ||
-		GetJoypadTrigger(0, JOYKEY_DOWN) == true ||
-		GetJoypadStick(0, JOYKEY_LEFTSTICK_DOWN, NULL, NULL) == true)
-	{
-		if (nCoolTime == 0)
+			 GetJoypadTrigger(0, JOYKEY_DOWN) == true ||
+			 GetJoypadStick(0, JOYKEY_LEFTSTICK_DOWN, NULL, NULL) == true)
+	{// 下入力がされた
+
+		g_nSelect++;
+
+		PlaySound(SOUND_SE_MUD);
+
+		if (g_nSelect >= PAUSE_MENU_MAX)
 		{
-			g_nSelect++;
-			PlaySound(SOUND_SE_MUD);
-			if (g_nSelect >= PAUSE_MENU_MAX)
-			{
-				g_nSelect = PAUSE_MENU_CONTINUE;
-			}
-			nCoolTime = 28;
+			g_nSelect = PAUSE_MENU_CONTINUE;
 		}
+
 	}
-	else
-	{
-		nCoolTime = 0;
-	}
+	
+
 	if (GetKeyboardTrigger(DIK_RETURN) ||
 		GetJoypadTrigger(0, JOYKEY_A) == true)
-	{
+	{// 決定が押された
+
 		PlaySound(SOUND_SE_DECISION);
+
 		switch (g_nSelect)
 		{
 		case PAUSE_MENU_CONTINUE:
+
 			SetEnablePause(false);
+
 			g_pauseMenu = PAUSE_MENU_CONTINUE;
+
 			PlaySound(SOUND_BGM_GAME);
+
 			break;
 
 		case PAUSE_MENU_RETRY:
+
 			g_pauseMenu = PAUSE_MENU_RETRY;
+
 			SetFade(MODE_GAME);
+
 			break;
 
 		case PAUSE_MENU_QUIT:
-			g_pauseMenu = PAUSE_MENU_QUIT;
-			SetFade(MODE_TITLE);
-			break;
 
+			g_pauseMenu = PAUSE_MENU_QUIT;
+
+			SetFade(MODE_TITLE);
+
+			break;
 		}
 	}
 	for (int nCntPause = 0; nCntPause < MAX_PAUSE_OBJ; nCntPause++)

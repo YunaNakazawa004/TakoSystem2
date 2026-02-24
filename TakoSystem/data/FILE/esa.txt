@@ -65,7 +65,14 @@ SET_ESADATA
 		GET_SCORE   = 10		# 獲得スコア
 	END_ESA
 	
-	
+	SET_ESA		# [6]タラバガニ
+		TEXTURE = data/TEXTURE/esa_tmp_texture/esa_tmp_taraba-crub.png
+		MODEL	= data/MODEL/esa/Taraba_Gani.x
+		
+		SPEED		= 0.005		# 移動速度
+		HIT_RADIUS  = 10.0		# 当たり判定の大きさ
+		GET_SCORE   = 70		# 獲得スコア
+	END_ESA
 	
 END_ESADATA
 

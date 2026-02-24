@@ -90,6 +90,7 @@ void InitPot(void)
 		{
 			if (pMat[nCntMat].pTextureFilename != NULL)
 			{// テクスチャファイルが存在する
+
 				D3DXCreateTextureFromFile(pDevice, pMat[nCntMat].pTextureFilename, &g_aPotModel[nCntPot].apTexture[nCntMat]);
 			}
 		}

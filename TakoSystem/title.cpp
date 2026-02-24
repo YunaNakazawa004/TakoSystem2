@@ -36,9 +36,14 @@ int g_PlayerSelect = 1;	// プレイヤーの人数
 //TITLECURSOR g_Cursor;
 int g_CursorPos;	// カーソルの位置情報
 
+bool g_bTestTitle = true;
+
+//===================================================================
 // タイトルの初期化処理
+//===================================================================
 void InitTitle(void)
 {
+	
 	LPDIRECT3DDEVICE9 pDevice;	// デバイスへのポインタ
 
 	g_TitleDeley = 0.0f;	// ディレイの値を初期化
@@ -68,10 +73,10 @@ void InitTitle(void)
 	SetLightColor(2, D3DXCOLOR(0.3f, 0.3f, 0.5f, 0.3f));
 
 	// 配置物の初期化処理
-	InitObject("data\\objpos001.txt");
+	InitObject("data\\objpos001.txt"); 
 
 	// メッシュシリンダーの初期化処理
-	InitMeshCylinder();
+	InitMeshCylinder();	
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 2.0f), D3DXVECTOR2(INCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, MESHCYLINDERTYPE_ROCK);
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(OUTCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), true, MESHCYLINDERTYPE_SEA);
 
@@ -79,13 +84,13 @@ void InitTitle(void)
 	InitMeshField();
 
 	// メッシュオービットの初期化処理
-	InitMeshOrbit();
+	InitMeshOrbit(); 
 
 	// 水面の初期化処理
 	InitWaterSurf();
 
 	// CPUの初期化処理
-	InitComputer();
+	InitComputer(); 
 
 	// デバイスの取得
 	pDevice = GetDevice();
@@ -247,7 +252,9 @@ void InitTitle(void)
 	PlaySound(SOUND_BGM_TITLE);
 }
 
+//===================================================================
 // タイトルの終了処理
+//===================================================================
 void UninitTitle(void)
 {
 	// サウンドの停止
@@ -289,9 +296,21 @@ void UninitTitle(void)
 	}
 }
 
+//===================================================================
 // タイトルの更新処理
+//===================================================================
 void UpdateTitle(void)
 {
+
+#if 0
+	if (GetKeyboardTrigger(DIK_F11)) g_bTestTitle = (g_bTestTitle == true) ? false : true;
+
+	if (g_bTestTitle == true)
+	{
+		SetFade(MODE_TITLE);
+	}
+#endif 
+
 	// 配置物の更新処理
 	UpdateObject();
 
@@ -553,7 +572,9 @@ void UpdateTitle(void)
 	}
 }
 
+//===================================================================
 // タイトルの描画処理
+//===================================================================
 void DrawTitle(void)
 {
 	LPDIRECT3DDEVICE9 pDevice;	// デバイスへのポインタ
@@ -562,8 +583,6 @@ void DrawTitle(void)
 	{
 		SetFog(D3DXCOLOR(0.0f, 0.1f, 0.2f, 1.0f), 1000.0f, 0.0f, false);
 	}
-
-	//SetCamera(0);
 
 	// 配置物の描画処理
 	DrawObject();
@@ -602,7 +621,9 @@ void DrawTitle(void)
 	}
 }
 
+//===================================================================
 // プレイヤーの人数を取得
+//===================================================================
 int GetPlayerSelect(void)
 {
 	return g_PlayerSelect;

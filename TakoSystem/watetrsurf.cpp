@@ -47,9 +47,6 @@ void InitWaterSurf(void)
 	// デバイスの取得
 	pDevice = GetDevice();
 
-	// randのランダム化
-	srand((unsigned int)time(NULL));
-
 	// テクスチャの読み込み
 	D3DXCreateTextureFromFile(
 		pDevice,

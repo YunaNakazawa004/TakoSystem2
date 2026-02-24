@@ -117,7 +117,7 @@ void InitMap(void)
 		for (int nCntMap = 0; nCntMap < MAP_USE_NUM; nCntMap++)
 		{
 			pMap[nCntMap].pos =
-			{ SCREEN_WIDTH - MAP_SIZE - 50,MAP_SIZE + 50,0.0f };
+			{ SCREEN_WIDTH - MAP_SIZE - 50, MAP_SIZE + 50, 0.0f };
 			pMap[nCntMap].bUse = false;
 		}
 		pMap[0].bUse = true;

@@ -130,6 +130,7 @@ void InitReady(void)
 	{
 		bfrag[nCntReady] = false;
 	}
+
 	for (int nCntReady = 0; nCntReady < MAX_READY; nCntReady++)
 	{
 		//　テクスチャの読み込み
@@ -168,10 +169,7 @@ void InitReady(void)
 		pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 		pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 
-		if (g_aReady[nCntReady].TexIdx == 0)
-		{
-		}
-		else
+		if (g_aReady[nCntReady].TexIdx != 0)
 		{
 			// テクスチャ座標の設定
 			pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);

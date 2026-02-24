@@ -168,29 +168,32 @@ void UninitPlayer(void)
 {
 	Player* pPlayer = GetPlayer();
 
-	for (int nCntModel = 0; nCntModel < pPlayer->nNumModel; nCntModel++, pPlayer++)
+	for (int nCntPlayer = 0; nCntPlayer < MAX_PLAYER; nCntPlayer++, pPlayer++)
 	{
-		// メッシュの破棄
-		if (pPlayer->aModel[nCntModel].pMesh != NULL)
+		for (int nCntModel = 0; nCntModel < MAX_NUMMODEL; nCntModel++)
 		{
-			pPlayer->aModel[nCntModel].pMesh->Release();
-			pPlayer->aModel[nCntModel].pMesh = NULL;
-		}
-
-		// マテリアルの破棄
-		if (pPlayer->aModel[nCntModel].pBuffMat != NULL)
-		{
-			pPlayer->aModel[nCntModel].pBuffMat->Release();
-			pPlayer->aModel[nCntModel].pBuffMat = NULL;
-		}
-
-		// テクスチャの破棄
-		for (int nCntPlayer = 0; nCntPlayer < (int)pPlayer->aModel[nCntModel].dwNumMat; nCntPlayer++)
-		{
-			if (pPlayer->aModel[nCntModel].apTexture[nCntPlayer] != NULL)
+			// メッシュの破棄
+			if (pPlayer->aModel[nCntModel].pMesh != NULL)
 			{
-				pPlayer->aModel[nCntModel].apTexture[nCntPlayer]->Release();
-				pPlayer->aModel[nCntModel].apTexture[nCntPlayer] = NULL;
+				pPlayer->aModel[nCntModel].pMesh->Release();
+				pPlayer->aModel[nCntModel].pMesh = NULL;
+			}
+
+			// マテリアルの破棄
+			if (pPlayer->aModel[nCntModel].pBuffMat != NULL)
+			{
+				pPlayer->aModel[nCntModel].pBuffMat->Release();
+				pPlayer->aModel[nCntModel].pBuffMat = NULL;
+			}
+
+			// テクスチャの破棄
+			for (int nCntTexture = 0; nCntTexture < (int)pPlayer->aModel[nCntModel].dwNumMat; nCntTexture++)
+			{
+				if (pPlayer->aModel[nCntModel].apTexture[nCntTexture] != NULL)
+				{
+					pPlayer->aModel[nCntModel].apTexture[nCntTexture]->Release();
+					pPlayer->aModel[nCntModel].apTexture[nCntTexture] = NULL;
+				}
 			}
 		}
 	}
@@ -843,6 +846,7 @@ void DrawPlayer(void)
 	{
 		if (pPlayer->bUse == true)
 		{// 使用しているとき
+
 			// ワールドマトリックスの初期化
 			D3DXMatrixIdentity(&pPlayer->mtxWorld);
 

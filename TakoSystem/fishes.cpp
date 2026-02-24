@@ -39,6 +39,8 @@ FishesInfo g_aFishInfo[] =
 
 };
 
+int g_nNumFishes;										// 生き物の総数
+
 //=============================================================================
 // 生き物の初期化処理
 //=============================================================================
@@ -46,14 +48,12 @@ void InitFishes(void)
 {
 	// ローカル変数宣言
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();		// デバイスへのポインタ
-	D3DXMATERIAL* pMat;
-	Fishes* pFishes = GetFishes();
-	Fishes_Model* pFishesModel = GetFishesModel();
-	FishesInfo* pFishesInfo = &g_aFishInfo[0];
-	int NumScanModel = 0;
-
-	// randのランダム化
-	srand((unsigned int)time(NULL));
+	
+	Fishes_Model* pFishesModel = GetFishesModel();	// 生き物のモデル情報を獲得
+	Fishes* pFishes = GetFishes();					// 生き物の情報を獲得
+	
+	D3DXMATERIAL* pMat;								// マテリアルポインタ
+	int NumScanModel = 0;							// カウンタ
 
 	// 生き物の情報の初期化
 	for (int nCntFishes = 0; nCntFishes < FISHES_MAX_NUM; nCntFishes++, pFishes++)
@@ -89,11 +89,12 @@ void InitFishes(void)
 		pFishes->nCounterBlend = 0;
 	}
 
-	g_aFishes[0].nUseNum = 0;
+	g_nNumFishes = 0;	// 生き物の総数を初期化
 
 	for (int nCntFishes = 0; nCntFishes < FISHES_CALC_SIZEARRAY(g_aFishInfo); nCntFishes++, pFishesModel++)
-	{
-		LoadFishes(nCntFishes);
+	{// Infoの数分繰り返す
+
+		LoadFishes(nCntFishes);	// nCnt目のファイルを読み込む
 
 		for (int nCntModel = 0; nCntModel < pFishesModel->nNumModel; nCntModel++)
 		{
@@ -114,7 +115,10 @@ void InitFishes(void)
 			{
 				if (pMat[nCntMat].pTextureFilename != NULL)
 				{// テクスチャファイルが存在する
-					D3DXCreateTextureFromFile(pDevice, pMat[nCntMat].pTextureFilename, &pFishesModel->aModel[nCntModel].apTexture[nCntMat]);
+
+					D3DXCreateTextureFromFile(pDevice, 
+											  pMat[nCntMat].pTextureFilename, 
+											  &pFishesModel->aModel[nCntModel].apTexture[nCntMat]);
 				}
 			}
 		}
@@ -123,7 +127,7 @@ void InitFishes(void)
 	// どのモデルをどれだけ呼び出すか
 	//SetFishes(0, 0,true);
 
-	for (int nCntFishes = 0; nCntFishes < g_aFishes[0].nUseNum; nCntFishes++)
+	for (int nCntFishes = 0; nCntFishes < g_nNumFishes; nCntFishes++)
 	{
 		SetMotionFishes(nCntFishes, MOTIONTYPE_NEUTRAL, g_aFishes[nCntFishes].bBlendMotion, g_aFishes[nCntFishes].nFrameBlend);
 	}
@@ -139,29 +143,34 @@ void UninitFishes(void)
 	Fishes* pFishes = GetFishes();
 	Fishes_Model* pFishesModel = GetFishesModel();
 
-	for (int nCntModel = 0; nCntModel < FISHES_CALC_SIZEARRAY(g_aFishInfo); nCntModel++, pFishesModel++)
-	{
-		// メッシュの破棄
-		if (pFishesModel->aModel[nCntModel].pMesh != NULL)
-		{
-			pFishesModel->aModel[nCntModel].pMesh->Release();
-			pFishesModel->aModel[nCntModel].pMesh = NULL;
-		}
+	for (int nCntFishes = 0; nCntFishes < FISHES_MAX_MODELS; nCntFishes++, pFishesModel++)
+	{// 生き物の数分繰り返す
 
-		// マテリアルの破棄
-		if (pFishesModel->aModel[nCntModel].pBuffMat != NULL)
-		{
-			pFishesModel->aModel[nCntModel].pBuffMat->Release();
-			pFishesModel->aModel[nCntModel].pBuffMat = NULL;
-		}
+		for (int nCntModel = 0; nCntModel < MAX_NUMMODEL; nCntModel++)
+		{// モデルの数分繰り返す
 
-		// テクスチャの破棄
-		for (int nCntFishes = 0; nCntFishes < (int)pFishesModel->aModel[nCntModel].dwNumMat; nCntFishes++)
-		{
-			if (pFishesModel->aModel[nCntModel].apTexture[nCntFishes] != NULL)
+			// メッシュの破棄
+			if (pFishesModel->aModel[nCntModel].pMesh != NULL)
 			{
-				pFishesModel->aModel[nCntModel].apTexture[nCntFishes]->Release();
-				pFishesModel->aModel[nCntModel].apTexture[nCntFishes] = NULL;
+				pFishesModel->aModel[nCntModel].pMesh->Release();
+				pFishesModel->aModel[nCntModel].pMesh = NULL;
+			}
+
+			// マテリアルの破棄
+			if (pFishesModel->aModel[nCntModel].pBuffMat != NULL)
+			{
+				pFishesModel->aModel[nCntModel].pBuffMat->Release();
+				pFishesModel->aModel[nCntModel].pBuffMat = NULL;
+			}
+
+			// テクスチャの破棄
+			for (int nCntTexture = 0; nCntTexture < MAX_TEXTURE; nCntTexture++)
+			{
+				if (pFishesModel->aModel[nCntModel].apTexture[nCntTexture] != NULL)
+				{
+					pFishesModel->aModel[nCntModel].apTexture[nCntTexture]->Release();
+					pFishesModel->aModel[nCntModel].apTexture[nCntTexture] = NULL;
+				}
 			}
 		}
 	}
@@ -178,7 +187,7 @@ void UpdateFishes(void)
 	float fmoveAngle = 0.0f;
 	int Radian = 400;
 
-	for (int nCntFishes = 0; nCntFishes < g_aFishes[0].nUseNum; nCntFishes++, pFishes++)
+	for (int nCntFishes = 0; nCntFishes < g_nNumFishes; nCntFishes++, pFishes++)
 	{
 		if (pFishes->bUse == true && pFishes->bMoving == true)
 		{
@@ -258,7 +267,7 @@ void DrawFishes(void)
 	D3DXMATERIAL* pMat;								// マテリアルデータへのポインタ
 	Fishes* pFishes = GetFishes();
 
-	for (int nCntFishes = 0; nCntFishes < g_aFishes[0].nUseNum; nCntFishes++, pFishes++)
+	for (int nCntFishes = 0; nCntFishes < g_nNumFishes; nCntFishes++, pFishes++)
 	{
 		if (pFishes->bUse == true)
 		{// 使用しているとき
@@ -438,7 +447,8 @@ void SetFishes(int ModelIdx, int nNumSet, bool bMove, D3DXVECTOR3 pos, D3DXVECTO
 				pFishes->aMotionInfo[nCntMotion] = pFishesModel[ModelIdx].aMotionInfo[nCntMotion];		// モーション情報
 			}
 
-			g_aFishes[0].nUseNum++;
+			g_nNumFishes++;	// 総数を増やす
+
 			nModelSet++;
 		}
 	}
@@ -451,7 +461,6 @@ void LoadFishes(int Idx)
 	// ローカル変数宣言
 	FILE* pFile;
 	Fishes_Model* pFishesModel = GetFishesModel();
-	FishesInfo* pFishesInfo = &g_aFishInfo[0];
 	char aString[512] = {};				// ファイルのテキスト読み込み
 	char aTrash[512] = {};				// ごみ箱
 	char aModelName[128][512] = {};		// モデルの名前
@@ -482,7 +491,7 @@ void LoadFishes(int Idx)
 	int nCntMotion = 0;		// モーション番号
 	KEY key = {};			// キー要素
 
-	pFile = fopen(pFishesInfo[Idx].Model_FileName, "r");
+	pFile = fopen(g_aFishInfo[Idx].Model_FileName, "r");
 
 	if (pFile != NULL)
 	{// ファイルが開けた場合
@@ -508,24 +517,29 @@ void LoadFishes(int Idx)
 
 			if (strcmp(&aString[0], "MODEL_FILENAME") == 0)
 			{// モデルの名前読み込み
+
 				for (int nCntModel = 0; nCntModel < pFishesModel[Idx].nNumModel; nCntModel++)
-				{
+				{// 読み込むモデル数分繰り返す
+
 					if (nCntModel > 0)
 					{// 2回目以降のMODEL_FILENAMEを読み込んでおく
+
 						if (strcmp(&aString[0], "MODEL_FILENAME") != 0)
 						{// コメントの代わりに読み込んだ場合はなし
+							
 							fscanf(pFile, "%s", &aTrash[0]);
 						}
 					}
 
-					fscanf(pFile, " = %s", &aModelName[nCntModel][0]);		// モデルのパス
-					strcpy(pFishesModel[Idx].sModelFileName[nCntModel], aModelName[nCntModel]);
+					fscanf(pFile, " = %s", &aModelName[nCntModel][0]);							// モデルのパスを読み取る
 
+					strcpy(pFishesModel[Idx].sModelFileName[nCntModel], aModelName[nCntModel]);	// モデルの名前を設定
 
-					fscanf(pFile, "%s", &aString[0]);
+					fscanf(pFile, "%s", &aString[0]);											// 文字列を読み取る
 
 					if (aString[0] == '#')
 					{// コメント無視
+
 						fgets(&aTrash[0], ONE_LINE, pFile);
 					}
 				}

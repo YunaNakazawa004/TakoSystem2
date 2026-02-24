@@ -217,7 +217,7 @@ void UpdateEsa(void)
 			MoveEsa(&g_aEsa[nCntEsa]);
 
 			if (g_aEsa[nCntEsa].esaType != ESA_ACTTYPE_GOTO_PLAYER
-			 || g_aEsa[nCntEsa].esaType != ESA_ACTTYPE_GOTO_POT)
+			 && g_aEsa[nCntEsa].esaType != ESA_ACTTYPE_GOTO_POT)
 			{// プレイヤーとポットにむかっている状態でない場合
 
 				// 海流の処理
@@ -370,17 +370,21 @@ HRESULT SetEsaModel(const char* pFilename, EsaModel* pEsaModel)
 	// デバイスの所得
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();
 
+	HRESULT hr;
+
 	// ====================================================
 
 	// Xファイルの読み込み
-	if(FAILED(D3DXLoadMeshFromX(&pFilename[0],
-							    D3DXMESH_SYSTEMMEM,
-							    pDevice,
-							    NULL,
-							    &pEsaModel->pBuffMat,
-							    NULL,
-							    &pEsaModel->dwNumMat,
-							    &pEsaModel->pMesh)))
+	hr = D3DXLoadMeshFromX(&pFilename[0],
+						   D3DXMESH_SYSTEMMEM,
+						   pDevice,
+						   NULL,
+						   &pEsaModel->pBuffMat,
+						   NULL,
+						   &pEsaModel->dwNumMat,
+						   &pEsaModel->pMesh);
+
+	if(FAILED(hr))
 	{// Xファイルの読み込みに失敗した場合
 
 		return E_FAIL;	// 設定に失敗した事を返す
