@@ -129,33 +129,6 @@ void InitPlayer(void)
 		pPlayer->nCounterMotionBlend = 0;
 		pPlayer->nFrameBlend = 0;
 		pPlayer->nCounterBlend = 0;
-
-		for (int nCntModel = 0; nCntModel < pPlayer->nNumModel; nCntModel++)
-		{
-			// Xファイルの読み込み
-			if (FAILED(D3DXLoadMeshFromX(g_apFilenamePlayer[pPlayer->aModel[nCntModel].nIdx],
-				D3DXMESH_SYSTEMMEM,
-				pDevice,
-				NULL,
-				&pPlayer->aModel[nCntModel].pBuffMat,
-				NULL,
-				&pPlayer->aModel[nCntModel].dwNumMat,
-				&pPlayer->aModel[nCntModel].pMesh)))
-			{
-				return;
-			}
-
-			// マテリアルデータへのポインタを取得
-			pMat = (D3DXMATERIAL*)pPlayer->aModel[nCntModel].pBuffMat->GetBufferPointer();
-
-			for (int nCntMat = 0; nCntMat < (int)pPlayer->aModel[nCntModel].dwNumMat; nCntMat++)
-			{
-				if (pMat[nCntMat].pTextureFilename != NULL)
-				{// テクスチャファイルが存在する
-					D3DXCreateTextureFromFile(pDevice, pMat[nCntMat].pTextureFilename, &pPlayer->aModel[nCntModel].apTexture[nCntMat]);
-				}
-			}
-		}
 	}
 
 	SetRandomPlayer(GetNumCamera());
@@ -166,38 +139,6 @@ void InitPlayer(void)
 //=============================================================================
 void UninitPlayer(void)
 {
-	Player* pPlayer = GetPlayer();
-
-	
-	for (int nCntPlayer = 0; nCntPlayer < MAX_PLAYER; nCntPlayer++, pPlayer++)
-	{
-		for (int nCntModel = 0; nCntModel < MAX_NUMMODEL; nCntModel++)
-		{
-			// メッシュの破棄
-			if (pPlayer->aModel[nCntModel].pMesh != NULL)
-			{
-				pPlayer->aModel[nCntModel].pMesh->Release();
-				pPlayer->aModel[nCntModel].pMesh = NULL;
-			}
-
-			// マテリアルの破棄
-			if (pPlayer->aModel[nCntModel].pBuffMat != NULL)
-			{
-				pPlayer->aModel[nCntModel].pBuffMat->Release();
-				pPlayer->aModel[nCntModel].pBuffMat = NULL;
-			}
-
-			// テクスチャの破棄
-			for (int nCntTex = 0; nCntTex < MAX_TEXTURE; nCntTex++)
-			{
-				if (pPlayer->aModel[nCntModel].apTexture[nCntTex] != NULL)
-				{
-					pPlayer->aModel[nCntModel].apTexture[nCntTex]->Release();
-					pPlayer->aModel[nCntModel].apTexture[nCntTex] = NULL;
-				}
-			}
-		}
-	}
 }
 
 //=============================================================================
@@ -839,6 +780,7 @@ void DrawPlayer(void)
 	D3DMATERIAL9 matDef;				// 現在のマテリアル保存用
 	D3DXMATERIAL* pMat;					// マテリアルデータへのポインタ
 	Player* pPlayer = GetPlayer();
+	Model_Info* pTakoModel = GetTakoModel();
 
 	for (int nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++, pPlayer++)
 	{
@@ -902,18 +844,18 @@ void DrawPlayer(void)
 				pDevice->SetTransform(D3DTS_WORLD, &pPlayer->aModel[nCntModel].mtxWorld);
 
 				// マテリアルデータへのポインタを取得
-				pMat = (D3DXMATERIAL*)pPlayer->aModel[nCntModel].pBuffMat->GetBufferPointer();
+				pMat = (D3DXMATERIAL*)pTakoModel[nCntModel].pBuffMat->GetBufferPointer();
 
-				for (int nCntMat = 0; nCntMat < (int)pPlayer->aModel[nCntModel].dwNumMat; nCntMat++)
+				for (int nCntMat = 0; nCntMat < (int)pTakoModel[nCntModel].dwNumMat; nCntMat++)
 				{
 					// マテリアルの設定
 					pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
 
 					// テクスチャの設定
-					pDevice->SetTexture(0, pPlayer->aModel[nCntModel].apTexture[nCntMat]);
+					pDevice->SetTexture(0, pTakoModel[nCntModel].apTexture[nCntMat]);
 
 					// モデルパーツの描画
-					pPlayer->aModel[nCntModel].pMesh->DrawSubset(nCntMat);
+					pTakoModel[nCntModel].pMesh->DrawSubset(nCntMat);
 				}
 			}
 

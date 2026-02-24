@@ -11,6 +11,7 @@
 #include <time.h>
 #include <stdio.h>
 #include "debugproc.h"
+#include "computer.h"
 
 //=======================================
 // マクロ定義 
@@ -27,7 +28,7 @@
 //=======================================
 
 Fishes g_aFishes[FISHES_MAX_NUM];						// 生き物の情報
-Fishes_Model g_aFishesModel[FISHES_MAX_MODELS];			// 生き物のモデル情報
+//Fishes_Model g_aFishesModel[FISHES_MAX_MODELS];			// 生き物のモデル情報
 
 // 生き物の状態 -------------------------
 
@@ -49,7 +50,7 @@ void InitFishes(void)
 	// ローカル変数宣言
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();		// デバイスへのポインタ
 	
-	Fishes_Model* pFishesModel = GetFishesModel();	// 生き物のモデル情報を獲得
+	//Fishes_Model* pFishesModel = GetFishesModel();	// 生き物のモデル情報を獲得
 	Fishes* pFishes = GetFishes();					// 生き物の情報を獲得
 	
 	D3DXMATERIAL* pMat;								// マテリアルポインタ
@@ -90,7 +91,9 @@ void InitFishes(void)
 	}
 
 	g_nNumFishes = 0;	// 生き物の総数を初期化
+	LoadFishes();	// nCnt目のファイルを読み込む
 
+#if 0
 	for (int nCntFishes = 0; nCntFishes < FISHES_CALC_SIZEARRAY(g_aFishInfo); nCntFishes++, pFishesModel++)
 	{// Infoの数分繰り返す
 
@@ -123,6 +126,7 @@ void InitFishes(void)
 			}
 		}
 	}
+#endif
 
 	// どのモデルをどれだけ呼び出すか
 	//SetFishes(0, 0,true);
@@ -139,6 +143,7 @@ void InitFishes(void)
 //=============================================================================
 void UninitFishes(void)
 {
+#if 0
 	// ローカル変数宣言
 	Fishes* pFishes = GetFishes();
 	Fishes_Model* pFishesModel = GetFishesModel();
@@ -176,6 +181,7 @@ void UninitFishes(void)
 		}
 	
 	}
+#endif
 }
 
 //=============================================================================
@@ -269,6 +275,7 @@ void DrawFishes(void)
 	D3DMATERIAL9 matDef;							// 現在のマテリアル保存用
 	D3DXMATERIAL* pMat;								// マテリアルデータへのポインタ
 	Fishes* pFishes = GetFishes();
+	Model_Info* pTakoModel = GetTakoModel();
 
 	for (int nCntFishes = 0; nCntFishes < g_nNumFishes; nCntFishes++, pFishes++)
 	{
@@ -328,18 +335,18 @@ void DrawFishes(void)
 				pDevice->SetTransform(D3DTS_WORLD, &pFishes->aModel[nCntModel].mtxWorld);
 
 				// マテリアルデータへのポインタを取得
-				pMat = (D3DXMATERIAL*)pFishes->aModel[nCntModel].pBuffMat->GetBufferPointer();
+				pMat = (D3DXMATERIAL*)pTakoModel[nCntModel].pBuffMat->GetBufferPointer();
 
-				for (int nCntMat = 0; nCntMat < (int)pFishes->aModel[nCntModel].dwNumMat; nCntMat++)
+				for (int nCntMat = 0; nCntMat < (int)pTakoModel[nCntModel].dwNumMat; nCntMat++)
 				{
 					// マテリアルの設定
 					pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
 
 					// テクスチャの設定
-					pDevice->SetTexture(0, pFishes->aModel[nCntModel].apTexture[nCntMat]);
+					pDevice->SetTexture(0, pTakoModel[nCntModel].apTexture[nCntMat]);
 
 					// モデルパーツの描画
-					pFishes->aModel[nCntModel].pMesh->DrawSubset(nCntMat);
+					pTakoModel[nCntModel].pMesh->DrawSubset(nCntMat);
 				}
 			}
 
@@ -395,6 +402,7 @@ Fishes* GetFishes(void)
 	return &g_aFishes[0];
 }
 
+#if 0
 //=============================================================================
 // 生き物の取得処理
 //=============================================================================
@@ -402,6 +410,7 @@ Fishes_Model* GetFishesModel(void)
 {
 	return &g_aFishesModel[0];
 }
+#endif
 
 //=============================================================================
 // 生き物の設定処理
@@ -410,7 +419,7 @@ void SetFishes(int ModelIdx, int nNumSet, bool bMove, D3DXVECTOR3 pos, D3DXVECTO
 {
 	// ローカル変数宣言
 	Fishes* pFishes = GetFishes();
-	Fishes_Model* pFishesModel = GetFishesModel();
+	//Fishes_Model* pFishesModel = GetFishesModel();
 	int nModelSet = 0;
 
 	for (int nCntFishes = 0; nCntFishes < FISHES_MAX_NUM; nCntFishes++, pFishes++)
@@ -429,25 +438,25 @@ void SetFishes(int ModelIdx, int nNumSet, bool bMove, D3DXVECTOR3 pos, D3DXVECTO
 
 			pFishes->pos = pos;
 			pFishes->rot = rot;
-			pFishes->bLoopMotion = pFishesModel[ModelIdx].aMotionInfo->bLoop;		// ループするかどうか
-			pFishes->fRadius = pFishesModel[ModelIdx].fRadius;						// 半径
-			pFishes->fHeight = pFishesModel[ModelIdx].fHeight;						// 高さ
-			pFishes->nNumModel = pFishesModel[ModelIdx].nNumModel;					// モデル(パーツ)の総数
-			pFishes->nNumMotion = pFishesModel[ModelIdx].nNumMotion;				// モーションの総数
-			pFishes->bBlendMotion = pFishesModel[ModelIdx].bBlendMotion;			// ブレンドモーションがあるかどうか
-			pFishes->motionTypeBlend = pFishesModel[ModelIdx].motionTypeBlend;		// ブレンドモーションの種類
-			pFishes->bLoopMotionBlend = pFishesModel[ModelIdx].bLoopMotionBlend;	// ブレンドモーションがループするかどうか
-			pFishes->nNumKeyBlend = pFishesModel[ModelIdx].nNumKeyBlend;			// ブレンドモーションのキーの総数
-			pFishes->nFrameBlend = pFishesModel[ModelIdx].nFrameBlend;				// ブレンドフレーム数
+			pFishes->bLoopMotion = pFishes[ModelIdx].aMotionInfo->bLoop;		// ループするかどうか
+			pFishes->fRadius = pFishes[ModelIdx].fRadius;						// 半径
+			pFishes->fHeight = pFishes[ModelIdx].fHeight;						// 高さ
+			pFishes->nNumModel = pFishes[ModelIdx].nNumModel;					// モデル(パーツ)の総数
+			pFishes->nNumMotion = pFishes[ModelIdx].nNumMotion;				// モーションの総数
+			pFishes->bBlendMotion = pFishes[ModelIdx].bBlendMotion;			// ブレンドモーションがあるかどうか
+			pFishes->motionTypeBlend = pFishes[ModelIdx].motionTypeBlend;		// ブレンドモーションの種類
+			pFishes->bLoopMotionBlend = pFishes[ModelIdx].bLoopMotionBlend;	// ブレンドモーションがループするかどうか
+			pFishes->nNumKeyBlend = pFishes[ModelIdx].nNumKeyBlend;			// ブレンドモーションのキーの総数
+			pFishes->nFrameBlend = pFishes[ModelIdx].nFrameBlend;				// ブレンドフレーム数
 
 			// 全モデル(パーツ)の描画
 			for (int nCntModel = 0; nCntModel < pFishes->nNumModel; nCntModel++)
 			{
-				pFishes->aModel[nCntModel] = pFishesModel[ModelIdx].aModel[nCntModel];		// モデル(パーツ)
+				pFishes->aModel[nCntModel] = pFishes[ModelIdx].aModel[nCntModel];		// モデル(パーツ)
 			}
 			for (int nCntMotion = 0; nCntMotion < pFishes->nNumMotion; nCntMotion++)
 			{
-				pFishes->aMotionInfo[nCntMotion] = pFishesModel[ModelIdx].aMotionInfo[nCntMotion];		// モーション情報
+				pFishes->aMotionInfo[nCntMotion] = pFishes[ModelIdx].aMotionInfo[nCntMotion];		// モーション情報
 			}
 
 
@@ -460,11 +469,12 @@ void SetFishes(int ModelIdx, int nNumSet, bool bMove, D3DXVECTOR3 pos, D3DXVECTO
 //=============================================================================
 // 生き物のロード処理
 //=============================================================================
-void LoadFishes(int Idx)
+void LoadFishes(void)
 {
 	// ローカル変数宣言
 	FILE* pFile;
-	Fishes_Model* pFishesModel = GetFishesModel();
+	//Fishes_Model* pFishesModel = GetFishesModel();
+	Fishes* pFishes = GetFishes();
 
 	char aString[512] = {};				// ファイルのテキスト読み込み
 	char aTrash[512] = {};				// ごみ箱
@@ -497,7 +507,7 @@ void LoadFishes(int Idx)
 	KEY key = {};			// キー要素
 
 
-	pFile = fopen(g_aFishInfo[Idx].Model_FileName, "r");
+	pFile = fopen(g_aFishInfo->Model_FileName, "r");
 
 	if (pFile != NULL)
 	{// ファイルが開けた場合
@@ -516,7 +526,7 @@ void LoadFishes(int Idx)
 
 			if (strcmp(&aString[0], "NUM_MODEL") == 0)
 			{// モデル数の読み込み
-				fscanf(pFile, " = %d", &pFishesModel[Idx].nNumModel);
+				fscanf(pFile, " = %d", &pFishes->nNumModel);
 
 				continue;
 			}
@@ -524,7 +534,7 @@ void LoadFishes(int Idx)
 			if (strcmp(&aString[0], "MODEL_FILENAME") == 0)
 			{// モデルの名前読み込み
 
-				for (int nCntModel = 0; nCntModel < pFishesModel[Idx].nNumModel; nCntModel++)
+				for (int nCntModel = 0; nCntModel < pFishes->nNumModel; nCntModel++)
 
 				{// 読み込むモデル数分繰り返す
 
@@ -541,7 +551,7 @@ void LoadFishes(int Idx)
 
 					fscanf(pFile, " = %s", &aModelName[nCntModel][0]);							// モデルのパスを読み取る
 
-					strcpy(pFishesModel[Idx].sModelFileName[nCntModel], aModelName[nCntModel]);	// モデルの名前を設定
+					//strcpy(pFishes[Idx].sModelFileName[nCntModel], aModelName[nCntModel]);	// モデルの名前を設定
 
 
 					fscanf(pFile, "%s", &aString[0]);											// 文字列を読み取る
@@ -609,7 +619,7 @@ void LoadFishes(int Idx)
 
 				if (strcmp(&aString[0], "RADIUS") == 0)
 				{// キャラクターの半径
-					fscanf(pFile, " = %f", &pFishesModel[Idx].fRadius);
+					fscanf(pFile, " = %f", &pFishes->fRadius);
 
 					fscanf(pFile, "%s", &aString[0]);
 
@@ -624,7 +634,7 @@ void LoadFishes(int Idx)
 
 				if (strcmp(&aString[0], "HEIGHT") == 0)
 				{// キャラクターの高さ
-					fscanf(pFile, " = %f", &pFishesModel[Idx].fHeight);
+					fscanf(pFile, " = %f", &pFishes->fHeight);
 
 					fscanf(pFile, "%s", &aString[0]);
 
@@ -771,12 +781,12 @@ void LoadFishes(int Idx)
 					}
 
 					// プレイヤーのモデル情報に設定
-					pFishesModel[Idx].aModel[nCntParts].nIdx = nIdx;
-					pFishesModel[Idx].aModel[nCntParts].nIdxModelParent = nIdxParent;
-					pFishesModel[Idx].aModel[nCntParts].pos = pos;
-					pFishesModel[Idx].aModel[nCntParts].rot = rot;
-					pFishesModel[Idx].aModel[nCntParts].posOff = pos;
-					pFishesModel[Idx].aModel[nCntParts].rotOff = rot;
+					pFishes->aModel[nCntParts].nIdx = nIdx;
+					pFishes->aModel[nCntParts].nIdxModelParent = nIdxParent;
+					pFishes->aModel[nCntParts].pos = pos;
+					pFishes->aModel[nCntParts].rot = rot;
+					pFishes->aModel[nCntParts].posOff = pos;
+					pFishes->aModel[nCntParts].rotOff = rot;
 				}
 
 				continue;
@@ -801,11 +811,11 @@ void LoadFishes(int Idx)
 					// ループの真偽を代入
 					if (nLoop == 0)
 					{// false
-						pFishesModel[Idx].aMotionInfo[nCntMotion].bLoop = false;
+						pFishes->aMotionInfo[nCntMotion].bLoop = false;
 					}
 					else if (nLoop == 1)
 					{// true
-						pFishesModel[Idx].aMotionInfo[nCntMotion].bLoop = true;
+						pFishes->aMotionInfo[nCntMotion].bLoop = true;
 					}
 
 					fscanf(pFile, "%s", &aString[0]);
@@ -824,7 +834,7 @@ void LoadFishes(int Idx)
 					fscanf(pFile, " = %d", &nNumKey);
 
 					// キーの総数を代入
-					pFishesModel[Idx].aMotionInfo[nCntMotion].nNumKey = nNumKey;
+					pFishes->aMotionInfo[nCntMotion].nNumKey = nNumKey;
 
 					fscanf(pFile, "%s", &aString[0]);
 
@@ -857,7 +867,7 @@ void LoadFishes(int Idx)
 					{// 再生フレーム数
 						fscanf(pFile, " = %d", &nFrame);
 
-						pFishesModel[Idx].aMotionInfo[nCntMotion].aKeyInfo[nCntKey].nFrame = nFrame;
+						pFishes->aMotionInfo[nCntMotion].aKeyInfo[nCntKey].nFrame = nFrame;
 
 						fscanf(pFile, "%s", &aString[0]);
 
@@ -922,7 +932,7 @@ void LoadFishes(int Idx)
 						}
 
 						// モーション情報に代入
-						pFishesModel[Idx].aMotionInfo[nCntMotion].aKeyInfo[nCntKey].aKey[nCntPartsKey] = key;
+						pFishes->aMotionInfo[nCntMotion].aKeyInfo[nCntKey].aKey[nCntPartsKey] = key;
 					}
 
 					if (strcmp(&aString[0], "END_KEYSET") == 0)
@@ -943,7 +953,12 @@ void LoadFishes(int Idx)
 		}
 
 		// モーションの総数を代入
-		pFishesModel[Idx].nNumMotion = nCntMotion + 1;
+		pFishes->nNumMotion = nCntMotion + 1;
+
+		for (int nCntFish = 0; nCntFish < FISHES_MAX_NUM - 1; nCntFish++)
+		{
+			pFishes[nCntFish + 1] = pFishes[nCntFish];
+		}
 
 		fclose(pFile);
 	}

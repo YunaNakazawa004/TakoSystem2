@@ -116,6 +116,7 @@ void LoadComputer(void);
 // グローバル変数
 //*****************************************************************************
 Computer g_aComputer[MAX_COMPUTER];						// CPUの情報
+Model_Info g_ComputerModel[MAX_NUMMODEL];				// CPUモデルの情報
 Node g_aOutNode[NODE_COUNT * NODE_HEIGHT];				// ノード(外周)
 Node g_aInNode[NODE_COUNT * NODE_HEIGHT];				// ノード(内周)
 char* g_apFilenameComputer[MAX_NUMMODEL] = {};			// モデルファイルへのポインタ
@@ -185,7 +186,7 @@ void InitComputer(void)
 	pComputer = GetComputer();
 
 	for (int nCntComputer = 0; nCntComputer < MAX_COMPUTER; nCntComputer++, pComputer++)
-	
+
 	{// コンピューターの総数分繰り返す
 
 		pComputer->motionType = MOTIONTYPE_NEUTRAL;							// モーションの種類をニュートラルに設定
@@ -202,42 +203,41 @@ void InitComputer(void)
 		pComputer->nCounterMotionBlend = 0;									// ブレンド時のモーションカウンタを初期化
 		pComputer->nFrameBlend = 0;											// ブレンドフレーム数を初期化
 		pComputer->nCounterBlend = 0;										// ブレンドカウンタを初期化
+	}
 
-		// モデルの読み込み
-		for (int nCntModel = 0; nCntModel < pComputer->nNumModel; nCntModel++)
-		{// タコのパーツの総数分繰り返す
+	// モデルの読み込み
+	for (int nCntModel = 0; nCntModel < g_aComputer[0].nNumModel; nCntModel++)
+	{// タコのパーツの総数分繰り返す
 
-			// Xファイルの読み込み
-			if (FAILED(D3DXLoadMeshFromX(g_apFilenameComputer[pComputer->aModel[nCntModel].nIdx],
+		// Xファイルの読み込み
+		if (FAILED(D3DXLoadMeshFromX(g_apFilenameComputer[g_aComputer[0].aModel[nCntModel].nIdx],
+			D3DXMESH_SYSTEMMEM,
+			pDevice,
+			NULL,
+			&g_ComputerModel[nCntModel].pBuffMat,
+			NULL,
+			&g_ComputerModel[nCntModel].dwNumMat,
+			&g_ComputerModel[nCntModel].pMesh)))
+		{// モデルの読み込みに失敗した場合
 
-										 D3DXMESH_SYSTEMMEM,
-										 pDevice,
-										 NULL,
-										 &pComputer->aModel[nCntModel].pBuffMat,
-										 NULL,
-										 &pComputer->aModel[nCntModel].dwNumMat,
-										 &pComputer->aModel[nCntModel].pMesh)))
-			{// モデルの読み込みに失敗した場合
+			continue;
+		}
 
-				continue;
+		// マテリアルデータへのポインタを取得
+		pMat = (D3DXMATERIAL*)g_ComputerModel[nCntModel].pBuffMat->GetBufferPointer();
+
+		// マテリアルの読み込み
+		for (int nCntMat = 0; nCntMat < (int)g_ComputerModel[nCntModel].dwNumMat; nCntMat++)
+		{
+			if (pMat[nCntMat].pTextureFilename != NULL)
+			{// テクスチャファイルが存在する
+				D3DXCreateTextureFromFile(pDevice, pMat[nCntMat].pTextureFilename, &g_ComputerModel[nCntModel].apTexture[nCntMat]);
 			}
 
-			// マテリアルデータへのポインタを取得
-			pMat = (D3DXMATERIAL*)pComputer->aModel[nCntModel].pBuffMat->GetBufferPointer();
-
-			// マテリアルの読み込み
-			for (int nCntMat = 0; nCntMat < (int)pComputer->aModel[nCntModel].dwNumMat; nCntMat++)
-			{
-				if (pMat[nCntMat].pTextureFilename != NULL)
-				{// テクスチャファイルが存在する
-
-				}
-
-			}
-		
 		}
 
 	}
+
 #if 1
 	// ランダムな位置に設定
 	SetRandomComputer(ALL_OCTO - GetNumCamera());
@@ -249,38 +249,31 @@ void InitComputer(void)
 //=============================================================================
 void UninitComputer(void)
 {
-	Computer* pComputer = GetComputer();
-
-	for (int nCntComputer = 0; nCntComputer < MAX_COMPUTER; nCntComputer++, pComputer++)
+	for (int nCntModel = 0; nCntModel < MAX_NUMMODEL; nCntModel++)
 	{
-
-		for (int nCntModel = 0; nCntModel < MAX_NUMMODEL; nCntModel++)
+		// メッシュの破棄
+		if (g_ComputerModel[nCntModel].pMesh != NULL)
 		{
-			// メッシュの破棄
-			if (pComputer->aModel[nCntModel].pMesh != NULL)
-			{
-				pComputer->aModel[nCntModel].pMesh->Release();
-				pComputer->aModel[nCntModel].pMesh = NULL;
-			}
+			g_ComputerModel[nCntModel].pMesh->Release();
+			g_ComputerModel[nCntModel].pMesh = NULL;
+		}
 
-			// マテリアルの破棄
-			if (pComputer->aModel[nCntModel].pBuffMat != NULL)
-			{
-				pComputer->aModel[nCntModel].pBuffMat->Release();
-				pComputer->aModel[nCntModel].pBuffMat = NULL;
-			}
+		// マテリアルの破棄
+		if (g_ComputerModel[nCntModel].pBuffMat != NULL)
+		{
+			g_ComputerModel[nCntModel].pBuffMat->Release();
+			g_ComputerModel[nCntModel].pBuffMat = NULL;
+		}
 
-			// テクスチャの破棄
-			for (int nCntTex = 0; nCntTex < MAX_TEXTURE; nCntTex++)
-			{
-			
-				if (pComputer->aModel[nCntModel].apTexture[nCntTex] != NULL)
-				{
-					pComputer->aModel[nCntModel].apTexture[nCntTex]->Release();
-					pComputer->aModel[nCntModel].apTexture[nCntTex] = NULL;
-				}
-			}
+		// テクスチャの破棄
+		for (int nCntTex = 0; nCntTex < MAX_TEXTURE; nCntTex++)
+		{
 
+			if (g_ComputerModel[nCntModel].apTexture[nCntTex] != NULL)
+			{
+				g_ComputerModel[nCntModel].apTexture[nCntTex]->Release();
+				g_ComputerModel[nCntModel].apTexture[nCntTex] = NULL;
+			}
 		}
 	}
 }
@@ -531,7 +524,7 @@ void UpdateComputer(void)
 						int nIdx = -1;
 
 						if (CollisionEsa(&nIdx, false, &tentaclePos, pComputer->phys.fRadius) == true &&
-							pComputer->nFoodCount < pComputer->nMaxFood * CPU_TENTACLE && 
+							pComputer->nFoodCount < pComputer->nMaxFood * CPU_TENTACLE &&
 							pComputer->motionType != MOTIONTYPE_OCEANCULLENT)
 						{// エサと接触した
 							Esa* pEsa = GetEsa();
@@ -629,7 +622,7 @@ void UpdateComputer(void)
 
 				if (GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL)
 				{// 安地外で渦潮
-					if (pComputer->TentState == PLTENTACLESTATE_NORMAL && 
+					if (pComputer->TentState == PLTENTACLESTATE_NORMAL &&
 						(pComputer->motionType != MOTIONTYPE_DASH || pComputer->motionTypeBlend != MOTIONTYPE_DASH) &&
 						pComputer->state != CPUSTATE_INK_ATTACK && pComputer->state != CPUSTATE_BACKAREA)
 					{// 触手が通常状態のときだけ
@@ -649,7 +642,7 @@ void UpdateComputer(void)
 			if (pComputer->TentState == CPUTENTACLESTATE_NORMAL &&
 				D3DXVec3Length(&pComputer->phys.move) > 0.1f &&
 				pComputer->state != CPUSTATE_INK_ATTACK && pComputer->state != CPUSTATE_BACKAREA &&
-				(pComputer->motionType != MOTIONTYPE_DASH || pComputer->motionTypeBlend != MOTIONTYPE_DASH) && 
+				(pComputer->motionType != MOTIONTYPE_DASH || pComputer->motionTypeBlend != MOTIONTYPE_DASH) &&
 				(GetOceanCurrents() != OCEANCURRENTSSTATE_WIRLPOOL ||
 					(GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL && CollisionObjectArea(pComputer->phys.pos) == true)))
 			{// 移動モーション
@@ -658,7 +651,7 @@ void UpdateComputer(void)
 			else if (pComputer->TentState == CPUTENTACLESTATE_NORMAL &&
 				D3DXVec3Length(&pComputer->phys.move) < 0.1f &&
 				pComputer->state != CPUSTATE_INK_ATTACK &&
-				(pComputer->motionType != MOTIONTYPE_DASH || pComputer->motionTypeBlend != MOTIONTYPE_DASH) && 
+				(pComputer->motionType != MOTIONTYPE_DASH || pComputer->motionTypeBlend != MOTIONTYPE_DASH) &&
 				(GetOceanCurrents() != OCEANCURRENTSSTATE_WIRLPOOL ||
 					(GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL && CollisionObjectArea(pComputer->phys.pos) == true)))
 			{// 待機モーション
@@ -867,18 +860,18 @@ void DrawComputer(void)
 				pDevice->SetTransform(D3DTS_WORLD, &pComputer->aModel[nCntModel].mtxWorld);
 
 				// マテリアルデータへのポインタを取得
-				pMat = (D3DXMATERIAL*)pComputer->aModel[nCntModel].pBuffMat->GetBufferPointer();
+				pMat = (D3DXMATERIAL*)g_ComputerModel[nCntModel].pBuffMat->GetBufferPointer();
 
-				for (int nCntMat = 0; nCntMat < (int)pComputer->aModel[nCntModel].dwNumMat; nCntMat++)
+				for (int nCntMat = 0; nCntMat < (int)g_ComputerModel[nCntModel].dwNumMat; nCntMat++)
 				{
 					// マテリアルの設定
 					pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
 
 					// テクスチャの設定
-					pDevice->SetTexture(0, pComputer->aModel[nCntModel].apTexture[nCntMat]);
+					pDevice->SetTexture(0, g_ComputerModel[nCntModel].apTexture[nCntMat]);
 
 					// モデルパーツの描画
-					pComputer->aModel[nCntModel].pMesh->DrawSubset(nCntMat);
+					g_ComputerModel[nCntModel].pMesh->DrawSubset(nCntMat);
 				}
 			}
 
@@ -2560,6 +2553,14 @@ Computer* GetComputer(void)
 }
 
 //=============================================================================
+// タコモデルの取得処理
+//=============================================================================
+Model_Info* GetTakoModel(void)
+{
+	return &g_ComputerModel[0];
+}
+
+//=============================================================================
 // 墨吐きの当たり判定
 //=============================================================================
 void CollisionInk(int nIdx, bool bCPU, D3DXVECTOR3 pos)
@@ -2739,7 +2740,7 @@ void LoadComputer(void)
 	int nCntMotion = 0;		// モーション番号
 	KEY key = {};			// キー要素
 
-	
+
 
 	pFile = fopen(CPU_FILE, "r");
 

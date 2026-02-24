@@ -81,7 +81,7 @@ typedef struct
 }Fishes;
 
 // 生き物のモデル構造体 -----------------
-
+#if 0
 typedef struct
 {
 	float fRadius;								// 半径
@@ -100,6 +100,7 @@ typedef struct
 	bool bUse;									// 使用状態
 
 }Fishes_Model;
+#endif
 
 // 生き物のモデル情報 -------------------
 
@@ -120,9 +121,9 @@ void UpdateFishes(void);
 void DrawFishes(void);
 void CollisionFishes(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, float fWidth, float fDepth);
 Fishes* GetFishes(void);
-Fishes_Model* GetFishesModel(void);
+//Fishes_Model* GetFishesModel(void);
 void SetFishes(int ModelIdx, int nNumSet, bool bMove, D3DXVECTOR3 pos, D3DXVECTOR3 rot);
-void LoadFishes(int Idx);
+void LoadFishes(void);
 void UpdateMotionFishes(void);
 void SetMotionFishes(int nIdx, MOTIONTYPE motionType, bool bBlendMotion, int nFrameBlend);
 
