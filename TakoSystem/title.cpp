@@ -302,12 +302,13 @@ void UninitTitle(void)
 void UpdateTitle(void)
 {
 
-#if 0
+#if 1	// ƒ^ƒCƒgƒ‹‚Ì‘JˆÚ(F11‚Å‰ğœ)
+
 	if (GetKeyboardTrigger(DIK_F11)) g_bTestTitle = (g_bTestTitle == true) ? false : true;
 
 	if (g_bTestTitle == true)
 	{
-		SetFade(MODE_TITLE);
+		SetFade(MODE_LOGO);
 	}
 #endif 
 
