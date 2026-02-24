@@ -32,7 +32,7 @@
 #define SETPOS_PLAYER		(D3DXVECTOR3(-167.0f, 85.0f, 0.0f))
 #define SETARIA_PLAYER		(33.0f)
 
-#define WAIT_SETING			(60 * 5)
+#define WAIT_SETING			(60 * 3.5f)
 
 
 // 構造体の定義 ================================================
@@ -98,17 +98,18 @@ LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffResult = NULL;				// 頂点バッファへのポインタ
 
 ResultPolygon g_aResultPolygon[MAX_NUM_RESULT];					// リザルトのポリゴン情報
 
-// リザルトの状態
+// リザルトの情報
 RESULTSTATE g_resultState = RESULTSTATE_BEGIN;					// リザルトの状態
 int g_nCounterResultState;										// リザルトの状態カウンター
-int g_nNowEsaType;
+int g_nNowEsaType;												// 今表示しているエサの種類
 
-int g_aIdxUiResultGS[MAX_PLAYER + MAX_COMPUTER] = {};			
+int g_aIdxUiResultGS[MAX_PLAYER + MAX_COMPUTER] = {};			// リザルトの獲得スコアのインデックス(プレイヤー分)
+
+GiveResultPlayer g_aGiveRforR[MAX_PLAYER + MAX_COMPUTER];	// リザルトに渡す情報
 
 // ゲームの情報
 int g_nMaxPlayer;													// プレイヤーの総数
 int g_nIdxSetEsa;													// エサの種類の総数
-//WORD g_aEsaScore[MAX_ESATYPE] = {};									// エサのスコア
 WORD g_aNumHaveEsa[MAX_PLAYER + MAX_COMPUTER][MAX_ESATYPE] = {};	// 持っているエサの数
 
 // ファイル名
@@ -116,7 +117,7 @@ const char* c_apFilenameResult[] =
 {
 	"data/TEXTURE/In_the_sea.png",		// [0]背景
 	"data/TEXTURE/tex_alpha001.jpg",	// [1]スコア背景
-	"data/TEXTURE/RESULT001.png",		// [2]RESULTテキスト
+	"data/TEXTURE/RESULT002.png",		// [2]RESULTテキスト
 	"data/TEXTURE/RESULT_LINE.png",		// [3]放射線
 	"data/TEXTURE/text_player.png",		// [4]プレイヤーテキスト
 	"data/TEXTURE/number000.png",		// [5]数字
@@ -159,7 +160,7 @@ void InitResult(void)
 	SetNumCamera(1);
 
 	// カメラの位置設定
-	SetCameraPos(0, D3DXVECTOR3(0.0f, 0.0f, 100.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CAMERATYPE_STOP);
+	SetCameraPos(0, D3DXVECTOR3(0.0f, 0.0f, 100.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CAMERATYPE_STOP);
 	
 	// エサの初期化
 	InitEsa(false);	
@@ -196,11 +197,10 @@ void InitResult(void)
 	g_resultState = RESULTSTATE_BEGIN;	// リザルトの状態を開始状態に設定
 	g_nCounterResultState = 0;			// リザルトの状態カウンターを初期化
 
-	g_nNowEsaType = -1;
+	g_nNowEsaType = -1;					// 表示されてるエサの種類を初期化
+	g_nIdxSetEsa = -1;					// 表示されてるエサのインデックスを初期化
 
-	g_nIdxSetEsa = -1;
-
-	memset(&g_aIdxUiResultGS[0], -1, MAX_PLAYER + MAX_COMPUTER);
+	memset(&g_aIdxUiResultGS[0], -1, sizeof (int) * (MAX_PLAYER + MAX_COMPUTER));	// リザルトスコアUIのインデックスの初期化
 
 	// 頂点バッファの生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * 4 * MAX_NUM_RESULT,
@@ -247,6 +247,46 @@ void InitResult(void)
 	// 頂点バッファをアンロックする
 	g_pVtxBuffResult->Unlock();
 
+
+#if 0	// 渡す値の確認用 *************************************************************
+
+	// 変数宣言 =================================
+
+	// 設定情報
+	const int c_nNumPlayer = 4;						// プレイヤーの数
+	const int c_nMaxHave = 10;						// エサの所持出来る最大数
+
+	RESULT_TYPEPLAYER aPlayer[c_nNumPlayer] =
+	{// プレイヤーの種類
+
+		RESULT_PLAYER_PLAYER,				// [0]番目のプレイヤーは「プレイヤー」。
+		RESULT_PLAYER_COMPUTER,				// [1]番目のプレイヤーは「コンピューター」。
+		RESULT_PLAYER_COMPUTER,				// [2]番目のプレイヤーは「コンピューター」。
+		RESULT_PLAYER_COMPUTER,				// [3]番目のプレイヤーは「コンピューター」。
+	};
+
+	int aHaveEsa[c_nNumPlayer][c_nMaxHave] =
+	{// エサの種類情報
+
+		{0, 1,-1,-1,-1,-1,-1,-1,-1,-1},	// [0]番目のプレイヤーのエサの所持状況
+		{0, 2,-1,-1,-1,-1,-1,-1,-1,-1},	// [1]番目のプレイヤーのエサの所持状況
+		{0, 3,-1,-1,-1,-1,-1,-1,-1,-1},	// [2]番目のプレイヤーのエサの所持状況
+		{0, 4,-1,-1,-1,-1,-1,-1,-1,-1},	// [3]番目のプレイヤーのエサの所持状況
+	};
+	
+	// 貰う場所
+	GiveResultPlayer aResultPlayer[c_nNumPlayer];	// 判定したプレイヤーの情報を貰う場所
+	
+	// ==========================================
+
+	// リザルトに情報を渡す処理
+	ReceiveResult(&aPlayer[0], &aHaveEsa[0][0], c_nNumPlayer, c_nMaxHave);
+
+	// リザルトの情報を渡す処理
+	GetRankingForResult(&aResultPlayer[0], c_nNumPlayer);
+
+#endif // *****************************************************************************
+
 	// リザルトポリゴンの設定(背景)
 	SetResultPolygon(g_aResultPolygonInfo[0].nIdxTexture, g_aResultPolygonInfo[0].bAlphaBlend, g_aResultPolygonInfo[0].nDrowLevel,							// 
 					 g_aResultPolygonInfo[0].pos, g_aResultPolygonInfo[0].rot, g_aResultPolygonInfo[0].addRot, g_aResultPolygonInfo[0].fSizeWidth, g_aResultPolygonInfo[0].fSizeHeight,		// 
@@ -267,18 +307,8 @@ void InitResult(void)
 					 g_aResultPolygonInfo[3].pos, g_aResultPolygonInfo[3].rot, g_aResultPolygonInfo[3].addRot, g_aResultPolygonInfo[3].fSizeWidth, g_aResultPolygonInfo[3].fSizeHeight,		// 
 					 g_aResultPolygonInfo[3].texPos, g_aResultPolygonInfo[3].texSize, g_aResultPolygonInfo[3].col);											// 
 
-	int aTmpHaveEsa[3][5] =
-	{
-		{0, 1, 2, 3, 4},
-		{0, 0, 0, 0, 0},
-		{1, 0, 0, 0, -1}
-	};
-
-	//ReceiveResult(&aTmpHaveEsa[0][0], 3, 5);
-
 	// リザルトの設定
-	SetResult(RESULTTYPE_PLAYER, SETPOS_PLAYER);
-
+	SetResult(RESULTTYPE_PLAYER, SETPOS_PLAYER);	// プレイヤーの設定
 
 	// サウンドの再生
 	PlaySound(SOUND_BGM_RESULT);
@@ -295,14 +325,15 @@ void UninitResult(void)
 	for (nCntResult = 0; nCntResult < MAX_PLAYER + MAX_COMPUTER; nCntResult++)
 	{// プレイヤーの最大数分繰り返す
 
-		memset(&g_aNumHaveEsa[nCntResult][0], 0, MAX_ESATYPE);	// エサの種類別所持数を初期化
+		memset(&g_aNumHaveEsa[nCntResult][0], 0, sizeof (WORD) * MAX_ESATYPE);	// エサの種類別所持数を初期化
 	}
+
+	
 
 	//memset(&g_aEsaScore[0], 0, MAX_ESATYPE);					// エサの種類別獲得スコアを初期化
 
 	g_nMaxPlayer = 0;											// プレイヤーの総数を初期化
 
-	
 	// エサの終了
 	UninitEsa();
 
@@ -374,7 +405,7 @@ void UpdateResult(void)
 	{
 	case RESULTSTATE_BEGIN:
 
-		if (GetKeyboardTrigger(DIK_RETURN))
+		if (GetKeyboardTrigger(DIK_RETURN) || GetJoypadTrigger(0, JOYKEY_A) == true)
 		{
 			g_resultState = RESULTSTATE_SETING;
 		}
@@ -426,7 +457,7 @@ void UpdateResult(void)
 	
 	case RESULTSTATE_SETING:
 	
-		g_nCounterResultState = WAIT_SETING;
+		g_nCounterResultState = (int)WAIT_SETING;	// 待機時間を設定
 
 		g_resultState = RESULTSTATE_WAIT;
 
@@ -511,9 +542,8 @@ void UpdateResult(void)
 
 	// 次のモードへの移動処理
 #if 1
-	if (pFade == FADE_NONE && g_resultState == RESULTSTATE_COMPLETE 
-	    || (/*GetKeyboardTrigger(DIK_RETURN) == true ||*/ GetJoypadTrigger(0, JOYKEY_START) == true || GetJoypadTrigger(0, JOYKEY_A) == true))
-	{// 決定キー（ENTERキー）が押された
+	if (pFade == FADE_NONE && g_resultState == RESULTSTATE_COMPLETE)
+	{
 		
 		// モード設定
 		SetFade(MODE_RANKING);
@@ -569,8 +599,6 @@ void DrawResultPolygon(int nIdx)
 
 	D3DXMATRIX mtxWorld;
 	D3DXMATRIX mtxRot, mtxTrans;	// 計算用マトリックス
-	D3DMATERIAL9 matDef;			// 現在のマテリアル保存用
-	D3DXMATERIAL* pMat;				// マテリアルのポインタ
 
 	// ====================================================
 
@@ -640,7 +668,7 @@ void DrawResultPolygon(int nIdx)
 void SetResult(RESULTTYPE type, D3DXVECTOR3 pos)
 {
 	D3DXVECTOR3 setPos, setShiftPos;
-	float fSetWidth, fSetHeight;
+
 	D3DXVECTOR2 setTexPos, setTexSize;
 	D3DXCOLOR setCol;
 
@@ -732,25 +760,36 @@ int SetResultPolygon(int nIdxTexture, bool bAlphaBlend, int nDrowLevel,
 //========================================================================
 // リザルトの情報を貰う処理
 //========================================================================
-void ReceiveResult(int pHaveEsa[], int nMaxPlayer, int nMaxHave)
+void ReceiveResult(RESULT_TYPEPLAYER* pTypePlayer, int pHaveEsa[], int nMaxPlayer, int nMaxHave)
 {
 	// 変数宣言 ===========================================
 
 	int nCntResult;
 
+	EsaData* pEsaData = GetEsaData(0);
+
 	// ====================================================
+
+	// ランキングに渡す情報を初期化
+	for (nCntResult = 0; nCntResult < MAX_PLAYER + MAX_COMPUTER; nCntResult++)
+	{
+		g_aGiveRforR[nCntResult].typePlayer = RESULT_PLAYER_NONE;	// プレイヤーの種類を初期化
+		g_aGiveRforR[nCntResult].nTotalScore = 0;					// 合計スコアを初期化
+	}
 
 	g_nMaxPlayer = nMaxPlayer;		// プレイヤーの総数を設定
 
 	// エサの種類別所持数を初期化
 	for (nCntResult = 0; nCntResult < g_nMaxPlayer; nCntResult++)
 	{		
-		memset(&g_aNumHaveEsa[nCntResult][0], 0, MAX_ESATYPE);
+		memset(&g_aNumHaveEsa[nCntResult][0], 0, sizeof (WORD) * MAX_ESATYPE);
 	}
 
 	// 持っているエサの数の集計
 	for (nCntResult = 0; nCntResult < g_nMaxPlayer; nCntResult++)
 	{// プレイヤーの総数分繰り返す
+
+		g_aGiveRforR[nCntResult].typePlayer = pTypePlayer[nCntResult];	// プレイヤーの種類を設定	
 
 		int *pHave = &pHaveEsa[nMaxHave * nCntResult];	// nCntResult目の先頭の所持情報を設定
 
@@ -764,7 +803,28 @@ void ReceiveResult(int pHaveEsa[], int nMaxPlayer, int nMaxHave)
 				continue;	// 処理の始めに戻る
 			}
 
+			g_aGiveRforR[nCntResult].nTotalScore += pEsaData[*pHave].nScore;	// プレイヤースコアを加算
+			
 			g_aNumHaveEsa[nCntResult][*pHave]++;	// 所持しているプレイヤーのエサの種類の場所の値を増やす
 		}
 	}
+}
+
+//========================================================================
+// リザルトからランキングに情報を渡す処理
+//========================================================================
+int GetRankingForResult(GiveResultPlayer* pResultPlayer, int nNumPlayer)
+{
+	if (pResultPlayer)
+	{// プレイヤーのタイプ情報を入れる場所がある場合
+
+		for (int nCntPlayer = 0; nCntPlayer < nNumPlayer; nCntPlayer++, pResultPlayer++)
+		{// 
+
+			pResultPlayer->typePlayer = g_aGiveRforR[nCntPlayer].typePlayer;		// プレイヤーのタイプ情報を設定
+			pResultPlayer->nTotalScore = g_aGiveRforR[nCntPlayer].nTotalScore;		// プレイヤートータルスコア情報を設定
+		}
+	}
+
+	return g_nMaxPlayer;	// プレイヤーの総数を返す
 }

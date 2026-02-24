@@ -401,7 +401,7 @@ void SetNumCamera(int nNum)
 //=============================================================================
 // ÉJÉÅÉâÇÃà íuê›íË
 //=============================================================================
-void SetCameraPos(int nIdx, D3DXVECTOR3 posV, D3DXVECTOR3 posR, CAMERATYPE type)
+void SetCameraPos(int nIdx, D3DXVECTOR3 posV, D3DXVECTOR3 posR, D3DXVECTOR3 rot, CAMERATYPE type)
 {
 	Camera* pCamera = GetCamera();
 
@@ -409,6 +409,7 @@ void SetCameraPos(int nIdx, D3DXVECTOR3 posV, D3DXVECTOR3 posR, CAMERATYPE type)
 	pCamera[nIdx].posVDest = posV;
 	pCamera[nIdx].posR = posR;
 	pCamera[nIdx].posRDest = posR;
+	pCamera[nIdx].rot = rot;
 	pCamera[nIdx].type = type;
 }
 

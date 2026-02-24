@@ -329,9 +329,7 @@ void DrawUiResultGetScore(void)
 
 	D3DXMATRIX mtxWorld;
 	D3DXMATRIX mtxRot, mtxTrans;	// 計算用マトリックス
-	D3DMATERIAL9 matDef;			// 現在のマテリアル保存用
-	D3DXMATERIAL* pMat;				// マテリアルのポインタ
-
+	
 	// ====================================================
 	
 	// ポリゴンの描画
@@ -614,7 +612,7 @@ int nCalcNumDigit(int nNum)
 		for (nDigit = 0; nNum > 0; nDigit++)
 		{// 値が0になるまで桁を減らしていく
 
-			nNum *= 0.1f;
+			nNum /= 10;
 		}
 	}
 

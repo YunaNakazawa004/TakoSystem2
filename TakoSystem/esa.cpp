@@ -128,13 +128,14 @@ void InitEsa(bool bSet)
 
 #else	// ランダム設定
 
-		for (int nCntEsa = 0; nCntEsa < 20; nCntEsa++)
+
+		for (int nCntEsa = 0; nCntEsa < 30; nCntEsa++)
 		{// 配置する数だけ繰り返す
 
-			int nSetType = rand() % g_nNumEsatype;											// ランダムで種類を設定
-			float fRandRadius = rand() % (int)(OUTCYLINDER_RADIUS - 100.0f) + (int)INCYLINDER_RADIUS;	// 中心からの距離を設定
-			float fRandAngle = (float)(rand() % 629 - 314) / 1000.0f;						// 角度を設定
-			float fRandHeight = rand() % (int)CYLINDER_HEIGHT;								// 高さを設定
+			int nSetType = rand() % g_nNumEsatype;																// ランダムで種類を設定
+			float fRandRadius = rand() % (int)(OUTCYLINDER_RADIUS - 100.0f) + (int)INCYLINDER_RADIUS;			// 中心からの距離を設定
+			float fRandAngle = ((float)(rand() % ((int)(D3DX_PI * 2000)) - (int)(D3DX_PI * 1000))) / 1000.0f;	// 角度(xy位置)を設定
+			float fRandHeight = rand() % (int)CYLINDER_HEIGHT;													// 高さを設定
 
 			// 位置を設定
 			D3DXVECTOR3 setPos = D3DXVECTOR3(sinf(fRandAngle) * fRandRadius,
@@ -142,7 +143,8 @@ void InitEsa(bool bSet)
 											 cosf(fRandAngle) * fRandRadius);
 
 			// エサの設定処理
-			SetEsa(nSetType, true, ESA_ACTTYPE_LAND, 0, setPos, D3DXVECTOR3(0.0f,0.0f,0.0f));
+
+			SetEsa(nSetType, true, ESA_ACTTYPE_SWIM, 0, setPos, D3DXVECTOR3(0.0f,0.0f,0.0f));
 		}
 
 #endif
@@ -437,10 +439,12 @@ int SetEsa(int nEsaType, bool bSetOrbit, ESA_ACTTYPE esaType, int nBehavior, D3D
 			g_aEsa[nCntEsa].rot = rot;								// 角度を設定
 			g_aEsa[nCntEsa].fMoveAngle = 0.0f;						// 移動角度を初期化
 			g_aEsa[nCntEsa].esaType = esaType;						// エサの挙動を設定
-			g_aEsa[nCntEsa].nNumBehavior = 0;						// 挙動の値を初期化
+
+			g_aEsa[nCntEsa].nNumBehavior = nBehavior;				// 挙動の値を初期化
 			g_aEsa[nCntEsa].bOrbit = bSetOrbit;						// 軌跡状態を設定
 			g_aEsa[nCntEsa].bDisp = true;							// 表示している状態に設定
 			g_aEsa[nCntEsa].bUse = true;							// 使用している状態に設定
+
 
 			return nCntEsa;	// 設定した場所を返す
 		}

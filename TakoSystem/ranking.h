@@ -9,15 +9,34 @@
 
 #include "main.h"
 
-// マクロ定義
-#define MAX_RANK	(5)	// ランク数
+//=====================================
+// 構造体の定義
+//=====================================
 
-// ランキング構造体
+// ランキングOBJ ----------------------
+
 typedef struct
 {
-	D3DXVECTOR3 pos;	// 位置
-	int nScore;			// スコア
-} Ranking;
+	D3DXVECTOR3 pos;			// 位置
+	D3DXCOLOR col;				// 色
+	D3DXVECTOR3 size;			// サイズ
+	D3DXMATRIX mtxWorld;		// ワールドマトリックス
+	bool bUse;					// 使用しているか
+	int nType;					// タイプ
+	int TexIdx;					// 使用する画像のインデックス
+	int NumIdx;					// 数字系テクスチャのインデックス
+} RankingOBJ;
+
+// ランキング情報 ---------------------
+
+typedef struct
+{
+	int nCharaIdx;				// P1,P2かCPUか
+	int nScore;					// スコア
+	int nRank;					// 順位
+	int nNumFirstRank;			// 一位の人数
+
+}Ranking_Info;
 
 // プロトタイプ宣言
 void InitRanking(void);

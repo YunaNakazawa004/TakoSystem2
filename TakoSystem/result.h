@@ -9,7 +9,9 @@
 
 #include "esa.h"
 
-// 列挙型の定義
+// 列挙型の定義 ================================================
+
+// リザルトの状態
 typedef enum
 {
 	RESULTSTATE_BEGIN = 0,	// [0]開始状態
@@ -22,16 +24,40 @@ typedef enum
 
 }RESULTSTATE;
 
+// リザルトの設定種類
 typedef enum
 {
-	RESULTTYPE_RADIATION = 0,	// [0]放射線
-	RESULTTYPE_PLAYER,
+	RESULTTYPE_PLAYER = 0,	// 
 
 	RESULTTYPE_MAX
+
 }RESULTTYPE;
 
+// ランキングに渡すプレイヤーの種類
+typedef enum
+{
+	RESULT_PLAYER_NONE = -1,	// [-1]無し
+	RESULT_PLAYER_PLAYER,		// [ 0]プレイヤー
+	RESULT_PLAYER_COMPUTER,		// [ 1]コンピューター
 
-// プロトタイプ宣言
+	RESULT_PLAYER_MAX			// 最大値
+
+}RESULT_TYPEPLAYER;
+
+// 構造体の定義 ================================================
+
+
+typedef struct
+{
+	RESULT_TYPEPLAYER typePlayer;
+	
+	int nTotalScore;
+
+}GiveResultPlayer;
+
+
+// プロトタイプ宣言 ============================================
+
 void InitResult(void);		// リザルトの初期化処理
 void UninitResult(void);	// リザルトの終了処理
 void UpdateResult(void);	// リザルトの更新処理
@@ -40,15 +66,19 @@ void DrawResult(void);		// リザルトの描画処理
 void SetResult
 (RESULTTYPE type, D3DXVECTOR3 pos);
 
-int SetResultPolygon		// リザルトのポリゴンの設定処理
-(int nIdxTexture, bool bAlphaBlend, int nDrowLevel,		// テクスチャインデックス, aブレンドをするか
- D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 addRot,	// 位置, 角度
- float fSizeWidth, float fSizeHeight,					// 大きさ(幅, 高さ)
- D3DXVECTOR2 texPos, D3DXVECTOR2 texSize,				// テクスチャ座標, テクスチャサイズ
- D3DXCOLOR col);										// 色
+int SetResultPolygon						// リザルトのポリゴンの設定処理
+(int nIdxTexture, bool bAlphaBlend, int nDrowLevel,			// テクスチャインデックス, aブレンドをするか
+ D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 addRot,		// 位置, 角度
+ float fSizeWidth, float fSizeHeight,						// 大きさ(幅, 高さ)
+ D3DXVECTOR2 texPos, D3DXVECTOR2 texSize,					// テクスチャ座標, テクスチャサイズ
+ D3DXCOLOR col);											// 色
 
-void ReceiveResult			// リザルトの情報を貰う処理
-(int pHaveEsa[], int nMaxPlayer, int nMaxHave);			// エサの情報, エサの種類の総数
+void ReceiveResult							// リザルトの情報を貰う処理
+(RESULT_TYPEPLAYER* pTypePlayer, int pHaveEsa[], 			// プレイヤーの種類, エサの情報
+ int nMaxPlayer, int nMaxHave);								// プレイヤーの種類の大きさ, プレイヤーの総数, エサの種類の総数 
  
+int GetRankingForResult	// リザルトからランキングに情報を渡す処理
+(GiveResultPlayer* pTypePlayer, int nNumPlayer);			// プレイヤーの種類情報(情報を入れる場所, その場所の大きさ)
+
 
 #endif

@@ -53,8 +53,8 @@ void InitTutorial(void)
 
 	// カメラの初期化処理
 	SetNumCamera(GetPlayerSelect());
-	SetCameraPos(0, FIRST_POS, FIRST_POS, CAMERATYPE_PLAYER);
-	SetCameraPos(1, FIRST_POS, FIRST_POS, CAMERATYPE_PLAYER);
+	SetCameraPos(0, FIRST_POS, FIRST_POS, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CAMERATYPE_PLAYER);
+	SetCameraPos(1, FIRST_POS, FIRST_POS, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CAMERATYPE_PLAYER);
 
 	// メッシュオービットの初期化処理
 	InitMeshOrbit();
@@ -131,7 +131,7 @@ void InitTutorial(void)
 		&g_pTextureTutorial[0]);
 
 	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/TUTORIAL001.png",
+		"data/TEXTURE/TUTORIAL002.png",
 		&g_pTextureTutorial[1]);
 
 	// 頂点バッファの生成

@@ -20,4 +20,7 @@ void FileMovePosion				// posの移動+保存処理
  int nUpKey, int nDownKey, 					// y方向移動キー(+,-)
  int nForKey, int nBackKey);				// z方向移動キー(+,-)
 
+
+void FileLogPass				// 通過した場所とかかった時間を記録する処理
+(const char* pPassPointName);
 #endif

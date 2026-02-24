@@ -4,24 +4,23 @@
 // Author : 井上 祐一
 // 
 //=============================================================================
-#include "main.h"
 #include "title.h"
 #include "input.h"
 #include "sound.h"
 #include "light.h"
 #include "fade.h"
 #include "camera.h"
-#include "game.h"
+
 #include "object.h"
 #include "meshcylinder.h"
 #include "meshfield.h"
-#include "meshorbit.h"
+#include "meshorbit.h"	// 消えない
 #include "waterSurf.h"
 #include "computer.h"
 
 // マクロ定義
 #define	MAX_TITLE	(8)	// タイトルで表示するテクスチャの最大数
-#define	RANKING_DELEY	(10)	// ランキング移行に掛かる時間（25秒）
+#define	RANKING_DELEY	(1500)	// ランキング移行に掛かる時間（25秒）
 #define	CLEAR_DELEY	(60)	// 消滅にかかる時間
 #define	ENTRY_DELEY	(90)	// 消滅→再登場までにかかる時間
 #define	TITLE_DELEY_MAX	(500.0f)	// タイトルの最大数
@@ -47,10 +46,29 @@ void InitTitle(void)
 
 	g_CursorPos = 0;		// カーソルの位置を初期化
 
-	// CPUの初期化処理
-	InitComputer();
+	// 乱数の種を設定
+	srand((unsigned int)time(0));
 
-	// メッシュシリンダーの初期化処理
+	int nCamera = rand() % 6;	// カメラの位置設定
+	int nVecR = rand() % 5;		// カメラの角度設定
+
+	// カメラの数の設定
+	SetNumCamera(1);
+
+	// カメラの位置設定
+	SetCameraPos(0, 
+				 D3DXVECTOR3(0.0f, ((float)nCamera * 100.0f) + 600.0f, 0.0f),
+				 D3DXVECTOR3(0.0f, (((float)nCamera * 100.0f) + 600.0f) + (((float)nVecR * 50.0f) - 100.0f), 0.0f),
+				 D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				 CAMERATYPE_POINT);
+
+	// ライトの設定
+	SetLightColor(0, D3DXCOLOR(0.8f, 0.9f, 1.0f, 1.0f));
+	SetLightColor(1, D3DXCOLOR(0.5f, 0.6f, 0.8f, 0.7f));
+	SetLightColor(2, D3DXCOLOR(0.3f, 0.3f, 0.5f, 0.3f));
+
+	// 配置物の初期化処理
+	InitObject("data\\objpos001.txt");	// メッシュシリンダーの初期化処理
 	InitMeshCylinder();
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 2.0f), D3DXVECTOR2(INCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, MESHCYLINDERTYPE_ROCK);
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(OUTCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), true, MESHCYLINDERTYPE_SEA);
@@ -64,28 +82,7 @@ void InitTitle(void)
 	// 水面の初期化処理
 	InitWaterSurf();
 
-	// ライトの設定
-	SetLightColor(0, D3DXCOLOR(0.8f, 0.9f, 1.0f, 1.0f));
-	SetLightColor(1, D3DXCOLOR(0.5f, 0.6f, 0.8f, 0.7f));
-	SetLightColor(2, D3DXCOLOR(0.3f, 0.3f, 0.5f, 0.3f));
-
-	// カメラの数の設定
-	SetNumCamera(1);
-
-	// 乱数の種を設定
-	srand((unsigned int)time(0));
-
-	int nCamera = rand() % 6;	// カメラの位置設定
-	int nVecR = rand() % 5;		// カメラの角度設定
-
-	// カメラの位置設定
-	SetCameraPos(0, D3DXVECTOR3(0.0f, ((float)nCamera * 100.0f) + 600.0f, 0.0f),
-		D3DXVECTOR3(0.0f, (((float)nCamera * 100.0f) + 600.0f) + (((float)nVecR * 50.0f) - 100.0f), 0.0f),
-		CAMERATYPE_POINT);
-
-	// 配置物の初期化処理
-	InitObject("data\\objpos001.txt");
-
+	InitComputer();
 	// デバイスの取得
 	pDevice = GetDevice();
 
@@ -99,7 +96,7 @@ void InitTitle(void)
 		&g_pTextureTitle[1]);
 
 	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/START003.png",
+		"data/TEXTURE/START004.png",
 		&g_pTextureTitle[2]);
 
 	D3DXCreateTextureFromFile(pDevice,
@@ -175,10 +172,10 @@ void InitTitle(void)
 		}
 		else if (nCntTitle == 5)
 		{// カーソル
-			pVtx[0].pos = D3DXVECTOR3(200.0f, 460.0f, 0.0f);	// 右回りで設定する
-			pVtx[1].pos = D3DXVECTOR3(440.0f, 460.0f, 0.0f);	// 2Dの場合Zの値は0にする
-			pVtx[2].pos = D3DXVECTOR3(200.0f, 620.0f, 0.0f);
-			pVtx[3].pos = D3DXVECTOR3(440.0f, 620.0f, 0.0f);
+			pVtx[0].pos = D3DXVECTOR3(180.0f, 500.0f, 0.0f);	// 右回りで設定する
+			pVtx[1].pos = D3DXVECTOR3(300.0f, 500.0f, 0.0f);	// 2Dの場合Zの値は0にする
+			pVtx[2].pos = D3DXVECTOR3(180.0f, 580.0f, 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(300.0f, 580.0f, 0.0f);
 		}
 		else if (nCntTitle == 6)
 		{// 左人数カーソル
@@ -421,17 +418,17 @@ void UpdateTitle(void)
 		{// カーソル
 			if (g_CursorPos == TITLECURSOR_PLAYER_SELECT)
 			{// 人数設定
-				pVtx[0].pos = D3DXVECTOR3(100.0f, 460.0f, 0.0f);	// 右回りで設定する
-				pVtx[1].pos = D3DXVECTOR3(340.0f, 460.0f, 0.0f);	// 2Dの場合Zの値は0にする
-				pVtx[2].pos = D3DXVECTOR3(100.0f, 620.0f, 0.0f);
-				pVtx[3].pos = D3DXVECTOR3(340.0f, 620.0f, 0.0f);
+				pVtx[0].pos = D3DXVECTOR3(180.0f, 500.0f, 0.0f);	// 右回りで設定する
+				pVtx[1].pos = D3DXVECTOR3(300.0f, 500.0f, 0.0f);	// 2Dの場合Zの値は0にする
+				pVtx[2].pos = D3DXVECTOR3(180.0f, 580.0f, 0.0f);
+				pVtx[3].pos = D3DXVECTOR3(300.0f, 580.0f, 0.0f);
 			}
 			else if (g_CursorPos == TITLECURSOR_PLAY_START)
 			{// ゲームスタート
-				pVtx[0].pos = D3DXVECTOR3(100.0f, 540.0f, 0.0f);	// 右回りで設定する
-				pVtx[1].pos = D3DXVECTOR3(340.0f, 540.0f, 0.0f);	// 2Dの場合Zの値は0にする
-				pVtx[2].pos = D3DXVECTOR3(100.0f, 700.0f, 0.0f);
-				pVtx[3].pos = D3DXVECTOR3(340.0f, 700.0f, 0.0f);
+				pVtx[0].pos = D3DXVECTOR3(180.0f, 580.0f, 0.0f);	// 右回りで設定する
+				pVtx[1].pos = D3DXVECTOR3(300.0f, 580.0f, 0.0f);	// 2Dの場合Zの値は0にする
+				pVtx[2].pos = D3DXVECTOR3(180.0f, 660.0f, 0.0f);
+				pVtx[3].pos = D3DXVECTOR3(300.0f, 660.0f, 0.0f);
 			}
 		}
 		else if (nCntTitle == 6)
@@ -493,6 +490,7 @@ void UpdateTitle(void)
 		GetJoypadStick(0, JOYKEY_LEFTSTICK_UP, NULL, NULL) == true))
 	{// カーソル下移動
 		g_CursorPos--;
+
 		if (g_CursorPos < 0) g_CursorPos = TITLECURSOR_PLAYER_SELECT;
 		PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
 		if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
