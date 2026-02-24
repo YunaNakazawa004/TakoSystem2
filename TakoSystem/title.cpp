@@ -20,7 +20,7 @@
 
 // マクロ定義
 #define	MAX_TITLE	(8)	// タイトルで表示するテクスチャの最大数
-#define	RANKING_DELEY	(1500)	// ランキング移行に掛かる時間（25秒）
+#define	RANKING_DELEY	(10)	// ランキング移行に掛かる時間（25秒）
 #define	CLEAR_DELEY	(60)	// 消滅にかかる時間
 #define	ENTRY_DELEY	(90)	// 消滅→再登場までにかかる時間
 #define	TITLE_DELEY_MAX	(500.0f)	// タイトルの最大数
@@ -73,6 +73,8 @@ void InitTitle(void)
 	SetLightColor(2, D3DXCOLOR(0.3f, 0.3f, 0.5f, 0.3f));
 
 	// 配置物の初期化処理
+	InitObject("data\\objpos001.txt");
+	
 	// メッシュシリンダーの初期化処理
 	InitMeshCylinder();	
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 2.0f), D3DXVECTOR2(INCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, MESHCYLINDERTYPE_ROCK);
