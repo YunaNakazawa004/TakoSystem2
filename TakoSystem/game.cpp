@@ -354,7 +354,7 @@ void UpdateGame(void)
 	else
 	{// ポーズしていない場合
 
-#if 1
+#if 0
 		if (bGameStart == true)
 		{
 			// CPUの更新処理
