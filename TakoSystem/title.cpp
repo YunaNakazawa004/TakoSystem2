@@ -72,9 +72,6 @@ void InitTitle(void)
 	SetLightColor(1, D3DXCOLOR(0.5f, 0.6f, 0.8f, 0.7f));
 	SetLightColor(2, D3DXCOLOR(0.3f, 0.3f, 0.5f, 0.3f));
 
-	// 配置物の初期化処理
-	InitObject("data\\objpos001.txt");
-	
 	// メッシュシリンダーの初期化処理
 	InitMeshCylinder();	
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 2.0f), D3DXVECTOR2(INCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, MESHCYLINDERTYPE_ROCK);
@@ -91,6 +88,10 @@ void InitTitle(void)
 
 	// CPUの初期化処理
 	InitComputer(); 
+
+	// 配置物の初期化処理
+	InitObject("data\\objpos001.txt");
+
 	// デバイスの取得
 	pDevice = GetDevice();
 
