@@ -172,7 +172,10 @@ void UpdateLogo(void)
 		}
 
 		pVtx += 4;		// 頂点データのポインタを4つ分進める
-	}
+	}	
+	
+	// 頂点バッファをアンロックする
+	g_pVtxBuffLogo->Unlock();
 
 	if (pFade == FADE_NONE && g_LogoDeley > TITLE_TRANS)
 	{
@@ -186,10 +189,6 @@ void UpdateLogo(void)
 	{// 特定のキーを押すと即座にタイトル
 		SetFade(MODE_TITLE);
 	}
-
-	// 頂点バッファをアンロックする
-	g_pVtxBuffLogo->Unlock();
-
 }
 
 // ロゴの描画処理

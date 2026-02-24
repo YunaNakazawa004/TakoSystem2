@@ -124,7 +124,7 @@ void DrawMeshField(void)
 
 	for (int nCntMeshField = 0; nCntMeshField < MAX_MESHFIELD; nCntMeshField++)
 	{
-		if (g_aMeshField[nCntMeshField].bUse == true)
+		if (g_aMeshField[nCntMeshField].bUse == true)	
 		{// 使用しているとき
 			// ワールドマトリックスの初期化
 			D3DXMatrixIdentity(&g_aMeshField[nCntMeshField].mtxWorld);
@@ -155,6 +155,18 @@ void DrawMeshField(void)
 			// ポリゴンの描画
 			pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, ((int)g_aMeshField[nCntMeshField].block.x + 1) * ((int)g_aMeshField[nCntMeshField].block.y + 1), 0,
 				(((int)g_aMeshField[nCntMeshField].block.x) * ((int)g_aMeshField[nCntMeshField].block.y) * 2) + (((int)g_aMeshField[nCntMeshField].block.y - 1) * 4));
+
+			////OutputDebugStringA("Before DrawMeshField\n");
+			//HRESULT hr = pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, ((int)g_aMeshField[nCntMeshField].block.x + 1) * ((int)g_aMeshField[nCntMeshField].block.y + 1), 0,
+			//	(((int)g_aMeshField[nCntMeshField].block.x) * ((int)g_aMeshField[nCntMeshField].block.y) * 2));
+			////OutputDebugStringA("After DrawMeshField\n");
+
+			//if (FAILED(hr))
+			//{
+			//	char buf[128];
+			//	sprintf_s(buf, "DrawMeshField FAILED hr=0x%08X\n", hr);
+			//	OutputDebugStringA(buf);
+			//}
 		}
 	}
 }
@@ -219,6 +231,12 @@ void SetMeshField(MESHFIELDTYPE type, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECT
 			// インデックスバッファの数
 			int nNumIdx = (((int)g_aMeshField[nCntMeshField].block.x) * ((int)g_aMeshField[nCntMeshField].block.y) * 2) + (((int)g_aMeshField[nCntMeshField].block.y - 1) * 4) + 2;
 
+			//int bx = (int)g_aMeshField[nCntMeshField].block.x;
+			//int by = (int)g_aMeshField[nCntMeshField].block.y;
+			//int rowWidth = bx + 1;
+			//int quadCount = bx * by;
+			//int nNumIdx = quadCount * 6;
+
 			// インデックスバッファの生成
 			pDevice->CreateIndexBuffer(sizeof(WORD) * nNumIdx,
 				D3DUSAGE_WRITEONLY,
@@ -230,6 +248,7 @@ void SetMeshField(MESHFIELDTYPE type, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECT
 			// インデックスバッファをロックし、頂点番号データへのポインタを取得
 			g_aMeshField[nCntMeshField].pIdxBuff->Lock(0, 0, (void**)&pIdx, 0);
 
+#if 1
 			int nNum = 0;			// 縮退ポリゴン
 
 			// 頂点番号データの設定
@@ -250,6 +269,28 @@ void SetMeshField(MESHFIELDTYPE type, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECT
 
 				pIdx += 2;
 			}
+#endif
+			//int idx = 0;
+			//for (int y = 0; y < by; ++y)
+			//{
+			//	for (int x = 0; x < bx; ++x)
+			//	{
+			//		int v0 = y * rowWidth + x;
+			//		int v1 = y * rowWidth + (x + 1);
+			//		int v2 = (y + 1) * rowWidth + x;
+			//		int v3 = (y + 1) * rowWidth + (x + 1);
+
+			//		// 三角形1（CCW）
+			//		pIdx[idx++] = v0;
+			//		pIdx[idx++] = v1;
+			//		pIdx[idx++] = v2;
+
+			//		// 三角形2（CCW）
+			//		pIdx[idx++] = v1;
+			//		pIdx[idx++] = v3;
+			//		pIdx[idx++] = v2;
+			//	}
+			//}
 
 			// インデックスバッファをアンロックする
 			g_aMeshField[nCntMeshField].pIdxBuff->Unlock();

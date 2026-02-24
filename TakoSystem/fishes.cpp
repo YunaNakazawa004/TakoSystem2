@@ -170,9 +170,11 @@ void UninitFishes(void)
 				{
 					pFishesModel->aModel[nCntModel].apTexture[nCntTexture]->Release();
 					pFishesModel->aModel[nCntModel].apTexture[nCntTexture] = NULL;
+
 				}
 			}
 		}
+	
 	}
 }
 
@@ -186,6 +188,7 @@ void UpdateFishes(void)
 	FISHESSTATE OldState = FISHESSTATE_STOP;
 	float fmoveAngle = 0.0f;
 	int Radian = 400;
+
 
 	for (int nCntFishes = 0; nCntFishes < g_nNumFishes; nCntFishes++, pFishes++)
 	{
@@ -447,6 +450,7 @@ void SetFishes(int ModelIdx, int nNumSet, bool bMove, D3DXVECTOR3 pos, D3DXVECTO
 				pFishes->aMotionInfo[nCntMotion] = pFishesModel[ModelIdx].aMotionInfo[nCntMotion];		// モーション情報
 			}
 
+
 			g_nNumFishes++;	// 総数を増やす
 
 			nModelSet++;
@@ -461,6 +465,7 @@ void LoadFishes(int Idx)
 	// ローカル変数宣言
 	FILE* pFile;
 	Fishes_Model* pFishesModel = GetFishesModel();
+
 	char aString[512] = {};				// ファイルのテキスト読み込み
 	char aTrash[512] = {};				// ごみ箱
 	char aModelName[128][512] = {};		// モデルの名前
@@ -491,6 +496,7 @@ void LoadFishes(int Idx)
 	int nCntMotion = 0;		// モーション番号
 	KEY key = {};			// キー要素
 
+
 	pFile = fopen(g_aFishInfo[Idx].Model_FileName, "r");
 
 	if (pFile != NULL)
@@ -519,6 +525,7 @@ void LoadFishes(int Idx)
 			{// モデルの名前読み込み
 
 				for (int nCntModel = 0; nCntModel < pFishesModel[Idx].nNumModel; nCntModel++)
+
 				{// 読み込むモデル数分繰り返す
 
 					if (nCntModel > 0)
@@ -531,9 +538,11 @@ void LoadFishes(int Idx)
 						}
 					}
 
+
 					fscanf(pFile, " = %s", &aModelName[nCntModel][0]);							// モデルのパスを読み取る
 
 					strcpy(pFishesModel[Idx].sModelFileName[nCntModel], aModelName[nCntModel]);	// モデルの名前を設定
+
 
 					fscanf(pFile, "%s", &aString[0]);											// 文字列を読み取る
 

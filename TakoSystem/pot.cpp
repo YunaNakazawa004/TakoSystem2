@@ -205,6 +205,8 @@ void UpdatePot(void)
 				if (pEsa[nIdx].esaType == ESA_ACTTYPE_GOTO_POT)
 				{// ƒ^ƒR‚Â‚Ú‚É“ü‚ê‚Ä‚éÅ’†
 					pEsa[nIdx].bUse = false;
+					pEsa[nIdx].bOrbit = false;
+					pEsa[nIdx].nOrbitIdx = -1;
 				}
 			}
 

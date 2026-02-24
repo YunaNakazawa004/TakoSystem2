@@ -114,6 +114,7 @@ typedef struct
 	ESA_ACTTYPE esaType;	// エサの挙動
 	int nNumBehavior;		// 挙動の値
 
+	bool bOrbit;			// 軌跡状態
 	bool bDisp;				// 表示状態
 	bool bUse;				// 使用状態
 

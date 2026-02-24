@@ -48,7 +48,6 @@ void InitMeshOrbit(void)
 
 		pMeshOrbit->pVtxBuff = NULL;
 		pMeshOrbit->pIdxBuff = NULL;
-		pMeshOrbit->pMtxParent = NULL;
 		pMeshOrbit->aOffset[0] = FIRST_POS;
 		pMeshOrbit->aOffset[1] = FIRST_POS;
 		pMeshOrbit->aCol[0] = WHITE_VTX;
@@ -107,31 +106,15 @@ void InitMeshOrbit(void)
 			&pMeshOrbit->pIdxBuff,
 			NULL);
 
-		// インデックスバッファをロックし、頂点番号データへのポインタを取得
 		pMeshOrbit->pIdxBuff->Lock(0, 0, (void**)&pIdx, 0);
 
-		int nNum = 0;			// 縮退ポリゴン
-
-		// 頂点番号データの設定
-		for (int nCntPoint = 0; nCntPoint < MAX_ORBIT_VTX / 2; nCntPoint++)
+		for (int nCntPoint = 0; nCntPoint < MAX_ORBIT_VTX; nCntPoint++)
 		{
-			if (nCntPoint % (MAX_ORBIT_VTX / 2 + 2) == (MAX_ORBIT_VTX / 2 + 1))
-			{// 縮退ポリゴンのところ
-				nNum++;
+			pIdx[0] = nCntPoint;
 
-				pIdx[0] = nCntPoint - nNum;
-				pIdx[1] = nCntPoint + (MAX_ORBIT_VTX / 2 + 2);
-			}
-			else
-			{// 縮退以外のポリゴン
-				pIdx[0] = (nCntPoint - nNum) + (MAX_ORBIT_VTX / 2);
-				pIdx[1] = (nCntPoint - nNum);
-			}
-
-			pIdx += 2;
+			pIdx++;
 		}
 
-		// インデックスバッファをアンロックする
 		pMeshOrbit->pIdxBuff->Unlock();
 	}
 }
@@ -166,6 +149,8 @@ void UninitMeshOrbit(void)
 			g_aMeshOrbit[nCntMeshOrbit].pIdxBuff->Release();
 			g_aMeshOrbit[nCntMeshOrbit].pIdxBuff = NULL;
 		}
+
+		g_aMeshOrbit[nCntMeshOrbit].bUse = false;
 	}
 }
 
@@ -174,6 +159,7 @@ void UninitMeshOrbit(void)
 //=============================================================================
 void UpdateMeshOrbit(void)
 {
+#if 0
 	for (int nCntMeshOrbit = 0; nCntMeshOrbit < MAX_MESHORBIT; nCntMeshOrbit++)
 	{
 		MeshOrbit* pMeshOrbit = &g_aMeshOrbit[nCntMeshOrbit];
@@ -190,6 +176,11 @@ void UpdateMeshOrbit(void)
 			{
 				pMeshOrbit->aColPoint[nCntPoint].a -= ALPHA_MINUS;
 
+				if (pMeshOrbit->aColPoint[nCntPoint].a < 0.0f)
+				{// 最低値
+					pMeshOrbit->aColPoint[nCntPoint].a = 0.0f;
+				}
+
 				// 頂点カラーの設定
 				pVtx[0].col = pMeshOrbit->aColPoint[nCntPoint];
 
@@ -200,6 +191,7 @@ void UpdateMeshOrbit(void)
 			pMeshOrbit->pVtxBuff->Unlock();
 		}
 	}
+#endif 
 }
 
 //=============================================================================
@@ -209,31 +201,29 @@ void DrawMeshOrbit(void)
 {
 	// ローカル変数宣言
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();			// デバイスへのポインタ
-	D3DXMATRIX mtxRot, mtxTrans;		// 計算用マトリックス
+	MeshOrbit* pMeshOrbit = GetMeshOrbit();
 
-	for (int nCntMeshOrbit = 0; nCntMeshOrbit < MAX_MESHORBIT; nCntMeshOrbit++)
+	for (int nCntMeshOrbit = 0; nCntMeshOrbit < MAX_MESHORBIT; nCntMeshOrbit++, pMeshOrbit++)
 	{
-		MeshOrbit* pMeshOrbit = &g_aMeshOrbit[nCntMeshOrbit];
+		// アルファテストを有効にする
+		pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+		pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
+		pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
+
+		// Zテストを無効にする
+		pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESS);
+		pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+
+		// レンダーステートを加算合成にする
+		pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+		pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+		pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+		pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
 		if (pMeshOrbit->bUse == true)
 		{// 使用しているとき
-			// アルファテストを有効にする
-			pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
-			pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
-			pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
-
-			// Zテストを無効にする
-			pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESS);
-			pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
-
-			// レンダーステートを加算合成にする
-			pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-			pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-			pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
-			pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-
 			// 保存してある頂点座標と頂点カラーをずらす
-			for (int nCntPoint = MAX_ORBIT_VTX - 1; nCntPoint > 2; nCntPoint -= 2)
+			for (int nCntPoint = MAX_ORBIT_VTX - 1; nCntPoint >= 3; nCntPoint -= 2)
 			{
 				pMeshOrbit->aPosPoint[nCntPoint] = pMeshOrbit->aPosPoint[nCntPoint - 2];
 				pMeshOrbit->aPosPoint[nCntPoint - 1] = pMeshOrbit->aPosPoint[nCntPoint - 3];
@@ -241,7 +231,7 @@ void DrawMeshOrbit(void)
 				pMeshOrbit->aColPoint[nCntPoint - 1] = pMeshOrbit->aColPoint[nCntPoint - 3];
 			}
 
-			D3DXMATRIX mtxParent = *pMeshOrbit->pMtxParent;
+			D3DXMATRIX mtxParent = pMeshOrbit->pMtxParent;
 
 			// 親のマトリックスにオフセットを掛けて新しい位置を算出
 			D3DXVec3TransformCoord(&pMeshOrbit->aPosPoint[0], &pMeshOrbit->aOffset[0], &mtxParent);
@@ -262,6 +252,13 @@ void DrawMeshOrbit(void)
 				// 頂点座標の設定
 				pVtx[0].pos = pMeshOrbit->aPosPoint[nCntPoint];
 
+				pMeshOrbit->aColPoint[nCntPoint].a -= ALPHA_MINUS;
+
+				if (pMeshOrbit->aColPoint[nCntPoint].a < 0.0f)
+				{// 最低値
+					pMeshOrbit->aColPoint[nCntPoint].a = 0.0f;
+				}
+
 				// 頂点カラーの設定
 				pVtx[0].col = pMeshOrbit->aColPoint[nCntPoint];
 
@@ -281,7 +278,7 @@ void DrawMeshOrbit(void)
 			pDevice->SetStreamSource(0, pMeshOrbit->pVtxBuff, 0, sizeof(VERTEX_3D));
 
 			// インデックスバッファをデータストリームに設定
-			//pDevice->SetIndices(pMeshOrbit->pIdxBuff);
+			pDevice->SetIndices(pMeshOrbit->pIdxBuff);
 
 			// 頂点フォーマットの設定
 			pDevice->SetFVF(FVF_VERTEX_3D);
@@ -290,23 +287,35 @@ void DrawMeshOrbit(void)
 			pDevice->SetTexture(0, g_apTextureMeshOrbit[0]);
 
 			// ポリゴンの描画
-			pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, MAX_ORBIT_VTX - 2);
+			int primitiveCount = (MAX_ORBIT_VTX / 2 - 1) * 2;
+			HRESULT hr = pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, MAX_ORBIT_VTX, 0, MAX_ORBIT_VTX - 2);
+			//pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, MAX_ORBIT_VTX - 2);
+			//OutputDebugStringA("Before DrawMeshOrbit\n");
+			//HRESULT hr = pDevice->DrawPrimitive(D3DPT_LINELIST, 0, MAX_ORBIT_VTX / 2);
+			//OutputDebugStringA("After DrawMeshOrbit\n");
 
-			// レンダーステートを元に戻す
-			pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-			pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-			pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-			pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
-
-			// Zテストを有効にする
-			pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
-			pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
-
-			// アルファテストを無効にする
-			pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
-			pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
-			pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
+			//if (FAILED(hr))
+			//{
+			//	char buf[128];
+			//	sprintf_s(buf, "DrawMeshOrbit FAILED hr=0x%08X\n", hr);y
+			//	OutputDebugStringA(buf);
+			//}
 		}
+
+		// レンダーステートを元に戻す
+		pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+		pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+		pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+		pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+
+		// Zテストを有効にする
+		pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
+		pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+
+		// アルファテストを無効にする
+		pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+		pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
+		pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
 	}
 }
 
@@ -315,9 +324,9 @@ void DrawMeshOrbit(void)
 //=============================================================================
 void SetMeshOrbitPos(int nIdx, D3DXVECTOR3 Offset0, D3DXVECTOR3 Offset1, D3DXCOLOR col0, D3DXCOLOR col1, D3DMATRIX* pMtxParent)
 {
-	if (nIdx == -1)
+	if (nIdx < 0 || nIdx >= MAX_MESHORBIT)
 	{// インデックスがない場合は無視
-
+		OutputDebugStringA("SetMeshOrbitPos: invalid idx\n");
 		return;
 	}
 
@@ -332,7 +341,7 @@ void SetMeshOrbitPos(int nIdx, D3DXVECTOR3 Offset0, D3DXVECTOR3 Offset1, D3DXCOL
 	pMeshOrbit->aOffset[1] = Offset1;
 	pMeshOrbit->aCol[0] = col0;
 	pMeshOrbit->aCol[1] = col1;
-	pMeshOrbit->pMtxParent = pMtxParent;
+	pMeshOrbit->pMtxParent = *pMtxParent;
 }
 
 //=============================================================================
@@ -353,9 +362,9 @@ int SetMeshOrbit(D3DXVECTOR3 Offset0, D3DXVECTOR3 Offset1, D3DXCOLOR col0, D3DXC
 			pMeshOrbit->aOffset[1] = Offset1;
 			pMeshOrbit->aCol[0] = col0;
 			pMeshOrbit->aCol[1] = col1;
-			pMeshOrbit->pMtxParent = pMtxParent;
+			pMeshOrbit->pMtxParent = *pMtxParent;
 
-			D3DXMATRIX mtxParent = *pMeshOrbit->pMtxParent;
+			D3DXMATRIX mtxParent = pMeshOrbit->pMtxParent;
 
 			for (int nCntPoint = 0; nCntPoint < MAX_ORBIT_VTX; nCntPoint += 2)
 			{
@@ -363,28 +372,28 @@ int SetMeshOrbit(D3DXVECTOR3 Offset0, D3DXVECTOR3 Offset1, D3DXCOLOR col0, D3DXC
 				D3DXVec3TransformCoord(&pMeshOrbit->aPosPoint[nCntPoint + 1], &pMeshOrbit->aOffset[1], &mtxParent);
 			}
 
-			VERTEX_3D* pVtx;					// 頂点情報へのポインタ
+			//VERTEX_3D* pVtx;					// 頂点情報へのポインタ
 
-			// 頂点バッファをロックし、頂点情報へのポインタを取得
-			pMeshOrbit->pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+			//// 頂点バッファをロックし、頂点情報へのポインタを取得
+			//pMeshOrbit->pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
-			// 頂点情報の設定
-			for (int nCntPoint = 0; nCntPoint < MAX_ORBIT_VTX; nCntPoint++)
-			{
-				// 頂点座標の設定
-				pVtx[0].pos = pMeshOrbit->aPosPoint[nCntPoint];
+			//// 頂点情報の設定
+			//for (int nCntPoint = 0; nCntPoint < MAX_ORBIT_VTX; nCntPoint++)
+			//{
+			//	// 頂点座標の設定
+			//	pVtx[0].pos = pMeshOrbit->aPosPoint[nCntPoint];
 
-				pVtx++;
-			}
+			//	pVtx++;
+			//}
 
-			// 頂点バッファをアンロックする
-			pMeshOrbit->pVtxBuff->Unlock();
+			//// 頂点バッファをアンロックする
+			//pMeshOrbit->pVtxBuff->Unlock();
 
-			break;
+			return nCntMeshOrbit;
 		}
 	}
 
-	return nCntMeshOrbit;
+	return -1;
 }
 
 //=============================================================================

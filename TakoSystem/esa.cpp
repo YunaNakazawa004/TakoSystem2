@@ -99,6 +99,7 @@ void InitEsa(bool bSet)
 		g_aEsa[nCntEsa].fMoveAngle = 0.0f;						// 移動角度を初期化
 		g_aEsa[nCntEsa].esaType = ESA_ACTTYPE_LAND;				// エサの挙動をLANDに設定
 		g_aEsa[nCntEsa].nNumBehavior = 0;						// 挙動の値を初期化
+		g_aEsa[nCntEsa].bOrbit = false;							// 軌跡していない状態に設定
 		g_aEsa[nCntEsa].bDisp = false;							// 表示していない状態に設定
 		g_aEsa[nCntEsa].bUse = false;							// 使用していない状態に設定
 	}
@@ -127,6 +128,7 @@ void InitEsa(bool bSet)
 
 #else	// ランダム設定
 
+
 		for (int nCntEsa = 0; nCntEsa < 30; nCntEsa++)
 		{// 配置する数だけ繰り返す
 
@@ -141,6 +143,7 @@ void InitEsa(bool bSet)
 											 cosf(fRandAngle) * fRandRadius);
 
 			// エサの設定処理
+
 			SetEsa(nSetType, true, ESA_ACTTYPE_SWIM, 0, setPos, D3DXVECTOR3(0.0f,0.0f,0.0f));
 		}
 
@@ -233,8 +236,6 @@ void UpdateEsa(void)
 
 			SetEffect3D(70, g_aEsa[nCntEsa].pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0.0f, 30.0f, -0.1f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f),EFFECTTYPE_NORMAL);
 
-			SetMeshOrbitPos(g_aEsa[nCntEsa].nOrbitIdx, FIRST_POS, D3DXVECTOR3(FIRST_POS.x, FIRST_POS.y + 10.0f, FIRST_POS.z), 
-				WHITE_VTX, CYAN_VTX, &g_aEsa[nCntEsa].mtxWorld);
 #if 0
 			PrintDebugProc("\nESA[%d]_POS %s", nCntEsa, (g_aEsa[nCntEsa].bUse == true ? "true":"false"));
 			PrintDebugProc("\nESA[%d]_POS %f %f %f", nCntEsa, g_aEsa[nCntEsa].pos.x, g_aEsa[nCntEsa].pos.y, g_aEsa[nCntEsa].pos.z);
@@ -303,6 +304,18 @@ void DrawEsa(void)
 
 			// 保存していたマテリアルを戻す
 			pDevice->SetMaterial(&matDef);
+
+			if (g_aEsa[nCntEsa].bOrbit == true)
+			{// オービットを設定する場合
+				if (g_aEsa[nCntEsa].nOrbitIdx == -1)
+				{// 初回
+					g_aEsa[nCntEsa].nOrbitIdx = SetMeshOrbit(FIRST_POS, D3DXVECTOR3(FIRST_POS.x, FIRST_POS.y + 10.0f, FIRST_POS.z),
+						WHITE_VTX, CYAN_VTX, &g_aEsa[nCntEsa].mtxWorld);
+				}
+
+				SetMeshOrbitPos(g_aEsa[nCntEsa].nOrbitIdx, FIRST_POS, D3DXVECTOR3(FIRST_POS.x, FIRST_POS.y + 10.0f, FIRST_POS.z),
+					WHITE_VTX, CYAN_VTX, &g_aEsa[nCntEsa].mtxWorld);
+			}
 		}
 	}
 }
@@ -430,16 +443,12 @@ int SetEsa(int nEsaType, bool bSetOrbit, ESA_ACTTYPE esaType, int nBehavior, D3D
 			g_aEsa[nCntEsa].rot = rot;								// 角度を設定
 			g_aEsa[nCntEsa].fMoveAngle = 0.0f;						// 移動角度を初期化
 			g_aEsa[nCntEsa].esaType = esaType;						// エサの挙動を設定
+
 			g_aEsa[nCntEsa].nNumBehavior = nBehavior;				// 挙動の値を初期化
+			g_aEsa[nCntEsa].bOrbit = bSetOrbit;						// 軌跡状態を設定
 			g_aEsa[nCntEsa].bDisp = true;							// 表示している状態に設定
 			g_aEsa[nCntEsa].bUse = true;							// 使用している状態に設定
 
-			if (bSetOrbit == true)
-			{// オービットを設定する場合
-
-				g_aEsa[nCntEsa].nOrbitIdx = SetMeshOrbit(FIRST_POS, D3DXVECTOR3(FIRST_POS.x, FIRST_POS.y + 10.0f, FIRST_POS.z),
-														 WHITE_VTX, CYAN_VTX, &g_aEsa[nCntEsa].mtxWorld);
-			}
 
 			return nCntEsa;	// 設定した場所を返す
 		}

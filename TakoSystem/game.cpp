@@ -41,7 +41,6 @@
 #include "fade.h"
 #include "screen.h"
 #include "title.h"
-#include "result.h"
 
 #include "game.h"
 
@@ -52,8 +51,6 @@ bool g_bPause = false;						// ポーズ状態のON/OFF
 int g_Stage = 0;		// 現在のステージ
 
 int g_nPointOld[3];	// 前回のポイント
-
-GAMESTATE g_gameState = GAMESTATE_BEGIN;	// ゲームの状態
 
 //===================================================================
 // ゲーム画面の初期化処理
@@ -71,8 +68,6 @@ void InitGame(void)
 	SetNumCamera(GetPlayerSelect());
 	SetCameraPos(0, FIRST_POS, FIRST_POS, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CAMERATYPE_PLAYER);
 	SetCameraPos(1, FIRST_POS, FIRST_POS, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CAMERATYPE_PLAYER);
-
-	g_gameState = GAMESTATE_BEGIN;	// ゲームの状態を開始状態に設定
 
 	// メッシュオービットの初期化処理
 	InitMeshOrbit();
@@ -166,8 +161,10 @@ void InitGame(void)
 //===================================================================
 void UninitGame(void)
 {
-	// サウンドの停止
 	StopSound();
+
+	// メッシュオービットの終了処理
+	UninitMeshOrbit();
 
 	// プレイヤーの終了処理
 	UninitPlayer();
@@ -207,9 +204,6 @@ void UninitGame(void)
 
 	// エサの終了処理
 	UninitEsa();
-
-	// メッシュオービットの終了処理
-	UninitMeshOrbit();
 
 	// 水面の終了処理
 	UninitWaterSurf();
@@ -296,13 +290,13 @@ void UpdateGame(void)
 
 		break;
 	}
-
 	if (g_gameState == GAMESTATE_BEGIN)
 	{// ゲームの状態が開始状態の場合
 
 		return;	// 処理しない
 	}
 
+			}	
 	// レディの更新処理
 	UpdateReady(); FileLogPass("ready");
 
@@ -391,9 +385,11 @@ void UpdateGame(void)
 		UpdateMeshCylinder(); FileLogPass("mesh_cy");
 
 		// メッシュドームの更新処理
+		UpdateMeshDome();
 		UpdateMeshDome(); FileLogPass("mesh_do");
 
 		// メッシュフィールドの更新処理
+
 		UpdateMeshField(); FileLogPass("mesh_fi");
 
 		// メッシュリングの更新処理

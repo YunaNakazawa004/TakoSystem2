@@ -73,8 +73,6 @@ void InitTitle(void)
 	SetLightColor(2, D3DXCOLOR(0.3f, 0.3f, 0.5f, 0.3f));
 
 	// 配置物の初期化処理
-	InitObject("data\\objpos001.txt"); 
-
 	// メッシュシリンダーの初期化処理
 	InitMeshCylinder();	
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 2.0f), D3DXVECTOR2(INCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, MESHCYLINDERTYPE_ROCK);
@@ -91,7 +89,6 @@ void InitTitle(void)
 
 	// CPUの初期化処理
 	InitComputer(); 
-
 	// デバイスの取得
 	pDevice = GetDevice();
 
@@ -263,6 +260,9 @@ void UninitTitle(void)
 	// 配置物の終了処理
 	UninitObject();
 
+	// CPUの終了処理
+	UninitComputer();
+
 	// メッシュシリンダーの終了処理
 	UninitMeshCylinder();
 
@@ -274,9 +274,6 @@ void UninitTitle(void)
 
 	// 水面の終了処理
 	UninitWaterSurf();
-
-	// CPUの終了処理
-	UninitComputer();
 
 	// テクスチャの破棄
 	for (int nCntTitle = 0; nCntTitle < MAX_TITLE; nCntTitle++)
@@ -587,6 +584,9 @@ void DrawTitle(void)
 	// 配置物の描画処理
 	DrawObject();
 
+	// CPUの描画処理
+	DrawComputer();
+
 	// メッシュシリンダーの描画処理
 	DrawMeshCylinder();
 
@@ -598,9 +598,6 @@ void DrawTitle(void)
 
 	// 水面の描画処理
 	DrawWaterSurf();
-
-	// CPUの描画処理
-	DrawComputer();
 
 	// デバイスの取得
 	pDevice = GetDevice();
