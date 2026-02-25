@@ -10,6 +10,7 @@
 #include "input.h"
 
 #define FILENAME_PASSLOG	"data/FILE/Debug_PassLog/log"
+
 #define MAX_NUMSAVELOG		(100000)	// 1ファイルに記録出来る回数
 
 // 

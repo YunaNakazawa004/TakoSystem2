@@ -119,13 +119,14 @@ void UpdateMeshField(void)
 void DrawMeshField(void)
 {
 	// ローカル変数宣言
-	LPDIRECT3DDEVICE9 pDevice = GetDevice();			// デバイスへのポインタ
-	D3DXMATRIX mtxRot, mtxTrans;		// 計算用マトリックス
+	LPDIRECT3DDEVICE9 pDevice = GetDevice();	// デバイスへのポインタ
+	D3DXMATRIX mtxRot, mtxTrans;				// 計算用マトリックス
 
 	for (int nCntMeshField = 0; nCntMeshField < MAX_MESHFIELD; nCntMeshField++)
 	{
 		if (g_aMeshField[nCntMeshField].bUse == true)	
 		{// 使用しているとき
+
 			// ワールドマトリックスの初期化
 			D3DXMatrixIdentity(&g_aMeshField[nCntMeshField].mtxWorld);
 
@@ -150,11 +151,24 @@ void DrawMeshField(void)
 			pDevice->SetFVF(FVF_VERTEX_3D);
 
 			// テクスチャの設定
-			pDevice->SetTexture(0, g_apTextureMeshField[g_aMeshField[nCntMeshField].type]);
+			if (g_aMeshField[nCntMeshField].type != -1 && g_aMeshField[nCntMeshField].type < MESHFIELDTYPE_MAX)
+			{// テクスチャがある場合
+
+				pDevice->SetTexture(0, g_apTextureMeshField[g_aMeshField[nCntMeshField].type]);
+			}
+			else
+			{
+
+				pDevice->SetTexture(0, NULL);
+			}
 
 			// ポリゴンの描画
-			pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, ((int)g_aMeshField[nCntMeshField].block.x + 1) * ((int)g_aMeshField[nCntMeshField].block.y + 1), 0,
-				(((int)g_aMeshField[nCntMeshField].block.x) * ((int)g_aMeshField[nCntMeshField].block.y) * 2) + (((int)g_aMeshField[nCntMeshField].block.y - 1) * 4));
+			pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP,
+										  0,
+										  0,
+										  ((int)g_aMeshField[nCntMeshField].block.x + 1) * ((int)g_aMeshField[nCntMeshField].block.y + 1),
+										  0,
+										  (((int)g_aMeshField[nCntMeshField].block.x) * ((int)g_aMeshField[nCntMeshField].block.y) * 2) + (((int)g_aMeshField[nCntMeshField].block.y - 1) * 4));
 
 			////OutputDebugStringA("Before DrawMeshField\n");
 			//HRESULT hr = pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, ((int)g_aMeshField[nCntMeshField].block.x + 1) * ((int)g_aMeshField[nCntMeshField].block.y + 1), 0,

@@ -302,7 +302,7 @@ void UninitTitle(void)
 void UpdateTitle(void)
 {
 
-#if 1	// タイトルの遷移(F11で解除)
+#if 0 // タイトルの遷移(F11で解除)
 
 	if (GetKeyboardTrigger(DIK_F11)) g_bTestTitle = (g_bTestTitle == true) ? false : true;
 
@@ -513,6 +513,7 @@ void UpdateTitle(void)
 	if ((GetKeyboardTrigger(DIK_W) || GetJoypadTrigger(0, JOYKEY_UP) ||
 		GetJoypadStick(0, JOYKEY_LEFTSTICK_UP, NULL, NULL) == true))
 	{// カーソル下移動
+
 		g_CursorPos--;
 
 		if (g_CursorPos < 0) g_CursorPos = TITLECURSOR_PLAYER_SELECT;
@@ -522,7 +523,9 @@ void UpdateTitle(void)
 	else if ((GetKeyboardTrigger(DIK_S) || GetJoypadTrigger(0, JOYKEY_DOWN) ||
 		GetJoypadStick(0, JOYKEY_LEFTSTICK_DOWN, NULL, NULL) == true))
 	{// カーソル上移動
+
 		g_CursorPos++;
+		
 		if (g_CursorPos >= TITLECURSOR_MAX) g_CursorPos = TITLECURSOR_PLAY_START;
 		PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
 		if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
@@ -534,7 +537,9 @@ void UpdateTitle(void)
 			GetJoypadStick(0, JOYKEY_LEFTSTICK_LEFT, NULL, NULL) == true)
 			&& g_PlayerSelect > 1)
 		{
+
 			g_PlayerSelect--;
+			
 			PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
 			if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 		}
@@ -542,7 +547,9 @@ void UpdateTitle(void)
 			GetJoypadStick(0, JOYKEY_LEFTSTICK_RIGHT, NULL, NULL) == true)
 			&& g_PlayerSelect < MAX_PLAYER)
 		{
+			
 			g_PlayerSelect++;
+			
 			PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
 			if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 		}
@@ -569,6 +576,7 @@ void UpdateTitle(void)
 
 	if (pFade == FADE_NONE && g_PressEnterDeley > RANKING_DELEY)
 	{// 時間経過でランキングへ移行
+
 		SetFade(MODE_LOGO);
 	}
 }
@@ -585,23 +593,27 @@ void DrawTitle(void)
 		SetFog(D3DXCOLOR(0.0f, 0.1f, 0.2f, 1.0f), 1000.0f, 0.0f, false);
 	}
 
+
 	// 配置物の描画処理
 	DrawObject();
 
+#if 1
 	// CPUの描画処理
 	DrawComputer();
-
+#endif
 	// メッシュシリンダーの描画処理
 	DrawMeshCylinder();
 
+#if 1
 	// メッシュフィールドの描画処理
 	DrawMeshField();
 
 	// メッシュオービットの描画処理
 	DrawMeshOrbit();
-
+#endif
 	// 水面の描画処理
 	DrawWaterSurf();
+
 
 	// デバイスの取得
 	pDevice = GetDevice();
