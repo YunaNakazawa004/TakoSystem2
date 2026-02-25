@@ -20,7 +20,7 @@
 
 // マクロ定義
 #define	MAX_TITLE	(8)	// タイトルで表示するテクスチャの最大数
-#define	RANKING_DELEY	(1500)	// ランキング移行に掛かる時間（25秒）
+#define	RANKING_DELEY	(10)	// ランキング移行に掛かる時間（25秒）
 #define	CLEAR_DELEY	(60)	// 消滅にかかる時間
 #define	ENTRY_DELEY	(90)	// 消滅→再登場までにかかる時間
 #define	TITLE_DELEY_MAX	(500.0f)	// タイトルの最大数
@@ -83,14 +83,14 @@ void InitTitle(void)
 	// メッシュオービットの初期化処理
 	InitMeshOrbit(); 
 
+	// 配置物の初期化処理
+	InitObject("data\\objpos001.txt");
+
 	// 水面の初期化処理
 	InitWaterSurf();
 
 	// CPUの初期化処理
 	InitComputer(); 
-
-	// 配置物の初期化処理
-	InitObject("data\\objpos001.txt");
 
 	// デバイスの取得
 	pDevice = GetDevice();
@@ -577,8 +577,7 @@ void UpdateTitle(void)
 	if (pFade == FADE_NONE && g_PressEnterDeley > RANKING_DELEY)
 	{// 時間経過でランキングへ移行
 
-		SetFade(MODE_LOGO);
-	}
+		SetFade(MODE_LOGO);	}
 }
 
 //===================================================================
@@ -592,7 +591,6 @@ void DrawTitle(void)
 	{
 		SetFog(D3DXCOLOR(0.0f, 0.1f, 0.2f, 1.0f), 1000.0f, 0.0f, false);
 	}
-
 
 	// 配置物の描画処理
 	DrawObject();
