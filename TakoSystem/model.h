@@ -25,6 +25,7 @@ typedef enum
 	MOTIONTYPE_WIN2,			// ガッツポーズ
 	MOTIONTYPE_CLAP1,			// 拍手1
 	MOTIONTYPE_CLAP2,			// 拍手2(不満げ)
+	MOTIONTYPE_DEATH,			// 絶命
 	MOTIONTYPE_MAX
 }MOTIONTYPE;
 
