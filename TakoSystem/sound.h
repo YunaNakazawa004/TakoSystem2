@@ -32,7 +32,7 @@ typedef enum
 	SOUND_SE_DECISION,					//決定音
 	SOUND_SE_WARNING,					//警告音(渦潮発生時など)
 	SOUND_SE_MUD,						//水音(べちゃっ)
-	SOUND_SE_DRUMROLL					//ドラムロール
+	SOUND_SE_DRUMROLL,					//ドラムロール
 	SOUND_MAX,
 } SOUND_LABEL;
 
