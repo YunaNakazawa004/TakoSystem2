@@ -479,7 +479,7 @@ void UpdateRanking(void)
 		SetCameraPos(0, { 0.0f ,70.0f ,-220.0f }, { 0.0f,55.0f,0.0f }, { 0.0f,0.0f,0.0f }, CAMERATYPE_STOP);
 	}
 
-	//TimeCnt++;
+	TimeCnt++;
 
 	if (TimeCnt == 120)
 	{

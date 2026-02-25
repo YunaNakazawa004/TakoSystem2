@@ -81,12 +81,13 @@ typedef struct
 }Fishes;
 
 // 生き物のモデル構造体 -----------------
-#if 0
+#if 1
 typedef struct
 {
 	float fRadius;								// 半径
 	float fHeight;								// 高さ
 	Model aModel[MAX_NUMMODEL];					// モデル(パーツ)
+	Model_Info aModel_Info[MAX_NUMMODEL];		// モデル(パーツ)
 	int nNumModel;								// モデル(パーツ)の総数
 	char sModelFileName[100][100];				// モデル(パーツ)のファイル名
 	MOTION_INFO aMotionInfo[MAX_MOTION];		// モーション情報
@@ -121,7 +122,7 @@ void UpdateFishes(void);
 void DrawFishes(void);
 void CollisionFishes(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, float fWidth, float fDepth);
 Fishes* GetFishes(void);
-//Fishes_Model* GetFishesModel(void);
+Fishes_Model* GetFishesModel(void);
 void SetFishes(int ModelIdx, int nNumSet, bool bMove, D3DXVECTOR3 pos, D3DXVECTOR3 rot);
 void LoadFishes(void);
 void UpdateMotionFishes(void);
