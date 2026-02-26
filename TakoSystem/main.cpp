@@ -46,7 +46,7 @@ void Draw(void);
 //*****************************************************************************
 LPDIRECT3D9 g_pD3D = NULL;							// Direct3Dオブジェクトへのポインタ
 LPDIRECT3DDEVICE9 g_pD3DDevice = NULL;				// Direct3Dデバイスへのポインタ
-MODE g_mode = MODE_RANKING;							// 現在のモード
+MODE g_mode = MODE_TITLE;							// 現在のモード
 int g_nCountFPS = 0;								// FPSカウンタ
 bool g_bWindowSize = TRUE;							// ウィンドウサイズ(TRUE : ウィンドウ FALSE : フルスクリーン)
 
@@ -468,6 +468,7 @@ void Update(void)
 void Draw(void)
 {
 	D3DVIEWPORT9 viewportDef;
+	HRESULT hr;
 
 	// 画面クリア(バックバッファとZバッファのクリア)
 	g_pD3DDevice->Clear(0, NULL, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER), D3DCOLOR_RGBA(0, 0, 0, 0), 1.0f, 0);
@@ -528,8 +529,40 @@ void Draw(void)
 		g_pD3DDevice->EndScene();
 		}
 
+	//// バックバッファとフロントバッファの入れ替え
+	//g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
+
 	// バックバッファとフロントバッファの入れ替え
-	g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
+	hr = g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
+
+#ifdef _DEBUG
+	if (FAILED(hr))
+	{
+		LPVOID* errorString;
+
+		FormatMessage(
+			FORMAT_MESSAGE_ALLOCATE_BUFFER					// テキストのメモリ割り当てを要求する
+			| FORMAT_MESSAGE_FROM_SYSTEM					// エラーメッセージはWindowsが用意しているものを使用
+			| FORMAT_MESSAGE_IGNORE_INSERTS,				// 次の引数を無視してエラーコードに対するエラーメッセージを作成する
+			NULL,
+			hr,
+			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),		// 言語を指定
+			(LPTSTR)&errorString,							// メッセージテキストが保存されるバッファへのポインタ
+			0,
+			NULL);
+
+		if (errorString == nullptr)
+		{
+			MessageBox(GetActiveWindow(), "failed get error code", "error", MB_ICONERROR);
+		}
+		else
+		{
+			MessageBox(GetActiveWindow(), (LPCTSTR)errorString, "error", MB_ICONERROR);
+
+			LocalFree(errorString);
+		}
+	}
+#endif
 	}
 
 //=============================================================================
