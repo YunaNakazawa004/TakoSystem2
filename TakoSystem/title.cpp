@@ -20,7 +20,7 @@
 
 // マクロ定義
 #define	MAX_TITLE	(8)	// タイトルで表示するテクスチャの最大数
-#define	RANKING_DELEY	(1000)	// ランキング移行に掛かる時間（25秒）
+#define	RANKING_DELEY	(1500)	// ランキング移行に掛かる時間（25秒）
 #define	CLEAR_DELEY	(60)	// 消滅にかかる時間
 #define	ENTRY_DELEY	(90)	// 消滅→再登場までにかかる時間
 #define	TITLE_DELEY_MAX	(500.0f)	// タイトルの最大数
@@ -43,7 +43,7 @@ bool g_bTestTitle = true;
 //===================================================================
 void InitTitle(void)
 {
-	
+
 	LPDIRECT3DDEVICE9 pDevice;	// デバイスへのポインタ
 
 	g_TitleDeley = 0.0f;	// ディレイの値を初期化
@@ -61,11 +61,11 @@ void InitTitle(void)
 	SetNumCamera(1);
 
 	// カメラの位置設定
-	SetCameraPos(0, 
-				 D3DXVECTOR3(0.0f, ((float)nCamera * 100.0f) + 600.0f, 0.0f),
-				 D3DXVECTOR3(0.0f, (((float)nCamera * 100.0f) + 600.0f) + (((float)nVecR * 50.0f) - 100.0f), 0.0f),
-				 D3DXVECTOR3(0.0f, 0.0f, 0.0f),
-				 CAMERATYPE_POINT);
+	SetCameraPos(0,
+		D3DXVECTOR3(0.0f, ((float)nCamera * 100.0f) + 600.0f, 0.0f),
+		D3DXVECTOR3(0.0f, (((float)nCamera * 100.0f) + 600.0f) + (((float)nVecR * 50.0f) - 100.0f), 0.0f),
+		D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+		CAMERATYPE_POINT);
 
 	// ライトの設定
 	SetLightColor(0, D3DXCOLOR(0.8f, 0.9f, 1.0f, 1.0f));
@@ -73,7 +73,7 @@ void InitTitle(void)
 	SetLightColor(2, D3DXCOLOR(0.3f, 0.3f, 0.5f, 0.3f));
 
 	// メッシュシリンダーの初期化処理
-	InitMeshCylinder();	
+	InitMeshCylinder();
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 2.0f), D3DXVECTOR2(INCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, MESHCYLINDERTYPE_ROCK);
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(OUTCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), true, MESHCYLINDERTYPE_SEA);
 
@@ -81,7 +81,7 @@ void InitTitle(void)
 	InitMeshField();
 
 	// メッシュオービットの初期化処理
-	InitMeshOrbit(); 
+	InitMeshOrbit();
 
 	// 配置物の初期化処理
 	InitObject("data\\objpos001.txt");
@@ -90,7 +90,7 @@ void InitTitle(void)
 	InitWaterSurf();
 
 	// CPUの初期化処理
-	InitComputer(); 
+	InitComputer();
 
 	// デバイスの取得
 	pDevice = GetDevice();
@@ -525,7 +525,7 @@ void UpdateTitle(void)
 	{// カーソル上移動
 
 		g_CursorPos++;
-		
+
 		if (g_CursorPos >= TITLECURSOR_MAX) g_CursorPos = TITLECURSOR_PLAY_START;
 		PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
 		if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
@@ -539,7 +539,7 @@ void UpdateTitle(void)
 		{
 
 			g_PlayerSelect--;
-			
+
 			PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
 			if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 		}
@@ -547,9 +547,9 @@ void UpdateTitle(void)
 			GetJoypadStick(0, JOYKEY_LEFTSTICK_RIGHT, NULL, NULL) == true)
 			&& g_PlayerSelect < MAX_PLAYER)
 		{
-			
+
 			g_PlayerSelect++;
-			
+
 			PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
 			if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 		}
@@ -566,18 +566,20 @@ void UpdateTitle(void)
 			SetFade(MODE_TUTORIAL);
 		}
 
-		if ((GetKeyboardTrigger(DIK_RETURN) == true ||
-			GetJoypadTrigger(0, JOYKEY_START) == true ||
-			GetJoypadTrigger(0, JOYKEY_A) == true))
-		{// 特定のキーを押すと即座に到着
-			g_TitleDeley = TITLE_DELEY_MAX;
-		}
+	}
+
+	if ((GetKeyboardTrigger(DIK_RETURN) == true ||
+		GetJoypadTrigger(0, JOYKEY_START) == true ||
+		GetJoypadTrigger(0, JOYKEY_A) == true))
+	{// 特定のキーを押すと即座に到着
+		g_TitleDeley = TITLE_DELEY_MAX;
 	}
 
 	if (pFade == FADE_NONE && g_PressEnterDeley > RANKING_DELEY)
 	{// 時間経過でランキングへ移行
 
-		SetFade(MODE_LOGO);	}
+		SetFade(MODE_LOGO);
+	}
 }
 
 //===================================================================
