@@ -357,10 +357,11 @@ void UpdateTutorial(void)
 
 	if ((GetKeyboardTrigger(DIK_RETURN) == true ||
 		GetJoypadTrigger(0, JOYKEY_START) == true ||
-		GetJoypadTrigger(0, JOYKEY_A) == true) || pFade == FADE_NONE)
+		GetJoypadTrigger(0, JOYKEY_A) == true) && pFade == FADE_NONE)
 	{// 決定キー（ENTERキー）が押された
+
 		// モード設定
-		SetFade(MODE_TITLE);
+		SetFade(MODE_GAME);
 	}
 }
 
