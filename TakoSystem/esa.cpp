@@ -129,13 +129,13 @@ void InitEsa(bool bSet)
 #else	// ランダム設定
 
 
-		for (int nCntEsa = 0; nCntEsa < 30; nCntEsa++)
+		for (nCntEsa = 0; nCntEsa < 30; nCntEsa++)
 		{// 配置する数だけ繰り返す
 
 			int nSetType = rand() % g_nNumEsatype;																// ランダムで種類を設定
-			float fRandRadius = rand() % (int)(OUTCYLINDER_RADIUS - 100.0f) + (int)INCYLINDER_RADIUS;			// 中心からの距離を設定
+			float fRandRadius =(float)(rand() % (int)(OUTCYLINDER_RADIUS - 100.0f) + (int)INCYLINDER_RADIUS);			// 中心からの距離を設定
 			float fRandAngle = ((float)(rand() % ((int)(D3DX_PI * 2000)) - (int)(D3DX_PI * 1000))) / 1000.0f;	// 角度(xy位置)を設定
-			float fRandHeight = rand() % (int)CYLINDER_HEIGHT;													// 高さを設定
+			float fRandHeight = (float)(rand() % (int)CYLINDER_HEIGHT);													// 高さを設定
 
 			// 位置を設定
 			D3DXVECTOR3 setPos = D3DXVECTOR3(sinf(fRandAngle) * fRandRadius,
@@ -397,6 +397,35 @@ HRESULT SetEsaModel(const char* pFilename, EsaModel* pEsaModel)
 						   &pEsaModel->dwNumMat,
 						   &pEsaModel->pMesh);
 
+#ifdef _DEBUG
+	if (FAILED(hr))
+	{
+		LPVOID* errorString;
+
+		FormatMessage(
+			FORMAT_MESSAGE_ALLOCATE_BUFFER					// テキストのメモリ割り当てを要求する
+			| FORMAT_MESSAGE_FROM_SYSTEM					// エラーメッセージはWindowsが用意しているものを使用
+			| FORMAT_MESSAGE_IGNORE_INSERTS,				// 次の引数を無視してエラーコードに対するエラーメッセージを作成する
+			NULL,
+			hr,
+			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),		// 言語を指定
+			(LPTSTR)&errorString,							// メッセージテキストが保存されるバッファへのポインタ
+			0,
+			NULL);
+
+		if (errorString == nullptr)
+		{
+			MessageBox(GetActiveWindow(), "failed get error code", "error", MB_ICONERROR);
+		}
+		else
+		{
+			MessageBox(GetActiveWindow(), (LPCTSTR)errorString, "error", MB_ICONERROR);
+
+			LocalFree(errorString);
+		}
+	}
+#endif
+
 	if(FAILED(hr))
 	{// Xファイルの読み込みに失敗した場合
 
@@ -537,8 +566,6 @@ void MoveEsa(Esa* pEsa)
 	float fDistRadius;				// 中心からの距離(半径)
 	float fNomRadius;				// 正規化した距離(半径)
 	float fToTagetAngle = 0.0f;		// 対象との角度
-
-	float *pWaterSurf = GetWaterSurf_Height();	// 海面の高さの情報
 
 	Player* pPlayer = GetPlayer();				// プレイヤーの情報
 
@@ -756,7 +783,7 @@ bool SetLoadEsaData(EsaData* pEsaData, const char* pFilename)
 						{// 〇END_ESA
 
 							// エサの情報を設定
-							g_aIdxEsaData[g_nNumEsatype] = SetEsaData(&g_aEsaData[0], setEsaDataInfo);	// 設定したエサのインデックスを代入
+							g_aIdxEsaData[g_nNumEsatype] = SetEsaData(&pEsaData[0], setEsaDataInfo);	// 設定したエサのインデックスを代入
 							
 							g_nNumEsatype++;															// エサの種類の総数を増やす
 

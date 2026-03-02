@@ -219,7 +219,7 @@ void SetRandomSeaDust(int nAmount)
 	{
 		D3DXVECTOR3 pos;
 		float fAngle = (D3DX_PI * 2.0f) * ((float)((nCntDust + 1) * (360.0f / nAmount)) / 360.0f);
-		float fsin = sinf(fAngle);
+		//float fsin = sinf(fAngle);
 
 		pos.x = sinf(fAngle) * (INCYLINDER_RADIUS + (((float)(rand() % (int)((OUTCYLINDER_RADIUS * 2) - INCYLINDER_RADIUS) + 1))));
 		pos.y = (float)(rand() % (int)(CYLINDER_HEIGHT));

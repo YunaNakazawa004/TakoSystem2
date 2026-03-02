@@ -278,12 +278,12 @@ void SetMeshRing(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVECTOR
 			// インデックスバッファをロックし、頂点番号データへのポインタを取得
 			g_aMeshRing[nCntMeshRing].pIdxBuff->Lock(0, 0, (void**)&pIdx, 0);
 
-			int nNum = 0;			// 縮退ポリゴン
+			//int nNum = 0;			// 縮退ポリゴン
 
 			// 頂点番号データの設定
 			for (int nCntMeshRing1 = 0; nCntMeshRing1 < nNumIdx; nCntMeshRing1++)
 			{
-				pIdx[0] = nCntMeshRing1;
+				pIdx[0] = (WORD)nCntMeshRing1;
 				pIdx++;
 			}
 

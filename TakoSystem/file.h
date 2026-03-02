@@ -10,6 +10,9 @@
 
 // プロトタイプ宣言 ============================================
 
+bool FileReadTop				// 読み取り開始地点まで読み取る処理
+(FILE* pFile);
+
 bool FileExtractText			// ファイルから文字だけを読み取る処理
 (FILE* pFile, char* pReadText);				// ファイルポインタ, 読み取った文字	
 

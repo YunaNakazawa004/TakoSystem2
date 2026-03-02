@@ -8,6 +8,7 @@
 #define _MAIN_H_		// 2重インクルード防止のマクロを定義する
 
 #include <windows.h>
+#include <crtdbg.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
@@ -126,5 +127,8 @@ void onWireFrame(void);
 void offWireFrame(void);
 void CorrectAngle(float* fAngle, float fAngleCmp);
 void SetFog(D3DXCOLOR col, float fFogStart, float fFogEnd, bool bUse);
+
+void DebugADD(void);
+void DebugSUB(void);
 
 #endif

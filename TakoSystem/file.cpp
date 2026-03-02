@@ -20,6 +20,32 @@ unsigned int g_unNumFileSave = 0;		// 記録した回数
 unsigned long g_ulTimeOld = 0;			// 前の時間
 
 //========================================================================
+// 読み取り開始地点まで読み取る処理
+//========================================================================
+bool FileReadTop(FILE* pFile)
+{
+	// 変数宣言 ===========================================
+
+	char aReadText[256] = {};	// 読み取った文字
+
+	// ====================================================
+
+	do
+	{// 読み取り開始位置まで読み取る
+
+		// 文字の読み取り処理
+		if (FileExtractText(pFile, &aReadText[0]) == false)
+		{// 開始位置の読み取りに失敗した場合
+
+			return false;	// 読み取りに失敗した事を返す
+		}
+
+	} while (strcmp(&aReadText[0], "SCRIPT"));	// ●SCRIPTまで
+
+	return true;			// 読み取りに成功した事を返す
+}
+
+//========================================================================
 // ファイルから文字だけの読み取り処理
 //========================================================================
 bool FileExtractText(FILE* pFile, char* pReadText)
@@ -149,7 +175,7 @@ void FileLogPass(const char* pPassPointName)
 	}
 
 	// ▼ファイルを開く
-	pFile = fopen(g_aPassLogFileName, "a");	// 追記モード
+	pFile = fopen(&g_aPassLogFileName[0], "a");	// 追記モード
 
 	if (pFile == NULL)
 	{// ファイルが開けなかった場合
@@ -158,7 +184,7 @@ void FileLogPass(const char* pPassPointName)
 	}
 
 	// 情報を書き込む
-	fprintf(pFile, "[%10s] %d\n", &pPassPointName[0], ulCurrentTime - g_ulTimeOld);
+	fprintf(pFile, "[%10s] %d\n", &pPassPointName[0], (ulCurrentTime - g_ulTimeOld));
 
 	g_unNumFileSave--;		// 書き込める回数を減らす
 

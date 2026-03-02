@@ -37,6 +37,8 @@ typedef struct
 	D3DXVECTOR2 texPos;				// テクスチャ(座標)
 	D3DXVECTOR2 texSize;			// テクスチャ(サイズ)
 
+	D3DXCOLOR col;
+
 	bool bAlphaBlend;				// aブレンドをするか
 
 	bool bUse;						// 使用状態
@@ -138,10 +140,11 @@ void InitUiResultGetScore(void)
 		g_aResultGSPolygon[nCntUiResultGS].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		g_aResultGSPolygon[nCntUiResultGS].fSizeWidth = 0.0f;
 		g_aResultGSPolygon[nCntUiResultGS].fSizeHeight = 0.0f;
-		g_aResultGSPolygon[nCntUiResultGS].fSizeWLeft;
-		g_aResultGSPolygon[nCntUiResultGS].fSizeWRight;
+		g_aResultGSPolygon[nCntUiResultGS].fSizeWLeft = 0.0f;
+		g_aResultGSPolygon[nCntUiResultGS].fSizeWRight = 0.0f;
 		g_aResultGSPolygon[nCntUiResultGS].texPos = D3DXVECTOR2(0.0f,0.0f);
 		g_aResultGSPolygon[nCntUiResultGS].texSize = D3DXVECTOR2(0.0f,0.0f);
+		g_aResultGSPolygon[nCntUiResultGS].col = D3DXCOLOR(0.0f,0.0f,0.0f,0.0);
 		g_aResultGSPolygon[nCntUiResultGS].bAlphaBlend = false;
 		g_aResultGSPolygon[nCntUiResultGS].bUse = false;
 	}
@@ -341,8 +344,6 @@ void DrawUiResultGetScore(void)
 			continue;	// 処理の始めに戻る
 		}
 
-		
-
 		// インデックスのポリゴンを描画
 		for (int nCntPolygon = 0; nCntPolygon < MAX_GLOUP_UI_RESULTGETSCORE; nCntPolygon++)
 		{// インテックスの数分繰り返す
@@ -441,6 +442,7 @@ int SetUiResultGetScorePolygon(int nIdxTexture, bool bAlphaBlend, UI_RESULTGSPOL
 		g_aResultGSPolygon[nCntUiResultGS].texPos = texPos;
 		g_aResultGSPolygon[nCntUiResultGS].texSize = texSize;
 		g_aResultGSPolygon[nCntUiResultGS].bAlphaBlend = bAlphaBlend;
+		g_aResultGSPolygon[nCntUiResultGS].col = col;
 		g_aResultGSPolygon[nCntUiResultGS].bUse = true;
 
 		return nCntUiResultGS;
@@ -459,7 +461,7 @@ int SetUiResultGetScore(D3DXVECTOR3 pos, D3DXCOLOR col, int nScore, int nHaveNum
 	D3DXVECTOR2 setTexPos = D3DXVECTOR2(0.0f,0.0f);
 
 	int nTexU[2] = {};	// テクスチャ座標
-	int nNum;			// 計算用数値
+	int nNum = 0;			// 計算用数値
 	int nDigit;			// 桁数
 	int nPow;			// 累乗値
 
@@ -511,11 +513,13 @@ int SetUiResultGetScore(D3DXVECTOR3 pos, D3DXCOLOR col, int nScore, int nHaveNum
 
 					// nCntNumber目の桁の値を取り出す
 					if (nCntNumber == 0)
-					{
+					{// 最初の場合
+
 						nTexU[nCntNumber] = nNum			   / nPow;
 					}
 					else
-					{
+					{// 最初じゃない場合
+
 						nTexU[nCntNumber] = nNum % (nPow * 10) / nPow;
 					}
 					

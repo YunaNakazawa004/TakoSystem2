@@ -297,13 +297,13 @@ int SetMeshCylinder(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVEC
 				{// èkëﬁÉ|ÉäÉSÉìÇÃÇ∆Ç±ÇÎ
 					nNum++;
 
-					pIdx[0] = nCntMeshCylinder1 - nNum;
-					pIdx[1] = nCntMeshCylinder1 + ((int)g_aMeshCylinder[nCntMeshCylinder].block.x + 1);
+					pIdx[0] = (WORD)(nCntMeshCylinder1 - nNum);
+					pIdx[1] = (WORD)(nCntMeshCylinder1 + ((int)g_aMeshCylinder[nCntMeshCylinder].block.x + 1));
 				}
 				else
 				{// èkëﬁà»äOÇÃÉ|ÉäÉSÉì
-					pIdx[0] = (nCntMeshCylinder1 - nNum) + ((int)g_aMeshCylinder[nCntMeshCylinder].block.x + 1);
-					pIdx[1] = (nCntMeshCylinder1 - nNum);
+					pIdx[0] = (WORD)((nCntMeshCylinder1 - nNum) + ((int)g_aMeshCylinder[nCntMeshCylinder].block.x + 1));
+					pIdx[1] = (WORD)((nCntMeshCylinder1 - nNum));
 				}
 
 				pIdx += 2;
@@ -418,7 +418,7 @@ bool CollisionMeshCylinder(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3*
 			fDot = (-vecMove.x * vecNor.x) + (-vecMove.z * vecNor.z);
 
 			// äOêœ
-			float f = ((vecMove.z * vecNor.x) - (vecMove.x * vecNor.z));
+			//float f = ((vecMove.z * vecNor.x) - (vecMove.x * vecNor.z));
 
 			// åì_ÇÃäÑçá
 			fRate = ((vecToPos.z * vecMove.x) - (vecToPos.x * vecMove.z)) /

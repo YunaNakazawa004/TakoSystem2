@@ -75,19 +75,19 @@ void InitGame(void)
 	g_gameState = GAMESTATE_BEGIN;	// ゲームの状態を開始状態に設定
 
 	// メッシュオービットの初期化処理
-	InitMeshOrbit();
+	InitMeshOrbit(); 
 
 	// プレイヤーの初期化処理
 	InitPlayer();
 
 	// CPUの初期化処理
-	InitComputer();
+	InitComputer(); 
 
 	// ステージの初期化処理
 	//InitStage();
 
 	// メッシュシリンダーの初期化処理
-	InitMeshCylinder();
+	InitMeshCylinder(); 
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 2.0f), D3DXVECTOR2(INCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, MESHCYLINDERTYPE_ROCK);
 	//SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(OUTCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), true, MESHCYLINDERTYPE_SEA);
 
@@ -99,16 +99,16 @@ void InitGame(void)
 	InitMeshField();
 
 	// メッシュリングの初期化処理
-	InitMeshRing();
+	InitMeshRing(); 
 
 	// 塵の初期化処理
 	InitSeaDust();
 
 	// 3Dエフェクトの初期化処理
-	InitEffect3D();
+	InitEffect3D(); 
 
 	// 3Dパーティクルの初期化処理
-	InitParticle3D();
+	InitParticle3D(); 
 
 	// 生き物の初期化処理
 	//InitFishes();
@@ -126,7 +126,7 @@ void InitGame(void)
 	InitObject("data\\objpos001.txt");
 
 	// レディの初期化処理
-	InitReady();
+	InitReady(); 
 
 	// クロスヘアの初期化処理
 	InitCrossHair();
@@ -135,13 +135,13 @@ void InitGame(void)
 	InitUiGaugeIcon();
 
 	// エサUIの初期化処理
-	InitUiEsa();
+	InitUiEsa(); 
 
 	// 時間の初期化処理
-	InitTime();
+	InitTime(); 
 
 	// 時間の初期設定
-	SetTime(DEFAULT_TIME);
+	SetTime(DEFAULT_TIME); 
 
 	// マップの初期化処理
 	InitMap();
@@ -227,7 +227,7 @@ void UninitGame(void)
 	UninitUiEsa();
 
 	// 時間の終了処理
-	UninitTime();
+	UninitTime(); 
 
 	// マップの終了処理
 	UninitMap();
@@ -310,7 +310,7 @@ void UpdateGame(void)
 	if (bGameStart == true)
 	{// ゲーム開始状態
 
-		SetFade(MODE_GAME);	// ゲームにフェード
+		SetFade(MODE_TUTORIAL);	// ゲームにフェード
 	}
 #endif
 
