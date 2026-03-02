@@ -21,8 +21,8 @@
 // マクロ定義
 #define	MAX_TITLE	(8)	// タイトルで表示するテクスチャの最大数
 #define	RANKING_DELEY	(1500)	// ランキング移行に掛かる時間（25秒）
-#define	CLEAR_DELEY	(60)	// 消滅にかかる時間
-#define	ENTRY_DELEY	(90)	// 消滅→再登場までにかかる時間
+#define	CLEAR_DELEY	(60)	// 登場→消滅にかかる時間
+#define	ENTRY_DELEY	(90)	// 登場→消滅→再登場までにかかる時間
 #define	TITLE_DELEY_MAX	(500.0f)	// タイトルの最大数
 
 // グローバル変数
