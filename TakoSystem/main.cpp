@@ -48,7 +48,7 @@ void Draw(void);
 //*****************************************************************************
 LPDIRECT3D9 g_pD3D = NULL;							// Direct3Dオブジェクトへのポインタ
 LPDIRECT3DDEVICE9 g_pD3DDevice = NULL;				// Direct3Dデバイスへのポインタ
-MODE g_mode = MODE_RESULT;							// 現在のモード
+MODE g_mode = MODE_TITLE;							// 現在のモード
 int g_nCountFPS = 0;								// FPSカウンタ
 bool g_bWindowSize = TRUE;							// ウィンドウサイズ(TRUE : ウィンドウ FALSE : フルスクリーン)
 
@@ -541,8 +541,11 @@ void Draw(void)
 		g_pD3DDevice->EndScene();
 		}
 
+	//// バックバッファとフロントバッファの入れ替え
+	//g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
+
 	// バックバッファとフロントバッファの入れ替え
-	hr =  g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
+	hr = g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
 
 #ifdef _DEBUG
 	if (FAILED(hr))
@@ -571,8 +574,8 @@ void Draw(void)
 			LocalFree(errorString);
 		}
 	}
-#endif
 
+#endif
 	}
 
 //=============================================================================

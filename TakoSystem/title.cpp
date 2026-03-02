@@ -20,7 +20,7 @@
 
 // マクロ定義
 #define	MAX_TITLE	(8)	// タイトルで表示するテクスチャの最大数
-#define	RANKING_DELEY	(10)	// ランキング移行に掛かる時間（25秒）
+#define	RANKING_DELEY	(1500)	// ランキング移行に掛かる時間（25秒）
 #define	CLEAR_DELEY	(60)	// 消滅にかかる時間
 #define	ENTRY_DELEY	(90)	// 消滅→再登場までにかかる時間
 #define	TITLE_DELEY_MAX	(500.0f)	// タイトルの最大数
@@ -55,18 +55,20 @@ const char* c_apFilenameTitle[] =
 //===================================================================
 void InitTitle(void)
 {
+
 	// デバイスへのポインタ
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();	// デバイスの取得
 		
-	g_TitleDeley = 0.0f;		// ディレイの値を初期化
-	g_PressEnterDeley = 0;
+	g_TitleDeley = 0.0f;		// ディレイの値を初期化	g_PressEnterDeley = 0;
 
 	g_CursorPos = 0;			// カーソルの位置を初期化
 
 	int nCamera = rand() % 6;	// カメラの位置設定
 	int nVecR = rand() % 5;		// カメラの角度設定
 
-	// テクスチャの読み込み
+
+
+
 	for (int nCntTexture = 0; nCntTexture < sizeof c_apFilenameTitle / sizeof(c_apFilenameTitle[0]); nCntTexture++)
 	{
 		if (FAILED(D3DXCreateTextureFromFile(pDevice,
@@ -236,6 +238,7 @@ void InitTitle(void)
 	InitObject("data\\objpos001.txt"); DebugADD();	// 必ず最後(メッシュ後)に初期化する
 
 	// サウンドの再生
+
 	PlaySound(SOUND_BGM_TITLE);	
 }
 
@@ -318,7 +321,6 @@ void UpdateTitle(void)
 
 	// 水面の更新処理
 	UpdateWaterSurf();
-
 	// フェード情報の取得
 	FADE pFade = GetFade();
 
@@ -514,7 +516,7 @@ void UpdateTitle(void)
 	{// カーソル上移動
 
 		g_CursorPos++;
-		
+
 		if (g_CursorPos >= TITLECURSOR_MAX) g_CursorPos = TITLECURSOR_PLAY_START;
 		PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
 		if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
@@ -528,7 +530,7 @@ void UpdateTitle(void)
 		{
 
 			g_PlayerSelect--;
-			
+
 			PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
 			if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 		}
@@ -536,9 +538,9 @@ void UpdateTitle(void)
 			GetJoypadStick(0, JOYKEY_LEFTSTICK_RIGHT, NULL, NULL) == true)
 			&& g_PlayerSelect < MAX_PLAYER)
 		{
-			
+
 			g_PlayerSelect++;
-			
+
 			PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
 			if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 		}
@@ -555,18 +557,20 @@ void UpdateTitle(void)
 			SetFade(MODE_TUTORIAL);
 		}
 
-		if ((GetKeyboardTrigger(DIK_RETURN) == true ||
-			GetJoypadTrigger(0, JOYKEY_START) == true ||
-			GetJoypadTrigger(0, JOYKEY_A) == true))
-		{// 特定のキーを押すと即座に到着
-			g_TitleDeley = TITLE_DELEY_MAX;
-		}
+	}
+
+	if ((GetKeyboardTrigger(DIK_RETURN) == true ||
+		GetJoypadTrigger(0, JOYKEY_START) == true ||
+		GetJoypadTrigger(0, JOYKEY_A) == true))
+	{// 特定のキーを押すと即座に到着
+		g_TitleDeley = TITLE_DELEY_MAX;
 	}
 
 	if (pFade == FADE_NONE && g_PressEnterDeley > RANKING_DELEY)
 	{// 時間経過でランキングへ移行
 
-		SetFade(MODE_TUTORIAL);	}
+		SetFade(MODE_LOGO);
+	}
 }
 
 //===================================================================
