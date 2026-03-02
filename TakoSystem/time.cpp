@@ -39,24 +39,13 @@ void InitTime(void)
 	// デバイスの取得
 	pDevice = GetDevice();
 
-	//// ステージ情報の取得
-	//int pStage;
-	//pStage = GetStage();
-
-	//// リトライ情報の取得
-	//bool pRetry;
-	//pRetry = GetRetry();
-
 	// テクスチャの読み込み
 	D3DXCreateTextureFromFile(pDevice,
 		"data/TEXTURE/number000.png",
 		&g_pTextureTime);
 
-	//if (pStage == 0 || pRetry == true)
-	//{// 最初のステージ又はリトライ時のみの処理
 	g_nTimeDelay = 0;
 	g_nTime100Delay = 0;
-	//}
 
 	g_posTime = D3DXVECTOR3(545.0f, 15.0f, 0.0f);	// 位置を初期化する
 
