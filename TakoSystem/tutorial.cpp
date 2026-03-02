@@ -37,7 +37,7 @@
 #include "tutorialtxt.h"
 
 // マクロ定義
-#define	MAX_TUTORIAL	(2)	// タイトルで表示するテクスチャの最大数
+#define	MAX_TUTORIAL	(3)	// タイトルで表示するテクスチャの最大数
 
 // グローバル変数
 LPDIRECT3DTEXTURE9 g_pTextureTutorial[MAX_TUTORIAL] = {};	// テクスチャへのポインタ
@@ -136,8 +136,12 @@ void InitTutorial(void)
 		"data/TEXTURE/TUTORIAL002.png",
 		&g_pTextureTutorial[1]);
 
+	D3DXCreateTextureFromFile(pDevice,
+		"data/TEXTURE/text_tmp_rule_explanation.png",
+		&g_pTextureTutorial[2]);
+
 	// 頂点バッファの生成
-	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4 * MAX_TEXTURE,
+	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4 * MAX_TUTORIAL,
 		D3DUSAGE_WRITEONLY,
 		FVF_VERTEX_2D,
 		D3DPOOL_MANAGED,
@@ -159,12 +163,31 @@ void InitTutorial(void)
 			pVtx[2].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 			pVtx[3].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		}
-		else
+		else if(nCntTutorial == 1)
 		{// RESULTロゴ
 			pVtx[0].pos = D3DXVECTOR3(460.0f, 0.0f, 0.0f);	// 右回りで設定する
 			pVtx[1].pos = D3DXVECTOR3(820.0f, 0.0f, 0.0f);	// 2Dの場合Zの値は0にする
 			pVtx[2].pos = D3DXVECTOR3(460.0f, 180.0f, 0.0f);
 			pVtx[3].pos = D3DXVECTOR3(820.0f, 180.0f, 0.0f);
+		}
+		else
+		{// RESULTロゴ
+
+			if (GetPlayerSelect() == 1)
+			{// 1人プレイ時
+
+				pVtx[0].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 470.0f) - 140.0f, ((SCREEN_HEIGHT / 2) - 150.0f) - 180.0f, 0.0f);	// 右回りで設定する
+				pVtx[1].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 470.0f) + 140.0f, ((SCREEN_HEIGHT / 2) - 150.0f) - 180.0f, 0.0f);	// 2Dの場合Zの値は0にする
+				pVtx[2].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 470.0f) - 140.0f, ((SCREEN_HEIGHT / 2) - 150.0f) + 180.0f, 0.0f);	// (位置(中央 +- 中央からずらす量)) +- (大きさ)
+				pVtx[3].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 470.0f) + 140.0f, ((SCREEN_HEIGHT / 2) - 150.0f) + 180.0f, 0.0f);
+			}
+			else
+			{
+				pVtx[0].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 0.0f) - 110.0f, ((SCREEN_HEIGHT / 2) + 235.0f) - 120.0f, 0.0f);	// 右回りで設定する
+				pVtx[1].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 0.0f) + 110.0f, ((SCREEN_HEIGHT / 2) + 235.0f) - 120.0f, 0.0f);	// 2Dの場合Zの値は0にする
+				pVtx[2].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 0.0f) - 110.0f, ((SCREEN_HEIGHT / 2) + 235.0f) + 120.0f, 0.0f);
+				pVtx[3].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 0.0f) + 110.0f, ((SCREEN_HEIGHT / 2) + 235.0f) + 120.0f, 0.0f);
+			}
 		}
 
 		// rhwの設定

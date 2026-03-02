@@ -24,7 +24,7 @@ SCRIPT		# 読み取り開始
 # リザルトの設定情報
 #===========================================================
 
-NUM_TEXTURE = 8		# 読み込むテクスチャ数
+NUM_TEXTURE = 9		# 読み込むテクスチャ数
 
 TEXTURE_FILENAME = data/TEXTURE/In_the_sea000.jpg			# [00]背景
 TEXTURE_FILENAME = data/TEXTURE/tex_alpha001.jpg			# [01]RESULTテキストの背景
@@ -34,6 +34,7 @@ TEXTURE_FILENAME = data/TEXTURE/text_player.png           	# [04]プレイヤー
 TEXTURE_FILENAME = data/TEXTURE/number000.png             	# [05]数字
 TEXTURE_FILENAME = data/TEXTURE/tex_alpha000.jpg          	# [06]集計開始の背景
 TEXTURE_FILENAME = data/TEXTURE/text_start_tallying.png   	# [07]集計開始テキスト
+TEXTURE_FILENAME = data/TEXTURE/text_esa_name.png			# [08]エサ名テキスト
 
 #===========================================================
 # リザルトの配置情報
@@ -61,13 +62,13 @@ SET_LAYOUT_RESULT	# 配置開始
 		END_POLYGON2D
 		
 		SET_POLYGON2D	# 2Dポリゴン
-			TEXIDX    = 1				# [1]RESULTテキストの背景
+			TEXIDX    = 6				# [1]RESULTテキストの背景
 			DRAWLEVEL = 0				# 描画順位
 			BLEND_A   = 1				# Aブレンド(0 しない, 1 する)
-			POS     = 640.0 0.0 0.0		# 位置
+			POS     = 640.0 50.0 0.0		# 位置
 			ROT     = 0.0 0.0 0.0		# 角度
 			ADDROT  = 0.0 0.0 0.0		# 加算角度
-			SIZE    = 50.0 33.0			# 大きさ
+			SIZE    = 640.0 50.0			# 大きさ
 			COL     = 1.0 1.0 1.0 1.0	# 色
 			TEXPOS  = 0.0 0.0			# テクスチャ座標
 			TEXSIZE = 1.0 1.0			# テクスチャサイズ
@@ -77,10 +78,10 @@ SET_LAYOUT_RESULT	# 配置開始
 			TEXIDX    = 2				# [2]RESULTテキスト
 			DRAWLEVEL = 0				# 描画順位
 			BLEND_A   = 0				# Aブレンド(0 しない, 1 する)
-			POS     = 0.0 0.0 0.0		# 位置
+			POS     = 640.0 66.0 0.0	# 位置
 			ROT     = 0.0 0.0 0.0		# 角度
 			ADDROT  = 0.0 0.0 0.0		# 加算角度
-			SIZE    = 50.0 33.0			# 大きさ
+			SIZE    = 285.0 80.0		# 大きさ
 			COL     = 1.0 1.0 1.0 1.0	# 色
 			TEXPOS  = 0.0 0.0			# テクスチャ座標
 			TEXSIZE = 1.0 1.0			# テクスチャサイズ
@@ -95,7 +96,7 @@ SET_LAYOUT_RESULT	# 配置開始
 		
 		SET_POLYGON2D	# 2Dポリゴン
 			TEXIDX    = 6				# [6]集計開始の背景
-			DRAWLEVEL = 5				# 描画順位
+			DRAWLEVEL = 4				# 描画順位
 			BLEND_A   = 1				# Aブレンド(0 しない, 1 する)
 			POS     = 640.0 360.0 0.0	# 位置
 			ROT     = 0.0 0.0 0.0		# 角度
@@ -108,12 +109,12 @@ SET_LAYOUT_RESULT	# 配置開始
 		
 		SET_POLYGON2D	# 2Dポリゴン
 			TEXIDX    = 7				# [7]集計開始テキスト
-			DRAWLEVEL = 5				# 描画順位
-			BLEND_A   = 1				# Aブレンド(0 しない, 1 する)
-			POS     = 640.0 360.0 0.0	# 位置
+			DRAWLEVEL = 4				# 描画順位
+			BLEND_A   = 0				# Aブレンド(0 しない, 1 する)
+			POS     = 659.0 360.0 0.0	# 位置
 			ROT     = 0.0 0.0 0.0		# 角度
 			ADDROT  = 0.0 0.0 0.0		# 加算角度
-			SIZE    = 50.0 33.0			# 大きさ
+			SIZE    = 435.0 92.0			# 大きさ
 			COL     = 1.0 1.0 1.0 1.0	# 色
 			TEXPOS  = 0.0 0.0			# テクスチャ座標
 			TEXSIZE = 1.0 1.0			# テクスチャサイズ
@@ -128,31 +129,63 @@ SET_LAYOUT_RESULT	# 配置開始
 		
 		SET_POLYGON2D	# 2Dポリゴン
 			TEXIDX    = 3				# [3]放射線
-			DRAWLEVEL = 1				# 描画順位
+			DRAWLEVEL = 0				# 描画順位
 			BLEND_A   = 0				# Aブレンド(0 しない, 1 する)
-			POS     = 0.0 0.0 0.0		# 位置
-			ROT     = 0.0 0.001 0.0		# 角度
-			ADDROT  = 0.0 0.0 0.0		# 加算角度
-			SIZE    = 50.0 33.0			# 大きさ
+			POS     = 1043.0 318.0 0.0	# 位置
+			ROT     = 0.0 0.0 0.0		# 角度
+			ADDROT  = 0.0 0.001 0.0		# 加算角度
+			SIZE    = 232.0 232.0		# 大きさ
 			COL     = 1.0 1.0 1.0 1.0	# 色
 			TEXPOS  = 0.0 0.0			# テクスチャ座標
 			TEXSIZE = 1.0 1.0			# テクスチャサイズ
 		END_POLYGON2D
 		
+		SET_POLYGON2D	# 2Dポリゴン
+			TEXIDX    = 6				# [6]描画開始背景
+			DRAWLEVEL = 0				# 描画順位
+			BLEND_A   = 1				# Aブレンド(0 しない, 1 する)
+			POS     = 1043.0 472.0 0.0	# 位置
+			ROT     = 0.0 0.0 0.0		# 角度
+			ADDROT  = 0.0 0.0 0.0		# 加算角度
+			SIZE    = 165.0 32.0		# 大きさ
+			COL     = 1.0 1.0 1.0 1.0	# 色
+			TEXPOS  = 0.0 0.0			# テクスチャ座標
+			TEXSIZE = 1.0 1.0			# テクスチャサイズ
+		END_POLYGON2D
+		
+		SET_POLYGON2D	# 2Dポリゴン
+			TEXIDX    = 8				# [8]エサ名テキスト
+			DRAWLEVEL = 0				# 描画順位
+			BLEND_A   = 0				# Aブレンド(0 しない, 1 する)
+			POS     = 1043.0 472.0 0.0	# 位置
+			ROT     = 0.0 0.0 0.0		# 角度
+			ADDROT  = 0.0 0.0 0.0		# 加算角度
+			SIZE    = 165.0 32.0		# 大きさ
+			COL     = 1.0 1.0 1.0 1.0	# 色
+			TEXPOS  = 0.0 0.0			# テクスチャ座標
+			TEXSIZE = 1.0 0.143			# テクスチャサイズ
+		END_POLYGON2D
+		
+		#SET_ESA_GETSCORE
+		#	
+		#	INITPOS = 0.0 0.0 0.0
+		#	
+		#END_ESA_GETSCORE
+		
 		SET_ESASET		# エサの配置情報
 			DRAWLEVEL = 2				# 描画順位
-			POS = 134.0 11.0 0.0		# 位置
-			ROTSPEED = 0.0				# 回転速度(y軸)
+			POS = 136.0 11.0 0.0		# 位置
+			ROTSPEED = 0.05				# 回転速度(y軸)
 		END_ESASET
 		
 		SET_ESAANGLE	# エサの初期角度
-			ESA[ 0 ] = 0.0 0.0 0.0		# [0]エビ
-			ESA[ 1 ] = 0.0 0.0 0.0      # [1]カニ
-			ESA[ 2 ] = 0.0 0.0 0.0      # [2]貝
-			ESA[ 3 ] = 0.0 0.0 0.0      # [3]ヤドカリ
-			ESA[ 4 ] = 0.0 0.0 0.0      # [4]イセエビ
-			ESA[ 5 ] = 0.0 0.0 0.0      # [5]アジ
-			ESA[ 6 ] = 0.0 0.0 0.0      # [6]タラバガニ
+			ESA[ 0 ] = 1.57 0.0 0.0		# [0]貝
+			ESA[ 1 ] = 0.0 0.0 0.0      # [1]ヤドカリ
+			ESA[ 2 ] = 0.0 0.0 0.0      # [2]エビ
+			ESA[ 3 ] = 0.0 0.0 0.0      # [3]カニ
+			ESA[ 4 ] = 0.0 0.0 0.0      # [4]アジ
+			ESA[ 5 ] = 1.57 0.0 0.0      # [5]イセエビ
+			ESA[ 6 ] = 1.57 0.0 0.0     # [6]タラバガニ
 		END_ESAANGLE
 		
 	END_LAY_ESA
@@ -162,9 +195,9 @@ SET_LAYOUT_RESULT	# 配置開始
 #---------------------------------------
 	SET_LAY_PLAYER
 	
-		INITPOS = 0.0 0.0 0.0   # 初期地点
-		SPACE_WIDTH  = 0.0      # 開ける間隔(幅)
-		SPACE_HEIGHT = 0.0		# 開ける間隔(高さ)
+		INITPOS = 13.0 102.0 0.0   # 初期地点
+		SPACE_WIDTH  = 5.0      # 開ける間隔(幅)
+		SPACE_HEIGHT = 10.0		# 開ける間隔(高さ)
 		
 		SET_POLYGON2D	# 2Dポリゴン
 			TEXIDX    = 4				# [4]プレイヤーテキスト
@@ -173,7 +206,7 @@ SET_LAYOUT_RESULT	# 配置開始
 			POS     = 0.0 0.0 0.0		# 位置
 			ROT     = 0.0 0.0 0.0		# 角度
 			ADDROT  = 0.0 0.0 0.0		# 加算角度
-			SIZE    = 50.0 33.0			# 大きさ
+			SIZE    = 124.0 32.0		# 大きさ
 			COL     = 1.0 1.0 1.0 1.0	# 色
 			TEXPOS  = 0.0 0.0			# テクスチャ座標
 			TEXSIZE = 1.0 1.0			# テクスチャサイズ
@@ -186,7 +219,7 @@ SET_LAYOUT_RESULT	# 配置開始
 			POS     = 0.0 0.0 0.0		# 位置
 			ROT     = 0.0 0.0 0.0		# 角度
 			ADDROT  = 0.0 0.0 0.0		# 加算角度
-			SIZE    = 50.0 33.0			# 大きさ
+			SIZE    = 32.0 32.0			# 大きさ
 			COL     = 1.0 1.0 1.0 1.0	# 色
 			TEXPOS  = 0.0 0.0			# テクスチャ座標
 			TEXSIZE = 0.1 1.0			# テクスチャサイズ
