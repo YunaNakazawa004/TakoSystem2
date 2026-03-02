@@ -59,7 +59,7 @@ float g_fLogoOut;		// ƒƒS‚Ì“§–¾‰»
 // ƒtƒ@ƒCƒ‹–¼
 const char* c_apFilenameLogo[] =
 {
-	"data/TEXTURE/In_the_sea.png",
+	"data/TEXTURE/In_the_sea000.jpg",
 	"data/TEXTURE/LOGO.png",
 };
 

@@ -43,7 +43,9 @@
 LPDIRECT3DTEXTURE9 g_pTextureTutorial[MAX_TUTORIAL] = {};	// テクスチャへのポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffTutorial = NULL;	// 頂点バッファへのポインタ
 
-// リザルトの初期化処理
+//===================================================================
+// チュートリアルの初期化処理
+//===================================================================
 void InitTutorial(void)
 {
 	// ライトの設定
@@ -127,7 +129,7 @@ void InitTutorial(void)
 
 	// テクスチャの読み込み
 	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/In_the_sea.png",
+		"data/TEXTURE/In_the_sea000.jpg",
 		&g_pTextureTutorial[0]);
 
 	D3DXCreateTextureFromFile(pDevice,
@@ -192,7 +194,9 @@ void InitTutorial(void)
 	PlaySound(SOUND_BGM_TUTORIAL);
 }
 
+//===================================================================
 // リザルトの終了処理
+//===================================================================
 void UninitTutorial(void)
 {
 	// サウンドの停止
@@ -211,16 +215,16 @@ void UninitTutorial(void)
 	UninitMeshDome();
 
 	// メッシュフィールドの終了処理
-	UninitMeshField();
+	UninitMeshField(); 
 
 	// メッシュリングの終了処理
-	UninitMeshRing();
+	UninitMeshRing(); 
 
 	// 塵の終了処理
 	UninitSeaDust();
 
 	// 3Dエフェクトの終了処理
-	UninitEffect3D();
+	UninitEffect3D(); 
 
 	// 3Dパーティクルの終了処理
 	UninitParticle3D();
@@ -229,13 +233,13 @@ void UninitTutorial(void)
 	UninitFishes();
 
 	// タコつぼの終了処理
-	UninitPot();
+	UninitPot(); 
 
 	// エサの終了処理
-	UninitEsa();
+	UninitEsa(); 
 
 	// メッシュオービットの終了処理
-	UninitMeshOrbit();
+	UninitMeshOrbit(); 
 
 	// 水面の終了処理
 	UninitWaterSurf();
@@ -247,13 +251,13 @@ void UninitTutorial(void)
 	UninitTutorialTxt();
 
 	// クロスヘアの終了処理
-	UninitCrossHair();
+	UninitCrossHair(); 
 
 	// UIゲージアイコンの終了処理
-	UninitUiGaugeIcon();
+	UninitUiGaugeIcon(); 
 
 	// エサUIの終了処理
-	UninitUiEsa();
+	UninitUiEsa(); 
 
 	// マップの終了処理
 	UninitMap();
@@ -277,9 +281,12 @@ void UninitTutorial(void)
 		g_pVtxBuffTutorial->Release();
 		g_pVtxBuffTutorial = NULL;
 	}
+
 }
 
+//===================================================================
 // リザルトの更新処理
+//===================================================================
 void UpdateTutorial(void)
 {
 	// プレイヤーの更新処理
@@ -352,12 +359,15 @@ void UpdateTutorial(void)
 		GetJoypadTrigger(0, JOYKEY_START) == true ||
 		GetJoypadTrigger(0, JOYKEY_A) == true) && pFade == FADE_NONE)
 	{// 決定キー（ENTERキー）が押された
+
 		// モード設定
 		SetFade(MODE_GAME);
 	}
 }
 
+//===================================================================
 // リザルトの描画処理
+//===================================================================
 void DrawTutorial(void)
 {
 	// プレイヤーの描画処理

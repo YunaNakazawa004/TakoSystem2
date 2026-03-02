@@ -41,8 +41,8 @@ MeshField g_aMeshField[MAX_MESHFIELD];						// メッシュフィールドの情報
 //*****************************************************************************
 const char* c_apFilenameMeshField[MESHFIELDTYPE_MAX] =
 {
-	"data\\TEXTURE\\In_the_sea.png",
-	"data\\TEXTURE\\suna.png",
+	"data\\TEXTURE\\In_the_sea000.jpg",
+	"data\\TEXTURE\\tex_suna001.jpg",
 };
 
 //=============================================================================
@@ -272,13 +272,13 @@ void SetMeshField(MESHFIELDTYPE type, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECT
 				{// 縮退ポリゴンのところ
 					nNum++;
 
-					pIdx[0] = nCntMeshField1 - nNum;
-					pIdx[1] = nCntMeshField1 - nNum + ((int)g_aMeshField[nCntMeshField].block.x + 2);
+					pIdx[0] = (WORD)(nCntMeshField1 - nNum);
+					pIdx[1] = (WORD)(nCntMeshField1 - nNum + ((int)g_aMeshField[nCntMeshField].block.x + 2));
 				}
 				else
 				{// 縮退以外のポリゴン
-					pIdx[0] = (nCntMeshField1 - nNum) + ((int)g_aMeshField[nCntMeshField].block.x + 1);
-					pIdx[1] = (nCntMeshField1 - nNum);
+					pIdx[0] = (WORD)((nCntMeshField1 - nNum) + ((int)g_aMeshField[nCntMeshField].block.x + 1));
+					pIdx[1] = (WORD)((nCntMeshField1 - nNum));
 				}
 
 				pIdx += 2;

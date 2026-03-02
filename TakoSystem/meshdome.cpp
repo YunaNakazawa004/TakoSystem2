@@ -262,7 +262,7 @@ void SetMeshDome(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, float fRad
 			// 頂点番号データの設定
 			for (int nCntMeshDome1 = 0; nCntMeshDome1 < nNumIdxFan; nCntMeshDome1++)
 			{
-				pIdx[0] = nCntMeshDome1;
+				pIdx[0] = (WORD)nCntMeshDome1;
 
 				if (nCntMeshDome1 == nNumIdxFan - 1)
 				{// 最後は戻ってくる
@@ -281,13 +281,13 @@ void SetMeshDome(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, float fRad
 				{// 縮退ポリゴンのところ
 					nNum++;
 
-					pIdx[0] = ((int)g_aMeshDome[nCntMeshDome].block.x + 1) + nCntMeshDome1 - nNum;
-					pIdx[1] = ((int)g_aMeshDome[nCntMeshDome].block.x + 1) + nCntMeshDome1 - nNum + ((int)g_aMeshDome[nCntMeshDome].block.x + 2);
+					pIdx[0] = (WORD)(((int)g_aMeshDome[nCntMeshDome].block.x + 1) + nCntMeshDome1 - nNum);
+					pIdx[1] = (WORD)(((int)g_aMeshDome[nCntMeshDome].block.x + 1) + nCntMeshDome1 - nNum + ((int)g_aMeshDome[nCntMeshDome].block.x + 2));
 				}
 				else
 				{// 縮退以外のポリゴン
-					pIdx[0] = ((int)g_aMeshDome[nCntMeshDome].block.x + 1) + (nCntMeshDome1 - nNum) + ((int)g_aMeshDome[nCntMeshDome].block.x + 1);
-					pIdx[1] = ((int)g_aMeshDome[nCntMeshDome].block.x + 1) + (nCntMeshDome1 - nNum);
+					pIdx[0] = (WORD)(((int)g_aMeshDome[nCntMeshDome].block.x + 1) + (nCntMeshDome1 - nNum) + ((int)g_aMeshDome[nCntMeshDome].block.x + 1));
+					pIdx[1] = (WORD)(((int)g_aMeshDome[nCntMeshDome].block.x + 1) + (nCntMeshDome1 - nNum));
 				}
 
 				pIdx += 2;

@@ -69,8 +69,8 @@ char* g_apFilenamePlayer[MAX_NUMMODEL] = {};			// モデルファイルへのポインタ
 void InitPlayer(void)
 {
 	// ローカル変数宣言
-	LPDIRECT3DDEVICE9 pDevice = GetDevice();			// デバイスへのポインタ
-	D3DXMATERIAL* pMat;
+	//LPDIRECT3DDEVICE9 pDevice = GetDevice();			// デバイスへのポインタ
+	//D3DXMATERIAL* pMat;
 	Player* pPlayer = GetPlayer();
 
 	// プレイヤーの情報の初期化
@@ -938,7 +938,7 @@ void SetRandomPlayer(int nAmount)
 	{
 		D3DXVECTOR3 pos;
 		float fAngle = (D3DX_PI * 2.0f) * ((float)((nCntPlayer + 1) * (360.0f / nAmount)) / 360.0f);
-		float fsin = sinf(fAngle);
+		//float fsin = sinf(fAngle);
 
 		pos.x = sinf(fAngle) * (INCYLINDER_RADIUS + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) + 1))));
 		pos.y = (float)(rand() % (int)(CYLINDER_HEIGHT * 0.6f)) + (CYLINDER_HEIGHT * 0.2f);
@@ -974,8 +974,8 @@ void LoadPlayer(void)
 
 	// キャラクターセット用の変数
 	int nNumParts = 0;		// 読み込むパーツ数
-	float fRadius = 0.0f;	// キャラクターの半径
-	float fHeight = 0.0f;	// キャラクターの高さ
+	//float fRadius = 0.0f;	// キャラクターの半径
+	//float fHeight = 0.0f;	// キャラクターの高さ
 	float fMove = 0.0f;		// キャラクターの移動量
 	float fJump = 0.0f;		// キャラクターのジャンプ量
 	D3DXVECTOR2 Blowoff = D3DXVECTOR2(0.0f, 0.0f);		// 吹っ飛び量

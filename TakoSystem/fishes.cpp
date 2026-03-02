@@ -54,7 +54,7 @@ void InitFishes(void)
 	Fishes* pFishes = GetFishes();					// 生き物の情報を獲得
 	
 	D3DXMATERIAL* pMat;								// マテリアルポインタ
-	int NumScanModel = 0;							// カウンタ
+	//int NumScanModel = 0;							// カウンタ
 
 	// 生き物の情報の初期化
 	for (int nCntFishes = 0; nCntFishes < FISHES_MAX_NUM; nCntFishes++, pFishes++)
@@ -144,7 +144,7 @@ void UninitFishes(void)
 {
 #if 1
 	// ローカル変数宣言
-	Fishes* pFishes = GetFishes();
+	//Fishes* pFishes = GetFishes();
 	Fishes_Model* pFishesModel = GetFishesModel();
 
 	for (int nCntFishes = 0; nCntFishes < FISHES_MAX_MODELS; nCntFishes++, pFishesModel++)
@@ -482,8 +482,8 @@ void LoadFishes(void)
 
 	// キャラクターセット用の変数
 	int nNumParts = 0;		// 読み込むパーツ数
-	float fRadius = 0.0f;	// キャラクターの半径
-	float fHeight = 0.0f;	// キャラクターの高さ
+	//float fRadius = 0.0f;	// キャラクターの半径
+	//float fHeight = 0.0f;	// キャラクターの高さ
 	float fMove = 0.0f;		// キャラクターの移動量
 	float fJump = 0.0f;		// キャラクターのジャンプ量
 	D3DXVECTOR2 Blowoff = D3DXVECTOR2(0.0f, 0.0f);		// 吹っ飛び量

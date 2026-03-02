@@ -24,7 +24,7 @@ MeshOrbit g_aMeshOrbit[MAX_MESHORBIT];			// メッシュオービットの情報
 //*****************************************************************************
 const char* c_apFilenameMeshOrbit[1] =
 {
-	"data\\TEXTURE\\In_the_sea.png",
+	"data\\TEXTURE\\In_the_sea000.jpg",
 };
 
 //=============================================================================
@@ -110,7 +110,7 @@ void InitMeshOrbit(void)
 
 		for (int nCntPoint = 0; nCntPoint < MAX_ORBIT_VTX; nCntPoint++)
 		{
-			pIdx[0] = nCntPoint;
+			pIdx[0] = (WORD)nCntPoint;
 
 			pIdx++;
 		}
@@ -287,8 +287,8 @@ void DrawMeshOrbit(void)
 			pDevice->SetTexture(0, g_apTextureMeshOrbit[0]);
 
 			// ポリゴンの描画
-			int primitiveCount = (MAX_ORBIT_VTX / 2 - 1) * 2;
-			HRESULT hr = pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, MAX_ORBIT_VTX, 0, MAX_ORBIT_VTX - 2);
+			//int primitiveCount = (MAX_ORBIT_VTX / 2 - 1) * 2;
+			/*HRESULT hr = */pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, MAX_ORBIT_VTX, 0, MAX_ORBIT_VTX - 2);
 			//pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, MAX_ORBIT_VTX - 2);
 			//OutputDebugStringA("Before DrawMeshOrbit\n");
 			//HRESULT hr = pDevice->DrawPrimitive(D3DPT_LINELIST, 0, MAX_ORBIT_VTX / 2);

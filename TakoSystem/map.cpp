@@ -228,7 +228,7 @@ void UpdateMap(void)
 	D3DXVECTOR3 posRate[MAX_PLAYER] = {};										// 中心地からのプレイヤーの位置の割合
 	Player* pPlayer = GetPlayer();
 	Map* pMap = GetMap();
-	MapTextureInfo* pMapInfo = &g_aMapTexInfo[0];
+	//MapTextureInfo* pMapInfo = &g_aMapTexInfo[0];
 
 	// 頂点バッファをロックし、頂点情報へのポインタを取得
 	g_pVtxBuffMap->Lock(0, 0, (void**)&pVtx, 0);

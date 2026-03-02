@@ -365,13 +365,13 @@ void UpdateRanking(void)
 	VERTEX_3D* pVtx3D;							// 頂点情報へのポインタ
 	FADE pFade = GetFade();
 	Fishes* pFishes = GetFishes();
-	Camera* pCamera = GetCamera();
-	int nPlayerNum = GetPlayerSelect();
+	//Camera* pCamera = GetCamera();
+	//int nPlayerNum = GetPlayerSelect();
 	static float N = 1;
-	int nPlayerCnt = 0;
+	int nPlayerCnt, nCntRank, nCntRank2, n3D, n2D, nRank;
 	int nCpuCnt = 0;
 	static int TimeCnt = 0;						// 経過時間のカウント
-
+	
 	if (pFade == FADE_NONE)
 	{// フェードが何もしていない状態のみ発動
 
@@ -398,7 +398,7 @@ void UpdateRanking(void)
 	// 3Dパーティクルの更新処理
 	UpdateParticle3D();
 
-	for (int nCntRank = 0, n3D = 0, n2D = 0; nCntRank < MAX_RANKINGOBJ; nCntRank++)
+	for (nCntRank = 0, n3D = 0, n2D = 0; nCntRank < MAX_RANKINGOBJ; nCntRank++)
 	{ // テクスチャ位置を動かす
 
 		if (g_aRank[nCntRank].TexIdx == 1 && g_aRank[nCntRank].NumIdx == 1)
@@ -448,7 +448,7 @@ void UpdateRanking(void)
 		}
 	}
 
-	for (int nCntRank = 0, nCntRank2 = 0, nPlayerCnt = 0, nCpuCnt = 0; nCntRank < MAX_RANK; nCntRank++)
+	for (nCntRank = 0, nCntRank2 = 0, nPlayerCnt = 0, nCpuCnt = 0; nCntRank < MAX_RANK; nCntRank++)
 	{ // 番号をプレイヤーの上に移動させる
 
 		if (g_aRank_Info[nCntRank].nCharaIdx == RESULT_PLAYER_PLAYER)
@@ -504,7 +504,7 @@ void UpdateRanking(void)
 		// １位を中心に移動、その他を周りに倒す
 		float y = 0, rot = 0;
 
-		for (int nCntRank = 0, nRank = 0, nCpuCnt = 0; nCntRank < MAX_RANK; nCntRank++)
+		for (nCntRank = 0, nRank = 0, nCpuCnt = 0; nCntRank < MAX_RANK; nCntRank++)
 		{
 			if (g_aRank_Info[nCntRank].nRank == 0)
 			{

@@ -475,7 +475,7 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 			fDot = (-vecMove.x * vecNor.x) + (-vecMove.z * vecNor.z);
 
 			// äOêœ
-			float f = ((vecMove.z * vecNor.x) - (vecMove.x * vecNor.z));
+			//float f = ((vecMove.z * vecNor.x) - (vecMove.x * vecNor.z));
 
 			// åì_ÇÃäÑçá
 			fRate = ((vecToPos.z * vecMove.x) - (vecToPos.x * vecMove.z)) /

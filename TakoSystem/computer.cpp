@@ -1010,7 +1010,7 @@ void InkAttack(Computer* pComputer)
 void Explore(Computer* pComputer)
 {
 	D3DXVECTOR3 posDiff = pComputer->extarget - pComputer->phys.pos;
-	float fDist = D3DXVec3Length(&posDiff);
+	//float fDist = D3DXVec3Length(&posDiff);
 
 	if (pComputer->nExploreCooldown % (ONE_SECOND * 3) == 0)
 	{// 5秒に1回設定
@@ -2170,7 +2170,7 @@ void FindTentacleTarget(Computer* pComputer)
 		D3DXVECTOR3 dir(cosf(angle), 0, sinf(angle));
 
 		// 外周と中央柱の両方にレイキャスト
-		float distOuter, distInner;
+		float /*distOuter, */distInner;
 		//bool hitOuter = RaycastToOuterWall(pComputer->phys.pos, dir, &distOuter);
 		bool hitInner = RaycastToInnerPillar(pComputer->phys.pos, dir, &distInner);
 
@@ -2534,7 +2534,7 @@ void SetRandomComputer(int nAmount)
 	{
 		D3DXVECTOR3 pos;
 		float fAngle = (D3DX_PI * 2.0f) * ((float)((nCntCPU + 1) * (360.0f / nAmount)) / 360.0f);
-		float fsin = sinf(fAngle);
+		//float fsin = sinf(fAngle);
 
 		pos.x = sinf(fAngle) * (INCYLINDER_RADIUS + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) + 1))));
 		pos.y = (float)(rand() % (int)(CYLINDER_HEIGHT * 0.6f)) + (CYLINDER_HEIGHT * 0.2f);
@@ -2720,8 +2720,8 @@ void LoadComputer(void)
 
 	// キャラクターセット用の変数
 	int nNumParts = 0;		// 読み込むパーツ数
-	float fRadius = 0.0f;	// キャラクターの半径
-	float fHeight = 0.0f;	// キャラクターの高さ
+	//float fRadius = 0.0f;	// キャラクターの半径
+	//float fHeight = 0.0f;	// キャラクターの高さ
 	float fMove = 0.0f;		// キャラクターの移動量
 	float fJump = 0.0f;		// キャラクターのジャンプ量
 	D3DXVECTOR2 Blowoff = D3DXVECTOR2(0.0f, 0.0f);		// 吹っ飛び量

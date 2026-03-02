@@ -305,7 +305,7 @@ void SetRandomPot(int nAmount)
 	{
 		D3DXVECTOR3 pos;
 		float fAngle = (D3DX_PI * 2.0f) * ((float)((nCntPot + 1) * (360.0f / nAmount)) / 360.0f);
-		float fsin = sinf(fAngle);
+		//float fsin = sinf(fAngle);
 
 		pos.x = sinf(fAngle) * (INCYLINDER_RADIUS + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) + 1))));
 		pos.y = 0.0f;
@@ -494,7 +494,7 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 						{
 							if (pComputer->nFoodCount < pComputer->nMaxFood * 8)
 							{// Ž‚Ä‚é”‚¾‚¯Ž‚Â
-								int nIdx = Dequeue(&pPot->esaQueue);
+								//int nIdx = Dequeue(&pPot->esaQueue);
 								pPot->nFood--;
 
 								//Enqueue(&pComputer->esaQueue, nIdx);

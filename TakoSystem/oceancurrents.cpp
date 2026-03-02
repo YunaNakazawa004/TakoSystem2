@@ -115,13 +115,13 @@ int g_nIdxOCTimer;
 // テクスチャファイル情報
 const char* c_apFilenameOceanCurrents[] =
 {
-	"data/TEXTURE/ui_OceanCurrents/whirlpool_warning.png",		// [0]渦潮注意標識
-	"data/TEXTURE/ui_OceanCurrents/tex_alpha000.jpg",			// [1]バックテクスチャ
-	"data/TEXTURE/ui_OceanCurrents/tex_warning000.jpg",			// [2]トラテープ
-	"data/TEXTURE/ui_OceanCurrents/text_warning.png",			// [3]テキスト「warning!」
-	"data/TEXTURE/ui_OceanCurrents/text_warning_whirlpool.png",	// [4]テキスト「渦潮注意」
-	"data/TEXTURE/ui_OceanCurrents/text_Hide_behind.png",		// [5]テキスト「物陰に隠れろ」
-	"data/TEXTURE/number000.png",								// [6]数字
+	"data/TEXTURE/whirlpool_warning.png",		// [0]渦潮注意標識
+	"data/TEXTURE/tex_alpha000.jpg",			// [1]バックテクスチャ
+	"data/TEXTURE/tex_warning000.jpg",			// [2]トラテープ
+	"data/TEXTURE/text_warning.png",			// [3]テキスト「warning!」
+	"data/TEXTURE/text_warning_whirlpool.png",	// [4]テキスト「渦潮注意」
+	"data/TEXTURE/text_Hide_behind.png",		// [5]テキスト「物陰に隠れろ」
+	"data/TEXTURE/number000.png",				// [6]数字
 };
 
 OCUI_info g_aOCUiInfo[] =

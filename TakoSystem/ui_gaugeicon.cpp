@@ -223,9 +223,6 @@ void UpdateUiGaugeIcon(void)
 {
 	// 変数宣言 ================================================
 
-	// デバイスの所得
-	LPDIRECT3DDEVICE9 pDevice = GetDevice();
-
 	VERTEX_2D* pVtx;	// 頂点情報へのポインタを宣言
 
 	// =========================================================
@@ -420,7 +417,7 @@ void UpdateStateUiGaugeIcon(int nIdxUiGaugeIcon)
 	// 変数宣言 ================================================
 
 	// デバイスの所得
-	LPDIRECT3DDEVICE9 pDevice = GetDevice();
+	//LPDIRECT3DDEVICE9 pDevice = GetDevice();
 
 	// =========================================================
 

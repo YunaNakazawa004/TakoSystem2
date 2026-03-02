@@ -41,6 +41,8 @@ void Uninit(void);
 void Update(void);
 void Draw(void);
 
+
+
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
@@ -50,11 +52,17 @@ MODE g_mode = MODE_TITLE;							// 現在のモード
 int g_nCountFPS = 0;								// FPSカウンタ
 bool g_bWindowSize = TRUE;							// ウィンドウサイズ(TRUE : ウィンドウ FALSE : フルスクリーン)
 
+int g_nDebugCounter = 0;
+
 //=============================================================================
 // メイン関数
 //=============================================================================
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, LPSTR lpCmdLine, int nCmdShow)
 {
+#ifdef _DEBUG
+	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF);
+#endif
+
 	// ローカル変数宣言
 	DWORD dwCurrentTime;		// 現在時刻
 	DWORD dwExecLastTime;		// 最後に処理した時刻
@@ -107,6 +115,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, LPSTR lpCmdLine
 	{// 初期化処理が失敗した場合
 		return -1;
 	}
+
+	g_nDebugCounter = 0;	// デバッグカウンタを初期化
 
 	// 分解能を設定
 	timeBeginPeriod(1);
@@ -322,6 +332,7 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		return E_FAIL;
 	}
 
+	// 乱数の種を設定
 	srand((unsigned int)time(NULL));
 
 	// カメラの初期化処理
@@ -421,7 +432,8 @@ void Update(void)
 	// デバッグ表示の更新処理
 	UpdateDebugProc();
 	PrintDebugProc("FPS : %d\n", g_nCountFPS);
-
+	PrintDebugProc("DebugCounter : %d\n", g_nDebugCounter);
+	
 	// キーボードの更新処理
 	UpdateKeyboard();
 
@@ -562,6 +574,7 @@ void Draw(void)
 			LocalFree(errorString);
 		}
 	}
+
 #endif
 	}
 
@@ -709,4 +722,20 @@ void SetFog(D3DXCOLOR col, float fFogStart, float fFogEnd, bool bUse)
 
 	// 範囲ベースのフォグを使用
 	g_pD3DDevice->SetRenderState(D3DRS_RANGEFOGENABLE, TRUE);
+}
+
+//=============================================================================
+// デバッグカウンタを加算
+//=============================================================================
+void DebugADD(void)
+{
+	g_nDebugCounter++;
+}
+
+//=============================================================================
+// デバッグカウンタを加算
+//=============================================================================
+void DebugSUB(void)
+{
+	g_nDebugCounter--;
 }
