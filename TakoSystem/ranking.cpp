@@ -159,7 +159,7 @@ void InitRanking(void)
 
 	// テクスチャの読み込み
 	D3DXCreateTextureFromFile(pDevice,
-		"data\\TEXTURE\\test1.png",
+		"data\\TEXTURE\\test1.jpg",
 		&g_pTextureRank[0]);
 
 	// テクスチャの読み込み

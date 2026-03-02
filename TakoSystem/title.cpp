@@ -218,7 +218,7 @@ void InitTitle(void)
 	SetLightColor(2, D3DXCOLOR(0.3f, 0.3f, 0.5f, 0.3f));
 
 	// CPUの初期化処理
-	InitComputer(); DebugADD();
+	InitComputer();
 
 	// メッシュシリンダーの初期化処理
 	InitMeshCylinder();	DebugADD();
@@ -226,16 +226,16 @@ void InitTitle(void)
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(OUTCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), true, MESHCYLINDERTYPE_SEA);
 
 	// メッシュフィールドの初期化処理
-	InitMeshField(); DebugADD();
+	InitMeshField();
 
 	// メッシュオービットの初期化処理
-	InitMeshOrbit(); DebugADD();
+	InitMeshOrbit();
 
 	// 水面の初期化処理
-	InitWaterSurf(); DebugADD();
+	InitWaterSurf();
 
 	// 配置物の初期化処理
-	InitObject("data\\objpos001.txt"); DebugADD();	// 必ず最後(メッシュ後)に初期化する
+	InitObject("data\\objpos001.txt");	// 必ず最後(メッシュ後)に初期化する
 
 	// サウンドの再生
 
@@ -267,25 +267,23 @@ void UninitTitle(void)
 		g_pVtxBuffTitle = NULL;
 	}
 
-	DebugSUB();
-
 	// CPUの終了処理
-	UninitComputer(); DebugSUB();
+	UninitComputer();
 
 	// メッシュシリンダーの終了処理
-	UninitMeshCylinder(); DebugSUB();
+	UninitMeshCylinder();
 
 	// メッシュフィールドの終了処理
-	UninitMeshField(); DebugSUB();
+	UninitMeshField();
 
 	// メッシュオービットの終了処理
-	UninitMeshOrbit(); DebugSUB();
+	UninitMeshOrbit();
 
 	// 配置物の終了処理
-	UninitObject(); DebugSUB();
+	UninitObject();
 
 	// 水面の終了処理
-	UninitWaterSurf(); DebugSUB();
+	UninitWaterSurf();
 }
 
 //===================================================================
@@ -566,7 +564,7 @@ void UpdateTitle(void)
 		g_TitleDeley = TITLE_DELEY_MAX;
 	}
 
-	if (pFade == FADE_NONE && g_PressEnterDeley > RANKING_DELEY)
+	if (pFade == FADE_NONE || g_PressEnterDeley > RANKING_DELEY)
 	{// 時間経過でランキングへ移行
 
 		SetFade(MODE_LOGO);
