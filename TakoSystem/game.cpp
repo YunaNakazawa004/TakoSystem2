@@ -306,12 +306,14 @@ void UpdateGame(void)
 	// レディの更新処理
 	UpdateReady(); FileLogPass("ready");
 
+#ifdef _DEBUG
 #if 0
 	if (bGameStart == true)
 	{// ゲーム開始状態
 
 		SetFade(MODE_TUTORIAL);	// ゲームにフェード
 	}
+#endif
 #endif
 
 	if (bGameStart == true)

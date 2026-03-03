@@ -196,6 +196,8 @@ void UpdateUiEsa(void)
 
 	// =========================================================
 
+#ifdef _DEBUG
+
 #if 0	// デバッグ
 
 	if (GetKeyboardTrigger(DIK_RSHIFT))
@@ -218,6 +220,8 @@ void UpdateUiEsa(void)
 		PrintDebugProc("\nUIESA[0]_POS %f %f %f", g_aUiEsaParent[0].pos.x, g_aUiEsaParent[0].pos.y, g_aUiEsaParent[0].pos.z);
 	
 		//PrintDebugProc("\nUIESA(PALENT)[%d]_TOTAL %d", nCntUiEsa, g_aUiEsaParent[nCntUiEsa].nNumEsa);
+
+#endif
 
 #endif
 
