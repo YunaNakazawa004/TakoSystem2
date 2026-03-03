@@ -222,8 +222,9 @@ void UpdateReady(void)
 	VERTEX_2D* pVtx;					//頂点情報へのポインタ
 	int nTime = GetTime();
 
+
 #ifdef _DEBUG
-	if (GetKeyboardTrigger(DIK_I) == true)
+	if (GetKeyboardTrigger(DIK_9) == true)
 	{
 		g_aReady[0].Idx = 4;
 		bfrag[0] = false; 

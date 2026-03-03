@@ -18,6 +18,7 @@
 #include "fishes.h"
 #include "watersurf.h"
 
+#include "confetti.h"
 #include "effect_3d.h"
 #include "particle_3d.h"
 #include "input.h"
@@ -121,6 +122,9 @@ void InitRanking(void)
 
 	// 3Dパーティクルの初期化処理
 	InitParticle3D();
+
+	// 紙吹雪の初期化処理
+	InitConfetti();
 
 	GetRankingForResult(&g_aGRP[0], MAX_RANK);
 
@@ -328,6 +332,9 @@ void UninitRanking(void)
 	// 3Dパーティクルの終了処理
 	UninitParticle3D();
 
+	// 紙吹雪の終了処理
+	UninitConfetti();
+
 	// カメラの終了処理
 	UninitCamera();
 
@@ -373,12 +380,12 @@ void UpdateRanking(void)
 	VERTEX_3D* pVtx3D;							// 頂点情報へのポインタ
 	FADE pFade = GetFade();
 	Fishes* pFishes = GetFishes();
-	//Camera* pCamera = GetCamera();
-	//int nPlayerNum = GetPlayerSelect();
 	static float N = 1;
 	int nPlayerCnt, nCntRank, nCntRank2, n3D, n2D, nRank;
 	int nCpuCnt = 0;
 	static int TimeCnt = 0;						// 経過時間のカウント
+	static int TimeCnt2 = 0;					// 経過時間のカウント
+	float r = 0.0f, g = 0.0f, b = 0.0f;
 
 	if (pFade == FADE_IN)
 	{// フェードが何もしていない状態のみ発動
@@ -393,6 +400,11 @@ void UpdateRanking(void)
 	if (GetKeyboardPress(DIK_A) == true)
 	{
 		N -= 1;
+		SetCameraPos(0, { 0.0f + N ,80.0f ,-235.0f - N }, { 0.0f,55.0f,15.0f }, { 0.0f,0.0f,0.0f }, CAMERATYPE_STOP);
+	}
+	else
+	{
+		N = 0;
 	}
 #endif
 
@@ -410,6 +422,9 @@ void UpdateRanking(void)
 
 	// 3Dパーティクルの更新処理
 	UpdateParticle3D();
+
+	// 紙吹雪の更新処理
+	UpdateConfetti();
 
 	for (nCntRank = 0, n3D = 0, n2D = 0; nCntRank < MAX_RANKINGOBJ; nCntRank++)
 	{ // テクスチャ位置を動かす
@@ -548,6 +563,19 @@ void UpdateRanking(void)
 				nCpuCnt += 2;
 			}
 		}
+	}
+	if (TimeCnt >= 420)
+	{
+		r = ((rand() % 2) * 1.0f), g = ((rand() % 2) * 1.0f), b = ((rand() % 2) * 1.0f);
+
+		if (r == 0 && g == 0 && b == 0)
+		{
+			r = 1.0f;
+			g = 1.0f;
+			b = 1.0f;
+		}
+
+		SetConfetti(300,/*pos*/{ float(rand() % 600 - 300),200.0f,float(rand() % 300 - 150) },/*rot*/{ (rand() % 628 - 314) / 100.0f, (rand() % 628 - 314) / 100.0f, (rand() % 628 - 314) / 100.0f }, D3DXVECTOR3(0.0f, -1.0f, 0.0f), (rand() % 150 + 50) / 100.0f, (rand() % 300 + 150) / 100.0f, 0.00f, D3DXCOLOR(r, g, b, 1.0f));
 	}
 
 	// 一定時間経過ORキー入力
@@ -692,5 +720,8 @@ void DrawRanking(void)
 
 	// 3Dパーティクルの描画処理
 	DrawParticle3D();
+
+	// 紙吹雪の描画処理
+	DrawConfetti();
 
 }

@@ -150,6 +150,7 @@
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="computer.cpp" />
+    <ClCompile Include="confetti.cpp" />
     <ClCompile Include="crosshair.cpp" />
     <ClCompile Include="debugproc.cpp" />
     <ClCompile Include="effect_3d.cpp" />
@@ -194,6 +195,7 @@
   <ItemGroup>
     <ClInclude Include="camera.h" />
     <ClInclude Include="computer.h" />
+    <ClInclude Include="confetti.h" />
     <ClInclude Include="crosshair.h" />
     <ClInclude Include="debugproc.h" />
     <ClInclude Include="effect_3d.h" />
