@@ -9,6 +9,7 @@
 #include "oceancurrents.h"
 #include "meshorbit.h"
 #include "debugproc.h"
+#include "input.h"
 
 //*****************************************************************************
 // É}ÉNÉçíËã`
@@ -131,13 +132,11 @@ void UpdateSeaDust(void)
 			continue;
 		}
 
-		//float fAngleMove = (rand() % 100 + 1) / 100000.0f;
+		static float fAngle = 0.0f;
+		fAngle += 0.01f;
+		CorrectAngle(&fAngle, fAngle);
 
-		//static float fAngle = 0.0f;
-		//fAngle += fAngleMove * 0.01f;
-		//CorrectAngle(&fAngle, fAngle);
-
-		//g_aSeaDust[nCntDust].pos.y += cosf(fAngle);
+		g_aSeaDust[nCntDust].pos.y += cosf(fAngle) * 0.5f;
 	}
 }
 
