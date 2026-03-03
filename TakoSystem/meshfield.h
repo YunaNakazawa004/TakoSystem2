@@ -28,5 +28,6 @@ void UpdateMeshField(void);
 void DrawMeshField(void);
 void SetMeshField(MESHFIELDTYPE type, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVECTOR2 size);
 bool GetMeshFieldType(MESHFIELDTYPE type, D3DXVECTOR3 pos);
+void CollisionMeshField(D3DXVECTOR3 pos, D3DXVECTOR3 rot, float fRadius, float fHeight);
 
 #endif

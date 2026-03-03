@@ -7,6 +7,7 @@
 #include "player.h"
 #include "computer.h"
 #include "ui_esa.h"
+#include "meshfield.h"
 #include "meshcylinder.h"
 #include "meshring.h"
 #include "meshorbit.h"
@@ -729,6 +730,7 @@ void UpdatePlayer(void)
 			}
 
 			// “–‚½‚è”»’è
+			CollisionMeshField(pPlayer->pos, pPlayer->rot, pPlayer->fRadius, pPlayer->fHeight);
 			CollisionPot(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight);
 			CollisionObject(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight, false);
 			CollisionMeshCylinder(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight, false);
