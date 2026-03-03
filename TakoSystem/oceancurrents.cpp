@@ -291,6 +291,7 @@ void UpdateOceanCurrents(void)
 
 	// =========================================================
 
+#ifdef _DEBUG
 #if 0
 	if (g_nNumSelect != -1)
 	{
@@ -310,6 +311,7 @@ void UpdateOceanCurrents(void)
 		PrintDebugProc("\n\nOCPOLYGON[%d]_POS %f %f %f", g_nNumSelect, g_aOCPolygon[g_nNumSelect].offPos.x, g_aOCPolygon[g_nNumSelect].offPos.y, g_aOCPolygon[g_nNumSelect].offPos.z);
 		//PrintDebugProc("\n\nOCPOLYGON[%d]_WIDTH %f", g_nNumSelect, g_aOCPolygon[g_nNumSelect].offPos.x, g_aOCPolygon[g_nNumSelect].offPos.y, g_aOCPolygon[g_nNumSelect].offPos.z);
 	}
+#endif
 #endif
 
 	// äCó¨ÇÃèÛë‘ÇÃçXêVèàóù

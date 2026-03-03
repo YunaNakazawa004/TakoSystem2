@@ -222,6 +222,7 @@ void UpdateReady(void)
 	VERTEX_2D* pVtx;					//頂点情報へのポインタ
 	int nTime = GetTime();
 
+#ifdef _DEBUG
 	if (GetKeyboardTrigger(DIK_I) == true)
 	{
 		g_aReady[0].Idx = 4;
@@ -229,6 +230,7 @@ void UpdateReady(void)
 		g_aReady[0].bDisp = true;
 		g_aReady[0].nCnt = 0;
 	}
+#endif
 
 	// 頂点バッファをロックし,頂点情報へのポインタを取得
 	g_pVtxBuffReady->Lock(0, 0, (void**)&pVtx, 0);
@@ -315,7 +317,6 @@ void UpdateReady(void)
 			}
 		}
 	}
-
 
 	for (int nCntReady = 0; nCntReady < MAX_READY; nCntReady++)
 	{ // 動かす

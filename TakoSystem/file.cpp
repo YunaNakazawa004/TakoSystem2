@@ -114,6 +114,8 @@ bool FileExtractText(FILE* pFile, char* pReadText)
 void FileMovePosion(const char* pSaveFilename, D3DXVECTOR3* pPos, float fSpeed,		
 					int nRightKey, int nLeftKey, int nUpKey, int nDownKey, int nForKey, int nBackKey)
 {
+#ifdef _DEBUG
+
 	// キーが押された時にその方向に移動
 	if (GetKeyboardPress(nRightKey)) pPos->x += fSpeed;		// 設定された「右キー」が押された時「+X」方向に移動　
 	if (GetKeyboardPress(nLeftKey))  pPos->x -= fSpeed;		// 設定された「左キー」が押された時「-X」方向に移動
@@ -142,6 +144,7 @@ void FileMovePosion(const char* pSaveFilename, D3DXVECTOR3* pPos, float fSpeed,
 		// ▲ファイルを閉じる
 		fclose(pFile);
 	}
+#endif
 }
 
 //========================================================================
@@ -161,6 +164,8 @@ void FileLogPass(const char* pPassPointName)
 
 	return;	// ファイルにログを書き込まない
 #endif
+
+#ifdef _DEBUG
 
 	// 記録上限
 	if (g_unNumFileSave == 0)
@@ -193,4 +198,6 @@ void FileLogPass(const char* pPassPointName)
 
 	// 前の時刻を現在の時刻に設定
 	g_ulTimeOld = ulCurrentTime;
+
+#endif
 }

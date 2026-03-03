@@ -291,7 +291,7 @@ void UninitTitle(void)
 //===================================================================
 void UpdateTitle(void)
 {
-
+#ifdef _DEBUG
 #if 0 // タイトルの遷移(F11で解除)
 
 	if (GetKeyboardTrigger(DIK_F11)) g_bTestTitle = (g_bTestTitle == true) ? false : true;
@@ -301,6 +301,7 @@ void UpdateTitle(void)
 		SetFade(MODE_LOGO);
 	}
 #endif 
+#endif
 
 	// CPUの更新処理
 	UpdateComputer();
