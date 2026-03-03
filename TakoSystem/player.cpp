@@ -448,6 +448,8 @@ void UpdatePlayer(void)
 				pPlayer->vecX.y += (0.0f - pPlayer->vecX.y) * DASH_MOVE;
 				pPlayer->vecX.z += (0.0f - pPlayer->vecX.z) * DASH_MOVE;
 
+				SetVibration(nCntPlayer, 1000, 1300, 1);
+
 				if (pPlayer->vecX.x < MOVE_ERROR && pPlayer->vecX.x > -MOVE_ERROR &&
 					pPlayer->vecX.y < MOVE_ERROR && pPlayer->vecX.y > -MOVE_ERROR &&
 					pPlayer->vecX.z < MOVE_ERROR && pPlayer->vecX.z > -MOVE_ERROR)
@@ -539,6 +541,8 @@ void UpdatePlayer(void)
 						pPlayer->state != PLAYERSTATE_INK && pPlayer->state != PLAYERSTATE_BACKAREA)
 					{// GŽè‚ª’Êíó‘Ô‚Ì‚Æ‚«‚¾‚¯
 						SetMotionPlayer(nCntPlayer, MOTIONTYPE_OCEANCULLENT, true, 20);
+
+						SetVibration(nCntPlayer, 10000, 10000, 1);
 					}
 
 					if (pPlayer->nFood > 0 && nCounter % 15 == 0)
