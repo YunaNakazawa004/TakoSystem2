@@ -434,7 +434,8 @@ void UpdateResult(void)
 	float fLength, fAngle;
 
 	// ===============================================
-
+	SetFade(MODE_RANKING);
+	return;
 	// リザルトの獲得スコアUIの更新
 	UpdateUiResultGetScore();
 
