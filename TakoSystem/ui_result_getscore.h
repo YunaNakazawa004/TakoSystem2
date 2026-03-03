@@ -31,6 +31,9 @@ void DrawUiResultGetScore(void);		// リザルトの獲得スコアのUIの描画処理
 void UpdateVtxUiResultGetScore			// リザルトの獲得スコアのUIの頂点更新処理 
 (int nIdxP, int nIdxC);
 
+void SetDrawUiResultGetScore
+(int nIdx);
+
 int SetUiResultGetScorePolygon			// リザルトの獲得スコアのUIのポリゴンの設定処理
 (int nIdxTexture, bool bAlphaBlend, UI_RESULTGSPOLYGONTYPE type,
  D3DXVECTOR3 pos, D3DXVECTOR3 rot,
@@ -50,7 +53,7 @@ int CalcNumDigit						// 桁数を求める処理
 void CalcDigit							// 桁の値を求める処理
 (int nNum, int nDigit, int* pTexU, int nSizeTexU);
 
-bool GetCompletGetScore(void);			// 完了したかを返す
+bool GetCompletGetScore(void);			// 完了したかを返す処理
 
 #endif
 

@@ -197,6 +197,7 @@ void InitResult(void)
 		g_aResultPolygon[nCntResult].col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);		// 色を初期化
 		g_aResultPolygon[nCntResult].texPos = D3DXVECTOR2(0.0f, 0.0f);				// テクスチャ座標を初期化
 		g_aResultPolygon[nCntResult].texSize = D3DXVECTOR2(0.0f, 0.0f);				// テクスチャサイズを初期化
+		g_aResultPolygon[nCntResult].bDisp = false;									// 表示してない状態に設定
 		g_aResultPolygon[nCntResult].bUse = false;									// 使用しない状態に設定
 	}
 
@@ -319,7 +320,7 @@ void InitResult(void)
 	g_pVtxBuffResult->Unlock();
 
 #ifdef _DEBUG
-#if 1	// 渡す値の確認用 *************************************************************
+#if 0	// 渡す値の確認用 *************************************************************
 
 	// 変数宣言 =================================
 
@@ -339,8 +340,8 @@ void InitResult(void)
 	int aHaveEsa[c_nNumPlayer][c_nMaxHave] =
 	{// エサの種類情報
 
-		{0, 1, 1, 1,-1,-1,-1,-1,-1,-1},	// [0]番目のプレイヤーのエサの所持状況
-		{0, 2,-1,-1,-1,-1,-1,-1,-1,-1},	// [1]番目のプレイヤーのエサの所持状況
+		{0, 3, 1, 1, 0, 0,-1,-1,-1,-1},	// [0]番目のプレイヤーのエサの所持状況
+		{0, 2, 0,-1,-1,-1,-1,-1,-1,-1},	// [1]番目のプレイヤーのエサの所持状況
 		{0, 3,-1,-1,-1,-1,-1,-1,-1,-1},	// [2]番目のプレイヤーのエサの所持状況
 		{0, 4,-1,-1,-1,-1,-1,-1,-1,-1},	// [3]番目のプレイヤーのエサの所持状況
 	};
@@ -493,12 +494,14 @@ void UpdateResult(void)
 
 #if 1
 
-	if(g_resultState == RESULTSTATE_BEGIN) g_nCounterResultState--;	// リザルトの状態カウンタをデクリメント
+	 //g_nCounterResultState--;	// リザルトの状態カウンタをデクリメント
 
 	// リザルトの状態別処理
 	switch(g_resultState)
 	{
 	case RESULTSTATE_BEGIN:
+
+		g_nCounterResultState--;	// リザルトの状態カウンタをデクリメント
 
 		if (g_nCounterResultState <= 0)
 		{// 状態カウンタが0になった
@@ -513,6 +516,12 @@ void UpdateResult(void)
 
 	case RESULTSTATE_WAIT:
 	
+		if (GetCompletGetScore() == true)
+		{// UIの設定が完了した
+
+			g_nCounterResultState--;	// リザルトの状態カウンタをデクリメント
+		}
+
 		if (g_nCounterResultState <= 0)
 		{// カウンタが0になった
 
@@ -566,13 +575,14 @@ void UpdateResult(void)
 		// レイアウトの設定
 		SetResult(RESULTLAYTYPE_ESA, g_nNowEsaType);
 		
-		g_resultState = RESULTSTATE_WAIT;			// 状態を待機状態に設定
-		g_nCounterResultState = (int)WAIT_SETING;	// 待機時間を設定
+		g_resultState = RESULTSTATE_WAIT;		// 状態を待機状態に設定
+		g_nCounterResultState = g_nSetingTime;	// 待機時間を設定
 		
 		break;
 	}
 #endif
 
+	// エサの角度を更新
 	if (g_nIdxSetEsa != -1)
 	{
 		// 表示されているエサの角度の更新
@@ -651,8 +661,8 @@ void UpdateResult(void)
 			pVtx[2].tex.x = g_aResultPolygon[nCntResult].texPos.x;
 			pVtx[3].tex.x = g_aResultPolygon[nCntResult].texPos.x + g_aResultPolygon[nCntResult].texSize.x;
 
-			pVtx[0].tex.y = g_aResultPolygon[nCntResult].texPos.y - g_aResultPolygon[nCntResult].texSize.y;
-			pVtx[1].tex.y = g_aResultPolygon[nCntResult].texPos.y - g_aResultPolygon[nCntResult].texSize.y;
+			pVtx[0].tex.y = g_aResultPolygon[nCntResult].texPos.y;
+			pVtx[1].tex.y = g_aResultPolygon[nCntResult].texPos.y;
 			pVtx[2].tex.y = g_aResultPolygon[nCntResult].texPos.y + g_aResultPolygon[nCntResult].texSize.y;
 			pVtx[3].tex.y = g_aResultPolygon[nCntResult].texPos.y + g_aResultPolygon[nCntResult].texSize.y;
 
@@ -679,7 +689,7 @@ void UpdateResult(void)
 	}
 
 	// 次のモードへの移動処理
-#if 0
+#if 1
 	if (pFade == FADE_NONE && g_resultState == RESULTSTATE_COMPLETE)
 	{
 		
@@ -799,7 +809,7 @@ void SetResult(RESULTLAYTYPE type, int nNum)
 {
 	// 変数宣言 ===========================================
 
-	int nIdx;
+	int nIdx = 0;
 	
 	D3DXVECTOR3 setPos      = D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 				setShiftPos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -905,7 +915,7 @@ void SetResult(RESULTLAYTYPE type, int nNum)
 			}
 
 			g_aUiResultPlayerPosion[nCntPlayer].x = g_resultPlayerInfo.pos.x + setShiftPos.x;
-			g_aUiResultPlayerPosion[nCntPlayer].y = g_resultPlayerInfo.pos.y + setShiftPos.y;
+			g_aUiResultPlayerPosion[nCntPlayer].y = g_resultPlayerInfo.pos.y + setShiftPos.y + g_aResultPolygonInfo[nIdx].fSizeHeight;
 			g_aUiResultPlayerPosion[nCntPlayer].z = 0.0f;
 		}
 

@@ -22,6 +22,8 @@
 
 #define MAX_DIGIT					(2)		// 桁数
 
+#define WAIT_UIRESULTSG		((int)(60 * 1))
+
 // 構造体の定義 ================================================
 
 // リザルトの獲得スコアUIのポリゴン情報
@@ -79,8 +81,8 @@ typedef struct
 	int aIdxPolygon[MAX_GLOUP_RESULTGS];	// ポリゴンインデックス
 	int aIdxNumPolygon[MAX_DIGIT];			// 数値のインデックス
 
-	int nNumScore;							// スコア(獲得数)
-	int nNowNum;							// 今のスコア(獲得数)
+	int nMaxHave;							// 総獲得数
+	int nNowHave;							// 獲得数
 
 	D3DXVECTOR3 pos;						// 位置
 	D3DXCOLOR col;							// 色
@@ -125,6 +127,8 @@ UiResultGSPolygon_info g_aUiResultGSPolygonInfo[] =
 
 int g_nNumResultSGPolygon = 0;
 int g_nIdxSelectResultSG = 0;
+
+int g_nTimerResultSG = 0;
 
 //========================================================================
 // リザルトの獲得スコアのUIの初期化処理
@@ -173,8 +177,8 @@ void InitUiResultGetScore(void)
 	{
 		memset(&g_aResultGS[nCntUiResultGS].aIdxPolygon[0], -1, sizeof g_aResultGS[nCntUiResultGS].aIdxPolygon);		// 
 		memset(&g_aResultGS[nCntUiResultGS].aIdxNumPolygon[0], -1, sizeof g_aResultGS[nCntUiResultGS].aIdxNumPolygon);	// 
-		g_aResultGS[nCntUiResultGS].nNumScore = 0;																		// 
-		g_aResultGS[nCntUiResultGS].nNowNum = 0;																		// 
+		g_aResultGS[nCntUiResultGS].nMaxHave = 0;																		// 
+		g_aResultGS[nCntUiResultGS].nNowHave = 0;																		// 
 		g_aResultGS[nCntUiResultGS].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);												// 
 		g_aResultGS[nCntUiResultGS].col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);											// 
 		g_aResultGS[nCntUiResultGS].nUseTimer = 0;																		// 
@@ -270,7 +274,7 @@ void UpdateUiResultGetScore(void)
 	// ====================================================
 
 #if _DEBUG
-#if 1
+#if 0
 	// 選択する対象の設定
 	if (GetKeyboardTrigger(DIK_1))
 	{
@@ -327,12 +331,16 @@ void UpdateUiResultGetScore(void)
 		}
 	}
 
+	PrintDebugProc("\nUI_RESULT_NUM %d", g_nNumResultGS);
+	PrintDebugProc("\nUI_RESULT_END %d", g_nEndResultGS);
+
 #endif
 #endif
 
 	// ポリゴン情報の更新
 	for (int nCntUiResultGS = 0; nCntUiResultGS < MAX_PLAYER + MAX_COMPUTER; nCntUiResultGS++)
 	{
+
 		if (g_aResultGS[nCntUiResultGS].bUse == false)
 		{// 使用してない
 
@@ -340,23 +348,34 @@ void UpdateUiResultGetScore(void)
 		}
 
 		// スコアの値の更新
-		if (g_aResultGS[nCntUiResultGS].nNowNum < g_aResultGS[nCntUiResultGS].nNumScore)
-		{// 今のスコアが低い場合
+		if (g_aResultGS[nCntUiResultGS].nUseTimer > 0)
+		{
+			g_aResultGS[nCntUiResultGS].nUseTimer--;
 
-			g_aResultGS[nCntUiResultGS].nNowNum++;		// 今のスコアをインクリメント
+			if (g_aResultGS[nCntUiResultGS].nUseTimer == 0)
+			{
+				if (g_aResultGS[nCntUiResultGS].nNowHave < g_aResultGS[nCntUiResultGS].nMaxHave)
+				{// 今のスコアが低い場合
 
-			if (g_aResultGS[nCntUiResultGS].nNowNum == g_aResultGS[nCntUiResultGS].nNumScore)
-			{// 目標のスコアと同じになった
+					g_aResultGS[nCntUiResultGS].nNowHave++;		// 今のスコアをインクリメント
 
-				g_nEndResultGS++;	// 集計完了数をインクリメント
+					if (g_aResultGS[nCntUiResultGS].nNowHave == g_aResultGS[nCntUiResultGS].nMaxHave)
+					{// 目標のスコアと同じになった
+
+						g_nEndResultGS++;	// 集計完了数をインクリメント
+					}
+				}
+
+				g_aResultGS[nCntUiResultGS].nUseTimer = WAIT_UIRESULTSG;
 			}
 		}
+		
 			
 		// 桁数を求める
-		nDigit = CalcNumDigit(g_aResultGS[nCntUiResultGS].nNowNum);
+		nDigit = CalcNumDigit(g_aResultGS[nCntUiResultGS].nNowHave);
 
 		// 桁の値を求める
-		CalcDigit(g_aResultGS[nCntUiResultGS].nNowNum, nDigit, &aTexU[0], MAX_DIGIT);
+		CalcDigit(g_aResultGS[nCntUiResultGS].nNowHave, nDigit, &aTexU[0], MAX_DIGIT);
 
 		// グループのポリゴンを更新
 		for (int nCntPolygon = 0; nCntPolygon < MAX_GLOUP_RESULTGS; nCntPolygon++)
@@ -468,17 +487,6 @@ void UpdateVtxUiResultGetScore(int nIdxP,int nIdxC)
 //========================================================================
 void DrawUiResultGetScore(void)
 {
-	// 変数宣言 ===========================================
-
-	LPDIRECT3DDEVICE9 pDevice;	// デバイスへのポインタ
-
-	// デバイスの取得
-	pDevice = GetDevice();
-
-	D3DXMATRIX mtxWorld;
-	D3DXMATRIX mtxRot, mtxTrans;	// 計算用マトリックス
-	
-	// ====================================================
 	
 	// ポリゴンの描画
 	for (int nCntUiResultGS = 0; nCntUiResultGS < MAX_PLAYER + MAX_COMPUTER; nCntUiResultGS++)
@@ -500,52 +508,85 @@ void DrawUiResultGetScore(void)
 				continue;	// 処理の始めに戻る
 			}
 
-			pDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
+			// スコアのUIの描画設定
+			SetDrawUiResultGetScore(nIdx);
+		}
 
-			// 頂点バッファをデータストリームに設定
-			pDevice->SetStreamSource(0, g_pVtxBuffUiResultGetScore, 0, sizeof(VERTEX_2D));
+		// インデックスの数字のポリゴンを描画
+		for (int nCntNumber = 0; nCntNumber < MAX_DIGIT; nCntNumber++)
+		{
+			int nIdx = g_aResultGS[nCntUiResultGS].aIdxNumPolygon[nCntNumber];	// インデックスの値を格納
 
-			// 頂点フォーマットの設定
-			pDevice->SetFVF(FVF_VERTEX_2D);
-
-			// テクスチャの設定
-			if (g_aResultGSPolygon[nIdx].nIdxTexture != -1)
-			{// テクスチャがある場合
-
-				pDevice->SetTexture(0, g_apTextureUiResultGetScore[g_aResultGSPolygon[nIdx].nIdxTexture]);
-			}
-			else
-			{// テクスチャがない場合
-
-				pDevice->SetTexture(0, NULL);
+			if (nIdx == -1)
+			{
+				continue;	// 処理の始めに戻る
 			}
 
-			if (g_aResultGSPolygon[nIdx].bAlphaBlend == true)
-			{// aブレンドをする場合
-
-				// 減算合成の設定
-				pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);		// アルファブレンドの設定1
-				pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);	// アルファブレンドの設定2
-				pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);		// アルファブレンドの設定3
-			}
-
-			// ポリゴンの描画
-			pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,	// 描画形式
-								   nIdx * 4,			// インデックス
-								   2);					// ポリゴン数
-
-			if (g_aResultGSPolygon[nIdx].bAlphaBlend == true)
-			{// aブレンドをする場合
-
-				// 減算合成の設定を元に戻す 
-				pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);			// アルファブレンドの設定1
-				pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);		// アルファブレンドの設定2
-				pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);	// アルファブレンドの設定3
-			}
-
-			pDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
+			// スコアのUIの描画設定
+			SetDrawUiResultGetScore(nIdx);
 		}
 	}
+}
+
+//========================================================================
+// リザルトの獲得スコアのUIの描画設定処理
+//========================================================================
+void SetDrawUiResultGetScore(int nIdx)
+{
+	// 変数宣言 ===========================================
+
+	LPDIRECT3DDEVICE9 pDevice;	// デバイスへのポインタ
+
+	// デバイスの取得
+	pDevice = GetDevice();
+
+	// ====================================================
+
+
+	pDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
+
+	// 頂点バッファをデータストリームに設定
+	pDevice->SetStreamSource(0, g_pVtxBuffUiResultGetScore, 0, sizeof(VERTEX_2D));
+
+	// 頂点フォーマットの設定
+	pDevice->SetFVF(FVF_VERTEX_2D);
+
+	// テクスチャの設定
+	if (g_aResultGSPolygon[nIdx].nIdxTexture != -1)
+	{// テクスチャがある場合
+
+		pDevice->SetTexture(0, g_apTextureUiResultGetScore[g_aResultGSPolygon[nIdx].nIdxTexture]);
+	}
+	else
+	{// テクスチャがない場合
+
+		pDevice->SetTexture(0, NULL);
+	}
+
+	if (g_aResultGSPolygon[nIdx].bAlphaBlend == true)
+	{// aブレンドをする場合
+
+		// 減算合成の設定
+		pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);		// アルファブレンドの設定1
+		pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);	// アルファブレンドの設定2
+		pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);		// アルファブレンドの設定3
+	}
+
+	// ポリゴンの描画
+	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,	// 描画形式
+		nIdx * 4,			// インデックス
+		2);					// ポリゴン数
+
+	if (g_aResultGSPolygon[nIdx].bAlphaBlend == true)
+	{// aブレンドをする場合
+
+		// 減算合成の設定を元に戻す 
+		pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);			// アルファブレンドの設定1
+		pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);		// アルファブレンドの設定2
+		pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);	// アルファブレンドの設定3
+	}
+
+	pDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
 }
 
 //========================================================================
@@ -590,13 +631,18 @@ int SetUiResultGetScorePolygon(int nIdxTexture, bool bAlphaBlend, UI_RESULTGSPOL
 //========================================================================
 int SetUiResultGetScore(D3DXVECTOR3 pos, D3DXCOLOR col, int nScore, int nHaveNum)
 {
-	int nAddSet;										// 追加で設定した数
 	D3DXVECTOR3 setPos = D3DXVECTOR3(0.0f,0.0f,0.0f);	// ずらす量(前のテクスチャ分)
 	D3DXVECTOR2 setTexPos = D3DXVECTOR2(0.0f,0.0f);
 
+	int nIdx;
 	int aTexU[MAX_DIGIT] = {};	// テクスチャ座標
 	int nNum = 0;				// 計算用数値
 	int nDigit;					// 桁数
+
+	//int nCntNumber;
+	int nAddSet = 0;			// 追加で設定した数
+
+	int nSetLoop = 0;
 
 	for (int nCntUiResultGS = 0; nCntUiResultGS < MAX_PLAYER + MAX_COMPUTER; nCntUiResultGS++)
 	{
@@ -609,27 +655,31 @@ int SetUiResultGetScore(D3DXVECTOR3 pos, D3DXCOLOR col, int nScore, int nHaveNum
 		// リザルトのの獲得スコアの情報を初期化
 		g_aResultGS[nCntUiResultGS].pos = pos;																		// 位置
 		g_aResultGS[nCntUiResultGS].col = col;																		// 色
+		g_aResultGS[nCntUiResultGS].nMaxHave = nHaveNum;															// 総獲得数
+		g_aResultGS[nCntUiResultGS].nUseTimer = WAIT_UIRESULTSG;													// カウントの待機時間
 		g_aResultGS[nCntUiResultGS].bUse = true;																	// 使用している状態に設定
 
 		memset(&g_aResultGS[nCntUiResultGS].aIdxPolygon[0], -1, sizeof g_aResultGS[nCntUiResultGS].aIdxPolygon);	// ポリゴンインデックスを初期化
 
-		nAddSet = 0;	// 追加で設定した数
-
 		// テンプレのポリゴンを設定
-		for (int nCntPolygon = 0; nCntPolygon < sizeof g_aUiResultGSPolygonInfo / sizeof(g_aUiResultGSPolygonInfo[0]); nCntPolygon++)
+		for (int nCntInfo = 0; nCntInfo < sizeof g_aUiResultGSPolygonInfo / sizeof(g_aUiResultGSPolygonInfo[0]); nCntInfo++)
 		{// 設定する数だけ繰り返す
 
-			if (g_aUiResultGSPolygonInfo[nCntPolygon].type == UI_RESULTGSPOLYGONTYPE_NUM_SCORE 
-			 || g_aUiResultGSPolygonInfo[nCntPolygon].type == UI_RESULTGSPOLYGONTYPE_NUM_GET)
-			{// 数字系の設定の場合
+			switch (g_aUiResultGSPolygonInfo[nCntInfo].type)
+			{
+			case UI_RESULTGSPOLYGONTYPE_NUM_SCORE:
+			case UI_RESULTGSPOLYGONTYPE_NUM_GET:
+
+				// 繰り返し設定する回数を設定
+				nSetLoop = MAX_DIGIT;	// 桁数分繰り返す
 				
 				// 設定する値を設定
-				if (g_aUiResultGSPolygonInfo[nCntPolygon].type == UI_RESULTGSPOLYGONTYPE_NUM_SCORE)
+				if (g_aUiResultGSPolygonInfo[nCntInfo].type == UI_RESULTGSPOLYGONTYPE_NUM_SCORE)
 				{// スコアの場合
 
 					nNum = nScore;
 				}
-				else if (g_aUiResultGSPolygonInfo[nCntPolygon].type == UI_RESULTGSPOLYGONTYPE_NUM_GET)
+				else if (g_aUiResultGSPolygonInfo[nCntInfo].type == UI_RESULTGSPOLYGONTYPE_NUM_GET)
 				{// 獲得数の場合
 
 					nNum = nHaveNum;
@@ -641,60 +691,85 @@ int SetUiResultGetScore(D3DXVECTOR3 pos, D3DXCOLOR col, int nScore, int nHaveNum
 				// 桁の値を求める
 				CalcDigit(nNum, nDigit, &aTexU[0], sizeof aTexU);
 
-				for (int nCntNumber = 0; nCntNumber < nDigit; nCntNumber++)
-				{// 桁数分繰り返す
+				break;
 
+			default:
+
+				// 繰り返し設定する回数を設定
+				nSetLoop = 1;			// 1回だけ
+
+				break;
+			}
+
+			// ポリゴンの設定
+			for (int nCntLoop = 0; nCntLoop < nSetLoop; nCntLoop++)
+			{// 桁数分繰り返す
+
+				if (g_aUiResultGSPolygonInfo[nCntInfo].type == UI_RESULTGSPOLYGONTYPE_NUM_SCORE
+				 || g_aUiResultGSPolygonInfo[nCntInfo].type == UI_RESULTGSPOLYGONTYPE_NUM_GET)
+				{
 					// テクスチャの位置を設定
-					setTexPos.x = g_aUiResultGSPolygonInfo[nCntPolygon].texPos.x + (1.0f / 11) * aTexU[nCntNumber];	// テクスチャの位置から桁の分ずらす
-					setTexPos.y = g_aUiResultGSPolygonInfo[nCntPolygon].texPos.y;
+					setTexPos.x = g_aUiResultGSPolygonInfo[nCntInfo].texPos.x + (1.0f / 11) * aTexU[nCntLoop];
+					setTexPos.y = g_aUiResultGSPolygonInfo[nCntInfo].texPos.y;
+				}
+				else
+				{
+					// テクスチャの位置を設定
+					setTexPos.x = g_aUiResultGSPolygonInfo[nCntInfo].texPos.x;
+					setTexPos.y = g_aUiResultGSPolygonInfo[nCntInfo].texPos.y;
+				}
 
-					// ポリゴンの設定(設定したインデックスを代入)
-					g_aResultGS[nCntUiResultGS].aIdxPolygon[nCntPolygon + nAddSet] = SetUiResultGetScorePolygon(g_aUiResultGSPolygonInfo[nCntPolygon].nIdxTexture,
-																												g_aUiResultGSPolygonInfo[nCntPolygon].bAlphaBlend,
-																												g_aUiResultGSPolygonInfo[nCntPolygon].type, 
-																												setPos + g_aUiResultGSPolygonInfo[nCntPolygon].pos,
-																												g_aUiResultGSPolygonInfo[nCntPolygon].rot, 
-																												g_aUiResultGSPolygonInfo[nCntPolygon].fSizeWidth,
-																												g_aUiResultGSPolygonInfo[nCntPolygon].fSizeHeight,
-																												setTexPos,
-																												g_aUiResultGSPolygonInfo[nCntPolygon].texSize,
-																												col);
-
-					setPos.x += g_aUiResultGSPolygonInfo[nCntPolygon].pos.x + g_aUiResultGSPolygonInfo[nCntPolygon].fSizeWidth;
-					
+				// ポリゴンの設定
+				nIdx = SetUiResultGetScorePolygon(g_aUiResultGSPolygonInfo[nCntInfo].nIdxTexture,	// テクスチャインデックス
+												  g_aUiResultGSPolygonInfo[nCntInfo].bAlphaBlend,	// アルファブレンドするか
+												  g_aUiResultGSPolygonInfo[nCntInfo].type, 			// 種類
+												  setPos + g_aUiResultGSPolygonInfo[nCntInfo].pos,	// 位置
+												  g_aUiResultGSPolygonInfo[nCntInfo].rot, 			// 角度
+												  g_aUiResultGSPolygonInfo[nCntInfo].fSizeWidth,	// 幅
+												  g_aUiResultGSPolygonInfo[nCntInfo].fSizeHeight,	// 高さ
+												  setTexPos,										// テクスチャ座標
+												  g_aUiResultGSPolygonInfo[nCntInfo].texSize,		// テクスチャサイズ
+												  col);												// 色
+				
+				// 追加設定時に同じ場所に設定するのの防止
+				if (nCntLoop != 0)
+				{// 最初じゃない場合
 
 					nAddSet++;	// 追加で設定した分を加算
 				}
-			}
-			else
-			{// 数字でない場合
 
-				// ポリゴンの設定(設定したインデックスを代入)
-				g_aResultGS[nCntUiResultGS].aIdxPolygon[nCntPolygon + nAddSet] = SetUiResultGetScorePolygon(g_aUiResultGSPolygonInfo[nCntPolygon].nIdxTexture,
-																											g_aUiResultGSPolygonInfo[nCntPolygon].bAlphaBlend,
-																											g_aUiResultGSPolygonInfo[nCntPolygon].type, 
-																											setPos + g_aUiResultGSPolygonInfo[nCntPolygon].pos,
-																											g_aUiResultGSPolygonInfo[nCntPolygon].rot, 
-																											g_aUiResultGSPolygonInfo[nCntPolygon].fSizeWidth,
-																											g_aUiResultGSPolygonInfo[nCntPolygon].fSizeHeight,
-																											g_aUiResultGSPolygonInfo[nCntPolygon].texPos,
-																											g_aUiResultGSPolygonInfo[nCntPolygon].texSize,
-																											col);
+				// 設定したポリゴンのインデックスを保存
+				if(g_aUiResultGSPolygonInfo[nCntInfo].type == UI_RESULTGSPOLYGONTYPE_NUM_GET)
+				{// 
 
-				if (g_aUiResultGSPolygonInfo[nCntPolygon].type != UI_RESULTGSPOLYGONTYPE_BG)
+					// 数字ポリゴンインデックスに設定したインデックスを代入
+					g_aResultGS[nCntUiResultGS].aIdxNumPolygon[nCntLoop] = nIdx;
+				}
+				else
+				{// 数字でない場合
+
+					// ポリゴンインデックスに設定したインデックスを代入
+					g_aResultGS[nCntUiResultGS].aIdxPolygon[nCntInfo + nAddSet] = nIdx;
+				}
+
+				// 位置をずらす
+				if (g_aUiResultGSPolygonInfo[nCntInfo].type != UI_RESULTGSPOLYGONTYPE_BG)
 				{// 種類が背景でない場合
 
-					setPos.x += g_aUiResultGSPolygonInfo[nCntPolygon].pos.x + g_aUiResultGSPolygonInfo[nCntPolygon].fSizeWidth;
+					setPos.x += g_aUiResultGSPolygonInfo[nCntInfo].pos.x + g_aUiResultGSPolygonInfo[nCntInfo].fSizeWidth;
 				}
+				
+
 			}
+		}	
+		
+		g_nNumResultGS++;		// 総数を増やす
 
-			
-		}
-
-		return nCntUiResultGS;
+		return nCntUiResultGS;	// 設定した場所のインデックスを返す
+		
 	}
 
-	return -1;
+	return -1;						// 場所のないインデックスを返す
 }
 
 //========================================================================
@@ -715,12 +790,13 @@ void DelUiResultGetScore(int nIdx)
 				g_nNumResultSGPolygon--;
 			}
 		}
-
+		g_aResultGS[nIdx].nNowHave = 0;
+		g_aResultGS[nIdx].nMaxHave = 0;
 		g_aResultGS[nIdx].bUse = false;	// 使用していない状態に設定
 	}
 
-	g_nEndResultGS = 0;
 	g_nNumResultGS = 0;
+	g_nEndResultGS = 0;
 }
 
 //========================================================================
@@ -781,11 +857,14 @@ void CalcDigit(int nNum, int nDigit, int *pTexU, int nSizeTexU)
 	}
 }
 
-
+//========================================================================
+// 完了したかを返す処理
+//========================================================================
 bool GetCompletGetScore(void)
 {
 	if (g_nNumResultGS == g_nEndResultGS)
-	{
+	{// 全てが目標の値に到達した場合
+
 		return true;
 	}
 	else
