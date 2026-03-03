@@ -459,21 +459,21 @@ void DrawTutorial(void)
 
 	LPDIRECT3DDEVICE9 pDevice;	// デバイスへのポインタ
 
-	//// デバイスの取得
-	//pDevice = GetDevice();
+	// デバイスの取得
+	pDevice = GetDevice();
 
-	//// 頂点バッファをデータストリームに設定
-	//pDevice->SetStreamSource(0, g_pVtxBuffTutorial, 0, sizeof(VERTEX_2D));
+	// 頂点バッファをデータストリームに設定
+	pDevice->SetStreamSource(0, g_pVtxBuffTutorial, 0, sizeof(VERTEX_2D));
 
-	//// 頂点フォーマットの設定
-	//pDevice->SetFVF(FVF_VERTEX_2D);
+	// 頂点フォーマットの設定
+	pDevice->SetFVF(FVF_VERTEX_2D);
 
-	//for (int nCntTutorial = 0; nCntTutorial < MAX_TUTORIAL; nCntTutorial++)
-	//{// 敵の最大数まで繰り返す
-	//	// テクスチャのM
-	//	pDevice->SetTexture(0, g_pTextureTutorial[nCntTutorial]);
+	for (int nCntTutorial = 0; nCntTutorial < MAX_TUTORIAL; nCntTutorial++)
+	{// 敵の最大数まで繰り返す
+		// テクスチャのM
+		pDevice->SetTexture(0, g_pTextureTutorial[nCntTutorial]);
 
-	//	// ポリゴンの描画
-	//	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, nCntTutorial * 4, 2);
-	//}
+		// ポリゴンの描画
+		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, nCntTutorial * 4, 2);
+	}
 }
