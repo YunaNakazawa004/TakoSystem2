@@ -390,6 +390,7 @@ void UpdateRanking(void)
 	if (pFade == FADE_IN)
 	{// フェードが何もしていない状態のみ発動
 		TimeCnt = 0;
+		N = 0;
 	}
 	else
 	{
