@@ -14,7 +14,7 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define MAX_SEADUST				(5000)							// 塵の最大数
+#define MAX_SEADUST				(2500)							// 塵の最大数
 #define SEADUST_SIZE			(1.0f)							// サイズ
 #define SEADUST_FILENAME		"data\\TEXTURE\\shadow000.png"	// 使用する塵のファイル名
 
@@ -97,7 +97,7 @@ void InitSeaDust(void)
 	// ▲頂点バッファをアンロックする
 	g_pVtxBuffSeaDust->Unlock();
 
-	SetRandomSeaDust(5000);
+	SetRandomSeaDust(MAX_SEADUST);
 }
 
 //======================================================================== 
