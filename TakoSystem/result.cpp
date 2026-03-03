@@ -435,8 +435,10 @@ void UpdateResult(void)
 	float fLength, fAngle;
 
 	// ===============================================
+#ifdef _DEBUG
 	SetFade(MODE_RANKING);
 	return;
+#endif
 	// リザルトの獲得スコアUIの更新
 	UpdateUiResultGetScore();
 
