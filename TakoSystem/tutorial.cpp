@@ -69,10 +69,11 @@ void InitTutorial(void)
 
 	// メッシュシリンダーの初期化処理
 	InitMeshCylinder();
-	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 2.0f), D3DXVECTOR2(INCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, MESHCYLINDERTYPE_ROCK);
+	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(16.0f, 2.0f), D3DXVECTOR2(INCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, MESHCYLINDERTYPE_ROCK);
 
 	// メッシュドームの初期化処理
 	InitMeshDome();
+	SetMeshDome(FIRST_POS, FIRST_POS, D3DXVECTOR2(16.0f, 5.0f), OUTCYLINDER_RADIUS * 2.5f);
 
 	// メッシュフィールドの初期化処理
 	InitMeshField();

@@ -11,6 +11,7 @@
 #include "time.h"
 #include "oceancurrents.h"
 #include "object.h"
+#include "meshfield.h"
 #include "meshcylinder.h"
 #include "meshring.h"
 #include "meshorbit.h"
@@ -749,6 +750,7 @@ void UpdateComputer(void)
 			//	pComputer->extarget.x, pComputer->extarget.y, pComputer->extarget.z);
 
 			// “–‚½‚è”»’è
+			CollisionMeshField(pComputer->phys.pos, pComputer->phys.rot, pComputer->phys.fRadius, pComputer->phys.fHeight);
 			CollisionObject(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, false);
 			CollisionPot(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius);
 			CollisionMeshCylinder(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, false);

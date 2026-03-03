@@ -104,7 +104,7 @@ void UpdateCamera(void)
 			pCamera->posVDest.y = pCamera->posRDest.y + cosf((D3DX_PI * 0.5f) - pCamera->fAngle) * pCamera->fDistance;
 			pCamera->posVDest.z = pCamera->posRDest.z + cosf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance * sinf((D3DX_PI * 0.5f) - pCamera->fAngle);
 
-			if (GetKeyboardPress(DIK_Q) == true || GetJoypadStick(nCntCamera, JOYKEY_RIGHTSTICK_LEFT, &nValueH, &nValueV) == true)
+			if ((nCntCamera == 0 ? GetKeyboardPress(DIK_J) == true : GetKeyboardPress(DIK_NUMPAD4) == true)|| GetJoypadStick(nCntCamera, JOYKEY_RIGHTSTICK_LEFT, &nValueH, &nValueV) == true)
 			{// ‰E‚Éù‰ñ
 				pCamera->rot.y += -ROT.y;
 
@@ -112,7 +112,7 @@ void UpdateCamera(void)
 				pCamera->posVDest.y = pCamera->posRDest.y + cosf((D3DX_PI * 0.5f) - pCamera->fAngle) * pCamera->fDistance;
 				pCamera->posVDest.z = pCamera->posRDest.z + cosf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance * sinf((D3DX_PI * 0.5f) - pCamera->fAngle);
 			}
-			else if (GetKeyboardPress(DIK_E) == true || GetJoypadStick(nCntCamera, JOYKEY_RIGHTSTICK_RIGHT, &nValueH, &nValueV) == true)
+			else if ((nCntCamera == 0 ? GetKeyboardPress(DIK_L) == true : GetKeyboardPress(DIK_NUMPAD6) == true) || GetJoypadStick(nCntCamera, JOYKEY_RIGHTSTICK_RIGHT, &nValueH, &nValueV) == true)
 			{// ¶‚Éù‰ñ
 				pCamera->rot.y += ROT.y;
 
@@ -122,7 +122,7 @@ void UpdateCamera(void)
 			}
 
 			// Ž‹“_ˆÚ“®
-			if (GetKeyboardPress(DIK_B) == true || GetJoypadStick(nCntCamera, JOYKEY_RIGHTSTICK_DOWN, &nValueH, &nValueV) == true)
+			if ((nCntCamera == 0 ? GetKeyboardPress(DIK_K) == true : GetKeyboardPress(DIK_NUMPAD5) == true) || GetJoypadStick(nCntCamera, JOYKEY_RIGHTSTICK_DOWN, &nValueH, &nValueV) == true)
 			{// ã‚ÉˆÚ“®
 				pCamera->fAngle += ROT.y;
 
@@ -137,7 +137,7 @@ void UpdateCamera(void)
 				pCamera->posVDest.y = pCamera->posRDest.y + cosf((D3DX_PI * 0.5f) - pCamera->fAngle) * pCamera->fDistance;
 				pCamera->posVDest.z = pCamera->posRDest.z + cosf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance * sinf((D3DX_PI * 0.5f) - pCamera->fAngle);
 			}
-			else if (GetKeyboardPress(DIK_T) == true || GetJoypadStick(nCntCamera, JOYKEY_RIGHTSTICK_UP, &nValueH, &nValueV) == true)
+			else if ((nCntCamera == 0 ? GetKeyboardPress(DIK_I) == true : GetKeyboardPress(DIK_NUMPAD8) == true) || GetJoypadStick(nCntCamera, JOYKEY_RIGHTSTICK_UP, &nValueH, &nValueV) == true)
 			{// ‰º‚ÉˆÚ“®
 				pCamera->fAngle += -ROT.y;
 
