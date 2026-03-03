@@ -505,6 +505,8 @@ void Draw(void)
 				break;
 
 			case MODE_TUTORIAL:			// チュートリアル画面
+				SetFog(D3DXCOLOR(0.0f, 0.1f, 0.2f, 1.0f), pPlayer[nCntCamera].fFogStart * 1.5f, pPlayer[nCntCamera].fFogEnd * 1.5f, true);
+
 				DrawTutorial();
 				break;
 
