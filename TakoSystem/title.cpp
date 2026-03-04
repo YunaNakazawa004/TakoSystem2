@@ -549,7 +549,7 @@ void UpdateTitle(void)
 
 	if (g_CursorPos == TITLECURSOR_PLAYER_SELECT)
 	{
-		if ((GetKeyboardRepeat(DIK_A) || GetJoypadRepeat(0, JOYKEY_LEFT) ||
+		if ((GetKeyboardRepeat(DIK_A) || GetJoypadTrigger(0, JOYKEY_LEFT) ||
 			GetJoypadStick(0, JOYKEY_LEFTSTICK_LEFT, NULL, NULL) == true)
 			&& g_PlayerSelect > 1  && (g_CursorDeley % CURSOR_DELEY == 0))
 		{
@@ -559,7 +559,7 @@ void UpdateTitle(void)
 			PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
 			if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 		}
-		else if ((GetKeyboardRepeat(DIK_D) && (g_CursorDeley % CURSOR_DELEY == 0) || GetJoypadRepeat(0, JOYKEY_RIGHT) ||
+		else if ((GetKeyboardRepeat(DIK_D) || GetJoypadTrigger(0, JOYKEY_RIGHT) ||
 			GetJoypadStick(0, JOYKEY_LEFTSTICK_RIGHT, NULL, NULL) == true)
 			&& g_PlayerSelect < MAX_PLAYER && (g_CursorDeley % CURSOR_DELEY == 0))
 		{
