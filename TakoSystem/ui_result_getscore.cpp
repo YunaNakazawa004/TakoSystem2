@@ -406,12 +406,12 @@ void UpdateUiResultGetScore(void)
 			}
 
 			// ˆêŒ…‚ÍˆêŒ…‚¾‚¯•\¦‚³‚ê‚é‚æ‚¤‚Éİ’è
-			if		(nCntPolygon <  nDigit && g_aResultGSPolygon[nIdx].bDisp == false)
+			if		(nCntPolygon <  nDigit/*&& g_aResultGSPolygon[nIdx].bDisp == false*/)
 			{// Œ…”‚æ‚è‚à¬‚³‚¢ê‡
 
 				g_aResultGSPolygon[nIdx].bDisp = true;
 			}
-			else if (nCntPolygon >= nDigit && g_aResultGSPolygon[nIdx].bDisp == true)
+			else if (nCntPolygon >= nDigit)
 			{// Œ…”‚æ‚è‚à‘å‚«‚¢ê‡
 
 				g_aResultGSPolygon[nIdx].bDisp = false;
@@ -542,6 +542,10 @@ void SetDrawUiResultGetScore(int nIdx)
 
 	// ====================================================
 
+	if (g_aResultGSPolygon[nIdx].bDisp == false)
+	{
+		return;
+	}
 
 	pDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
 

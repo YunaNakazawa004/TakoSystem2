@@ -14,7 +14,7 @@
 // マクロ定義
 #define	MAX_LOGO			(2)							// ロゴで表示するテクスチャの最大数
 #define	LOGO_SIZEUP_SPEED	(1.0f)						// ロゴが大きくなるサイズ
-#define	LOGO_SIZE_MAX		(15.0f)					// ロゴの最大サイズ
+#define	LOGO_SIZE_MAX		(150.0f)					// ロゴの最大サイズ
 #define	TITLE_TRANS			(LOGO_SIZE_MAX + 50.0f)		// タイトルまでの時間
 
 // 列挙型の定義
