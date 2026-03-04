@@ -33,6 +33,7 @@ typedef enum
 	SOUND_SE_WARNING,					//Œx‰¹(‰Q’ª”­¶Žž‚È‚Ç)
 	SOUND_SE_MUD,						//…‰¹(‚×‚¿‚á‚Á)
 	SOUND_SE_DRUMROLL,					//ƒhƒ‰ƒ€ƒ[ƒ‹
+	SOUND_SE_JAN,						//ƒWƒƒƒ“
 	SOUND_MAX,
 } SOUND_LABEL;
 

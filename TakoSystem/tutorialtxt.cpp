@@ -107,8 +107,8 @@ void InitTutorialTxt(void)
 	// 頂点バッファをアンロックする
 	g_pVtxBuffTutorialTxt->Unlock();
 
-	SetTutorialTxt(D3DXVECTOR3(750.0f, 1000.0f, 0.0f));
-	SetTutorialTxt(D3DXVECTOR3(-750.0f, 1000.0f, 0.0f));
+	SetTutorialTxt(D3DXVECTOR3(750.0f, 700.0f, 0.0f));
+	SetTutorialTxt(D3DXVECTOR3(-750.0f, 700.0f, 0.0f));
 }
 
 //=============================================================================

@@ -174,12 +174,6 @@ void UpdateConfetti(void)
 
 	// =========================================================
 
-	// †á‚Ì•\¦Ø‚è‘Ö‚¦
-	if (GetKeyboardTrigger(DIK_F2) || GetJoypadTrigger(0, JOYKEY_LEFT_SHOULDER))
-	{
-		g_bDispConfetti = (g_bDispConfetti == true) ? false : true;
-	}
-
 	for (nCntConfetti = 0; nCntConfetti < MAX_SET_CONFETTI; nCntConfetti++)
 	{
 		if (g_aConfetti[nCntConfetti].bUse == true)
