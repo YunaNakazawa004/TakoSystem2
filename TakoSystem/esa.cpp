@@ -570,6 +570,7 @@ void MoveEsa(Esa* pEsa)
 	float fToTagetAngle = 0.0f;		// 対象との角度
 
 	Player* pPlayer = GetPlayer();				// プレイヤーの情報
+	Pot* pPot = GetPot();
 
 	D3DXVECTOR3 tmpPos = pEsa->pos;				// エサの更新前の位置
 
@@ -624,9 +625,9 @@ void MoveEsa(Esa* pEsa)
 	case ESA_ACTTYPE_GOTO_POT:		// ポットに向かう
 
 		// ポットの位置にホーミング
-		pEsa->pos.x += pPlayer[pEsa->nNumBehavior].pos.x - pEsa->pos.x * ESA_HOMING_SPEED;
-		pEsa->pos.y += pPlayer[pEsa->nNumBehavior].pos.y - pEsa->pos.y * ESA_HOMING_SPEED;
-		pEsa->pos.z += pPlayer[pEsa->nNumBehavior].pos.z - pEsa->pos.z * ESA_HOMING_SPEED;
+		pEsa->pos.x += pPot[pEsa->nNumBehavior].pos.x - pEsa->pos.x * ESA_HOMING_SPEED;
+		pEsa->pos.y += pPot[pEsa->nNumBehavior].pos.y - pEsa->pos.y * ESA_HOMING_SPEED;
+		pEsa->pos.z += pPot[pEsa->nNumBehavior].pos.z - pEsa->pos.z * ESA_HOMING_SPEED;
 
 		break;
 	}

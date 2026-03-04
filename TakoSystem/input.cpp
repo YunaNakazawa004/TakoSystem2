@@ -5,6 +5,7 @@
 // 
 //=============================================================================
 #include "input.h"
+#include "camera.h"
 
 //*****************************************************************************
 // É}ÉNÉçíËã`
@@ -459,7 +460,7 @@ void SetVibration(int nIdx, WORD wLeftVibSpeed, WORD wRightVibSpeed, int nVibCou
 	g_bUseVib[nIdx] = true;
 
 	// êUìÆ
-	XInputSetState(0, &g_joykeyVibration[nIdx]);
+	XInputSetState(nIdx, &g_joykeyVibration[nIdx]);
 }
 
 //=============================================================================
@@ -467,7 +468,7 @@ void SetVibration(int nIdx, WORD wLeftVibSpeed, WORD wRightVibSpeed, int nVibCou
 //=============================================================================
 void UpdateVibration(void)
 {
-	for (int nCntJoypad = 0; nCntJoypad < MAX_PLAYER; nCntJoypad++)
+	for (int nCntJoypad = 0; nCntJoypad < GetNumCamera(); nCntJoypad++)
 	{
 		g_EndVib[nCntJoypad]--;
 
@@ -475,7 +476,7 @@ void UpdateVibration(void)
 		{// êUìÆÇèIÇÌÇÈéûÇ…Ç»Ç¡ÇΩ
 			// êUìÆÇé~ÇﬂÇÈ
 			g_joykeyVibration[nCntJoypad] = {};
-			XInputSetState(0, &g_joykeyVibration[nCntJoypad]);
+			XInputSetState(nCntJoypad, &g_joykeyVibration[nCntJoypad]);
 			g_bUseVib[nCntJoypad] = false;
 		}
 	}
@@ -486,7 +487,7 @@ void UpdateVibration(void)
 //=============================================================================
 void UninitVibration(void)
 {
-	for (int nCntJoypad = 0; nCntJoypad < MAX_PLAYER; nCntJoypad++)
+	for (int nCntJoypad = 0; nCntJoypad < GetNumCamera(); nCntJoypad++)
 	{
 		g_joykeyVibration[nCntJoypad] = {};
 	}
