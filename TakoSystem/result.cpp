@@ -435,7 +435,7 @@ void UpdateResult(void)
 	float fLength, fAngle;
 
 	// ===============================================
-#ifdef _DEBUG
+#if 0
 	SetFade(MODE_RANKING);
 	return;
 #endif
