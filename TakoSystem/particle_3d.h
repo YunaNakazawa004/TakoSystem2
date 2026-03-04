@@ -28,4 +28,5 @@ void SetPosionParticle3D		             // 3Dパーティクルの位置設定処理
 (int nIdx,                                   // インデックス, 
     const char* pMode, D3DXVECTOR3 pos);     // posの使用形式(put:代入, add:加算), 位置 
 
+D3DXVECTOR3* GetParticlePos(void);
 #endif

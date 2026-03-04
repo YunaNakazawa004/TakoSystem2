@@ -120,15 +120,31 @@ void UpdateParticle3D(void)
 			if (g_aPaticle3D[nCntPaticle].effecttype == EFFECTTYPE_OCTOINK)
 			{ // 用途がタコ墨の場合
 
-				// パーティクル本体の位置を移動
-				g_aPaticle3D[nCntPaticle].pos += (g_aPaticle3D[nCntPaticle].fVecMoveParticle * g_aPaticle3D[nCntPaticle].fSpeedPaticle);
-
-				if (g_aPaticle3D[nCntPaticle].nParticleLifeV <= 0)
-				{ // パーティクルが出ない
-
-				}
 				// パーティクルの生成
-				else if (g_aPaticle3D[nCntPaticle].nParticleLifeV < g_aPaticle3D[nCntPaticle].nParticleLifeO / 6)
+				if (g_aPaticle3D[nCntPaticle].nParticleLifeV > g_aPaticle3D[nCntPaticle].nParticleLifeO / 6 && g_aPaticle3D[nCntPaticle].nParticleLifeV > g_aPaticle3D[nCntPaticle].nParticleLifeO - (g_aPaticle3D[nCntPaticle].nEffectLife / 10))
+				{
+					// パーティクル本体の位置を移動
+					g_aPaticle3D[nCntPaticle].pos += (g_aPaticle3D[nCntPaticle].fVecMoveParticle * g_aPaticle3D[nCntPaticle].fSpeedPaticle);
+
+					rot.x = (float)(rand() % 629 - 314) / 1000.0f;		// 角度を設定
+					rot.y = (float)(rand() % 629 - 314) / 1000.0f;		// 角度を設定
+					rot.z = (float)(rand() % 629 - 314) / 1000.0f;		// 角度を設定
+
+					for (int nCntAppear = 0; nCntAppear < 1; nCntAppear++)
+					{// 生成するだけ繰り返す
+
+						// 3Dエフェクトの設定
+						SetEffect3D(100,										// 寿命
+							g_aPaticle3D[nCntPaticle].pos,						// 位置
+							D3DXVECTOR3(rot.x, rot.y, rot.z),					// 移動方向
+							g_aPaticle3D[nCntPaticle].fSpeedEffect * ((float)g_aPaticle3D[nCntPaticle].nParticleLifeV / g_aPaticle3D[nCntPaticle].nParticleLifeO),			// 移動速度
+							g_aPaticle3D[nCntPaticle].fEffectRadius / 2,		// 大きさ
+							g_aPaticle3D[nCntPaticle].faddEffectRadius / 2,		// 大きさの加算量
+							g_aPaticle3D[nCntPaticle].col,						// エフェクトの色	
+							g_aPaticle3D[nCntPaticle].effecttype);
+					}
+				}
+				else if (g_aPaticle3D[nCntPaticle].nParticleLifeV < g_aPaticle3D[nCntPaticle].nParticleLifeO / 6 && g_aPaticle3D[nCntPaticle].nParticleLifeV > g_aPaticle3D[nCntPaticle].nParticleLifeO - (g_aPaticle3D[nCntPaticle].nEffectLife / 10))
 				{ //発射から一定時間経過
 
 					for (int nCntAppear = 0; nCntAppear < g_aPaticle3D[nCntPaticle].nParticleValue; nCntAppear++)
@@ -148,26 +164,6 @@ void UpdateParticle3D(void)
 							g_aPaticle3D[nCntPaticle].fEffectRadius,		// 大きさ
 							g_aPaticle3D[nCntPaticle].faddEffectRadius,		// 大きさの加算量
 							g_aPaticle3D[nCntPaticle].col,					// エフェクトの色	
-							g_aPaticle3D[nCntPaticle].effecttype);
-					}
-				}
-				else
-				{
-					rot.x = (float)(rand() % 629 - 314) / 1000.0f;		// 角度を設定
-					rot.y = (float)(rand() % 629 - 314) / 1000.0f;		// 角度を設定
-					rot.z = (float)(rand() % 629 - 314) / 1000.0f;		// 角度を設定
-
-					for (int nCntAppear = 0; nCntAppear < 1; nCntAppear++)
-					{// 生成するだけ繰り返す
-
-						// 3Dエフェクトの設定
-						SetEffect3D(100,										// 寿命
-							g_aPaticle3D[nCntPaticle].pos,						// 位置
-							D3DXVECTOR3(rot.x, rot.y, rot.z),					// 移動方向
-							g_aPaticle3D[nCntPaticle].fSpeedEffect * ((float)g_aPaticle3D[nCntPaticle].nParticleLifeV / g_aPaticle3D[nCntPaticle].nParticleLifeO),			// 移動速度
-							g_aPaticle3D[nCntPaticle].fEffectRadius / 2,		// 大きさ
-							g_aPaticle3D[nCntPaticle].faddEffectRadius / 2,		// 大きさの加算量
-							g_aPaticle3D[nCntPaticle].col,						// エフェクトの色	
 							g_aPaticle3D[nCntPaticle].effecttype);
 					}
 				}
@@ -259,4 +255,11 @@ void SetPosionParticle3D(int nIdx, const char* pMode, D3DXVECTOR3 pos)
 			g_aPaticle3D[nIdx].pos += pos;	// posの値を加算
 		}
 	}
+}
+//======================================================================== 
+// 3Dパーティクルの位置取得
+//======================================================================== 
+D3DXVECTOR3* GetParticlePos(void)
+{
+	return &g_aPaticle3D[0].pos;
 }
