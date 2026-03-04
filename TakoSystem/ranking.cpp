@@ -59,7 +59,7 @@ RankingOBJ g_aRankOBJ_Info[MAX_RANKINGOBJ] =			// ランキングオブジェクト情報
 {// Pos,Col,Size,ワールドマトリックス,bUse,nType,TexIdx,NumIdx
 
 	{{0.0f,0.0f,0.0f},{1.0f,0.0f,0.0f,1.0f},{15.0f,15.0f,0.0f},{},{false},{RANKTYPE_3D},{2} },
-	{{0.0f,0.0f,0.0f},{0.2f,0.2f,1.0f,1.0f},{15.0f,15.0f,0.0f},{},{false},{RANKTYPE_3D},{3} },
+	{{0.0f,0.0f,0.0f},{0.2f,1.0f,0.2f,1.0f},{15.0f,15.0f,0.0f},{},{false},{RANKTYPE_3D},{3} },
 	{{0.0f,0.0f,0.0f},{1.0f,1.0f,1.0f,1.0f},{15.0f,15.0f,0.0f},{},{false},{RANKTYPE_3D},{4},{0} },
 	{{0.0f,0.0f,0.0f},{1.0f,1.0f,1.0f,1.0f},{15.0f,15.0f,0.0f},{},{false},{RANKTYPE_3D},{4},{1} },
 	{{0.0f,0.0f,0.0f},{1.0f,1.0f,1.0f,1.0f},{15.0f,15.0f,0.0f},{},{false},{RANKTYPE_3D},{4},{0} },
@@ -518,7 +518,8 @@ void UpdateRanking(void)
 		SetCameraPos(0, { 0.0f ,80.0f ,-235.0f }, { 0.0f,55.0f,15.0f }, { 0.0f,0.0f,0.0f }, CAMERATYPE_STOP);
 	}
 	if (TimeCnt == 420)
-	{
+	{// サウンドの再生
+		PlaySound(SOUND_SE_JAN);
 		// サウンドの再生
 		PlaySound(SOUND_BGM_RANKING);
 

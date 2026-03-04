@@ -52,6 +52,7 @@ SOUNDINFO g_aSoundInfo[SOUND_MAX] =
 	{"data/SE/warning.wav",0},				//Œx‰¹
 	{"data/SE/mud000.wav",0},				//…‰¹
 	{"data/SE/drumroll001.wav",0},			//ƒhƒ‰ƒ€ƒ[ƒ‹
+	{"data/SE/jan000.wav",0},				//ƒWƒƒƒ“
 };
 
 //=============================================================================
