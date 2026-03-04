@@ -224,13 +224,15 @@ void UpdateReady(void)
 
 
 #ifdef _DEBUG
-	if (GetKeyboardTrigger(DIK_9) == true)
-	{
-		g_aReady[0].Idx = 4;
-		bfrag[0] = false; 
-		g_aReady[0].bDisp = true;
-		g_aReady[0].nCnt = 0;
-	}
+	#if 0 
+		if (GetKeyboardTrigger(DIK_9) == true)
+		{
+			g_aReady[0].Idx = 4;
+			bfrag[0] = false; 
+			g_aReady[0].bDisp = true;
+			g_aReady[0].nCnt = 0;
+		}
+	#endif
 #endif
 
 	// 頂点バッファをロックし,頂点情報へのポインタを取得
@@ -290,6 +292,7 @@ void UpdateReady(void)
 			if (nTime < 0 && g_aReady[nCntReady].bDisp == false)
 			{
 				SetReady(2, 1);
+				PlaySound(SOUND_SE_TIMEUP);			// タイムアップ
 
 				bGameStart = false;
 			}
@@ -303,7 +306,6 @@ void UpdateReady(void)
 					SetGameState(GAMESTATE_TIMEOVER);	// 時間切れ状態に設定
 				}
 
-				PlaySound(SOUND_SE_TIMEUP);	// カウントダウン
 			}
 
 		}
