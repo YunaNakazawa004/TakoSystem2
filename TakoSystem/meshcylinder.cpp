@@ -15,6 +15,7 @@
 #define MOVEMENT				(D3DXVECTOR3(1.0f, 1.0f, 1.0f))			// 移動量
 #define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// 向き移動量
 #define FIRST_SIZE				(D3DXVECTOR2(0.0f, 0.0f))				// 初期サイズ
+#define CYLINDER_FADE_SPEED		(0.01f)									// メッシュシリンダーのフェードのスピード
 
 //*****************************************************************************
 // グローバル変数
@@ -55,7 +56,11 @@ void InitMeshCylinder(void)
 		g_aMeshCylinder[nCntMeshCylinder].rot = FIRST_POS;
 		g_aMeshCylinder[nCntMeshCylinder].block = FIRST_SIZE;
 		g_aMeshCylinder[nCntMeshCylinder].size = FIRST_SIZE;
+		g_aMeshCylinder[nCntMeshCylinder].state = MESHCYLINDERSTATE_NONE;
+		g_aMeshCylinder[nCntMeshCylinder].nCounterState = 0;
 		g_aMeshCylinder[nCntMeshCylinder].bInside = false;
+		g_aMeshCylinder[nCntMeshCylinder].bColl = true;
+		g_aMeshCylinder[nCntMeshCylinder].bDisp = true;
 		g_aMeshCylinder[nCntMeshCylinder].bUse = false;
 	}
 }
@@ -98,7 +103,6 @@ void UninitMeshCylinder(void)
 //=============================================================================
 void UpdateMeshCylinder(void)
 {
-#if 0
 	for (int nCntMeshC = 0; nCntMeshC < MAX_MESHCYLINDER; nCntMeshC++)
 	{
 		if (g_aMeshCylinder[nCntMeshC].bUse == false)
@@ -106,27 +110,57 @@ void UpdateMeshCylinder(void)
 			continue;
 		}
 
+		MeshCylinder* pMeshC = &g_aMeshCylinder[nCntMeshC];
+
+		switch (pMeshC->state)
+		{
+		case MESHCYLINDERSTATE_NONE:
+			pMeshC->col.a = 1.0f;
+
+			break;
+
+		case MESHCYLINDERSTATE_FADEIN:
+			pMeshC->col.a -= CYLINDER_FADE_SPEED;
+
+			if (pMeshC->col.a <= 0.0f)
+			{// 透明になった
+				pMeshC->col.a = 0.0f;
+				pMeshC->state = MESHCYLINDERSTATE_FADEOUT;
+			}
+
+			break;
+
+		case MESHCYLINDERSTATE_FADEOUT:
+			pMeshC->col.a += CYLINDER_FADE_SPEED;
+
+			if (pMeshC->col.a >= 1.0f)
+			{// 不透明になった
+				pMeshC->col.a = 1.0f;
+				pMeshC->state = MESHCYLINDERSTATE_FADEIN;
+			}
+
+			break;
+		}
+
 		VERTEX_3D* pVtx;					// 頂点情報へのポインタ
 
 		// 頂点バッファをロックし、頂点情報へのポインタを取得
 		g_aMeshCylinder[nCntMeshC].pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
-		
+
 		for (int nCntMeshCylinder1 = 0; nCntMeshCylinder1 < (int)g_aMeshCylinder[nCntMeshC].block.y + 1; nCntMeshCylinder1++)
 		{
 			for (int nCntMeshCylinder2 = 0; nCntMeshCylinder2 < (int)g_aMeshCylinder[nCntMeshC].block.x + 1; nCntMeshCylinder2++)
 			{
 				// テクスチャ座標の設定
-				pVtx[0].tex.x += -0.001f;
+				pVtx[0].col = pMeshC->col;
 
 				pVtx++;
 			}
 		}
 
-
 		// 頂点バッファをアンロックする
 		g_aMeshCylinder[nCntMeshC].pVtxBuff->Unlock();
 	}
-#endif
 }
 
 //=============================================================================
@@ -140,21 +174,24 @@ void DrawMeshCylinder(void)
 
 	for (int nCntMeshCylinder = 0; nCntMeshCylinder < MAX_MESHCYLINDER; nCntMeshCylinder++)
 	{
-		if (g_aMeshCylinder[nCntMeshCylinder].bUse == true)
+		if (g_aMeshCylinder[nCntMeshCylinder].bUse == true && g_aMeshCylinder[nCntMeshCylinder].bDisp == true)
 		{// 使用しているとき
-			//// アルファテストを有効にする
-			//pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
-			//pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
-			//pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
+			if (g_aMeshCylinder[nCntMeshCylinder].state != MESHCYLINDERSTATE_NONE)
+			{// 普通の円柱以外
+				// アルファテストを有効にする
+				pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+				pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
+				pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
 
-			//// Zテストを無効にする
-			//pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESS);
-			//pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+				// Zテストを無効にする
+				pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESS);
+				pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 
-			//// レンダーステートを加算合成にする
-			//pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-			//pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-			//pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+				// レンダーステートを加算合成にする
+				pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+				pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+				pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+			}
 
 			// ワールドマトリックスの初期化
 			D3DXMatrixIdentity(&g_aMeshCylinder[nCntMeshCylinder].mtxWorld);
@@ -180,25 +217,32 @@ void DrawMeshCylinder(void)
 			pDevice->SetFVF(FVF_VERTEX_3D);
 
 			// テクスチャの設定
-			pDevice->SetTexture(0, g_apTextureMeshCylinder[g_aMeshCylinder[nCntMeshCylinder].type]);
+			if (g_aMeshCylinder[nCntMeshCylinder].type == MESHCYLINDERTYPE_NONE)
+			{// NULL
+				pDevice->SetTexture(0, NULL);
+			}
+			else
+			{// テクスチャあり
+				pDevice->SetTexture(0, g_apTextureMeshCylinder[g_aMeshCylinder[nCntMeshCylinder].type]);
+			}
 
 			// ポリゴンの描画
 			pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, ((int)g_aMeshCylinder[nCntMeshCylinder].block.x + 1) * ((int)g_aMeshCylinder[nCntMeshCylinder].block.y + 1), 0,
 				(((int)g_aMeshCylinder[nCntMeshCylinder].block.x) * ((int)g_aMeshCylinder[nCntMeshCylinder].block.y) * 2) + (((int)g_aMeshCylinder[nCntMeshCylinder].block.y - 1) * 4));
 
-			//// レンダーステートを元に戻す
-			//pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-			//pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-			//pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+			// レンダーステートを元に戻す
+			pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+			pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+			pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 
-			//// Zテストを有効にする
-			//pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
-			//pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+			// Zテストを有効にする
+			pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
+			pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 
-			//// アルファテストを無効にする
-			//pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
-			//pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
-			//pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
+			// アルファテストを無効にする
+			pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+			pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
+			pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
 		}
 	}
 }
@@ -206,7 +250,7 @@ void DrawMeshCylinder(void)
 //=============================================================================
 // メッシュシリンダーの設定処理
 //=============================================================================
-int SetMeshCylinder(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVECTOR2 size, D3DXCOLOR col, bool bInside, MESHCYLINDERTYPE type)
+int SetMeshCylinder(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVECTOR2 size, D3DXCOLOR col, bool bInside, bool bColl, MESHCYLINDERTYPE type, MESHCYLINDERSTATE state)
 {
 	int nCntMeshCylinder = -1;
 
@@ -221,6 +265,10 @@ int SetMeshCylinder(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVEC
 			g_aMeshCylinder[nCntMeshCylinder].size = size;
 			g_aMeshCylinder[nCntMeshCylinder].bInside = bInside;
 			g_aMeshCylinder[nCntMeshCylinder].type = type;
+			g_aMeshCylinder[nCntMeshCylinder].state = state;
+			g_aMeshCylinder[nCntMeshCylinder].nCounterState = 0;
+			g_aMeshCylinder[nCntMeshCylinder].bColl = bColl;
+			g_aMeshCylinder[nCntMeshCylinder].bDisp = true;
 			g_aMeshCylinder[nCntMeshCylinder].bUse = true;
 
 			LPDIRECT3DDEVICE9 pDevice = GetDevice();			// デバイスへのポインタ
@@ -329,7 +377,7 @@ bool CollisionMeshCylinder(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3*
 
 	for (int nCntMeshC = 0; nCntMeshC < MAX_MESHCYLINDER; nCntMeshC++, pMeshC++)
 	{
-		if (pMeshC->bUse == false)
+		if (pMeshC->bUse == false || pMeshC->bColl == false)
 		{
 			continue;
 		}
@@ -537,4 +585,17 @@ bool CollisionMeshCylinder(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3*
 MeshCylinder* GetMeshCylinder(void)
 {
 	return &g_aMeshCylinder[0];
+}
+
+//=============================================================================
+// メッシュシリンダーの表示設定
+//=============================================================================
+void SetMeshCylinderDisp(int nIdx, bool bDisp)
+{
+	if (nIdx < 0 || nIdx > MAX_MESHCYLINDER)
+	{// 範囲外
+		return;
+	}
+
+	g_aMeshCylinder[nIdx].bDisp = bDisp;
 }

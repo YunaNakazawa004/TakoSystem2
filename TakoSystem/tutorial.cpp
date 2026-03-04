@@ -69,7 +69,7 @@ void InitTutorial(void)
 
 	// メッシュシリンダーの初期化処理
 	InitMeshCylinder();
-	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(16.0f, 2.0f), D3DXVECTOR2(INCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, MESHCYLINDERTYPE_ROCK);
+	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(16.0f, 2.0f), D3DXVECTOR2(INCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, true, MESHCYLINDERTYPE_ROCK, MESHCYLINDERSTATE_NONE);
 
 	// メッシュドームの初期化処理
 	InitMeshDome();
@@ -403,9 +403,6 @@ void DrawTutorial(void)
 	// 配置物の描画処理
 	DrawObject();
 
-	// メッシュシリンダーの描画処理
-	DrawMeshCylinder();
-
 	// メッシュドームの描画処理
 	DrawMeshDome();
 
@@ -414,6 +411,9 @@ void DrawTutorial(void)
 
 	// メッシュリングの描画処理
 	DrawMeshRing();
+
+	// メッシュシリンダーの描画処理
+	DrawMeshCylinder();
 
 	// 塵の描画処理
 	DrawSeaDust();

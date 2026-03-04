@@ -16,8 +16,20 @@ typedef enum
 {
 	MESHCYLINDERTYPE_SEA = 0,			// 海
 	MESHCYLINDERTYPE_ROCK,				// 岩
+	MESHCYLINDERTYPE_NONE,				// テクスチャ無し
 	MESHCYLINDERTYPE_MAX			
 }MESHCYLINDERTYPE;
+
+//*****************************************************************************
+// メッシュシリンダーの状態
+//*****************************************************************************
+typedef enum
+{
+	MESHCYLINDERSTATE_NONE = 0,			// 何もしない状態
+	MESHCYLINDERSTATE_FADEIN,			// フェードイン
+	MESHCYLINDERSTATE_FADEOUT,			// フェードアウト
+	MESHCYLINDERSTATE_MAX
+}MESHCYLINDERSTATE;
 
 //*****************************************************************************
 // メッシュシリンダーの構造体
@@ -33,7 +45,11 @@ typedef struct
 	D3DXVECTOR2 size;						// サイズ
 	D3DXMATRIX mtxWorld;					// ワールドマトリックス
 	MESHCYLINDERTYPE type;					// 種類
+	MESHCYLINDERSTATE state;				// 状態
+	int nCounterState;						// 状態カウンター
 	bool bInside;							// 内側からの当たり判定かどうか
+	bool bColl;								// 当たり判定をするかどうか
+	bool bDisp;								// 表示しているかどうか
 	bool bUse;								// 使用しているかどうか
 }MeshCylinder;
 
@@ -44,7 +60,8 @@ void InitMeshCylinder(void);
 void UninitMeshCylinder(void);
 void UpdateMeshCylinder(void);
 void DrawMeshCylinder(void);
-int SetMeshCylinder(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVECTOR2 size, D3DXCOLOR col, bool bInside, MESHCYLINDERTYPE type);
+int SetMeshCylinder(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVECTOR2 size, D3DXCOLOR col, bool bInside, bool bColl, MESHCYLINDERTYPE type, MESHCYLINDERSTATE state);
+void SetMeshCylinderDisp(int nIdx, bool bDisp);
 bool CollisionMeshCylinder(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, float fRadius, float fHeight, bool binsec);
 MeshCylinder* GetMeshCylinder(void);
 

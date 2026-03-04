@@ -50,7 +50,7 @@ typedef struct
 	OBJECTSTATE state;						// 状態
 	int nCounterState;						// 状態カウンター
 	int nType;								// 種類
-	int nIdxShadow;							// 影
+	int nIdxSafe;							// 安地
 	bool bUse;								// 使用しているかどうか
 	bool bCollision;						// 当たり判定するかどうか
 	char sFileName[128];					// モデル名
