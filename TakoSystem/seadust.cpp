@@ -9,11 +9,12 @@
 #include "oceancurrents.h"
 #include "meshorbit.h"
 #include "debugproc.h"
+#include "input.h"
 
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define MAX_SEADUST				(5000)							// 塵の最大数
+#define MAX_SEADUST				(2500)							// 塵の最大数
 #define SEADUST_SIZE			(1.0f)							// サイズ
 #define SEADUST_FILENAME		"data\\TEXTURE\\shadow000.png"	// 使用する塵のファイル名
 
@@ -96,7 +97,7 @@ void InitSeaDust(void)
 	// ▲頂点バッファをアンロックする
 	g_pVtxBuffSeaDust->Unlock();
 
-	SetRandomSeaDust(5000);
+	SetRandomSeaDust(MAX_SEADUST);
 }
 
 //======================================================================== 
@@ -131,13 +132,11 @@ void UpdateSeaDust(void)
 			continue;
 		}
 
-		//float fAngleMove = (rand() % 100 + 1) / 100000.0f;
+		static float fAngle = 0.0f;
+		fAngle += 0.01f;
+		CorrectAngle(&fAngle, fAngle);
 
-		//static float fAngle = 0.0f;
-		//fAngle += fAngleMove * 0.01f;
-		//CorrectAngle(&fAngle, fAngle);
-
-		//g_aSeaDust[nCntDust].pos.y += cosf(fAngle);
+		g_aSeaDust[nCntDust].pos.y += cosf(fAngle) * 0.5f;
 	}
 }
 
@@ -219,7 +218,7 @@ void SetRandomSeaDust(int nAmount)
 	{
 		D3DXVECTOR3 pos;
 		float fAngle = (D3DX_PI * 2.0f) * ((float)((nCntDust + 1) * (360.0f / nAmount)) / 360.0f);
-		float fsin = sinf(fAngle);
+		//float fsin = sinf(fAngle);
 
 		pos.x = sinf(fAngle) * (INCYLINDER_RADIUS + (((float)(rand() % (int)((OUTCYLINDER_RADIUS * 2) - INCYLINDER_RADIUS) + 1))));
 		pos.y = (float)(rand() % (int)(CYLINDER_HEIGHT));

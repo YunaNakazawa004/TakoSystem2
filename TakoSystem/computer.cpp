@@ -11,6 +11,7 @@
 #include "time.h"
 #include "oceancurrents.h"
 #include "object.h"
+#include "meshfield.h"
 #include "meshcylinder.h"
 #include "meshring.h"
 #include "meshorbit.h"
@@ -77,7 +78,7 @@
 #define INK_PILLAR_SCORE		(3.0f)									// 柱が近いスコア
 #define INK_BLIND_DIST			(500.0f)								// 墨にかかる距離
 
-#define POT_DISTANCE			(1000.0f)								// タコつぼが遠すぎる
+#define POT_DISTANCE			(400.0f)								// タコつぼが遠すぎる
 #define POT_ESA_SCORE			(0.4f)									// 自分のエサが多い
 #define POT_NO_ESA_SCORE		(5.0f)									// エサを持っていない
 #define POT_ENEMY_DISTANCE		(500.0f)								// 敵との距離
@@ -116,6 +117,7 @@ void LoadComputer(void);
 // グローバル変数
 //*****************************************************************************
 Computer g_aComputer[MAX_COMPUTER];						// CPUの情報
+Model_Info g_ComputerModel[MAX_NUMMODEL];				// CPUモデルの情報
 Node g_aOutNode[NODE_COUNT * NODE_HEIGHT];				// ノード(外周)
 Node g_aInNode[NODE_COUNT * NODE_HEIGHT];				// ノード(内周)
 char* g_apFilenameComputer[MAX_NUMMODEL] = {};			// モデルファイルへのポインタ
@@ -185,52 +187,62 @@ void InitComputer(void)
 	pComputer = GetComputer();
 
 	for (int nCntComputer = 0; nCntComputer < MAX_COMPUTER; nCntComputer++, pComputer++)
-	{
-		pComputer->motionType = MOTIONTYPE_NEUTRAL;
-		pComputer->bLoopMotion = pComputer->aMotionInfo[0].bLoop;
-		pComputer->nNumKey = pComputer->aMotionInfo[0].nNumKey;
-		pComputer->nKey = 0;
-		pComputer->nCounterMotion = 0;
-		pComputer->bFinishMotion = false;
-		pComputer->bBlendMotion = false;
-		pComputer->motionTypeBlend = MOTIONTYPE_NEUTRAL;
-		pComputer->bLoopMotionBlend = pComputer->aMotionInfo[0].bLoop;
-		pComputer->nNumKeyBlend = pComputer->aMotionInfo[0].nNumKey;
-		pComputer->nKeyBlend = 0;
-		pComputer->nCounterMotionBlend = 0;
-		pComputer->nFrameBlend = 0;
-		pComputer->nCounterBlend = 0;
 
-		for (int nCntModel = 0; nCntModel < pComputer->nNumModel; nCntModel++)
-		{
-			// Xファイルの読み込み
-			if (FAILED(D3DXLoadMeshFromX(g_apFilenameComputer[pComputer->aModel[nCntModel].nIdx],
-				D3DXMESH_SYSTEMMEM,
-				pDevice,
-				NULL,
-				&pComputer->aModel[nCntModel].pBuffMat,
-				NULL,
-				&pComputer->aModel[nCntModel].dwNumMat,
-				&pComputer->aModel[nCntModel].pMesh)))
-			{
-				return;
-			}
+	{// コンピューターの総数分繰り返す
 
-			// マテリアルデータへのポインタを取得
-			pMat = (D3DXMATERIAL*)pComputer->aModel[nCntModel].pBuffMat->GetBufferPointer();
-
-			for (int nCntMat = 0; nCntMat < (int)pComputer->aModel[nCntModel].dwNumMat; nCntMat++)
-			{
-				if (pMat[nCntMat].pTextureFilename != NULL)
-				{// テクスチャファイルが存在する
-					D3DXCreateTextureFromFile(pDevice, pMat[nCntMat].pTextureFilename, &pComputer->aModel[nCntModel].apTexture[nCntMat]);
-				}
-			}
-		}
+		pComputer->motionType = MOTIONTYPE_NEUTRAL;							// モーションの種類をニュートラルに設定
+		pComputer->bLoopMotion = pComputer->aMotionInfo[0].bLoop;			// ニュートラルモーションのループ状態を設定
+		pComputer->nNumKey = pComputer->aMotionInfo[0].nNumKey;				// ニュートラルモーションのキーの総数を設定
+		pComputer->nKey = 0;												// 現在のキーを初期化
+		pComputer->nCounterMotion = 0;										// モーションカウンタを初期化
+		pComputer->bFinishMotion = false;									// モーションを終了していない状態に設定
+		pComputer->bBlendMotion = false;									// ブレンドしない状態に設定
+		pComputer->motionTypeBlend = MOTIONTYPE_NEUTRAL;					// ブレンド時のモーションをニュートラルに設定
+		pComputer->bLoopMotionBlend = pComputer->aMotionInfo[0].bLoop;		// ニュートラルモーションのループ状態を設定
+		pComputer->nNumKeyBlend = pComputer->aMotionInfo[0].nNumKey;		// ニュートラルモーションのキーの総数を設定 
+		pComputer->nKeyBlend = 0;											// ブレンド時のキーを初期化
+		pComputer->nCounterMotionBlend = 0;									// ブレンド時のモーションカウンタを初期化
+		pComputer->nFrameBlend = 0;											// ブレンドフレーム数を初期化
+		pComputer->nCounterBlend = 0;										// ブレンドカウンタを初期化
 	}
 
+	// モデルの読み込み
+	for (int nCntModel = 0; nCntModel < g_aComputer[0].nNumModel; nCntModel++)
+	{// タコのパーツの総数分繰り返す
+
+		// Xファイルの読み込み
+		if (FAILED(D3DXLoadMeshFromX(g_apFilenameComputer[g_aComputer[0].aModel[nCntModel].nIdx],
+			D3DXMESH_SYSTEMMEM,
+			pDevice,
+			NULL,
+			&g_ComputerModel[nCntModel].pBuffMat,
+			NULL,
+			&g_ComputerModel[nCntModel].dwNumMat,
+			&g_ComputerModel[nCntModel].pMesh)))
+		{// モデルの読み込みに失敗した場合
+
+			continue;
+		}
+
+		// マテリアルデータへのポインタを取得
+		pMat = (D3DXMATERIAL*)g_ComputerModel[nCntModel].pBuffMat->GetBufferPointer();
+
+		// マテリアルの読み込み
+		for (int nCntMat = 0; nCntMat < (int)g_ComputerModel[nCntModel].dwNumMat; nCntMat++)
+		{
+			if (pMat[nCntMat].pTextureFilename != NULL)
+			{// テクスチャファイルが存在する
+				D3DXCreateTextureFromFile(pDevice, pMat[nCntMat].pTextureFilename, &g_ComputerModel[nCntModel].apTexture[nCntMat]);
+			}
+
+		}
+
+	}
+
+#if 1
 	// ランダムな位置に設定
 	SetRandomComputer(ALL_OCTO - GetNumCamera());
+#endif
 }
 
 //=============================================================================
@@ -238,31 +250,30 @@ void InitComputer(void)
 //=============================================================================
 void UninitComputer(void)
 {
-	Computer* pComputer = GetComputer();
-
-	for (int nCntModel = 0; nCntModel < pComputer->nNumModel; nCntModel++, pComputer++)
+	for (int nCntModel = 0; nCntModel < MAX_NUMMODEL; nCntModel++)
 	{
 		// メッシュの破棄
-		if (pComputer->aModel[nCntModel].pMesh != NULL)
+		if (g_ComputerModel[nCntModel].pMesh != NULL)
 		{
-			pComputer->aModel[nCntModel].pMesh->Release();
-			pComputer->aModel[nCntModel].pMesh = NULL;
+			g_ComputerModel[nCntModel].pMesh->Release();
+			g_ComputerModel[nCntModel].pMesh = NULL;
 		}
 
 		// マテリアルの破棄
-		if (pComputer->aModel[nCntModel].pBuffMat != NULL)
+		if (g_ComputerModel[nCntModel].pBuffMat != NULL)
 		{
-			pComputer->aModel[nCntModel].pBuffMat->Release();
-			pComputer->aModel[nCntModel].pBuffMat = NULL;
+			g_ComputerModel[nCntModel].pBuffMat->Release();
+			g_ComputerModel[nCntModel].pBuffMat = NULL;
 		}
 
 		// テクスチャの破棄
-		for (int nCntComputer = 0; nCntComputer < (int)pComputer->aModel[nCntModel].dwNumMat; nCntComputer++)
+		for (int nCntTex = 0; nCntTex < MAX_TEXTURE; nCntTex++)
 		{
-			if (pComputer->aModel[nCntModel].apTexture[nCntComputer] != NULL)
+
+			if (g_ComputerModel[nCntModel].apTexture[nCntTex] != NULL)
 			{
-				pComputer->aModel[nCntModel].apTexture[nCntComputer]->Release();
-				pComputer->aModel[nCntModel].apTexture[nCntComputer] = NULL;
+				g_ComputerModel[nCntModel].apTexture[nCntTex]->Release();
+				g_ComputerModel[nCntModel].apTexture[nCntTex] = NULL;
 			}
 		}
 	}
@@ -514,14 +525,18 @@ void UpdateComputer(void)
 						int nIdx = -1;
 
 						if (CollisionEsa(&nIdx, false, &tentaclePos, pComputer->phys.fRadius) == true &&
-							pComputer->nFoodCount < pComputer->nMaxFood * CPU_TENTACLE && 
+							pComputer->nFoodCount < pComputer->nMaxFood * CPU_TENTACLE &&
 							pComputer->motionType != MOTIONTYPE_OCEANCULLENT)
 						{// エサと接触した
 							Esa* pEsa = GetEsa();
 							pEsa[nIdx].bUse = false;
+							pEsa[nIdx].bOrbit = false;
+							pEsa[nIdx].nOrbitIdx = -1;
 
 							pComputer->nFoodCount++;
 							Enqueue(&pComputer->esaQueue, pEsa[nIdx].nIdxModel);
+
+							pComputer->state = CPUSTATE_EXPLORE;
 						}
 						else if (CollisionPotArea(tentaclePos, TENTACLE_RADIUS * 0.5f, NULL, pComputer, true) == true ||
 							CollisionOcto(nCntComputer, true, tentaclePos) == true)
@@ -529,6 +544,8 @@ void UpdateComputer(void)
 							pComputer->TentState = CPUTENTACLESTATE_TENTACLESHORT;
 
 							SetMotionComputer(nCntComputer, MOTIONTYPE_TENTACLESHORT, true, 20);
+
+							pComputer->state = CPUSTATE_EXPLORE;
 						}
 						else if (CollisionMeshCylinder(&tentaclePos, &pComputer->phys.pos, &pComputer->phys.move,
 							TENTACLE_RADIUS, TENTACLE_RADIUS, true) == true ||
@@ -538,6 +555,8 @@ void UpdateComputer(void)
 						{// 壁との当たり判定
 							pComputer->TentState = CPUTENTACLESTATE_TENTACLESHORT;
 							SetMotionComputer(nCntComputer, MOTIONTYPE_DASH, true, 20);
+
+							pComputer->state = CPUSTATE_EXPLORE;
 						}
 						else
 						{// 触手を伸ばす
@@ -604,21 +623,13 @@ void UpdateComputer(void)
 				pComputer->phys.move.z += (0.0f - pComputer->phys.move.z) * INERTIA_MOVE;
 			}
 
-			// 軌跡
-			for (int nCntTent = 0; nCntTent < CPU_TENTACLE; nCntTent++)
-			{
-				SetMeshOrbitPos(pComputer->nOrbitIdx[nCntTent], D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
-					D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
-					WHITE_VTX, CYAN_VTX, &pComputer->aModel[(nCntTent + 1) * 4].mtxWorld);
-			}
-
 			if (CollisionObjectArea(pComputer->phys.pos) == false)
 			{// 渦潮
 				MoveOceanCurrents(&pComputer->phys.pos);
 
 				if (GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL)
 				{// 安地外で渦潮
-					if (pComputer->TentState == PLTENTACLESTATE_NORMAL && 
+					if (pComputer->TentState == PLTENTACLESTATE_NORMAL &&
 						(pComputer->motionType != MOTIONTYPE_DASH || pComputer->motionTypeBlend != MOTIONTYPE_DASH) &&
 						pComputer->state != CPUSTATE_INK_ATTACK && pComputer->state != CPUSTATE_BACKAREA)
 					{// 触手が通常状態のときだけ
@@ -638,7 +649,7 @@ void UpdateComputer(void)
 			if (pComputer->TentState == CPUTENTACLESTATE_NORMAL &&
 				D3DXVec3Length(&pComputer->phys.move) > 0.1f &&
 				pComputer->state != CPUSTATE_INK_ATTACK && pComputer->state != CPUSTATE_BACKAREA &&
-				(pComputer->motionType != MOTIONTYPE_DASH || pComputer->motionTypeBlend != MOTIONTYPE_DASH) && 
+				(pComputer->motionType != MOTIONTYPE_DASH || pComputer->motionTypeBlend != MOTIONTYPE_DASH) &&
 				(GetOceanCurrents() != OCEANCURRENTSSTATE_WIRLPOOL ||
 					(GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL && CollisionObjectArea(pComputer->phys.pos) == true)))
 			{// 移動モーション
@@ -647,7 +658,7 @@ void UpdateComputer(void)
 			else if (pComputer->TentState == CPUTENTACLESTATE_NORMAL &&
 				D3DXVec3Length(&pComputer->phys.move) < 0.1f &&
 				pComputer->state != CPUSTATE_INK_ATTACK &&
-				(pComputer->motionType != MOTIONTYPE_DASH || pComputer->motionTypeBlend != MOTIONTYPE_DASH) && 
+				(pComputer->motionType != MOTIONTYPE_DASH || pComputer->motionTypeBlend != MOTIONTYPE_DASH) &&
 				(GetOceanCurrents() != OCEANCURRENTSSTATE_WIRLPOOL ||
 					(GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL && CollisionObjectArea(pComputer->phys.pos) == true)))
 			{// 待機モーション
@@ -738,13 +749,14 @@ void UpdateComputer(void)
 			//	pComputer->phys.pos.x, pComputer->phys.pos.y, pComputer->phys.pos.z);
 			//PrintDebugProc("ENEMY : move ( %f %f %f )\n",
 			//	pComputer->phys.move.x, pComputer->phys.move.y, pComputer->phys.move.z);
-			PrintDebugProc("ENEMY : nFood ( %d )\n", pComputer->nFoodCount);
+			//PrintDebugProc("ENEMY : nFood ( %d )\n", pComputer->nFoodCount);
 			//PrintDebugProc("ENEMY : TargetPot ( %d )\n", pComputer->nTargetPotIdx);
 			//PrintDebugProc("ENEMY : TargetEnemy ( %d )\n", pComputer->nTargetEnemyIdx);
 			//PrintDebugProc("ENEMY : ノード ( %f %f %f )\n",
 			//	pComputer->extarget.x, pComputer->extarget.y, pComputer->extarget.z);
 
 			// 当たり判定
+			CollisionMeshField(pComputer->phys.pos, pComputer->phys.rot, pComputer->phys.fRadius, pComputer->phys.fHeight);
 			CollisionObject(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, false);
 			CollisionPot(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius);
 			CollisionMeshCylinder(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, false);
@@ -760,6 +772,8 @@ void UpdateComputer(void)
 				if (pEsa[nIdx].esaType != ESA_ACTTYPE_GOTO_POT)
 				{// タコつぼに入れてる最中じゃない
 					pEsa[nIdx].bUse = false;
+					pEsa[nIdx].bOrbit = false;
+					pEsa[nIdx].nOrbitIdx = -1;
 
 					pComputer->nFoodCount++;
 					Enqueue(&pComputer->esaQueue, pEsa[nIdx].nIdxModel);
@@ -854,23 +868,47 @@ void DrawComputer(void)
 				pDevice->SetTransform(D3DTS_WORLD, &pComputer->aModel[nCntModel].mtxWorld);
 
 				// マテリアルデータへのポインタを取得
-				pMat = (D3DXMATERIAL*)pComputer->aModel[nCntModel].pBuffMat->GetBufferPointer();
+				pMat = (D3DXMATERIAL*)g_ComputerModel[nCntModel].pBuffMat->GetBufferPointer();
 
-				for (int nCntMat = 0; nCntMat < (int)pComputer->aModel[nCntModel].dwNumMat; nCntMat++)
+				for (int nCntMat = 0; nCntMat < (int)g_ComputerModel[nCntModel].dwNumMat; nCntMat++)
 				{
 					// マテリアルの設定
 					pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
 
 					// テクスチャの設定
-					pDevice->SetTexture(0, pComputer->aModel[nCntModel].apTexture[nCntMat]);
+					pDevice->SetTexture(0, g_ComputerModel[nCntModel].apTexture[nCntMat]);
 
 					// モデルパーツの描画
-					pComputer->aModel[nCntModel].pMesh->DrawSubset(nCntMat);
+					g_ComputerModel[nCntModel].pMesh->DrawSubset(nCntMat);
 				}
 			}
 
 			// 保存していたマテリアルを戻す
 			pDevice->SetMaterial(&matDef);
+
+			for (int nCntTent = 0; nCntTent < CPU_TENTACLE; nCntTent++)
+			{
+				int nIdx = pComputer->nOrbitIdx[nCntTent];
+
+				if (nIdx == -1)
+				{// 初回
+					nIdx = SetMeshOrbit(D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
+						D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
+						WHITE_VTX, CYAN_VTX, &pComputer->aModel[(nCntTent + 1) * 4].mtxWorld);
+
+					if (nIdx < 0)
+					{// 範囲外
+						pComputer->nOrbitIdx[nCntTent] = -1;
+						continue;
+					}
+
+					pComputer->nOrbitIdx[nCntTent] = nIdx;
+				}
+
+				SetMeshOrbitPos(pComputer->nOrbitIdx[nCntTent], D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
+					D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
+					WHITE_VTX, CYAN_VTX, &pComputer->aModel[(nCntTent + 1) * 4].mtxWorld);
+			}
 		}
 	}
 }
@@ -895,6 +933,14 @@ void MoveToFood(Computer* pComputer)
 	pComputer->phys.move.x += dir.x * MOVEMENT.x;
 	pComputer->phys.move.y += dir.y * MOVEMENT.y;
 	pComputer->phys.move.z += dir.z * MOVEMENT.z;
+
+	D3DXVECTOR3 posDiff = target - pComputer->phys.pos;
+
+	if (D3DXVec3Length(&posDiff) < TENTACLE_REACH)
+	{// 触手射程内なら掴みに行く
+		pComputer->targetWall = target;
+		UseTentacle(pComputer);
+	}
 }
 
 //=============================================================================
@@ -922,6 +968,8 @@ void AttackEnemy(Computer* pComputer)
 	{// 触手射程内なら掴みに行く
 		pComputer->targetWall = target;
 		UseTentacle(pComputer);
+
+		pComputer->state = CPUSTATE_EXPLORE;
 	}
 }
 
@@ -934,7 +982,7 @@ void Escape(Computer* pComputer)
 	D3DXVECTOR3 dir = pComputer->phys.pos - enemyPos; // 敵と逆方向
 	D3DXVec3Normalize(&dir, &dir);
 
-	// 慣性移動4
+	// 慣性移動
 	pComputer->phys.move.x += dir.x * MOVEMENT.x;
 	pComputer->phys.move.y += dir.y * MOVEMENT.y;
 	pComputer->phys.move.z += dir.z * MOVEMENT.z;
@@ -944,6 +992,8 @@ void Escape(Computer* pComputer)
 		FindTentacleTarget(pComputer);
 		UseTentacle(pComputer);
 	}
+
+	pComputer->state = CPUSTATE_EXPLORE;
 }
 
 //=============================================================================
@@ -979,8 +1029,8 @@ void InkAttack(Computer* pComputer)
 //=============================================================================
 void Explore(Computer* pComputer)
 {
-	D3DXVECTOR3 posDiff = pComputer->extarget - pComputer->phys.pos;
-	float fDist = D3DXVec3Length(&posDiff);
+	//D3DXVECTOR3 posDiff = pComputer->extarget - pComputer->phys.pos;
+	//float fDist = D3DXVec3Length(&posDiff);
 
 	if (pComputer->nExploreCooldown % (ONE_SECOND * 3) == 0)
 	{// 5秒に1回設定
@@ -1122,10 +1172,10 @@ void FinalCollect(Computer* pComputer)
 	D3DXVECTOR3 dir = target - pComputer->phys.pos;
 	D3DXVec3Normalize(&dir, &dir);
 
-	// 慣性移動
-	pComputer->phys.move.x += dir.x * MOVEMENT.x;
-	pComputer->phys.move.y += dir.y * MOVEMENT.y;
-	pComputer->phys.move.z += dir.z * MOVEMENT.z;
+	//// 慣性移動
+	//pComputer->phys.move.x += dir.x * MOVEMENT.x;
+	//pComputer->phys.move.y += dir.y * MOVEMENT.y;
+	//pComputer->phys.move.z += dir.z * MOVEMENT.z;
 
 	D3DXVECTOR3 posDiff = pPot->pos - pComputer->phys.pos;
 	float dist = D3DXVec3Length(&posDiff);
@@ -1309,7 +1359,7 @@ D3DXVECTOR3 GetHidePosition(Computer* pComputer)
 	Object* pObject = GetObjectAll();
 
 	// 最も危険な敵を探す
-	for (int nCntObject = 0; nCntObject < MAX_COMPUTER; nCntObject++, pObject++)
+	for (int nCntObject = 0; nCntObject < MAX_OBJECT; nCntObject++, pObject++)
 	{
 		if (pObject->bUse == false)
 		{// 使用していない
@@ -1445,7 +1495,7 @@ void CalcFoodScore(Computer* pComputer)
 void CalcAttackScore(Computer* pComputer)
 {
 	pComputer->fAttackScore = 0.0f;
-	pComputer->nTargetEnemyIdx = -1;
+	//pComputer->nTargetEnemyIdx = -1;
 
 	float bestScore = -9999.0f;
 
@@ -1467,7 +1517,8 @@ void CalcAttackScore(Computer* pComputer)
 		float dist = D3DXVec3Length(&toEnemy);
 		D3DXVec3Normalize(&pComputer->phys.dir, &toEnemy);
 
-		if (dist > ((pComputer->bBlinded) ? FAR_DISTANCE * 0.5f : FAR_DISTANCE))
+		if (dist > ((pComputer->bBlinded) ? FAR_DISTANCE * 0.5f : FAR_DISTANCE) || 
+			pComputer->nTargetEnemyIdx == nCntEnemy)
 		{// 遠すぎる敵は無視
 			continue;
 		}
@@ -1540,7 +1591,8 @@ void CalcAttackScore(Computer* pComputer)
 		float dist = D3DXVec3Length(&toPlayer);
 		D3DXVec3Normalize(&pComputer->phys.dir, &toPlayer);
 
-		if (dist > ((pComputer->bBlinded) ? FAR_DISTANCE * 0.5f : FAR_DISTANCE))
+		if (dist > ((pComputer->bBlinded) ? FAR_DISTANCE * 0.5f : FAR_DISTANCE) || 
+			pComputer->nTargetEnemyIdx == nCntPlayer + 100)
 		{// 遠すぎる敵は無視
 			continue;
 		}
@@ -1960,14 +2012,19 @@ void CalcPotScore(Computer* pComputer)
 			score += POT_ENEMY_DIST_SCORE;
 		}
 
+		if (CountEnemiesNear(pComputer->nIdx, pComputer->phys.pos, (pComputer->bBlinded) ? ENEMY_COUNT_DIST * 0.5f : ENEMY_COUNT_DIST) >= 2)
+		{// 敵が複数近くにいる
+			score -= POT_ENEMY_DIST_SCORE * 3.0f;
+		}
+
 		// 終盤ボーナス
 		if (GetTime() < POT_PHASE_1)
 		{
-			score += POT_PHASE_1_SCORE;
+			//score += POT_PHASE_1_SCORE;
 
 			if (GetTime() < POT_PHASE_2)
 			{
-				score += POT_PHASE_2_SCORE;
+				//score += POT_PHASE_2_SCORE;
 			}
 		}
 		else if (pComputer->nFoodCount == 0)
@@ -2140,7 +2197,7 @@ void FindTentacleTarget(Computer* pComputer)
 		D3DXVECTOR3 dir(cosf(angle), 0, sinf(angle));
 
 		// 外周と中央柱の両方にレイキャスト
-		float distOuter, distInner;
+		float /*distOuter, */distInner;
 		//bool hitOuter = RaycastToOuterWall(pComputer->phys.pos, dir, &distOuter);
 		bool hitInner = RaycastToInnerPillar(pComputer->phys.pos, dir, &distInner);
 
@@ -2329,9 +2386,9 @@ void UseTentacle(Computer* pComputer)
 	dir *= TENTACLE_MOVEMENT.x;
 
 	// 触手による強制加速
-	pComputer->phys.move.x += dir.x;
-	pComputer->phys.move.y += dir.y;
-	pComputer->phys.move.z += dir.z;
+	pComputer->phys.move.x += dir.x * 0.8f;
+	pComputer->phys.move.y += dir.y * 0.8f;
+	pComputer->phys.move.z += dir.z * 0.8f;
 
 	// 触手クールダウン
 	pComputer->nTentacleCooldown = TENTACLE_CT;
@@ -2469,16 +2526,6 @@ void SetComputer(D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType)
 			pComputer->Potstate = POTSTATE_NONE;
 			pComputer->nMaxFood = 1;
 
-			for (int nCntTent = 0; nCntTent < CPU_TENTACLE; nCntTent++)
-			{
-				pComputer->nOrbitIdx[nCntTent] = SetMeshOrbit(D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
-					D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
-					WHITE_VTX, CYAN_VTX, &pComputer->aModel[(nCntTent + 1) * 4].mtxWorld);
-
-				SetMeshOrbitPos(pComputer->nOrbitIdx[nCntTent], D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
-					D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
-					WHITE_VTX, CYAN_VTX, &pComputer->aModel[(nCntTent + 1) * 4].mtxWorld);
-			}
 
 			pComputer->nCurrentNode = 0;
 			pComputer->nNextNode = 0;
@@ -2514,7 +2561,7 @@ void SetRandomComputer(int nAmount)
 	{
 		D3DXVECTOR3 pos;
 		float fAngle = (D3DX_PI * 2.0f) * ((float)((nCntCPU + 1) * (360.0f / nAmount)) / 360.0f);
-		float fsin = sinf(fAngle);
+		//float fsin = sinf(fAngle);
 
 		pos.x = sinf(fAngle) * (INCYLINDER_RADIUS + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) + 1))));
 		pos.y = (float)(rand() % (int)(CYLINDER_HEIGHT * 0.6f)) + (CYLINDER_HEIGHT * 0.2f);
@@ -2530,6 +2577,14 @@ void SetRandomComputer(int nAmount)
 Computer* GetComputer(void)
 {
 	return &g_aComputer[0];
+}
+
+//=============================================================================
+// タコモデルの取得処理
+//=============================================================================
+Model_Info* GetTakoModel(void)
+{
+	return &g_ComputerModel[0];
 }
 
 //=============================================================================
@@ -2684,7 +2739,7 @@ void LoadComputer(void)
 	Computer* pComputer = GetComputer();
 	char aString[512] = {};				// ファイルのテキスト読み込み
 	char aTrash[512] = {};				// ごみ箱
-	char aModelName[128][512] = {};		// モデルの名前
+	char aModelName[128][512] = {};
 
 	// テクスチャ読み込み用の変数
 	int nNumTexture = 0;
@@ -2692,8 +2747,8 @@ void LoadComputer(void)
 
 	// キャラクターセット用の変数
 	int nNumParts = 0;		// 読み込むパーツ数
-	float fRadius = 0.0f;	// キャラクターの半径
-	float fHeight = 0.0f;	// キャラクターの高さ
+	//float fRadius = 0.0f;	// キャラクターの半径
+	//float fHeight = 0.0f;	// キャラクターの高さ
 	float fMove = 0.0f;		// キャラクターの移動量
 	float fJump = 0.0f;		// キャラクターのジャンプ量
 	D3DXVECTOR2 Blowoff = D3DXVECTOR2(0.0f, 0.0f);		// 吹っ飛び量
@@ -2711,6 +2766,8 @@ void LoadComputer(void)
 	int nFrame = 0;			// 再生フレーム数
 	int nCntMotion = 0;		// モーション番号
 	KEY key = {};			// キー要素
+
+
 
 	pFile = fopen(CPU_FILE, "r");
 

@@ -18,8 +18,8 @@
 
 // マクロ定義 ==================================================
 
-#define UIESA_SIZE_WIDTH	(10.0f)		// 
-#define UIESA_SIZE_HEIGHT	(10.0f)		// 
+#define UIESA_SIZE_WIDTH	(10.0f)		// エサテクスチャの幅の大きさ
+#define UIESA_SIZE_HEIGHT	(10.0f)		// エサテクスチャの高さの大きさ 
 
 // 構造体の定義 ================================================
 
@@ -123,7 +123,7 @@ void InitUiEsa(void)
 	// ▼頂点バッファをロックして頂点情報へのポインタを所得
 	g_pVtxBuffUiEsa->Lock(0, 0, (void**)&pVtx, 0);
 
-	for (int nCntUiEsa = 0; nCntUiEsa < MAX_SET_ESA; nCntUiEsa++)
+	for (nCntUiEsa = 0; nCntUiEsa < MAX_SET_ESA; nCntUiEsa++)
 	{
 		// 頂点情報の設定
 		pVtx[0].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// (x, y, z)			 
@@ -156,7 +156,7 @@ void InitUiEsa(void)
 	g_pVtxBuffUiEsa->Unlock();
 
 	// エサの親の設定
-	for (int nCntUiEsa = 0; nCntUiEsa < sizeof g_aUiEsaParentInfo / sizeof g_aUiEsaParentInfo[0]; nCntUiEsa++)
+	for (nCntUiEsa = 0; nCntUiEsa < sizeof g_aUiEsaParentInfo / sizeof g_aUiEsaParentInfo[0]; nCntUiEsa++)
 	{
 		if (g_aUiEsaParentInfo[nCntUiEsa].nNumPlay == GetNumCamera())
 		{// プレイ人数が同じ場合
@@ -192,9 +192,11 @@ void UpdateUiEsa(void)
 
 	D3DXVECTOR3 setPos;	// 設定する位置の値
 
-	int nSetRand = rand() % ESATYPE_MAX;
+	//int nSetRand = rand() % ESATYPE_MAX;
 
 	// =========================================================
+
+#ifdef _DEBUG
 
 #if 0	// デバッグ
 
@@ -218,6 +220,8 @@ void UpdateUiEsa(void)
 		PrintDebugProc("\nUIESA[0]_POS %f %f %f", g_aUiEsaParent[0].pos.x, g_aUiEsaParent[0].pos.y, g_aUiEsaParent[0].pos.z);
 	
 		//PrintDebugProc("\nUIESA(PALENT)[%d]_TOTAL %d", nCntUiEsa, g_aUiEsaParent[nCntUiEsa].nNumEsa);
+
+#endif
 
 #endif
 

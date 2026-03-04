@@ -5,6 +5,8 @@
 // 
 //=============================================================================
 #include "meshfield.h"
+#include "debugproc.h"
+#include "input.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -21,8 +23,10 @@ typedef struct
 {
 	LPDIRECT3DVERTEXBUFFER9 pVtxBuff;		// 頂点バッファへのポインタ
 	LPDIRECT3DINDEXBUFFER9 pIdxBuff;		// インデックスバッファへのポインタ
-	D3DXVECTOR3 pos;						// メッシュフィールドの位置情報
-	D3DXVECTOR3 rot;						// メッシュフィールドの向き情報
+	D3DXVECTOR3 pos;						// 現在の位置情報
+	D3DXVECTOR3 posPoint;					// 位置補正情報
+	float fHeight[5000];					// 高さ情報の保存先
+	D3DXVECTOR3 rot;						// 向き情報
 	D3DXVECTOR2 block;						// 分割数
 	D3DXVECTOR2 size;						// サイズ
 	MESHFIELDTYPE type;						// 種類
@@ -41,8 +45,8 @@ MeshField g_aMeshField[MAX_MESHFIELD];						// メッシュフィールドの情報
 //*****************************************************************************
 const char* c_apFilenameMeshField[MESHFIELDTYPE_MAX] =
 {
-	"data\\TEXTURE\\In_the_sea.png",
-	"data\\TEXTURE\\suna.png",
+	"data\\TEXTURE\\In_the_sea000.jpg",
+	"data\\TEXTURE\\tex_suna001.jpg",
 };
 
 //=============================================================================
@@ -65,6 +69,8 @@ void InitMeshField(void)
 		g_aMeshField[nCntMeshField].pVtxBuff = NULL;
 		g_aMeshField[nCntMeshField].pIdxBuff = NULL;
 		g_aMeshField[nCntMeshField].pos = FIRST_POS;
+		g_aMeshField[nCntMeshField].posPoint = FIRST_POS;
+		memset(&g_aMeshField[nCntMeshField].fHeight, 0, sizeof(float[5000]));
 		g_aMeshField[nCntMeshField].rot = FIRST_POS;
 		g_aMeshField[nCntMeshField].block = FIRST_SIZE;
 		g_aMeshField[nCntMeshField].size = FIRST_SIZE;
@@ -111,6 +117,59 @@ void UninitMeshField(void)
 //=============================================================================
 void UpdateMeshField(void)
 {
+	for (int nCntMeshField = 0; nCntMeshField < MAX_MESHFIELD; nCntMeshField++)
+	{
+		if (g_aMeshField[nCntMeshField].bUse == true)
+		{// 使用しているとき
+			VERTEX_3D* pVtx;					// 頂点情報へのポインタ
+
+#if 0	// 調整用
+			static float fPoint = 0.01f;
+			static float fPos = 1.0f;
+
+			if (GetKeyboardPress(DIK_UP))fPoint += 0.001f;
+			if (GetKeyboardPress(DIK_DOWN))fPoint -= 0.001f;
+			if (fPoint < 0.0f)fPoint = 0.0f;
+
+			if (GetKeyboardPress(DIK_RIGHT))fPos += 0.01f;
+			if (GetKeyboardPress(DIK_LEFT))fPos -= 0.01f;
+			if (fPos < 0.0f)fPos = 0.0f;
+
+			PrintDebugProc("メッシュフィールドの動く速さ : %f\n", fPoint);
+			PrintDebugProc("メッシュフィールドの動く距離 : %f\n", fPos);
+#endif
+
+			// 頂点バッファをロックし、頂点情報へのポインタを取得
+			g_aMeshField[nCntMeshField].pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+			// 頂点情報の設定
+			for (int nCntMeshField1 = 0; nCntMeshField1 < (int)g_aMeshField[nCntMeshField].block.y + 1; nCntMeshField1++)
+			{
+				for (int nCntMeshField2 = 0; nCntMeshField2 < (int)g_aMeshField[nCntMeshField].block.x + 1; nCntMeshField2++)
+				{
+					g_aMeshField[nCntMeshField].posPoint.x += 0.98f;
+					g_aMeshField[nCntMeshField].posPoint.z += 0.98f;
+					CorrectAngle(&g_aMeshField[nCntMeshField].posPoint.x, g_aMeshField[nCntMeshField].posPoint.x);
+					CorrectAngle(&g_aMeshField[nCntMeshField].posPoint.z, g_aMeshField[nCntMeshField].posPoint.z);
+
+					// 頂点座標の設定
+					pVtx[0].pos.x = -((g_aMeshField[nCntMeshField].block.x * g_aMeshField[nCntMeshField].size.x) * 0.5f) + (nCntMeshField2 * g_aMeshField[nCntMeshField].size.x)
+						+ (sinf(g_aMeshField[nCntMeshField].posPoint.x) * 2.0f);
+					pVtx[0].pos.z = ((g_aMeshField[nCntMeshField].block.y * g_aMeshField[nCntMeshField].size.y) * 0.5f) - (nCntMeshField1 * g_aMeshField[nCntMeshField].size.y)
+						+ (cosf(g_aMeshField[nCntMeshField].posPoint.z) * 2.0f);
+
+					g_aMeshField[nCntMeshField].posPoint.y = pVtx[0].pos.y;
+					pVtx[0].pos.y += (g_aMeshField[nCntMeshField].fHeight[nCntMeshField2 + (nCntMeshField1 * ((int)g_aMeshField[nCntMeshField].block.x + 1))]
+						- g_aMeshField[nCntMeshField].posPoint.y) * 0.05f;
+
+					pVtx++;
+				}
+			}
+
+			// 頂点バッファをアンロックする
+			g_aMeshField[nCntMeshField].pVtxBuff->Unlock();
+		}
+	}
 }
 
 //=============================================================================
@@ -119,13 +178,14 @@ void UpdateMeshField(void)
 void DrawMeshField(void)
 {
 	// ローカル変数宣言
-	LPDIRECT3DDEVICE9 pDevice = GetDevice();			// デバイスへのポインタ
-	D3DXMATRIX mtxRot, mtxTrans;		// 計算用マトリックス
+	LPDIRECT3DDEVICE9 pDevice = GetDevice();	// デバイスへのポインタ
+	D3DXMATRIX mtxRot, mtxTrans;				// 計算用マトリックス
 
 	for (int nCntMeshField = 0; nCntMeshField < MAX_MESHFIELD; nCntMeshField++)
 	{
 		if (g_aMeshField[nCntMeshField].bUse == true)
 		{// 使用しているとき
+
 			// ワールドマトリックスの初期化
 			D3DXMatrixIdentity(&g_aMeshField[nCntMeshField].mtxWorld);
 
@@ -150,10 +210,23 @@ void DrawMeshField(void)
 			pDevice->SetFVF(FVF_VERTEX_3D);
 
 			// テクスチャの設定
-			pDevice->SetTexture(0, g_apTextureMeshField[g_aMeshField[nCntMeshField].type]);
+			if (g_aMeshField[nCntMeshField].type != -1 && g_aMeshField[nCntMeshField].type < MESHFIELDTYPE_MAX)
+			{// テクスチャがある場合
+
+				pDevice->SetTexture(0, g_apTextureMeshField[g_aMeshField[nCntMeshField].type]);
+			}
+			else
+			{
+
+				pDevice->SetTexture(0, NULL);
+			}
 
 			// ポリゴンの描画
-			pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, ((int)g_aMeshField[nCntMeshField].block.x + 1) * ((int)g_aMeshField[nCntMeshField].block.y + 1), 0,
+			pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP,
+				0,
+				0,
+				((int)g_aMeshField[nCntMeshField].block.x + 1) * ((int)g_aMeshField[nCntMeshField].block.y + 1),
+				0,
 				(((int)g_aMeshField[nCntMeshField].block.x) * ((int)g_aMeshField[nCntMeshField].block.y) * 2) + (((int)g_aMeshField[nCntMeshField].block.y - 1) * 4));
 		}
 	}
@@ -169,6 +242,8 @@ void SetMeshField(MESHFIELDTYPE type, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECT
 		if (g_aMeshField[nCntMeshField].bUse == false)
 		{// 使用していない
 			g_aMeshField[nCntMeshField].pos = pos;
+			g_aMeshField[nCntMeshField].posPoint = FIRST_POS;
+			memset(&g_aMeshField[nCntMeshField].fHeight, 0, sizeof(float[5000]));
 			g_aMeshField[nCntMeshField].rot = rot;
 			g_aMeshField[nCntMeshField].block = block;
 			g_aMeshField[nCntMeshField].size = size;
@@ -239,13 +314,13 @@ void SetMeshField(MESHFIELDTYPE type, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECT
 				{// 縮退ポリゴンのところ
 					nNum++;
 
-					pIdx[0] = nCntMeshField1 - nNum;
-					pIdx[1] = nCntMeshField1 - nNum + ((int)g_aMeshField[nCntMeshField].block.x + 2);
+					pIdx[0] = (WORD)(nCntMeshField1 - nNum);
+					pIdx[1] = (WORD)(nCntMeshField1 - nNum + ((int)g_aMeshField[nCntMeshField].block.x + 2));
 				}
 				else
 				{// 縮退以外のポリゴン
-					pIdx[0] = (nCntMeshField1 - nNum) + ((int)g_aMeshField[nCntMeshField].block.x + 1);
-					pIdx[1] = (nCntMeshField1 - nNum);
+					pIdx[0] = (WORD)((nCntMeshField1 - nNum) + ((int)g_aMeshField[nCntMeshField].block.x + 1));
+					pIdx[1] = (WORD)((nCntMeshField1 - nNum));
 				}
 
 				pIdx += 2;
@@ -282,4 +357,61 @@ bool GetMeshFieldType(MESHFIELDTYPE type, D3DXVECTOR3 pos)
 	}
 
 	return false;
+}
+
+//=============================================================================
+// メッシュフィールドの当たり判定
+//=============================================================================
+void CollisionMeshField(D3DXVECTOR3 pos, D3DXVECTOR3 rot, float fRadius, float fHeight)
+{
+	for (int nCntMeshField = 0; nCntMeshField < MAX_MESHFIELD; nCntMeshField++)
+	{
+		if (g_aMeshField[nCntMeshField].bUse == false)
+		{// 使用していない
+			continue;
+		}
+
+		if (pos.y - fHeight > 5.0f)
+		{// 高い
+			continue;
+		}
+
+		VERTEX_3D* pVtx;					// 頂点情報へのポインタ
+
+		// 頂点バッファをロックし、頂点情報へのポインタを取得
+		g_aMeshField[nCntMeshField].pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+		// 頂点情報の設定
+		for (int nCntPoint = 0; nCntPoint < (int)((g_aMeshField[nCntMeshField].block.y + 1) * (g_aMeshField[nCntMeshField].block.x + 1)); nCntPoint++)
+		{
+			D3DXVECTOR2 dist;
+			dist.x = (pVtx[0].pos.x - pos.x);
+			dist.y = (pVtx[0].pos.z - pos.z);
+
+			if (D3DXVec2Length(&dist) < fRadius * 2.0f)
+			{// 近い頂点
+				g_aMeshField[nCntMeshField].fHeight[nCntPoint] = -15.0f;
+			}
+			else if (D3DXVec2Length(&dist) < fRadius * 6.0f)
+			{// 周辺
+				// 進行方向かどうか（内積）
+				D3DXVECTOR2 dirNorm, toPosNorm;
+				D3DXVECTOR2 toRot = D3DXVECTOR2(rot.x, rot.y);
+				D3DXVec2Normalize(&dirNorm, &toRot);
+				D3DXVec2Normalize(&toPosNorm, &dist);
+
+				float fDot = D3DXVec2Dot(&dirNorm, &toPosNorm);
+
+				if (fDot > 0.3f)
+				{// 後ろ以外
+					g_aMeshField[nCntMeshField].fHeight[nCntPoint] = 25.0f;
+				}
+			}
+
+			pVtx++;
+		}
+
+		// 頂点バッファをアンロックする
+		g_aMeshField[nCntMeshField].pVtxBuff->Unlock();
+	}
 }

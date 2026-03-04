@@ -47,9 +47,6 @@ void InitWaterSurf(void)
 	// デバイスの取得
 	pDevice = GetDevice();
 
-	// randのランダム化
-	srand((unsigned int)time(NULL));
-
 	// テクスチャの読み込み
 	D3DXCreateTextureFromFile(
 		pDevice,
@@ -283,13 +280,13 @@ void SetWaterSurf(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVECTO
 				{// 縮退ポリゴンのところ
 					nNum++;
 
-					pIdx[0] = nCntWaterSurf1 - nNum;
-					pIdx[1] = nCntWaterSurf1 - nNum + ((int)g_aWatersurf[nCntWaterSurf].block.x + 2);
+					pIdx[0] = (WORD)(nCntWaterSurf1 - nNum);
+					pIdx[1] = (WORD)(nCntWaterSurf1 - nNum + ((int)g_aWatersurf[nCntWaterSurf].block.x + 2));
 				}
 				else
 				{// 縮退以外のポリゴン
-					pIdx[0] = (nCntWaterSurf1 - nNum) + ((int)g_aWatersurf[nCntWaterSurf].block.x + 1);
-					pIdx[1] = (nCntWaterSurf1 - nNum);
+					pIdx[0] = (WORD)((nCntWaterSurf1 - nNum) + ((int)g_aWatersurf[nCntWaterSurf].block.x + 1));
+					pIdx[1] = (WORD)((nCntWaterSurf1 - nNum));
 				}
 
 				pIdx += 2;

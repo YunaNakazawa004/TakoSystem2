@@ -90,6 +90,7 @@ void InitPot(void)
 		{
 			if (pMat[nCntMat].pTextureFilename != NULL)
 			{// テクスチャファイルが存在する
+
 				D3DXCreateTextureFromFile(pDevice, pMat[nCntMat].pTextureFilename, &g_aPotModel[nCntPot].apTexture[nCntMat]);
 			}
 		}
@@ -145,7 +146,7 @@ void InitPot(void)
 	}
 
 	// ランダムな位置に設定
-	SetRandomPot(20);
+	//SetRandomPot(20);
 }
 
 //=============================================================================
@@ -204,6 +205,8 @@ void UpdatePot(void)
 				if (pEsa[nIdx].esaType == ESA_ACTTYPE_GOTO_POT)
 				{// タコつぼに入れてる最中
 					pEsa[nIdx].bUse = false;
+					pEsa[nIdx].bOrbit = false;
+					pEsa[nIdx].nOrbitIdx = -1;
 				}
 			}
 
@@ -302,7 +305,7 @@ void SetRandomPot(int nAmount)
 	{
 		D3DXVECTOR3 pos;
 		float fAngle = (D3DX_PI * 2.0f) * ((float)((nCntPot + 1) * (360.0f / nAmount)) / 360.0f);
-		float fsin = sinf(fAngle);
+		//float fsin = sinf(fAngle);
 
 		pos.x = sinf(fAngle) * (INCYLINDER_RADIUS + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) + 1))));
 		pos.y = 0.0f;
@@ -491,7 +494,7 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 						{
 							if (pComputer->nFoodCount < pComputer->nMaxFood * 8)
 							{// 持てる数だけ持つ
-								int nIdx = Dequeue(&pPot->esaQueue);
+								//int nIdx = Dequeue(&pPot->esaQueue);
 								pPot->nFood--;
 
 								//Enqueue(&pComputer->esaQueue, nIdx);

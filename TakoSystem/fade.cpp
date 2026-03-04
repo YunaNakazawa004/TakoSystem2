@@ -47,10 +47,10 @@ void InitFade(MODE modenext)
 	pVtx[3].pos = D3DXVECTOR3(SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f);
 
 	// rhwÇÃê›íË
-	pVtx[0].rhw = 1.0;
-	pVtx[1].rhw = 1.0;
-	pVtx[2].rhw = 1.0;
-	pVtx[3].rhw = 1.0;
+	pVtx[0].rhw = 1.0f;
+	pVtx[1].rhw = 1.0f;
+	pVtx[2].rhw = 1.0f;
+	pVtx[3].rhw = 1.0f;
 
 	// í∏ì_ÉJÉâÅ[ÇÃê›íË
 	pVtx[0].col = g_colorFade;

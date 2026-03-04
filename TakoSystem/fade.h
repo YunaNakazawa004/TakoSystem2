@@ -7,7 +7,6 @@
 #define _FADE_H_
 
 #include "main.h"
-#include <cstdio>
 
 // マクロ定義
 #define BLK_VISIBLE_VTX			(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f))		// 黒いポリゴン(不透明)

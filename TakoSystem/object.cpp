@@ -165,7 +165,7 @@ void UninitObject(void)
 		}
 
 		// テクスチャの破棄
-		for (int nCntObject = 0; nCntObject < (int)g_aObjectModel[nCntObjectModel].dwNumMat; nCntObject++)
+		for (int nCntObject = 0; nCntObject < MAX_TEXTURE; nCntObject++)
 		{
 			if (g_aObjectModel[nCntObjectModel].apTexture[nCntObject] != NULL)
 			{
@@ -475,7 +475,7 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 			fDot = (-vecMove.x * vecNor.x) + (-vecMove.z * vecNor.z);
 
 			// 外積
-			float f = ((vecMove.z * vecNor.x) - (vecMove.x * vecNor.z));
+			//float f = ((vecMove.z * vecNor.x) - (vecMove.x * vecNor.z));
 
 			// 交点の割合
 			fRate = ((vecToPos.z * vecMove.x) - (vecToPos.x * vecMove.z)) /

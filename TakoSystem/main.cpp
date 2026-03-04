@@ -41,20 +41,28 @@ void Uninit(void);
 void Update(void);
 void Draw(void);
 
+
+
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
 LPDIRECT3D9 g_pD3D = NULL;							// Direct3Dオブジェクトへのポインタ
 LPDIRECT3DDEVICE9 g_pD3DDevice = NULL;				// Direct3Dデバイスへのポインタ
-MODE g_mode = MODE_GAME;							// 現在のモード
+MODE g_mode = MODE_LOGO;							// 現在のモード
 int g_nCountFPS = 0;								// FPSカウンタ
 bool g_bWindowSize = TRUE;							// ウィンドウサイズ(TRUE : ウィンドウ FALSE : フルスクリーン)
+
+int g_nDebugCounter = 0;
 
 //=============================================================================
 // メイン関数
 //=============================================================================
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, LPSTR lpCmdLine, int nCmdShow)
 {
+#ifdef _DEBUG
+	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF);
+#endif
+
 	// ローカル変数宣言
 	DWORD dwCurrentTime;		// 現在時刻
 	DWORD dwExecLastTime;		// 最後に処理した時刻
@@ -107,6 +115,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, LPSTR lpCmdLine
 	{// 初期化処理が失敗した場合
 		return -1;
 	}
+
+	g_nDebugCounter = 0;	// デバッグカウンタを初期化
 
 	// 分解能を設定
 	timeBeginPeriod(1);
@@ -322,6 +332,7 @@ HRESULT Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		return E_FAIL;
 	}
 
+	// 乱数の種を設定
 	srand((unsigned int)time(NULL));
 
 	// カメラの初期化処理
@@ -421,7 +432,8 @@ void Update(void)
 	// デバッグ表示の更新処理
 	UpdateDebugProc();
 	PrintDebugProc("FPS : %d\n", g_nCountFPS);
-
+	PrintDebugProc("DebugCounter : %d\n", g_nDebugCounter);
+	
 	// キーボードの更新処理
 	UpdateKeyboard();
 
@@ -468,6 +480,7 @@ void Update(void)
 void Draw(void)
 {
 	D3DVIEWPORT9 viewportDef;
+	HRESULT hr;
 
 	// 画面クリア(バックバッファとZバッファのクリア)
 	g_pD3DDevice->Clear(0, NULL, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER), D3DCOLOR_RGBA(0, 0, 0, 0), 1.0f, 0);
@@ -492,6 +505,8 @@ void Draw(void)
 				break;
 
 			case MODE_TUTORIAL:			// チュートリアル画面
+				SetFog(D3DXCOLOR(0.0f, 0.1f, 0.2f, 1.0f), pPlayer[nCntCamera].fFogStart * 1.5f, pPlayer[nCntCamera].fFogEnd * 1.5f, true);
+
 				DrawTutorial();
 				break;
 
@@ -528,8 +543,41 @@ void Draw(void)
 		g_pD3DDevice->EndScene();
 		}
 
+	//// バックバッファとフロントバッファの入れ替え
+	//g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
+
 	// バックバッファとフロントバッファの入れ替え
-	g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
+	hr = g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
+
+#ifdef _DEBUG
+	if (FAILED(hr))
+	{
+		LPVOID* errorString;
+
+		FormatMessage(
+			FORMAT_MESSAGE_ALLOCATE_BUFFER					// テキストのメモリ割り当てを要求する
+			| FORMAT_MESSAGE_FROM_SYSTEM					// エラーメッセージはWindowsが用意しているものを使用
+			| FORMAT_MESSAGE_IGNORE_INSERTS,				// 次の引数を無視してエラーコードに対するエラーメッセージを作成する
+			NULL,
+			hr,
+			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),		// 言語を指定
+			(LPTSTR)&errorString,							// メッセージテキストが保存されるバッファへのポインタ
+			0,
+			NULL);
+
+		if (errorString == nullptr)
+		{
+			MessageBox(GetActiveWindow(), "failed get error code", "error", MB_ICONERROR);
+		}
+		else
+		{
+			MessageBox(GetActiveWindow(), (LPCTSTR)errorString, "error", MB_ICONERROR);
+
+			LocalFree(errorString);
+		}
+	}
+
+#endif
 	}
 
 //=============================================================================
@@ -676,4 +724,20 @@ void SetFog(D3DXCOLOR col, float fFogStart, float fFogEnd, bool bUse)
 
 	// 範囲ベースのフォグを使用
 	g_pD3DDevice->SetRenderState(D3DRS_RANGEFOGENABLE, TRUE);
+}
+
+//=============================================================================
+// デバッグカウンタを加算
+//=============================================================================
+void DebugADD(void)
+{
+	g_nDebugCounter++;
+}
+
+//=============================================================================
+// デバッグカウンタを加算
+//=============================================================================
+void DebugSUB(void)
+{
+	g_nDebugCounter--;
 }

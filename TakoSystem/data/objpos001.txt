@@ -35,7 +35,7 @@ MODEL_FILENAME = data/MODEL/Others_Object/taru000half.x			# [6]íM
 MODEL_FILENAME = data/MODEL/rock/iwa003.x						# [7]ä‚4
 MODEL_FILENAME = data/MODEL/Others_Object/Takotsubo_light001.x	# [8]ÇΩÇ±Ç¬Ç⁄(óßÇ¡ÇƒÇÈ)
 MODEL_FILENAME = data/MODEL/rock/iwa004.x						# [9]ä‚5
-MODEL_FILENAME = data/MODEL/Others_Object/wakame000.x			# [10]ÇÌÇ©Çﬂ
+MODEL_FILENAME = data/MODEL/Others_Object/wakame001.x			# [10]ÇÌÇ©Çﬂ
 MODEL_FILENAME = data/MODEL/stage/stage000.x					# [11]ÉXÉeÅ[ÉWÇÃíå
 MODEL_FILENAME = data/MODEL/Others_Object/taru002.x				# [12]ì|ÇÍÇƒÇÈíM
 MODEL_FILENAME = data/MODEL/Others_Object/taru003.x				# [13]è≠ÇµâÒì]ÇµÇƒÇ¢ÇÈíM
@@ -88,7 +88,7 @@ FIELDSET
 	TEXTYPE = 1
 	POS = 0 0 0
 	ROT = 0 0 0
-	BLOCK = 16 16
+	BLOCK = 64 64
 	SIZE = 9000	9000
 END_FIELDSET
 

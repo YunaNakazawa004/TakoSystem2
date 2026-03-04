@@ -25,6 +25,7 @@ typedef enum
 	MOTIONTYPE_WIN2,			// ガッツポーズ
 	MOTIONTYPE_CLAP1,			// 拍手1
 	MOTIONTYPE_CLAP2,			// 拍手2(不満げ)
+	MOTIONTYPE_DEATH,			// 絶命
 	MOTIONTYPE_MAX
 }MOTIONTYPE;
 
@@ -61,7 +62,7 @@ typedef struct
 }MOTION_INFO;
 
 //*****************************************************************************
-// モデルの構造体
+// モデルの情報
 //*****************************************************************************
 typedef struct
 {
@@ -69,6 +70,13 @@ typedef struct
 	LPD3DXMESH pMesh;							// マテリアルへのポインタ
 	LPD3DXBUFFER pBuffMat;						// メッシュ(頂点情報)へのポインタ
 	DWORD dwNumMat;								// マテリアルの数
+}Model_Info;
+
+//*****************************************************************************
+// モデルの構造体
+//*****************************************************************************
+typedef struct
+{
 	int nIdx;									// モデルのインデックス
 	int nIdxModelParent;						// 親モデルのインデックス
 	D3DXVECTOR3 pos;							// 位置

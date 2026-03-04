@@ -12,8 +12,9 @@ typedef enum
 {
 	GAMESTATE_BEGIN = 0,	// [0]開始状態
 	GAMESTATE_NONE,			// [1]開始状態
-	GAMESTATE_TIMEOVER,		// [2]時間切れ状態
-	GAMESTATE_END,			// [3]終了状態
+	GAMESTATE_LITTLETIME,	// [2]残り時間が少ない状態
+	GAMESTATE_TIMEOVER,		// [3]時間切れ状態
+	GAMESTATE_END,			// [4]終了状態
 
 	GAMESTATE_MAX,			// 状態の最大
 

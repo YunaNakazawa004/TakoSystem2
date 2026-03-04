@@ -223,13 +223,11 @@ void UpdateUiGaugeIcon(void)
 {
 	// 変数宣言 ================================================
 
-	// デバイスの所得
-	LPDIRECT3DDEVICE9 pDevice = GetDevice();
-
 	VERTEX_2D* pVtx;	// 頂点情報へのポインタを宣言
 
 	// =========================================================
 
+#ifdef _DEBUG
 #if 0
 	if (GetKeyboardPress(DIK_I)) g_aUiGaugeIcon[2].pos.y -= 1.0f;
 	if (GetKeyboardPress(DIK_K)) g_aUiGaugeIcon[2].pos.y += 1.0f;
@@ -238,6 +236,7 @@ void UpdateUiGaugeIcon(void)
 												
 	if (GetKeyboardPress(DIK_U)) g_aUiGaugeIcon[2].fSizeLength += 1.0f;
 	if (GetKeyboardPress(DIK_M)) g_aUiGaugeIcon[2].fSizeLength -= 1.0f;
+#endif
 #endif
 
 	for (int nCntUiGaugeIcon = 0; nCntUiGaugeIcon < MAX_SET_UIGAUGEICON; nCntUiGaugeIcon++)
@@ -420,7 +419,7 @@ void UpdateStateUiGaugeIcon(int nIdxUiGaugeIcon)
 	// 変数宣言 ================================================
 
 	// デバイスの所得
-	LPDIRECT3DDEVICE9 pDevice = GetDevice();
+	//LPDIRECT3DDEVICE9 pDevice = GetDevice();
 
 	// =========================================================
 

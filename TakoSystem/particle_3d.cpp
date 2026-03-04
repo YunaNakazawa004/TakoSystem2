@@ -117,7 +117,7 @@ void UpdateParticle3D(void)
 		if (g_aPaticle3D[nCntPaticle].bUse == true)
 		{// 使用している場合
 
-			if (g_aPaticle3D[nCntPaticle].effecttype = EFFECTTYPE_OCTOINK)
+			if (g_aPaticle3D[nCntPaticle].effecttype == EFFECTTYPE_OCTOINK)
 			{ // 用途がタコ墨の場合
 
 				// パーティクル本体の位置を移動

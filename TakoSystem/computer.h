@@ -1,5 +1,4 @@
 //=============================================================================
-//=============================================================================
 // 
 // CPUÉwÉbÉ_Å[ [computer.h]
 // Author : íÜ‡VóDìﬁ
@@ -206,6 +205,7 @@ D3DXVECTOR3 GetRandomExplorePoint(void);
 void SetComputer(D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType);
 void SetRandomComputer(int nAmount);
 Computer* GetComputer(void);
+Model_Info* GetTakoModel(void);
 void CollisionInk(int nIdx, bool bCPU, D3DXVECTOR3 pos);
 bool CollisionOcto(int nIdx, bool bCPU, D3DXVECTOR3 pos);
 

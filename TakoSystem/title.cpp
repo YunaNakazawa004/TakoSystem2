@@ -4,26 +4,25 @@
 // Author : 井上 祐一
 // 
 //=============================================================================
-#include "main.h"
 #include "title.h"
 #include "input.h"
 #include "sound.h"
 #include "light.h"
 #include "fade.h"
 #include "camera.h"
-#include "game.h"
+
 #include "object.h"
 #include "meshcylinder.h"
 #include "meshfield.h"
-#include "meshorbit.h"
+#include "meshorbit.h"	// 消えない
 #include "waterSurf.h"
 #include "computer.h"
 
 // マクロ定義
 #define	MAX_TITLE	(8)	// タイトルで表示するテクスチャの最大数
 #define	RANKING_DELEY	(1500)	// ランキング移行に掛かる時間（25秒）
-#define	CLEAR_DELEY	(60)	// 消滅にかかる時間
-#define	ENTRY_DELEY	(90)	// 消滅→再登場までにかかる時間
+#define	CLEAR_DELEY	(60)	// 登場→消滅にかかる時間
+#define	ENTRY_DELEY	(90)	// 登場→消滅→再登場までにかかる時間
 #define	TITLE_DELEY_MAX	(500.0f)	// タイトルの最大数
 
 // グローバル変数
@@ -37,92 +36,49 @@ int g_PlayerSelect = 1;	// プレイヤーの人数
 //TITLECURSOR g_Cursor;
 int g_CursorPos;	// カーソルの位置情報
 
+bool g_bTestTitle = true;
+
+const char* c_apFilenameTitle[] =
+{
+	"data/TEXTURE/TITLE.png",
+	"data/TEXTURE/PLAYER_SELECT001.png",
+	"data/TEXTURE/START004.png",
+	"data/TEXTURE/number000.png",
+	"data/TEXTURE/WPO.png",
+	"data/TEXTURE/CURSOR.png",
+	"data/TEXTURE/SELECT_CURSOR.png",
+	"data/TEXTURE/SELECT_CURSOR.png",
+};
+
+//===================================================================
 // タイトルの初期化処理
+//===================================================================
 void InitTitle(void)
 {
-	LPDIRECT3DDEVICE9 pDevice;	// デバイスへのポインタ
 
-	g_TitleDeley = 0.0f;	// ディレイの値を初期化
-	g_PressEnterDeley = 0;
+	// デバイスへのポインタ
+	LPDIRECT3DDEVICE9 pDevice = GetDevice();	// デバイスの取得
+		
+	g_TitleDeley = 0.0f;		// ディレイの値を初期化	g_PressEnterDeley = 0;
 
-	g_CursorPos = 0;		// カーソルの位置を初期化
-
-	// メッシュシリンダーの初期化処理
-	InitMeshCylinder();
-	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 2.0f), D3DXVECTOR2(INCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, MESHCYLINDERTYPE_ROCK);
-	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(OUTCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), true, MESHCYLINDERTYPE_SEA);
-
-	// メッシュフィールドの初期化処理
-	InitMeshField();
-
-	// メッシュオービットの初期化処理
-	InitMeshOrbit();
-
-	// 水面の初期化処理
-	InitWaterSurf();
-
-	// CPUの初期化処理
-	InitComputer();
-
-	// ライトの設定
-	SetLightColor(0, D3DXCOLOR(0.8f, 0.9f, 1.0f, 1.0f));
-	SetLightColor(1, D3DXCOLOR(0.5f, 0.6f, 0.8f, 0.7f));
-	SetLightColor(2, D3DXCOLOR(0.3f, 0.3f, 0.5f, 0.3f));
-
-	// カメラの数の設定
-	SetNumCamera(1);
-
-	// 乱数の種を設定
-	srand((unsigned int)time(0));
+	g_CursorPos = 0;			// カーソルの位置を初期化
 
 	int nCamera = rand() % 6;	// カメラの位置設定
 	int nVecR = rand() % 5;		// カメラの角度設定
 
-	// カメラの位置設定
-	SetCameraPos(0, 
-				 D3DXVECTOR3(0.0f, ((float)nCamera * 100.0f) + 600.0f, 0.0f),
-				 D3DXVECTOR3(0.0f, (((float)nCamera * 100.0f) + 600.0f) + (((float)nVecR * 50.0f) - 100.0f), 0.0f),
-				 D3DXVECTOR3(0.0f, 0.0f, 0.0f),
-				 CAMERATYPE_POINT);
 
-	// 配置物の初期化処理
-	InitObject("data\\objpos001.txt");
 
-	// デバイスの取得
-	pDevice = GetDevice();
 
-	// テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/TITLE.png",
-		&g_pTextureTitle[0]);
+	for (int nCntTexture = 0; nCntTexture < sizeof c_apFilenameTitle / sizeof(c_apFilenameTitle[0]); nCntTexture++)
+	{
+		if (FAILED(D3DXCreateTextureFromFile(pDevice,
+											 c_apFilenameTitle[nCntTexture],
+											 &g_pTextureTitle[nCntTexture])))
+		{// 読み込みに失敗
 
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/PLAYER_SELECT001.png",
-		&g_pTextureTitle[1]);
-
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/START004.png",
-		&g_pTextureTitle[2]);
-
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/number000.png",
-		&g_pTextureTitle[3]);
-
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/WPO.png",
-		&g_pTextureTitle[4]);
-
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/CURSOR.png",
-		&g_pTextureTitle[5]);
-
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/SELECT_CURSOR.png",
-		&g_pTextureTitle[6]);
-
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/SELECT_CURSOR.png",
-		&g_pTextureTitle[7]);
+			continue;
+		}
+	}
 
 	// 頂点バッファの生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4 * MAX_TITLE,
@@ -244,33 +200,55 @@ void InitTitle(void)
 	// 頂点バッファをアンロックする
 	g_pVtxBuffTitle->Unlock();
 
+	DebugADD();
+
+	// カメラの数の設定
+	SetNumCamera(1);
+
+	// カメラの位置設定
+	SetCameraPos(0,
+				 D3DXVECTOR3(0.0f, ((float)nCamera * 100.0f) + 600.0f, 0.0f),
+				 D3DXVECTOR3(0.0f, (((float)nCamera * 100.0f) + 600.0f) + (((float)nVecR * 50.0f) - 100.0f), 0.0f),
+				 D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				 CAMERATYPE_POINT);
+
+	// ライトの設定
+	SetLightColor(0, D3DXCOLOR(0.8f, 0.9f, 1.0f, 1.0f));
+	SetLightColor(1, D3DXCOLOR(0.5f, 0.6f, 0.8f, 0.7f));
+	SetLightColor(2, D3DXCOLOR(0.3f, 0.3f, 0.5f, 0.3f));
+
+	// CPUの初期化処理
+	InitComputer();
+
+	// メッシュシリンダーの初期化処理
+	InitMeshCylinder();	DebugADD();
+	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 2.0f), D3DXVECTOR2(INCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, MESHCYLINDERTYPE_ROCK);
+	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(OUTCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), true, MESHCYLINDERTYPE_SEA);
+
+	// メッシュフィールドの初期化処理
+	InitMeshField();
+
+	// メッシュオービットの初期化処理
+	InitMeshOrbit();
+
+	// 水面の初期化処理
+	InitWaterSurf();
+
+	// 配置物の初期化処理
+	InitObject("data\\objpos001.txt");	// 必ず最後(メッシュ後)に初期化する
+
 	// サウンドの再生
-	PlaySound(SOUND_BGM_TITLE);
+
+	PlaySound(SOUND_BGM_TITLE);	
 }
 
+//===================================================================
 // タイトルの終了処理
+//===================================================================
 void UninitTitle(void)
 {
 	// サウンドの停止
 	StopSound();
-
-	// 配置物の終了処理
-	UninitObject();
-
-	// メッシュシリンダーの終了処理
-	UninitMeshCylinder();
-
-	// メッシュフィールドの終了処理
-	UninitMeshField();
-
-	// メッシュオービットの終了処理
-	UninitMeshOrbit();
-
-	// 水面の終了処理
-	UninitWaterSurf();
-
-	// CPUの終了処理
-	UninitComputer();
 
 	// テクスチャの破棄
 	for (int nCntTitle = 0; nCntTitle < MAX_TITLE; nCntTitle++)
@@ -288,13 +266,45 @@ void UninitTitle(void)
 		g_pVtxBuffTitle->Release();
 		g_pVtxBuffTitle = NULL;
 	}
+
+	// CPUの終了処理
+	UninitComputer();
+
+	// メッシュシリンダーの終了処理
+	UninitMeshCylinder();
+
+	// メッシュフィールドの終了処理
+	UninitMeshField();
+
+	// メッシュオービットの終了処理
+	UninitMeshOrbit();
+
+	// 配置物の終了処理
+	UninitObject();
+
+	// 水面の終了処理
+	UninitWaterSurf();
 }
 
+//===================================================================
 // タイトルの更新処理
+//===================================================================
 void UpdateTitle(void)
 {
-	// 配置物の更新処理
-	UpdateObject();
+#ifdef _DEBUG
+#if 0 // タイトルの遷移(F11で解除)
+
+	if (GetKeyboardTrigger(DIK_F11)) g_bTestTitle = (g_bTestTitle == true) ? false : true;
+
+	if (g_bTestTitle == true)
+	{
+		SetFade(MODE_LOGO);
+	}
+#endif 
+#endif
+
+	// CPUの更新処理
+	UpdateComputer();
 
 	// メッシュシリンダーの更新処理
 	UpdateMeshCylinder();
@@ -305,12 +315,11 @@ void UpdateTitle(void)
 	// メッシュオービットの更新処理
 	UpdateMeshOrbit();
 
+	// 配置物の更新処理
+	UpdateObject();
+
 	// 水面の更新処理
 	UpdateWaterSurf();
-
-	// CPUの更新処理
-	UpdateComputer();
-
 	// フェード情報の取得
 	FADE pFade = GetFade();
 
@@ -488,10 +497,15 @@ void UpdateTitle(void)
 		pVtx += 4;		// 頂点データのポインタを4つ分進める
 	}
 
+	// 頂点バッファをアンロックする
+	g_pVtxBuffTitle->Unlock();
+
 	if ((GetKeyboardTrigger(DIK_W) || GetJoypadTrigger(0, JOYKEY_UP) ||
 		GetJoypadStick(0, JOYKEY_LEFTSTICK_UP, NULL, NULL) == true))
 	{// カーソル下移動
+
 		g_CursorPos--;
+
 		if (g_CursorPos < 0) g_CursorPos = TITLECURSOR_PLAYER_SELECT;
 		PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
 		if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
@@ -499,7 +513,9 @@ void UpdateTitle(void)
 	else if ((GetKeyboardTrigger(DIK_S) || GetJoypadTrigger(0, JOYKEY_DOWN) ||
 		GetJoypadStick(0, JOYKEY_LEFTSTICK_DOWN, NULL, NULL) == true))
 	{// カーソル上移動
+
 		g_CursorPos++;
+
 		if (g_CursorPos >= TITLECURSOR_MAX) g_CursorPos = TITLECURSOR_PLAY_START;
 		PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
 		if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
@@ -511,7 +527,9 @@ void UpdateTitle(void)
 			GetJoypadStick(0, JOYKEY_LEFTSTICK_LEFT, NULL, NULL) == true)
 			&& g_PlayerSelect > 1)
 		{
+
 			g_PlayerSelect--;
+
 			PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
 			if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 		}
@@ -519,7 +537,9 @@ void UpdateTitle(void)
 			GetJoypadStick(0, JOYKEY_LEFTSTICK_RIGHT, NULL, NULL) == true)
 			&& g_PlayerSelect < MAX_PLAYER)
 		{
+
 			g_PlayerSelect++;
+
 			PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
 			if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 		}
@@ -536,25 +556,25 @@ void UpdateTitle(void)
 			SetFade(MODE_TUTORIAL);
 		}
 
-		if ((GetKeyboardTrigger(DIK_RETURN) == true ||
-			GetJoypadTrigger(0, JOYKEY_START) == true ||
-			GetJoypadTrigger(0, JOYKEY_A) == true))
-		{// 特定のキーを押すと即座に到着
-			g_TitleDeley = TITLE_DELEY_MAX;
-		}
+	}
+
+	if ((GetKeyboardTrigger(DIK_RETURN) == true ||
+		GetJoypadTrigger(0, JOYKEY_START) == true ||
+		GetJoypadTrigger(0, JOYKEY_A) == true))
+	{// 特定のキーを押すと即座に到着
+		g_TitleDeley = TITLE_DELEY_MAX;
 	}
 
 	if (pFade == FADE_NONE && g_PressEnterDeley > RANKING_DELEY)
 	{// 時間経過でランキングへ移行
+
 		SetFade(MODE_LOGO);
 	}
-
-	// 頂点バッファをアンロックする
-	g_pVtxBuffTitle->Unlock();
-
 }
 
+//===================================================================
 // タイトルの描画処理
+//===================================================================
 void DrawTitle(void)
 {
 	LPDIRECT3DDEVICE9 pDevice;	// デバイスへのポインタ
@@ -564,25 +584,26 @@ void DrawTitle(void)
 		SetFog(D3DXCOLOR(0.0f, 0.1f, 0.2f, 1.0f), 1000.0f, 0.0f, false);
 	}
 
-	//SetCamera(0);
-
 	// 配置物の描画処理
 	DrawObject();
 
+#if 1
+	// CPUの描画処理
+	DrawComputer();
+#endif
 	// メッシュシリンダーの描画処理
 	DrawMeshCylinder();
 
+#if 1
 	// メッシュフィールドの描画処理
 	DrawMeshField();
 
 	// メッシュオービットの描画処理
 	DrawMeshOrbit();
-
+#endif
 	// 水面の描画処理
 	DrawWaterSurf();
 
-	// CPUの描画処理
-	DrawComputer();
 
 	// デバイスの取得
 	pDevice = GetDevice();
@@ -603,7 +624,9 @@ void DrawTitle(void)
 	}
 }
 
+//===================================================================
 // プレイヤーの人数を取得
+//===================================================================
 int GetPlayerSelect(void)
 {
 	return g_PlayerSelect;

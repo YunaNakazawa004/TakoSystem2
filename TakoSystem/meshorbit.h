@@ -21,7 +21,7 @@ typedef struct
 {
 	LPDIRECT3DVERTEXBUFFER9 pVtxBuff;		// 頂点バッファへのポインタ
 	LPDIRECT3DINDEXBUFFER9 pIdxBuff;		// インデックスバッファへのポインタ
-	D3DMATRIX* pMtxParent;					// 親のマトリックス
+	D3DMATRIX pMtxParent;					// 親のマトリックス
 	D3DXVECTOR3 aOffset[2];					// 両端のオフセット
 	D3DXCOLOR aCol[2];						// 両端の基準の色
 	D3DXVECTOR3 aPosPoint[MAX_ORBIT_VTX];	// 計算後の各頂点座標

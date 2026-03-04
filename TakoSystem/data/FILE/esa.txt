@@ -11,25 +11,7 @@ SCRIPT		# 読み取り開始
 #===========================================================
 SET_ESADATA
 
-	SET_ESA		# [0]エビ
-		TEXTURE	= data/TEXTURE/esa_tmp_texture/esa_tmp_shrimp.png	# テクスチャ
-		MODEL	= data/MODEL/esa/shrimp.x							# モデル
-		
-		SPEED		= 0.005		# 移動速度
-		HIT_RADIUS  = 10.0		# 当たり判定の大きさ
-		GET_SCORE   = 10		# 獲得スコア
-	END_ESA  
-
-	SET_ESA		# [1]カニ
-		TEXTURE	= data/TEXTURE/esa_tmp_texture/esa_tmp_crab.png	# テクスチャ
-		MODEL	= data/MODEL/esa/kani.x							# モデル
-		
-		SPEED		= 0.0003	# 移動速度
-		HIT_RADIUS  = 10.0		# 当たり判定の大きさ
-		GET_SCORE   = 15		# 獲得スコア
-	END_ESA  
-	
-	SET_ESA		# [2]貝
+	SET_ESA		# [0]貝
 		TEXTURE	= data/TEXTURE/esa_tmp_texture/esa_tmp_shell.png	# テクスチャ
 		MODEL	= data/MODEL/esa/shell000.x							# モデル
 		
@@ -38,25 +20,34 @@ SET_ESADATA
 		GET_SCORE   = 20		# 獲得スコア
 	END_ESA
 	
-	SET_ESA		# [3]ヤドカリ
+	SET_ESA		# [1]ヤドカリ
 		TEXTURE	= data/TEXTURE/esa_tmp_texture/esa_tmp_hermitcrab.png	# テクスチャ
-		MODEL	= data/MODEL/esa/Yadokari.x								# モデル
+		MODEL	= data/MODEL/esa/Yadokari001.x								# モデル
 		
 		SPEED		= 0.005		# 移動速度
 		HIT_RADIUS  = 10.0		# 当たり判定の大きさ
 		GET_SCORE   = 25		# 獲得スコア
 	END_ESA
 	
-	SET_ESA		# [4]伊勢エビ
-		TEXTURE	= data/TEXTURE/esa_tmp_texture/esa_tmp_ise-shrimp.png	# テクスチャ
-		MODEL	= data/MODEL/esa/spiny_lobster000.x						# モデル
+	SET_ESA		# [2]エビ
+		TEXTURE	= data/TEXTURE/esa_tmp_texture/esa_tmp_shrimp.png	# テクスチャ
+		MODEL	= data/MODEL/esa/shrimp.x							# モデル
 		
 		SPEED		= 0.005		# 移動速度
 		HIT_RADIUS  = 10.0		# 当たり判定の大きさ
-		GET_SCORE   = 50		# 獲得スコア
-	END_ESA
+		GET_SCORE   = 10		# 獲得スコア
+	END_ESA  
 	
-	SET_ESA		# [5]アジ
+	SET_ESA		# [3]カニ
+		TEXTURE	= data/TEXTURE/esa_tmp_texture/esa_tmp_crab.png	# テクスチャ
+		MODEL	= data/MODEL/esa/kani001.x							# モデル
+		
+		SPEED		= 0.0003	# 移動速度
+		HIT_RADIUS  = 10.0		# 当たり判定の大きさ
+		GET_SCORE   = 15		# 獲得スコア
+	END_ESA
+		
+	SET_ESA		# [4]アジ
 		TEXTURE = data/TEXTURE/esa_tmp_texture/esa_tmp_horse-mackerel.png	# テクスチャ
 		MODEL	= data/MODEL/esa/Azi.x                                  	# モデル
 		
@@ -65,7 +56,23 @@ SET_ESADATA
 		GET_SCORE   = 10		# 獲得スコア
 	END_ESA
 	
+	SET_ESA		# [5]伊勢エビ
+		TEXTURE	= data/TEXTURE/esa_tmp_texture/esa_tmp_ise-shrimp.png	# テクスチャ
+		MODEL	= data/MODEL/esa/spiny_lobster000.x						# モデル
+		
+		SPEED		= 0.005		# 移動速度
+		HIT_RADIUS  = 10.0		# 当たり判定の大きさ
+		GET_SCORE   = 50		# 獲得スコア
+	END_ESA
 	
+	SET_ESA		# [6]タラバガニ
+		TEXTURE = data/TEXTURE/esa_tmp_texture/esa_tmp_taraba-crub.png		# テクスチャ
+		MODEL	= data/MODEL/esa/TarabaGani001.x                            # モデル
+		
+		SPEED		= 0.005		# 移動速度
+		HIT_RADIUS  = 10.0		# 当たり判定の大きさ
+		GET_SCORE   = 70		# 獲得スコア
+	END_ESA
 	
 END_ESADATA
 

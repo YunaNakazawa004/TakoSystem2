@@ -37,13 +37,15 @@
 #include "tutorialtxt.h"
 
 // マクロ定義
-#define	MAX_TUTORIAL	(2)	// タイトルで表示するテクスチャの最大数
+#define	MAX_TUTORIAL	(3)	// タイトルで表示するテクスチャの最大数
 
 // グローバル変数
 LPDIRECT3DTEXTURE9 g_pTextureTutorial[MAX_TUTORIAL] = {};	// テクスチャへのポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffTutorial = NULL;	// 頂点バッファへのポインタ
 
-// リザルトの初期化処理
+//===================================================================
+// チュートリアルの初期化処理
+//===================================================================
 void InitTutorial(void)
 {
 	// ライトの設定
@@ -67,10 +69,11 @@ void InitTutorial(void)
 
 	// メッシュシリンダーの初期化処理
 	InitMeshCylinder();
-	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 2.0f), D3DXVECTOR2(INCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, MESHCYLINDERTYPE_ROCK);
+	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(16.0f, 2.0f), D3DXVECTOR2(INCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, MESHCYLINDERTYPE_ROCK);
 
 	// メッシュドームの初期化処理
 	InitMeshDome();
+	SetMeshDome(FIRST_POS, FIRST_POS, D3DXVECTOR2(16.0f, 5.0f), OUTCYLINDER_RADIUS * 2.5f);
 
 	// メッシュフィールドの初期化処理
 	InitMeshField();
@@ -127,15 +130,19 @@ void InitTutorial(void)
 
 	// テクスチャの読み込み
 	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/In_the_sea.png",
+		"data/TEXTURE/In_the_sea000.jpg",
 		&g_pTextureTutorial[0]);
 
 	D3DXCreateTextureFromFile(pDevice,
 		"data/TEXTURE/TUTORIAL002.png",
 		&g_pTextureTutorial[1]);
 
+	D3DXCreateTextureFromFile(pDevice,
+		"data/TEXTURE/text_tmp_rule_explanation000.png",
+		&g_pTextureTutorial[2]);
+
 	// 頂点バッファの生成
-	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4 * MAX_TEXTURE,
+	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4 * MAX_TUTORIAL,
 		D3DUSAGE_WRITEONLY,
 		FVF_VERTEX_2D,
 		D3DPOOL_MANAGED,
@@ -157,12 +164,31 @@ void InitTutorial(void)
 			pVtx[2].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 			pVtx[3].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		}
-		else
+		else if(nCntTutorial == 1)
 		{// RESULTロゴ
 			pVtx[0].pos = D3DXVECTOR3(460.0f, 0.0f, 0.0f);	// 右回りで設定する
 			pVtx[1].pos = D3DXVECTOR3(820.0f, 0.0f, 0.0f);	// 2Dの場合Zの値は0にする
 			pVtx[2].pos = D3DXVECTOR3(460.0f, 180.0f, 0.0f);
 			pVtx[3].pos = D3DXVECTOR3(820.0f, 180.0f, 0.0f);
+		}
+		else
+		{// RESULTロゴ
+
+			if (GetPlayerSelect() == 1)
+			{// 1人プレイ時
+
+				pVtx[0].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 470.0f) - 140.0f, ((SCREEN_HEIGHT / 2) - 150.0f) - 180.0f, 0.0f);	// 右回りで設定する
+				pVtx[1].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 470.0f) + 140.0f, ((SCREEN_HEIGHT / 2) - 150.0f) - 180.0f, 0.0f);	// 2Dの場合Zの値は0にする
+				pVtx[2].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 470.0f) - 140.0f, ((SCREEN_HEIGHT / 2) - 150.0f) + 180.0f, 0.0f);	// (位置(中央 +- 中央からずらす量)) +- (大きさ)
+				pVtx[3].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 470.0f) + 140.0f, ((SCREEN_HEIGHT / 2) - 150.0f) + 180.0f, 0.0f);
+			}
+			else
+			{
+				pVtx[0].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 0.0f) - 110.0f, ((SCREEN_HEIGHT / 2) + 235.0f) - 120.0f, 0.0f);	// 右回りで設定する
+				pVtx[1].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 0.0f) + 110.0f, ((SCREEN_HEIGHT / 2) + 235.0f) - 120.0f, 0.0f);	// 2Dの場合Zの値は0にする
+				pVtx[2].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 0.0f) - 110.0f, ((SCREEN_HEIGHT / 2) + 235.0f) + 120.0f, 0.0f);
+				pVtx[3].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 0.0f) + 110.0f, ((SCREEN_HEIGHT / 2) + 235.0f) + 120.0f, 0.0f);
+			}
 		}
 
 		// rhwの設定
@@ -192,7 +218,9 @@ void InitTutorial(void)
 	PlaySound(SOUND_BGM_TUTORIAL);
 }
 
+//===================================================================
 // リザルトの終了処理
+//===================================================================
 void UninitTutorial(void)
 {
 	// サウンドの停止
@@ -211,16 +239,16 @@ void UninitTutorial(void)
 	UninitMeshDome();
 
 	// メッシュフィールドの終了処理
-	UninitMeshField();
+	UninitMeshField(); 
 
 	// メッシュリングの終了処理
-	UninitMeshRing();
+	UninitMeshRing(); 
 
 	// 塵の終了処理
 	UninitSeaDust();
 
 	// 3Dエフェクトの終了処理
-	UninitEffect3D();
+	UninitEffect3D(); 
 
 	// 3Dパーティクルの終了処理
 	UninitParticle3D();
@@ -229,13 +257,13 @@ void UninitTutorial(void)
 	UninitFishes();
 
 	// タコつぼの終了処理
-	UninitPot();
+	UninitPot(); 
 
 	// エサの終了処理
-	UninitEsa();
+	UninitEsa(); 
 
 	// メッシュオービットの終了処理
-	UninitMeshOrbit();
+	UninitMeshOrbit(); 
 
 	// 水面の終了処理
 	UninitWaterSurf();
@@ -247,13 +275,13 @@ void UninitTutorial(void)
 	UninitTutorialTxt();
 
 	// クロスヘアの終了処理
-	UninitCrossHair();
+	UninitCrossHair(); 
 
 	// UIゲージアイコンの終了処理
-	UninitUiGaugeIcon();
+	UninitUiGaugeIcon(); 
 
 	// エサUIの終了処理
-	UninitUiEsa();
+	UninitUiEsa(); 
 
 	// マップの終了処理
 	UninitMap();
@@ -277,9 +305,12 @@ void UninitTutorial(void)
 		g_pVtxBuffTutorial->Release();
 		g_pVtxBuffTutorial = NULL;
 	}
+
 }
 
+//===================================================================
 // リザルトの更新処理
+//===================================================================
 void UpdateTutorial(void)
 {
 	// プレイヤーの更新処理
@@ -352,12 +383,15 @@ void UpdateTutorial(void)
 		GetJoypadTrigger(0, JOYKEY_START) == true ||
 		GetJoypadTrigger(0, JOYKEY_A) == true) && pFade == FADE_NONE)
 	{// 決定キー（ENTERキー）が押された
+
 		// モード設定
 		SetFade(MODE_GAME);
 	}
 }
 
+//===================================================================
 // リザルトの描画処理
+//===================================================================
 void DrawTutorial(void)
 {
 	// プレイヤーの描画処理

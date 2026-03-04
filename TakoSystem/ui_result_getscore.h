@@ -28,6 +28,12 @@ void UninitUiResultGetScore(void);		// リザルトの獲得スコアのUIの終了処理
 void UpdateUiResultGetScore(void);		// リザルトの獲得スコアのUIの更新処理
 void DrawUiResultGetScore(void);		// リザルトの獲得スコアのUIの描画処理
 
+void UpdateVtxUiResultGetScore			// リザルトの獲得スコアのUIの頂点更新処理 
+(int nIdxP, int nIdxC);
+
+void SetDrawUiResultGetScore
+(int nIdx);
+
 int SetUiResultGetScorePolygon			// リザルトの獲得スコアのUIのポリゴンの設定処理
 (int nIdxTexture, bool bAlphaBlend, UI_RESULTGSPOLYGONTYPE type,
  D3DXVECTOR3 pos, D3DXVECTOR3 rot,
@@ -35,14 +41,19 @@ int SetUiResultGetScorePolygon			// リザルトの獲得スコアのUIのポリゴンの設定処理
  D3DXVECTOR2 texPos, D3DXVECTOR2 texSize,
  D3DXCOLOR col);
 
-int SetUiResultGetScore
+int SetUiResultGetScore					// リザルトの獲得スコアのUIの設定処理
 (D3DXVECTOR3 pos, D3DXCOLOR col, int nPoint, int nNumHave);
 
 void DelUiResultGetScore
 (int nIdx);
 
-int nCalcNumDigit						// 桁数を求める処理
+int CalcNumDigit						// 桁数を求める処理
 (int nNum);
+
+void CalcDigit							// 桁の値を求める処理
+(int nNum, int nDigit, int* pTexU, int nSizeTexU);
+
+bool GetCompletGetScore(void);			// 完了したかを返す処理
 
 #endif
 

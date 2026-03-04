@@ -213,8 +213,8 @@ void UpdatePause(void)
 		nCoolTime--;
 	}
 
-	if (GetKeyboardTrigger(DIK_W) ||
-		GetJoypadTrigger(0, JOYKEY_UP) == true ||
+	if (GetKeyboardPress(DIK_W) ||
+		GetJoypadPress(0, JOYKEY_UP) == true ||
 		GetJoypadStick(0, JOYKEY_LEFTSTICK_UP, NULL, NULL) == true)
 	{
 		if (nCoolTime == 0)
@@ -228,8 +228,8 @@ void UpdatePause(void)
 			nCoolTime = 28;
 		}
 	}
-	else if (GetKeyboardTrigger(DIK_S) ||
-		GetJoypadTrigger(0, JOYKEY_DOWN) == true ||
+	else if (GetKeyboardPress(DIK_S) ||
+		GetJoypadPress(0, JOYKEY_DOWN) == true ||
 		GetJoypadStick(0, JOYKEY_LEFTSTICK_DOWN, NULL, NULL) == true)
 	{
 		if (nCoolTime == 0)
@@ -315,8 +315,8 @@ void UpdatePause(void)
 		{ // äÑçáÇ≈å≥Ç…ñﬂÇµÇƒÇ¢Ç≠
 
 			g_aPause[nCntPause].sizeBig -= {g_aPause[nCntPause].size.x * 0.37f,
-											g_aPause[nCntPause].size.y * 0.37f,
-											0.0f};
+				g_aPause[nCntPause].size.y * 0.37f,
+				0.0f};
 		}
 		else
 		{ // ÉTÉCÉYÇçáÇÌÇπÇÈ

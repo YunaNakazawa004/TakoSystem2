@@ -7,6 +7,7 @@
 #include "player.h"
 #include "computer.h"
 #include "ui_esa.h"
+#include "meshfield.h"
 #include "meshcylinder.h"
 #include "meshring.h"
 #include "meshorbit.h"
@@ -69,8 +70,8 @@ char* g_apFilenamePlayer[MAX_NUMMODEL] = {};			// モデルファイルへのポインタ
 void InitPlayer(void)
 {
 	// ローカル変数宣言
-	LPDIRECT3DDEVICE9 pDevice = GetDevice();			// デバイスへのポインタ
-	D3DXMATERIAL* pMat;
+	//LPDIRECT3DDEVICE9 pDevice = GetDevice();			// デバイスへのポインタ
+	//D3DXMATERIAL* pMat;
 	Player* pPlayer = GetPlayer();
 
 	// プレイヤーの情報の初期化
@@ -129,33 +130,6 @@ void InitPlayer(void)
 		pPlayer->nCounterMotionBlend = 0;
 		pPlayer->nFrameBlend = 0;
 		pPlayer->nCounterBlend = 0;
-
-		for (int nCntModel = 0; nCntModel < pPlayer->nNumModel; nCntModel++)
-		{
-			// Xファイルの読み込み
-			if (FAILED(D3DXLoadMeshFromX(g_apFilenamePlayer[pPlayer->aModel[nCntModel].nIdx],
-				D3DXMESH_SYSTEMMEM,
-				pDevice,
-				NULL,
-				&pPlayer->aModel[nCntModel].pBuffMat,
-				NULL,
-				&pPlayer->aModel[nCntModel].dwNumMat,
-				&pPlayer->aModel[nCntModel].pMesh)))
-			{
-				return;
-			}
-
-			// マテリアルデータへのポインタを取得
-			pMat = (D3DXMATERIAL*)pPlayer->aModel[nCntModel].pBuffMat->GetBufferPointer();
-
-			for (int nCntMat = 0; nCntMat < (int)pPlayer->aModel[nCntModel].dwNumMat; nCntMat++)
-			{
-				if (pMat[nCntMat].pTextureFilename != NULL)
-				{// テクスチャファイルが存在する
-					D3DXCreateTextureFromFile(pDevice, pMat[nCntMat].pTextureFilename, &pPlayer->aModel[nCntModel].apTexture[nCntMat]);
-				}
-			}
-		}
 	}
 
 	SetRandomPlayer(GetNumCamera());
@@ -166,34 +140,6 @@ void InitPlayer(void)
 //=============================================================================
 void UninitPlayer(void)
 {
-	Player* pPlayer = GetPlayer();
-
-	for (int nCntModel = 0; nCntModel < pPlayer->nNumModel; nCntModel++, pPlayer++)
-	{
-		// メッシュの破棄
-		if (pPlayer->aModel[nCntModel].pMesh != NULL)
-		{
-			pPlayer->aModel[nCntModel].pMesh->Release();
-			pPlayer->aModel[nCntModel].pMesh = NULL;
-		}
-
-		// マテリアルの破棄
-		if (pPlayer->aModel[nCntModel].pBuffMat != NULL)
-		{
-			pPlayer->aModel[nCntModel].pBuffMat->Release();
-			pPlayer->aModel[nCntModel].pBuffMat = NULL;
-		}
-
-		// テクスチャの破棄
-		for (int nCntPlayer = 0; nCntPlayer < (int)pPlayer->aModel[nCntModel].dwNumMat; nCntPlayer++)
-		{
-			if (pPlayer->aModel[nCntModel].apTexture[nCntPlayer] != NULL)
-			{
-				pPlayer->aModel[nCntModel].apTexture[nCntPlayer]->Release();
-				pPlayer->aModel[nCntModel].apTexture[nCntPlayer] = NULL;
-			}
-		}
-	}
 }
 
 //=============================================================================
@@ -291,102 +237,102 @@ void UpdatePlayer(void)
 
 					pPlayer->bMove = true;
 				}
-				else if (GetKeyboardPress(DIK_W) == true || GetJoypadPress(nCntPlayer, JOYKEY_UP) == true)		// キーボード移動
+				else if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_W) == true : GetKeyboardPress(DIK_UP) == true) || GetJoypadPress(nCntPlayer, JOYKEY_UP) == true)		// キーボード移動
 				{// 奥に移動
-					if (GetKeyboardPress(DIK_A) == true || GetJoypadPress(nCntPlayer, JOYKEY_LEFT) == true)
+					if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_A) == true : GetKeyboardPress(DIK_LEFT) == true) || GetJoypadPress(nCntPlayer, JOYKEY_LEFT) == true)
 					{// 左奥に移動
-						pPlayer[nCntPlayer].move.x += sinf(-D3DX_PI * 0.75f - pCamera->rot.y) * MOVEMENT.x;
-						pPlayer[nCntPlayer].move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * MOVEMENT.y;
-						pPlayer[nCntPlayer].move.z += cosf(-D3DX_PI * 0.25f + pCamera->rot.y) * MOVEMENT.z;
+						pPlayer->move.x += sinf(-D3DX_PI * 0.75f - pCamera->rot.y) * MOVEMENT.x;
+						pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * MOVEMENT.y;
+						pPlayer->move.z += cosf(-D3DX_PI * 0.25f + pCamera->rot.y) * MOVEMENT.z;
 
 						if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
 						{// 触手を伸ばしているときは向きを変えない
-							pPlayer[nCntPlayer].fAngleY = pCamera->rot.y - (-D3DX_PI * 0.75f);
+							pPlayer->fAngleY = pCamera->rot.y - (-D3DX_PI * 0.75f);
 						}
 					}
-					else if (GetKeyboardPress(DIK_D) == true || GetJoypadPress(nCntPlayer, JOYKEY_RIGHT) == true)
+					else if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_D) == true : GetKeyboardPress(DIK_RIGHT) == true) || GetJoypadPress(nCntPlayer, JOYKEY_RIGHT) == true)
 					{// 右奥に移動
-						pPlayer[nCntPlayer].move.x += sinf(D3DX_PI * 0.75f - pCamera->rot.y) * MOVEMENT.x;
-						pPlayer[nCntPlayer].move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * MOVEMENT.y;
-						pPlayer[nCntPlayer].move.z += cosf(D3DX_PI * 0.25f + pCamera->rot.y) * MOVEMENT.z;
+						pPlayer->move.x += sinf(D3DX_PI * 0.75f - pCamera->rot.y) * MOVEMENT.x;
+						pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * MOVEMENT.y;
+						pPlayer->move.z += cosf(D3DX_PI * 0.25f + pCamera->rot.y) * MOVEMENT.z;
 
 						if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
 						{// 触手を伸ばしているときは向きを変えない
-							pPlayer[nCntPlayer].fAngleY = pCamera->rot.y - (D3DX_PI * 0.75f);
+							pPlayer->fAngleY = pCamera->rot.y - (D3DX_PI * 0.75f);
 						}
 					}
-					else if (GetKeyboardPress(DIK_W) == true || GetJoypadPress(nCntPlayer, JOYKEY_UP) == true)
+					else if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_W) == true : GetKeyboardPress(DIK_UP) == true) || GetJoypadPress(nCntPlayer, JOYKEY_UP) == true)
 					{// 奥に移動
-						pPlayer[nCntPlayer].move.x += sinf(D3DX_PI * 0.0f + pCamera->rot.y) * MOVEMENT.x;
-						pPlayer[nCntPlayer].move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * MOVEMENT.y;
-						pPlayer[nCntPlayer].move.z += cosf(D3DX_PI * 0.0f + pCamera->rot.y) * MOVEMENT.z;
+						pPlayer->move.x += sinf(D3DX_PI * 0.0f + pCamera->rot.y) * MOVEMENT.x;
+						pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * MOVEMENT.y;
+						pPlayer->move.z += cosf(D3DX_PI * 0.0f + pCamera->rot.y) * MOVEMENT.z;
 
 						if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
 						{// 触手を伸ばしているときは向きを変えない
-							pPlayer[nCntPlayer].fAngleY = pCamera->rot.y - D3DX_PI;
+							pPlayer->fAngleY = pCamera->rot.y - D3DX_PI;
 						}
 					}
 
 					pPlayer->bMove = true;
 				}
-				else if (GetKeyboardPress(DIK_S) == true || GetJoypadPress(nCntPlayer, JOYKEY_DOWN) == true)
+				else if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_S) == true : GetKeyboardPress(DIK_DOWN) == true) || GetJoypadPress(nCntPlayer, JOYKEY_DOWN) == true)
 				{// 手前に移動
-					if (GetKeyboardPress(DIK_A) == true || GetJoypadPress(nCntPlayer, JOYKEY_LEFT) == true)
+					if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_A) == true :GetKeyboardPress(DIK_LEFT) == true) || GetJoypadPress(nCntPlayer, JOYKEY_LEFT) == true)
 					{// 左手前に移動
-						pPlayer[nCntPlayer].move.x += sinf(-D3DX_PI * 0.25f - pCamera->rot.y) * MOVEMENT.x;
-						pPlayer[nCntPlayer].move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * -MOVEMENT.y;
-						pPlayer[nCntPlayer].move.z += cosf(-D3DX_PI * 0.75f + pCamera->rot.y) * MOVEMENT.z;
+						pPlayer->move.x += sinf(-D3DX_PI * 0.25f - pCamera->rot.y) * MOVEMENT.x;
+						pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * -MOVEMENT.y;
+						pPlayer->move.z += cosf(-D3DX_PI * 0.75f + pCamera->rot.y) * MOVEMENT.z;
 
 						if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
 						{// 触手を伸ばしているときは向きを変えない
-							pPlayer[nCntPlayer].fAngleY = pCamera->rot.y + (D3DX_PI * 0.25f);
+							pPlayer->fAngleY = pCamera->rot.y + (D3DX_PI * 0.25f);
 						}
 					}
-					else if (GetKeyboardPress(DIK_D) == true || GetJoypadPress(nCntPlayer, JOYKEY_RIGHT) == true)
+					else if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_D) == true : GetKeyboardPress(DIK_RIGHT) == true) || GetJoypadPress(nCntPlayer, JOYKEY_RIGHT) == true)
 					{// 右手前に移動
-						pPlayer[nCntPlayer].move.x += sinf(D3DX_PI * 0.25f - pCamera->rot.y) * MOVEMENT.x;
-						pPlayer[nCntPlayer].move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * -MOVEMENT.y;
-						pPlayer[nCntPlayer].move.z += cosf(D3DX_PI * 0.75f + pCamera->rot.y) * MOVEMENT.z;
+						pPlayer->move.x += sinf(D3DX_PI * 0.25f - pCamera->rot.y) * MOVEMENT.x;
+						pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * -MOVEMENT.y;
+						pPlayer->move.z += cosf(D3DX_PI * 0.75f + pCamera->rot.y) * MOVEMENT.z;
 
 						if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
 						{// 触手を伸ばしているときは向きを変えない
-							pPlayer[nCntPlayer].fAngleY = pCamera->rot.y + (-D3DX_PI * 0.25f);
+							pPlayer->fAngleY = pCamera->rot.y + (-D3DX_PI * 0.25f);
 						}
 					}
-					else if (GetKeyboardPress(DIK_S) == true || GetJoypadPress(nCntPlayer, JOYKEY_DOWN) == true)
+					else if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_S) == true : GetKeyboardPress(DIK_DOWN) == true) || GetJoypadPress(nCntPlayer, JOYKEY_DOWN) == true)
 					{// 手前に移動
-						pPlayer[nCntPlayer].move.x += sinf(D3DX_PI * 1.0f + pCamera->rot.y) * MOVEMENT.x;
-						pPlayer[nCntPlayer].move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * -MOVEMENT.y;
-						pPlayer[nCntPlayer].move.z += cosf(D3DX_PI * 1.0f + pCamera->rot.y) * MOVEMENT.z;
+						pPlayer->move.x += sinf(D3DX_PI * 1.0f + pCamera->rot.y) * MOVEMENT.x;
+						pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * -MOVEMENT.y;
+						pPlayer->move.z += cosf(D3DX_PI * 1.0f + pCamera->rot.y) * MOVEMENT.z;
 
 						if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
 						{// 触手を伸ばしているときは向きを変えない
-							pPlayer[nCntPlayer].fAngleY = pCamera->rot.y;
+							pPlayer->fAngleY = pCamera->rot.y;
 						}
 					}
 
 					pPlayer->bMove = true;
 				}
-				else if (GetKeyboardPress(DIK_A) == true || GetJoypadPress(nCntPlayer, JOYKEY_LEFT) == true)
+				else if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_A) == true : GetKeyboardPress(DIK_LEFT) == true) || GetJoypadPress(nCntPlayer, JOYKEY_LEFT) == true)
 				{// 左に移動
-					pPlayer[nCntPlayer].move.x += sinf(-D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.x;
-					pPlayer[nCntPlayer].move.z += cosf(-D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.z;
+					pPlayer->move.x += sinf(-D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.x;
+					pPlayer->move.z += cosf(-D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.z;
 
 					if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
 					{// 触手を伸ばしているときは向きを変えない
-						pPlayer[nCntPlayer].fAngleY = pCamera->rot.y + (D3DX_PI * 0.5f);
+						pPlayer->fAngleY = pCamera->rot.y + (D3DX_PI * 0.5f);
 					}
 
 					pPlayer->bMove = true;
 				}
-				else if (GetKeyboardPress(DIK_D) == true || GetJoypadPress(nCntPlayer, JOYKEY_RIGHT) == true)
+				else if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_D) == true : GetKeyboardPress(DIK_RIGHT) == true) || GetJoypadPress(nCntPlayer, JOYKEY_RIGHT) == true)
 				{// 右に移動
-					pPlayer[nCntPlayer].move.x += sinf(D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.x;
-					pPlayer[nCntPlayer].move.z += cosf(D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.z;
+					pPlayer->move.x += sinf(D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.x;
+					pPlayer->move.z += cosf(D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.z;
 
 					if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
 					{// 触手を伸ばしているときは向きを変えない
-						pPlayer[nCntPlayer].fAngleY = pCamera->rot.y - (D3DX_PI * 0.5f);
+						pPlayer->fAngleY = pCamera->rot.y - (D3DX_PI * 0.5f);
 					}
 
 					pPlayer->bMove = true;
@@ -430,6 +376,8 @@ void UpdatePlayer(void)
 							if (pEsa[nIdx].esaType != ESA_ACTTYPE_GOTO_POT)
 							{// タコつぼに入れてる最中じゃない
 								pEsa[nIdx].bUse = false;
+								pEsa[nIdx].nOrbitIdx = -1;
+								pEsa[nIdx].bOrbit = false;
 								SetAddUiEsa(nCntPlayer, pEsa[nIdx].nIdxModel);
 
 								pPlayer->nFood++;
@@ -499,6 +447,8 @@ void UpdatePlayer(void)
 				pPlayer->vecX.x += (0.0f - pPlayer->vecX.x) * DASH_MOVE;
 				pPlayer->vecX.y += (0.0f - pPlayer->vecX.y) * DASH_MOVE;
 				pPlayer->vecX.z += (0.0f - pPlayer->vecX.z) * DASH_MOVE;
+
+				SetVibration(nCntPlayer, 1000, 1300, 1);
 
 				if (pPlayer->vecX.x < MOVE_ERROR && pPlayer->vecX.x > -MOVE_ERROR &&
 					pPlayer->vecX.y < MOVE_ERROR && pPlayer->vecX.y > -MOVE_ERROR &&
@@ -591,6 +541,8 @@ void UpdatePlayer(void)
 						pPlayer->state != PLAYERSTATE_INK && pPlayer->state != PLAYERSTATE_BACKAREA)
 					{// 触手が通常状態のときだけ
 						SetMotionPlayer(nCntPlayer, MOTIONTYPE_OCEANCULLENT, true, 20);
+
+						SetVibration(nCntPlayer, 10000, 10000, 1);
 					}
 
 					if (pPlayer->nFood > 0 && nCounter % 15 == 0)
@@ -611,14 +563,6 @@ void UpdatePlayer(void)
 				pPlayer->move.x += (0.0f - pPlayer->move.x) * INERTIA_MOVE;
 				pPlayer->move.y += (0.0f - pPlayer->move.y) * INERTIA_MOVE;
 				pPlayer->move.z += (0.0f - pPlayer->move.z) * INERTIA_MOVE;
-			}
-
-			// 軌跡
-			for (int nCntTent = 0; nCntTent < PLAYER_TENTACLE; nCntTent++)
-			{
-				SetMeshOrbitPos(pPlayer->nOrbitIdx[nCntTent], D3DXVECTOR3(pPlayer->aModel[(nCntTent + 1) * 4].posOff.x, pPlayer->aModel[(nCntTent + 1) * 4].posOff.y, pPlayer->aModel[(nCntTent + 1) * 4].posOff.z),
-					D3DXVECTOR3(pPlayer->aModel[(nCntTent + 1) * 4].posOff.x, pPlayer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pPlayer->aModel[(nCntTent + 1) * 4].posOff.z),
-					WHITE_VTX, CYAN_VTX, &pPlayer->aModel[(nCntTent + 1) * 4].mtxWorld);
 			}
 
 			D3DXVECTOR2 XZdist = D3DXVECTOR2(pPlayer->pos.x, pPlayer->pos.z);
@@ -737,7 +681,8 @@ void UpdatePlayer(void)
 				SetCrossHair(nCntPlayer, CROSSHAIRSTATE_NONE);
 			}
 
-			if (GetJoypadShoulder(nCntPlayer, JOYKEY_RIGHTTRIGGER, &nValue) == true
+			if (((nCntPlayer == 0 ? GetKeyboardPress(DIK_E) == true : (GetKeyboardPress(DIK_END) == true || GetKeyboardPress(DIK_NUMPAD1) == true)) ||
+				GetJoypadShoulder(nCntPlayer, JOYKEY_RIGHTTRIGGER, &nValue) == true)
 				&& pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG && pPlayer->state != PLAYERSTATE_DASH &&
 				pPlayer->nTentacleCooldown == 0)
 			{// 触手伸ばしアクション
@@ -767,7 +712,8 @@ void UpdatePlayer(void)
 				pPlayer->nTentacleCooldown = TENTACLE_CT;
 			}
 
-			if (GetJoypadShoulder(nCntPlayer, JOYKEY_LEFTTRIGGER, &nValue) == true
+			if (((nCntPlayer == 0 ? GetKeyboardPress(DIK_Q) == true : GetKeyboardPress(DIK_RSHIFT) == true) ||
+				GetJoypadShoulder(nCntPlayer, JOYKEY_LEFTTRIGGER, &nValue) == true)
 				&& pPlayer->state != PLAYERSTATE_INK && pPlayer->nInkCooldown == 0)
 			{// 墨吐きアクション
 				pPlayer->state = PLAYERSTATE_INK;
@@ -790,6 +736,7 @@ void UpdatePlayer(void)
 			}
 
 			// 当たり判定
+			CollisionMeshField(pPlayer->pos, pPlayer->rot, pPlayer->fRadius, pPlayer->fHeight);
 			CollisionPot(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight);
 			CollisionObject(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight, false);
 			CollisionMeshCylinder(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight, false);
@@ -805,6 +752,8 @@ void UpdatePlayer(void)
 				if (pEsa[nIdx].esaType != ESA_ACTTYPE_GOTO_POT)
 				{// タコつぼに入れてる最中じゃない
 					pEsa[nIdx].bUse = false;
+					pEsa[nIdx].bOrbit = false;
+					pEsa[nIdx].nOrbitIdx = -1;
 					SetAddUiEsa(nCntPlayer, pEsa[nIdx].nIdxModel);
 
 					pPlayer->nFood++;
@@ -821,10 +770,11 @@ void UpdatePlayer(void)
 
 			nCounter++;
 
-			// モーションの更新処理
-			UpdateMotionPlayer();
 		}
 	}
+
+	// モーションの更新処理
+	UpdateMotionPlayer();
 }
 
 //=============================================================================
@@ -838,11 +788,13 @@ void DrawPlayer(void)
 	D3DMATERIAL9 matDef;				// 現在のマテリアル保存用
 	D3DXMATERIAL* pMat;					// マテリアルデータへのポインタ
 	Player* pPlayer = GetPlayer();
+	Model_Info* pTakoModel = GetTakoModel();
 
 	for (int nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++, pPlayer++)
 	{
 		if (pPlayer->bUse == true)
 		{// 使用しているとき
+
 			// ワールドマトリックスの初期化
 			D3DXMatrixIdentity(&pPlayer->mtxWorld);
 
@@ -900,23 +852,37 @@ void DrawPlayer(void)
 				pDevice->SetTransform(D3DTS_WORLD, &pPlayer->aModel[nCntModel].mtxWorld);
 
 				// マテリアルデータへのポインタを取得
-				pMat = (D3DXMATERIAL*)pPlayer->aModel[nCntModel].pBuffMat->GetBufferPointer();
+				pMat = (D3DXMATERIAL*)pTakoModel[nCntModel].pBuffMat->GetBufferPointer();
 
-				for (int nCntMat = 0; nCntMat < (int)pPlayer->aModel[nCntModel].dwNumMat; nCntMat++)
+				for (int nCntMat = 0; nCntMat < (int)pTakoModel[nCntModel].dwNumMat; nCntMat++)
 				{
 					// マテリアルの設定
 					pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
 
 					// テクスチャの設定
-					pDevice->SetTexture(0, pPlayer->aModel[nCntModel].apTexture[nCntMat]);
+					pDevice->SetTexture(0, pTakoModel[nCntModel].apTexture[nCntMat]);
 
 					// モデルパーツの描画
-					pPlayer->aModel[nCntModel].pMesh->DrawSubset(nCntMat);
+					pTakoModel[nCntModel].pMesh->DrawSubset(nCntMat);
 				}
 			}
 
 			// 保存していたマテリアルを戻す
 			pDevice->SetMaterial(&matDef);
+
+			for (int nCntTent = 0; nCntTent < PLAYER_TENTACLE; nCntTent++)
+			{
+				if (pPlayer->nOrbitIdx[nCntTent] == -1)
+				{// 初回
+					pPlayer->nOrbitIdx[nCntTent] = SetMeshOrbit(D3DXVECTOR3(pPlayer->aModel[(nCntTent + 1) * 4].posOff.x, pPlayer->aModel[(nCntTent + 1) * 4].posOff.y, pPlayer->aModel[(nCntTent + 1) * 4].posOff.z),
+						D3DXVECTOR3(pPlayer->aModel[(nCntTent + 1) * 4].posOff.x, pPlayer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pPlayer->aModel[(nCntTent + 1) * 4].posOff.z),
+						WHITE_VTX, CYAN_VTX, &pPlayer->aModel[(nCntTent + 1) * 4].mtxWorld);
+				}
+
+				SetMeshOrbitPos(pPlayer->nOrbitIdx[nCntTent], D3DXVECTOR3(pPlayer->aModel[(nCntTent + 1) * 4].posOff.x, pPlayer->aModel[(nCntTent + 1) * 4].posOff.y, pPlayer->aModel[(nCntTent + 1) * 4].posOff.z),
+					D3DXVECTOR3(pPlayer->aModel[(nCntTent + 1) * 4].posOff.x, pPlayer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pPlayer->aModel[(nCntTent + 1) * 4].posOff.z),
+					WHITE_VTX, CYAN_VTX, &pPlayer->aModel[(nCntTent + 1) * 4].mtxWorld);
+			}
 		}
 	}
 }
@@ -952,16 +918,6 @@ void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType
 	pPlayer[nIdx].nTentacleCooldown = 0;
 	pPlayer[nIdx].nInkCooldown = 0;
 
-	for (int nCntTent = 0; nCntTent < PLAYER_TENTACLE; nCntTent++)
-	{
-		pPlayer[nIdx].nOrbitIdx[nCntTent] = SetMeshOrbit(D3DXVECTOR3(pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.x, pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.y, pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.z),
-			D3DXVECTOR3(pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.x, pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.z),
-			WHITE_VTX, CYAN_VTX, &pPlayer[nIdx].aModel[(nCntTent + 1) * 4].mtxWorld);
-
-		SetMeshOrbitPos(pPlayer[nIdx].nOrbitIdx[nCntTent], D3DXVECTOR3(pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.x, pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.y, pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.z),
-			D3DXVECTOR3(pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.x, pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pPlayer[nIdx].aModel[(nCntTent + 1) * 4].posOff.z),
-			WHITE_VTX, CYAN_VTX, &pPlayer[nIdx].aModel[(nCntTent + 1) * 4].mtxWorld);
-	}
 
 	pPlayer[nIdx].motionType = MOTIONTYPE_NEUTRAL;
 	pPlayer[nIdx].bLoopMotion = pPlayer[nIdx].aMotionInfo[MOTIONTYPE_NEUTRAL].bLoop;
@@ -990,7 +946,7 @@ void SetRandomPlayer(int nAmount)
 	{
 		D3DXVECTOR3 pos;
 		float fAngle = (D3DX_PI * 2.0f) * ((float)((nCntPlayer + 1) * (360.0f / nAmount)) / 360.0f);
-		float fsin = sinf(fAngle);
+		//float fsin = sinf(fAngle);
 
 		pos.x = sinf(fAngle) * (INCYLINDER_RADIUS + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) + 1))));
 		pos.y = (float)(rand() % (int)(CYLINDER_HEIGHT * 0.6f)) + (CYLINDER_HEIGHT * 0.2f);
@@ -1026,8 +982,8 @@ void LoadPlayer(void)
 
 	// キャラクターセット用の変数
 	int nNumParts = 0;		// 読み込むパーツ数
-	float fRadius = 0.0f;	// キャラクターの半径
-	float fHeight = 0.0f;	// キャラクターの高さ
+	//float fRadius = 0.0f;	// キャラクターの半径
+	//float fHeight = 0.0f;	// キャラクターの高さ
 	float fMove = 0.0f;		// キャラクターの移動量
 	float fJump = 0.0f;		// キャラクターのジャンプ量
 	D3DXVECTOR2 Blowoff = D3DXVECTOR2(0.0f, 0.0f);		// 吹っ飛び量
@@ -1486,7 +1442,7 @@ void LoadPlayer(void)
 		// モーションの総数を代入
 		pPlayer->nNumMotion = nCntMotion + 1;
 
-		if (MAX_PLAYER > 1)
+		if (GetNumCamera() > 1)
 		{// 1人プレイじゃない場合
 			pPlayer[1] = pPlayer[0];
 		}

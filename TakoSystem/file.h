@@ -10,6 +10,9 @@
 
 // プロトタイプ宣言 ============================================
 
+bool FileReadTop				// 読み取り開始地点まで読み取る処理
+(FILE* pFile);
+
 bool FileExtractText			// ファイルから文字だけを読み取る処理
 (FILE* pFile, char* pReadText);				// ファイルポインタ, 読み取った文字	
 
@@ -21,6 +24,6 @@ void FileMovePosion				// posの移動+保存処理
  int nForKey, int nBackKey);				// z方向移動キー(+,-)
 
 
-void FileLogPass
+void FileLogPass				// 通過した場所とかかった時間を記録する処理
 (const char* pPassPointName);
 #endif

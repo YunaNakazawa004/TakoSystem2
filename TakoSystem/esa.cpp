@@ -99,6 +99,7 @@ void InitEsa(bool bSet)
 		g_aEsa[nCntEsa].fMoveAngle = 0.0f;						// 移動角度を初期化
 		g_aEsa[nCntEsa].esaType = ESA_ACTTYPE_LAND;				// エサの挙動をLANDに設定
 		g_aEsa[nCntEsa].nNumBehavior = 0;						// 挙動の値を初期化
+		g_aEsa[nCntEsa].bOrbit = false;							// 軌跡していない状態に設定
 		g_aEsa[nCntEsa].bDisp = false;							// 表示していない状態に設定
 		g_aEsa[nCntEsa].bUse = false;							// 使用していない状態に設定
 	}
@@ -127,13 +128,14 @@ void InitEsa(bool bSet)
 
 #else	// ランダム設定
 
-		for (int nCntEsa = 0; nCntEsa < 20; nCntEsa++)
+
+		for (nCntEsa = 0; nCntEsa < 30; nCntEsa++)
 		{// 配置する数だけ繰り返す
 
-			int nSetType = rand() % g_nNumEsatype;											// ランダムで種類を設定
-			float fRandRadius = rand() % (int)(OUTCYLINDER_RADIUS - 100.0f) + (int)INCYLINDER_RADIUS;	// 中心からの距離を設定
-			float fRandAngle = (float)(rand() % 629 - 314) / 1000.0f;						// 角度を設定
-			float fRandHeight = rand() % (int)CYLINDER_HEIGHT;								// 高さを設定
+			int nSetType = rand() % g_nNumEsatype;																// ランダムで種類を設定
+			float fRandRadius =(float)(rand() % (int)(OUTCYLINDER_RADIUS - 100.0f) + (int)INCYLINDER_RADIUS);			// 中心からの距離を設定
+			float fRandAngle = ((float)(rand() % ((int)(D3DX_PI * 2000)) - (int)(D3DX_PI * 1000))) / 1000.0f;	// 角度(xy位置)を設定
+			float fRandHeight = (float)(rand() % (int)CYLINDER_HEIGHT);													// 高さを設定
 
 			// 位置を設定
 			D3DXVECTOR3 setPos = D3DXVECTOR3(sinf(fRandAngle) * fRandRadius,
@@ -141,7 +143,8 @@ void InitEsa(bool bSet)
 											 cosf(fRandAngle) * fRandRadius);
 
 			// エサの設定処理
-			SetEsa(nSetType, true, ESA_ACTTYPE_LAND, 0, setPos, D3DXVECTOR3(0.0f,0.0f,0.0f));
+
+			SetEsa(nSetType, true, ESA_ACTTYPE_SWIM, 0, setPos, D3DXVECTOR3(0.0f,0.0f,0.0f));
 		}
 
 #endif
@@ -217,7 +220,7 @@ void UpdateEsa(void)
 			MoveEsa(&g_aEsa[nCntEsa]);
 
 			if (g_aEsa[nCntEsa].esaType != ESA_ACTTYPE_GOTO_PLAYER
-			 || g_aEsa[nCntEsa].esaType != ESA_ACTTYPE_GOTO_POT)
+			 && g_aEsa[nCntEsa].esaType != ESA_ACTTYPE_GOTO_POT)
 			{// プレイヤーとポットにむかっている状態でない場合
 
 				// 海流の処理
@@ -233,11 +236,11 @@ void UpdateEsa(void)
 
 			SetEffect3D(70, g_aEsa[nCntEsa].pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0.0f, 30.0f, -0.1f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f),EFFECTTYPE_NORMAL);
 
-			SetMeshOrbitPos(g_aEsa[nCntEsa].nOrbitIdx, FIRST_POS, D3DXVECTOR3(FIRST_POS.x, FIRST_POS.y + 10.0f, FIRST_POS.z), 
-				WHITE_VTX, CYAN_VTX, &g_aEsa[nCntEsa].mtxWorld);
 #if 0
-			PrintDebugProc("\nESA[%d]_POS %s", nCntEsa, (g_aEsa[nCntEsa].bUse == true ? "true":"false"));
-			PrintDebugProc("\nESA[%d]_POS %f %f %f", nCntEsa, g_aEsa[nCntEsa].pos.x, g_aEsa[nCntEsa].pos.y, g_aEsa[nCntEsa].pos.z);
+			
+			
+			PrintDebugProc("\nESA[%d]=====", nCntEsa);
+			PrintDebugProc("\nPOS %f %f %f", g_aEsa[nCntEsa].pos.x, g_aEsa[nCntEsa].pos.y, g_aEsa[nCntEsa].pos.z);
 #endif
 		}
 	}
@@ -303,6 +306,18 @@ void DrawEsa(void)
 
 			// 保存していたマテリアルを戻す
 			pDevice->SetMaterial(&matDef);
+
+			if (g_aEsa[nCntEsa].bOrbit == true)
+			{// オービットを設定する場合
+				if (g_aEsa[nCntEsa].nOrbitIdx == -1)
+				{// 初回
+					g_aEsa[nCntEsa].nOrbitIdx = SetMeshOrbit(FIRST_POS, D3DXVECTOR3(FIRST_POS.x, FIRST_POS.y + 10.0f, FIRST_POS.z),
+						WHITE_VTX, CYAN_VTX, &g_aEsa[nCntEsa].mtxWorld);
+				}
+
+				SetMeshOrbitPos(g_aEsa[nCntEsa].nOrbitIdx, FIRST_POS, D3DXVECTOR3(FIRST_POS.x, FIRST_POS.y + 10.0f, FIRST_POS.z),
+					WHITE_VTX, CYAN_VTX, &g_aEsa[nCntEsa].mtxWorld);
+			}
 		}
 	}
 }
@@ -370,17 +385,50 @@ HRESULT SetEsaModel(const char* pFilename, EsaModel* pEsaModel)
 	// デバイスの所得
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();
 
+	HRESULT hr;
+
 	// ====================================================
 
 	// Xファイルの読み込み
-	if(FAILED(D3DXLoadMeshFromX(&pFilename[0],
-							    D3DXMESH_SYSTEMMEM,
-							    pDevice,
-							    NULL,
-							    &pEsaModel->pBuffMat,
-							    NULL,
-							    &pEsaModel->dwNumMat,
-							    &pEsaModel->pMesh)))
+	hr = D3DXLoadMeshFromX(&pFilename[0],
+						   D3DXMESH_SYSTEMMEM,
+						   pDevice,
+						   NULL,
+						   &pEsaModel->pBuffMat,
+						   NULL,
+						   &pEsaModel->dwNumMat,
+						   &pEsaModel->pMesh);
+
+#ifdef _DEBUG
+	if (FAILED(hr))
+	{
+		LPVOID* errorString;
+
+		FormatMessage(
+			FORMAT_MESSAGE_ALLOCATE_BUFFER					// テキストのメモリ割り当てを要求する
+			| FORMAT_MESSAGE_FROM_SYSTEM					// エラーメッセージはWindowsが用意しているものを使用
+			| FORMAT_MESSAGE_IGNORE_INSERTS,				// 次の引数を無視してエラーコードに対するエラーメッセージを作成する
+			NULL,
+			hr,
+			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),		// 言語を指定
+			(LPTSTR)&errorString,							// メッセージテキストが保存されるバッファへのポインタ
+			0,
+			NULL);
+
+		if (errorString == nullptr)
+		{
+			MessageBox(GetActiveWindow(), "failed get error code", "error", MB_ICONERROR);
+		}
+		else
+		{
+			MessageBox(GetActiveWindow(), (LPCTSTR)errorString, "error", MB_ICONERROR);
+
+			LocalFree(errorString);
+		}
+	}
+#endif
+
+	if(FAILED(hr))
 	{// Xファイルの読み込みに失敗した場合
 
 		return E_FAIL;	// 設定に失敗した事を返す
@@ -426,16 +474,12 @@ int SetEsa(int nEsaType, bool bSetOrbit, ESA_ACTTYPE esaType, int nBehavior, D3D
 			g_aEsa[nCntEsa].rot = rot;								// 角度を設定
 			g_aEsa[nCntEsa].fMoveAngle = 0.0f;						// 移動角度を初期化
 			g_aEsa[nCntEsa].esaType = esaType;						// エサの挙動を設定
-			g_aEsa[nCntEsa].nNumBehavior = 0;						// 挙動の値を初期化
+
+			g_aEsa[nCntEsa].nNumBehavior = nBehavior;				// 挙動の値を初期化
+			g_aEsa[nCntEsa].bOrbit = bSetOrbit;						// 軌跡状態を設定
 			g_aEsa[nCntEsa].bDisp = true;							// 表示している状態に設定
 			g_aEsa[nCntEsa].bUse = true;							// 使用している状態に設定
 
-			if (bSetOrbit == true)
-			{// オービットを設定する場合
-
-				g_aEsa[nCntEsa].nOrbitIdx = SetMeshOrbit(FIRST_POS, D3DXVECTOR3(FIRST_POS.x, FIRST_POS.y + 10.0f, FIRST_POS.z),
-														 WHITE_VTX, CYAN_VTX, &g_aEsa[nCntEsa].mtxWorld);
-			}
 
 			return nCntEsa;	// 設定した場所を返す
 		}
@@ -524,8 +568,6 @@ void MoveEsa(Esa* pEsa)
 	float fDistRadius;				// 中心からの距離(半径)
 	float fNomRadius;				// 正規化した距離(半径)
 	float fToTagetAngle = 0.0f;		// 対象との角度
-
-	float *pWaterSurf = GetWaterSurf_Height();	// 海面の高さの情報
 
 	Player* pPlayer = GetPlayer();				// プレイヤーの情報
 
@@ -743,7 +785,7 @@ bool SetLoadEsaData(EsaData* pEsaData, const char* pFilename)
 						{// 〇END_ESA
 
 							// エサの情報を設定
-							g_aIdxEsaData[g_nNumEsatype] = SetEsaData(&g_aEsaData[0], setEsaDataInfo);	// 設定したエサのインデックスを代入
+							g_aIdxEsaData[g_nNumEsatype] = SetEsaData(&pEsaData[0], setEsaDataInfo);	// 設定したエサのインデックスを代入
 							
 							g_nNumEsatype++;															// エサの種類の総数を増やす
 

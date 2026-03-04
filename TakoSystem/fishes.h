@@ -41,7 +41,7 @@ typedef enum
 
 typedef struct
 {
-	int nUseNum;								// 使用数
+	
 	D3DXVECTOR3 pos;							// 現在の位置
 	D3DXVECTOR3 posOld;							// 前回の位置
 	D3DXVECTOR3 move;							// 移動量
@@ -81,12 +81,13 @@ typedef struct
 }Fishes;
 
 // 生き物のモデル構造体 -----------------
-
+#if 1
 typedef struct
 {
 	float fRadius;								// 半径
 	float fHeight;								// 高さ
 	Model aModel[MAX_NUMMODEL];					// モデル(パーツ)
+	Model_Info aModel_Info[MAX_NUMMODEL];		// モデル(パーツ)
 	int nNumModel;								// モデル(パーツ)の総数
 	char sModelFileName[100][100];				// モデル(パーツ)のファイル名
 	MOTION_INFO aMotionInfo[MAX_MOTION];		// モーション情報
@@ -100,6 +101,7 @@ typedef struct
 	bool bUse;									// 使用状態
 
 }Fishes_Model;
+#endif
 
 // 生き物のモデル情報 -------------------
 
@@ -122,7 +124,7 @@ void CollisionFishes(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 Fishes* GetFishes(void);
 Fishes_Model* GetFishesModel(void);
 void SetFishes(int ModelIdx, int nNumSet, bool bMove, D3DXVECTOR3 pos, D3DXVECTOR3 rot);
-void LoadFishes(int Idx);
+void LoadFishes(void);
 void UpdateMotionFishes(void);
 void SetMotionFishes(int nIdx, MOTIONTYPE motionType, bool bBlendMotion, int nFrameBlend);
 

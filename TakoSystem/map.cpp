@@ -117,7 +117,7 @@ void InitMap(void)
 		for (int nCntMap = 0; nCntMap < MAP_USE_NUM; nCntMap++)
 		{
 			pMap[nCntMap].pos =
-			{ SCREEN_WIDTH - MAP_SIZE - 50,MAP_SIZE + 50,0.0f };
+			{ SCREEN_WIDTH - MAP_SIZE - 50, MAP_SIZE + 50, 0.0f };
 			pMap[nCntMap].bUse = false;
 		}
 		pMap[0].bUse = true;
@@ -228,7 +228,7 @@ void UpdateMap(void)
 	D3DXVECTOR3 posRate[MAX_PLAYER] = {};										// 中心地からのプレイヤーの位置の割合
 	Player* pPlayer = GetPlayer();
 	Map* pMap = GetMap();
-	MapTextureInfo* pMapInfo = &g_aMapTexInfo[0];
+	//MapTextureInfo* pMapInfo = &g_aMapTexInfo[0];
 
 	// 頂点バッファをロックし、頂点情報へのポインタを取得
 	g_pVtxBuffMap->Lock(0, 0, (void**)&pVtx, 0);

@@ -130,6 +130,7 @@ void InitReady(void)
 	{
 		bfrag[nCntReady] = false;
 	}
+
 	for (int nCntReady = 0; nCntReady < MAX_READY; nCntReady++)
 	{
 		//　テクスチャの読み込み
@@ -168,10 +169,7 @@ void InitReady(void)
 		pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 		pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 
-		if (g_aReady[nCntReady].TexIdx == 0)
-		{
-		}
-		else
+		if (g_aReady[nCntReady].TexIdx != 0)
 		{
 			// テクスチャ座標の設定
 			pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
@@ -224,13 +222,16 @@ void UpdateReady(void)
 	VERTEX_2D* pVtx;					//頂点情報へのポインタ
 	int nTime = GetTime();
 
-	if (GetKeyboardTrigger(DIK_I) == true)
+
+#ifdef _DEBUG
+	if (GetKeyboardTrigger(DIK_9) == true)
 	{
 		g_aReady[0].Idx = 4;
 		bfrag[0] = false; 
 		g_aReady[0].bDisp = true;
 		g_aReady[0].nCnt = 0;
 	}
+#endif
 
 	// 頂点バッファをロックし,頂点情報へのポインタを取得
 	g_pVtxBuffReady->Lock(0, 0, (void**)&pVtx, 0);
@@ -317,7 +318,6 @@ void UpdateReady(void)
 			}
 		}
 	}
-
 
 	for (int nCntReady = 0; nCntReady < MAX_READY; nCntReady++)
 	{ // 動かす

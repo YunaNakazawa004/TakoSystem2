@@ -7,9 +7,9 @@
 
 #include "main.h"			// メインヘッダー
 
-#include "oceancurrents.h"	// 海流ヘッダー
+#include "game.h"
 
-#include "meshcylinder.h"
+#include "oceancurrents.h"	// 海流ヘッダー
 
 #include "input.h"
 #include "debugproc.h"
@@ -115,13 +115,13 @@ int g_nIdxOCTimer;
 // テクスチャファイル情報
 const char* c_apFilenameOceanCurrents[] =
 {
-	"data/TEXTURE/ui_OceanCurrents/whirlpool_warning.png",		// [0]渦潮注意標識
-	"data/TEXTURE/ui_OceanCurrents/tex_alpha000.jpg",			// [1]バックテクスチャ
-	"data/TEXTURE/ui_OceanCurrents/tex_warning000.jpg",			// [2]トラテープ
-	"data/TEXTURE/ui_OceanCurrents/text_warning.png",			// [3]テキスト「warning!」
-	"data/TEXTURE/ui_OceanCurrents/text_warning_whirlpool.png",	// [4]テキスト「渦潮注意」
-	"data/TEXTURE/ui_OceanCurrents/text_Hide_behind.png",		// [5]テキスト「物陰に隠れろ」
-	"data/TEXTURE/number000.png",								// [6]数字
+	"data/TEXTURE/whirlpool_warning.png",		// [0]渦潮注意標識
+	"data/TEXTURE/tex_alpha000.jpg",			// [1]バックテクスチャ
+	"data/TEXTURE/tex_warning000.jpg",			// [2]トラテープ
+	"data/TEXTURE/text_warning.png",			// [3]テキスト「warning!」
+	"data/TEXTURE/text_warning_whirlpool.png",	// [4]テキスト「渦潮注意」
+	"data/TEXTURE/text_Hide_behind.png",		// [5]テキスト「物陰に隠れろ」
+	"data/TEXTURE/number000.png",				// [6]数字
 };
 
 OCUI_info g_aOCUiInfo[] =
@@ -291,6 +291,7 @@ void UpdateOceanCurrents(void)
 
 	// =========================================================
 
+#ifdef _DEBUG
 #if 0
 	if (g_nNumSelect != -1)
 	{
@@ -310,6 +311,7 @@ void UpdateOceanCurrents(void)
 		PrintDebugProc("\n\nOCPOLYGON[%d]_POS %f %f %f", g_nNumSelect, g_aOCPolygon[g_nNumSelect].offPos.x, g_aOCPolygon[g_nNumSelect].offPos.y, g_aOCPolygon[g_nNumSelect].offPos.z);
 		//PrintDebugProc("\n\nOCPOLYGON[%d]_WIDTH %f", g_nNumSelect, g_aOCPolygon[g_nNumSelect].offPos.x, g_aOCPolygon[g_nNumSelect].offPos.y, g_aOCPolygon[g_nNumSelect].offPos.z);
 	}
+#endif
 #endif
 
 	// 海流の状態の更新処理
@@ -667,6 +669,8 @@ void DelOceanCurrentsUi(int nIdxOCUi)
 //========================================================================
 void UpdateOceanCurrentsState(void)
 {
+	float fSpeedOceanCurrect = 0.0f;	// 海流の速度
+
 	g_nCounterOceanCurrents++;	// カウンタを加算
 
 	// 海流の回転速度の処理
@@ -680,7 +684,11 @@ void UpdateOceanCurrentsState(void)
 		if (g_nCounterOceanCurrents >= OCEANCURRECT_TIME_NOMAL)
 		{// 通常時の継続時間を過ぎた
 
-			g_OceanCurrentsState = OCEANCURRENTSSTATE_WAIT;			// 渦潮待機状態に設定
+			if (GetGameState() != GAMESTATE_LITTLETIME)
+			{// 残り時間が少なくない場合
+
+				g_OceanCurrentsState = OCEANCURRENTSSTATE_WAIT;			// 渦潮待機状態に設定
+			}
 
 			g_nCounterOceanCurrents = 0;							// カウンタを初期化
 
@@ -727,8 +735,15 @@ void UpdateOceanCurrentsState(void)
 			g_nCounterOceanCurrents = 0;							// カウンタを初期化
 		}
 
+		if (g_fSpeedOceanCurrent <= OCEANCURRECT_SPEED_WIRLPOOL + 0.01f && g_fSpeedOceanCurrent >= OCEANCURRECT_SPEED_WIRLPOOL - 0.01f)
+		{
+			PrintDebugProc("OCEAN_SPEED_MAX_WILPOOL");
+		}
 		break;
 	}
+
+	// 回転量を通常時の移動量に修正
+	g_fSpeedOceanCurrent += fSpeedOceanCurrect - g_fSpeedOceanCurrent * 0.03f;	// 慣性
 }
 
 //=============================================================================
@@ -741,8 +756,6 @@ void MoveOceanCurrents(D3DXVECTOR3* pPos)
 	float fDistRadius;	// 中心からの距離(半径)
 	float fNomRadius;	// 正規化した距離(半径)
 	float fNowAngle;	// 現在の角度
-
-	MeshCylinder *pMeshCylinder = GetMeshCylinder();
 
 	// ====================================================
 
