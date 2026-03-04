@@ -376,6 +376,7 @@ void UpdatePlayer(void)
 							if (pEsa[nIdx].esaType != ESA_ACTTYPE_GOTO_POT)
 							{// タコつぼに入れてる最中じゃない
 								pEsa[nIdx].bUse = false;
+								DeleteMeshOrbit(pEsa[nIdx].nOrbitIdx);
 								pEsa[nIdx].nOrbitIdx = -1;
 								pEsa[nIdx].bOrbit = false;
 								SetAddUiEsa(nCntPlayer, pEsa[nIdx].nIdxModel);
@@ -753,6 +754,7 @@ void UpdatePlayer(void)
 				{// タコつぼに入れてる最中じゃない
 					pEsa[nIdx].bUse = false;
 					pEsa[nIdx].bOrbit = false;
+					DeleteMeshOrbit(pEsa[nIdx].nOrbitIdx);
 					pEsa[nIdx].nOrbitIdx = -1;
 					SetAddUiEsa(nCntPlayer, pEsa[nIdx].nIdxModel);
 

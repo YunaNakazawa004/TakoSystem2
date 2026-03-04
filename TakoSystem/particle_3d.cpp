@@ -15,40 +15,6 @@
 
 #define MAX_SET_PARTCL3D		(5096)	// パーティクルの最大数
 
-// 構造体の定義 ================================================
-
-// 3Dパーティクルの構造体
-typedef struct
-{
-	// パーティクルの情報
-	D3DXVECTOR3 pos;				// 表示位置
-
-	D3DXVECTOR3 move;				// 移動量の蓄積
-
-	D3DXCOLOR col;					// 色
-
-	float fSpeedPaticle;			// パーティクルの移動速度
-	D3DXVECTOR3 fVecMoveParticle;	// パーティクルの移動方向
-
-	int nParticleValue;				// パーティクルの生成量
-	int nParticleLifeO;				// パーティクルの寿命(判定などに使う全体値)
-	int nParticleLifeV;				// パーティクルの寿命(寿命として減少させる値)
-
-	// エフェクトの情報
-	float fSpeedEffect;				// エフェクトの移動速度
-
-	float fEffectRadius;			// エフェクトの大きさ
-	float faddEffectRadius;			// エフェクトの大きさの加算量
-
-	int nEffectLife;				// エフェクトの寿命
-
-	EFFECTTYPE effecttype;			// エフェクトの用途
-
-	// 状態
-	bool bUse;						// 使用状況
-
-}Paticle3D;
-
 // グローバル宣言 ==============================================
 
 Paticle3D g_aPaticle3D[MAX_SET_PARTCL3D];		// 3Dパーティクルの情報
@@ -259,7 +225,7 @@ void SetPosionParticle3D(int nIdx, const char* pMode, D3DXVECTOR3 pos)
 //======================================================================== 
 // 3Dパーティクルの位置取得
 //======================================================================== 
-D3DXVECTOR3* GetParticlePos(void)
+Paticle3D* GetParticlePos(void)
 {
-	return &g_aPaticle3D[0].pos;
+	return &g_aPaticle3D[0];
 }

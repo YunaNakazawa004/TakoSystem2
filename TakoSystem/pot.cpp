@@ -7,6 +7,7 @@
 #include "pot.h"
 #include "debugproc.h"
 #include "meshring.h"
+#include "meshorbit.h"
 #include "input.h"
 #include "esa.h"
 #include "ui_esa.h"
@@ -206,6 +207,7 @@ void UpdatePot(void)
 				{// ƒ^ƒR‚Â‚Ú‚É“ü‚ê‚Ä‚éÅ’†
 					pEsa[nIdx].bUse = false;
 					pEsa[nIdx].bOrbit = false;
+					DeleteMeshOrbit(pEsa[nIdx].nOrbitIdx);
 					pEsa[nIdx].nOrbitIdx = -1;
 				}
 			}

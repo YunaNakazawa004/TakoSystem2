@@ -531,6 +531,7 @@ void UpdateComputer(void)
 							Esa* pEsa = GetEsa();
 							pEsa[nIdx].bUse = false;
 							pEsa[nIdx].bOrbit = false;
+							DeleteMeshOrbit(pEsa[nIdx].nOrbitIdx);
 							pEsa[nIdx].nOrbitIdx = -1;
 
 							pComputer->nFoodCount++;
@@ -773,6 +774,7 @@ void UpdateComputer(void)
 				{// ƒ^ƒR‚Â‚Ú‚É“ü‚ê‚Ä‚éÅ’†‚¶‚á‚È‚¢
 					pEsa[nIdx].bUse = false;
 					pEsa[nIdx].bOrbit = false;
+					DeleteMeshOrbit(pEsa[nIdx].nOrbitIdx);
 					pEsa[nIdx].nOrbitIdx = -1;
 
 					pComputer->nFoodCount++;
