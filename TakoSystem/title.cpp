@@ -22,6 +22,7 @@
 #define	MAX_TITLE	(8)	// タイトルで表示するテクスチャの最大数
 #define	RANKING_DELEY	(1500)	// ランキング移行に掛かる時間（25秒）
 #define	CLEAR_DELEY	(60)	// 登場→消滅にかかる時間
+#define	CURSOR_DELEY	(20)	// CURSOR移動にかかる時間
 #define	ENTRY_DELEY	(90)	// 登場→消滅→再登場までにかかる時間
 #define	TITLE_DELEY_MAX	(500.0f)	// タイトルの最大数
 
@@ -35,8 +36,10 @@ int g_PlayerSelect = 1;	// プレイヤーの人数
 
 //TITLECURSOR g_Cursor;
 int g_CursorPos;	// カーソルの位置情報
+int g_CursorDeley;	// カーソルの表示時間
 
 bool g_bTestTitle = true;
+bool g_CursorSwitch;	// カーソルの切り替え処理
 
 const char* c_apFilenameTitle[] =
 {
@@ -62,6 +65,8 @@ void InitTitle(void)
 	g_TitleDeley = 0.0f;		// ディレイの値を初期化	g_PressEnterDeley = 0;
 
 	g_CursorPos = 0;			// カーソルの位置を初期化
+	g_CursorDeley = 0;
+	g_CursorSwitch = false;
 
 	int nCamera = rand() % 6;	// カメラの位置設定
 	int nVecR = rand() % 5;		// カメラの角度設定
@@ -303,6 +308,27 @@ void UpdateTitle(void)
 #endif 
 #endif
 
+	if (((GetJoypadStick(0, JOYKEY_LEFTSTICK_UP, NULL, NULL) == true) || 
+		(GetJoypadStick(0, JOYKEY_LEFTSTICK_DOWN, NULL, NULL) == true) || 
+		(GetJoypadStick(0, JOYKEY_LEFTSTICK_LEFT, NULL, NULL) == true) || 
+		(GetJoypadStick(0, JOYKEY_LEFTSTICK_RIGHT, NULL, NULL) == true)) && g_CursorSwitch == false)
+	{
+		g_CursorDeley = CURSOR_DELEY;
+		g_CursorSwitch = true;
+	}
+	else
+	{
+		g_CursorDeley++;
+		if ((GetJoypadStick(0, JOYKEY_LEFTSTICK_UP, NULL, NULL) == false) &&
+			(GetJoypadStick(0, JOYKEY_LEFTSTICK_DOWN, NULL, NULL) == false) &&
+			(GetJoypadStick(0, JOYKEY_LEFTSTICK_LEFT, NULL, NULL) == false) &&
+			(GetJoypadStick(0, JOYKEY_LEFTSTICK_RIGHT, NULL, NULL) == false))
+		{
+			g_CursorSwitch = false;
+		}
+
+	}
+
 	// CPUの更新処理
 	UpdateComputer();
 
@@ -501,22 +527,22 @@ void UpdateTitle(void)
 	g_pVtxBuffTitle->Unlock();
 
 	if ((GetKeyboardTrigger(DIK_W) || GetJoypadTrigger(0, JOYKEY_UP) ||
-		GetJoypadStick(0, JOYKEY_LEFTSTICK_UP, NULL, NULL) == true))
+		(GetJoypadStick(0, JOYKEY_LEFTSTICK_UP, NULL, NULL) == true && (g_CursorDeley % CURSOR_DELEY == 0))))
 	{// カーソル下移動
 
 		g_CursorPos--;
 
-		if (g_CursorPos < 0) g_CursorPos = TITLECURSOR_PLAYER_SELECT;
+		if (g_CursorPos < 0) g_CursorPos = TITLECURSOR_PLAY_START;
 		PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
 		if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 	}
 	else if ((GetKeyboardTrigger(DIK_S) || GetJoypadTrigger(0, JOYKEY_DOWN) ||
-		GetJoypadStick(0, JOYKEY_LEFTSTICK_DOWN, NULL, NULL) == true))
+		(GetJoypadStick(0, JOYKEY_LEFTSTICK_DOWN, NULL, NULL) == true && (g_CursorDeley % CURSOR_DELEY == 0))))
 	{// カーソル上移動
 
 		g_CursorPos++;
 
-		if (g_CursorPos >= TITLECURSOR_MAX) g_CursorPos = TITLECURSOR_PLAY_START;
+		if (g_CursorPos >= TITLECURSOR_MAX) g_CursorPos = TITLECURSOR_PLAYER_SELECT;
 		PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
 		if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 	}
@@ -525,7 +551,7 @@ void UpdateTitle(void)
 	{
 		if ((GetKeyboardTrigger(DIK_A) || GetJoypadTrigger(0, JOYKEY_LEFT) ||
 			GetJoypadStick(0, JOYKEY_LEFTSTICK_LEFT, NULL, NULL) == true)
-			&& g_PlayerSelect > 1)
+			&& g_PlayerSelect > 1  && (g_CursorDeley % CURSOR_DELEY == 0))
 		{
 
 			g_PlayerSelect--;
@@ -533,9 +559,9 @@ void UpdateTitle(void)
 			PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
 			if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 		}
-		else if ((GetKeyboardTrigger(DIK_D) || GetJoypadTrigger(0, JOYKEY_RIGHT) ||
+		else if ((GetKeyboardTrigger(DIK_D) && (g_CursorDeley % CURSOR_DELEY == 0) || GetJoypadTrigger(0, JOYKEY_RIGHT) ||
 			GetJoypadStick(0, JOYKEY_LEFTSTICK_RIGHT, NULL, NULL) == true)
-			&& g_PlayerSelect < MAX_PLAYER)
+			&& g_PlayerSelect < MAX_PLAYER && (g_CursorDeley % CURSOR_DELEY == 0))
 		{
 
 			g_PlayerSelect++;
