@@ -71,7 +71,7 @@ void InitTitle(void)
 	int nCamera = rand() % 6;	// カメラの位置設定
 	int nVecR = rand() % 5;		// カメラの角度設定
 
-
+	g_PressEnterDeley = 0;
 
 
 	for (int nCntTexture = 0; nCntTexture < sizeof c_apFilenameTitle / sizeof(c_apFilenameTitle[0]); nCntTexture++)

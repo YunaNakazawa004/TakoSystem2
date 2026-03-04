@@ -577,20 +577,22 @@ void UpdateRanking(void)
 		}
 
 		SetConfetti(300,/*pos*/{ float(rand() % 600 - 300),200.0f,float(rand() % 300 - 150) },/*rot*/{ (rand() % 628 - 314) / 100.0f, (rand() % 628 - 314) / 100.0f, (rand() % 628 - 314) / 100.0f }, D3DXVECTOR3(0.0f, -1.0f, 0.0f), (rand() % 150 + 50) / 100.0f, (rand() % 300 + 150) / 100.0f, 0.00f, D3DXCOLOR(r, g, b, 1.0f));
+		
+		// 一定時間経過ORキー入力
+		if ((GetKeyboardTrigger(DIK_RETURN) == true ||
+			GetJoypadTrigger(0, JOYKEY_START) == true ||
+			GetJoypadTrigger(0, JOYKEY_A) == true)
+			&& pFade == FADE_NONE)
+		{// 決定キー（ENTERキー）が押された
+			//if (g_nRankDeley < TITLE_DELEY)
+			//{// クリックで反応
+			//	PlaySound(SOUND_LABEL_SE_SCORE);	// 再生したいサウンドを指定
+			//}
+			SetFade(MODE_TITLE);
+		}
 	}
 
-	// 一定時間経過ORキー入力
-	if ((GetKeyboardTrigger(DIK_RETURN) == true ||
-		GetJoypadTrigger(0, JOYKEY_START) == true ||
-		GetJoypadTrigger(0, JOYKEY_A) == true)
-		&& pFade == FADE_NONE)
-	{// 決定キー（ENTERキー）が押された
-		//if (g_nRankDeley < TITLE_DELEY)
-		//{// クリックで反応
-		//	PlaySound(SOUND_LABEL_SE_SCORE);	// 再生したいサウンドを指定
-		//}
-		SetFade(MODE_TITLE);
-	}
+	
 }
 
 //=======================================
