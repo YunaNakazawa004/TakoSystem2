@@ -406,7 +406,7 @@ void UpdateUiResultGetScore(void)
 			}
 
 			// ˆêŒ…‚ÍˆêŒ…‚¾‚¯•\¦‚³‚ê‚é‚æ‚¤‚Éİ’è
-			if		(nCntPolygon <  nDigit)
+			if		(nCntPolygon <  nDigit/*&& g_aResultGSPolygon[nIdx].bDisp == false*/)
 			{// Œ…”‚æ‚è‚à¬‚³‚¢ê‡
 
 				g_aResultGSPolygon[nIdx].bDisp = true;
