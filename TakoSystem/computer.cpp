@@ -31,7 +31,7 @@
 #define INERTIA_MOVE			(0.2f)									// 移動の慣性
 #define DASH_MOVE				(0.01f)									// 高速移動の速さ
 #define DASH_REACH				(10.0f)									// 高速移動のリーチ
-#define SEA_GRAVITY				(-0.02f)								// 重力
+#define GRAVITY					(-0.45f)								// 重力
 #define MAX_MOVE				(10.0f)									// 移動の制限
 #define INERTIA_ANGLE			(0.1f)									// 角度の慣性
 #define POS_ERROR				(10.0f)									// 位置の誤差
@@ -76,7 +76,7 @@
 #define INK_ENEMY_COUNT_SCORE	(5.0f)									// 敵が複数いるときのスコア
 #define INK_ESA_COUNT			(0.2f)									// 自分のエサが多い
 #define INK_PILLAR_SCORE		(3.0f)									// 柱が近いスコア
-#define INK_BLIND_DIST			(500.0f)								// 墨にかかる距離
+#define INK_BLIND_DIST			(350.0f)								// 墨にかかる距離
 
 #define POT_DISTANCE			(400.0f)								// タコつぼが遠すぎる
 #define POT_ESA_SCORE			(0.4f)									// 自分のエサが多い
@@ -612,9 +612,6 @@ void UpdateComputer(void)
 				pComputer->phys.move.z = -MAX_MOVE;
 			}
 
-			// 重力
-			pComputer->phys.move.y += SEA_GRAVITY;
-
 			if (pComputer->state != CPUSTATE_APPEAR)
 			{// 出現状態以外
 				// 慣性
@@ -695,7 +692,8 @@ void UpdateComputer(void)
 
 			if (pComputer->phys.pos.y > *GetWaterSurf_Height() - CPU_HEIGHT)
 			{// 上											  
-				pComputer->phys.pos.y = *GetWaterSurf_Height() - CPU_HEIGHT;
+				// 重力
+				pComputer->phys.move.y += GRAVITY;
 
 				if (nCounter % RIPPLE_COUNT == 0)
 				{// 定期的に波紋
@@ -703,6 +701,9 @@ void UpdateComputer(void)
 						D3DXVECTOR2(24.0f, 1.0f), D3DXVECTOR2(10.0f, 7.0f), D3DXCOLOR(WHITE_VTX.r, WHITE_VTX.g, WHITE_VTX.b, 0.5f));
 				}
 			}
+
+			// 墨の当たり判定
+			CollisionInk(pComputer->phys.pos, &pComputer->bBlinded, &pComputer->nBlindCounter, pComputer->nIdx);
 
 			if (pComputer->bBlinded == true)
 			{// 視界が悪そうなエフェクト
@@ -1009,12 +1010,9 @@ void InkAttack(Computer* pComputer)
 	}
 
 	// 墨を吐く処理
-	SetParticle3D(14, 30, pComputer->phys.pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pComputer->phys.rot.x, pComputer->phys.rot.y - D3DX_PI, pComputer->phys.rot.z), 4.0f, 200, 8.0f, 0.06f, EFFECTTYPE_OCTOINK);
-	SetParticle3D(14, 30, pComputer->phys.pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pComputer->phys.rot.x, pComputer->phys.rot.y - D3DX_PI, pComputer->phys.rot.z), 4.0f, 200, 8.0f, 0.06f, EFFECTTYPE_OCTOINK);
-	SetParticle3D(14, 30, pComputer->phys.pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pComputer->phys.rot.x, pComputer->phys.rot.y - D3DX_PI, pComputer->phys.rot.z), 4.0f, 200, 8.0f, 0.06f, EFFECTTYPE_OCTOINK);
-
-	// 墨の当たり判定
-	CollisionInk(pComputer->nIdx, true, pComputer->phys.pos);
+	SetParticle3D(14, 30, pComputer->phys.pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pComputer->phys.rot.x, pComputer->phys.rot.y - D3DX_PI, pComputer->phys.rot.z), 4.0f, 200, 8.0f, 0.06f, EFFECTTYPE_OCTOINK, pComputer->nIdx);
+	SetParticle3D(14, 30, pComputer->phys.pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pComputer->phys.rot.x, pComputer->phys.rot.y - D3DX_PI, pComputer->phys.rot.z), 4.0f, 200, 8.0f, 0.06f, EFFECTTYPE_OCTOINK, pComputer->nIdx);
+	SetParticle3D(14, 30, pComputer->phys.pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pComputer->phys.rot.x, pComputer->phys.rot.y - D3DX_PI, pComputer->phys.rot.z), 4.0f, 200, 8.0f, 0.06f, EFFECTTYPE_OCTOINK, pComputer->nIdx);
 
 	// 墨吐きモーション
 	SetMotionComputer(pComputer->nIdx, MOTIONTYPE_INK, true, 20);
@@ -2592,46 +2590,24 @@ Model_Info* GetTakoModel(void)
 //=============================================================================
 // 墨吐きの当たり判定
 //=============================================================================
-void CollisionInk(int nIdx, bool bCPU, D3DXVECTOR3 pos)
+void CollisionInk(D3DXVECTOR3 pos, bool* bBlind, int* pCounter, int nIdx)
 {
-	for (int nCntEnemy = 0; nCntEnemy < MAX_COMPUTER; nCntEnemy++)
+	Paticle3D* pParticle3D = GetParticlePos();
+
+	for (int nCntParitcle = 0; nCntParitcle < MAX_SET_PARTCL3D; nCntParitcle++, pParticle3D++)
 	{
-		Computer* pEnemy = &g_aComputer[nCntEnemy];
-
-		if (pEnemy->bUse == false)
-		{// 使用していない
+		if (pParticle3D->bUse == false || pParticle3D->effecttype != EFFECTTYPE_OCTOINK ||
+			pParticle3D->nParentIdx == nIdx)
+		{// 使ってないまたはタコ墨じゃないまたは親のもの
 			continue;
 		}
 
-		if (pEnemy->nIdx == nIdx && bCPU == true)
-		{// 自分自身は無視
-			continue;
-		}
-
-		D3DXVECTOR3 dist = pEnemy->phys.pos - pos;
+		D3DXVECTOR3 dist = pParticle3D->pos - pos;
 
 		if (D3DXVec3Length(&dist) < INK_BLIND_DIST)
 		{// 墨の範囲内
-			pEnemy->bBlinded = true;
-			pEnemy->nBlindCounter = ONE_SECOND * 3;
-		}
-	}
-
-	Player* pPlayer = GetPlayer();
-
-	for (int nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++, pPlayer++)
-	{
-		if (nCntPlayer == nIdx && bCPU == false)
-		{// 自分自身は無視
-			continue;
-		}
-
-		D3DXVECTOR3 dist = pPlayer->pos - pos;
-
-		if (D3DXVec3Length(&dist) < INK_BLIND_DIST)
-		{// 墨の範囲内
-			pPlayer->bBlind = true;
-			pPlayer->nBlindCounter = ONE_SECOND * 3;
+			*bBlind = true;
+			*pCounter = ONE_SECOND * 3;
 		}
 	}
 }
