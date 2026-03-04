@@ -277,7 +277,7 @@ void UpdatePlayer(void)
 				}
 				else if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_S) == true : GetKeyboardPress(DIK_DOWN) == true) || GetJoypadPress(nCntPlayer, JOYKEY_DOWN) == true)
 				{// 手前に移動
-					if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_A) == true :GetKeyboardPress(DIK_LEFT) == true) || GetJoypadPress(nCntPlayer, JOYKEY_LEFT) == true)
+					if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_A) == true : GetKeyboardPress(DIK_LEFT) == true) || GetJoypadPress(nCntPlayer, JOYKEY_LEFT) == true)
 					{// 左手前に移動
 						pPlayer->move.x += sinf(-D3DX_PI * 0.25f - pCamera->rot.y) * MOVEMENT.x;
 						pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * -MOVEMENT.y;
@@ -341,6 +341,19 @@ void UpdatePlayer(void)
 				{// プレイヤーの入力がない
 					pPlayer->bMove = false;
 				}
+			}
+
+			if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_LSHIFT) == true : GetKeyboardPress(DIK_NUMPAD2) == true) || GetJoypadPress(nCntPlayer, JOYKEY_LEFT_SHOULDER) == true)
+			{// 上昇
+				pPlayer->move.y += -MOVEMENT.y;
+
+				pPlayer->bMove = true;
+			}
+			else if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_LCONTROL) == true : GetKeyboardPress(DIK_NUMPAD0) == true) || GetJoypadPress(nCntPlayer, JOYKEY_RIGHT_SHOULDER) == true)
+			{// 下降
+				pPlayer->move.y += MOVEMENT.y;
+
+				pPlayer->bMove = true;
 			}
 
 			switch (pPlayer->TentacleState)
