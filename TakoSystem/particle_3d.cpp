@@ -11,10 +11,6 @@
 #include "input.h"
 #include "player.h"
 
-// マクロ定義 ==================================================
-
-#define MAX_SET_PARTCL3D		(5096)	// パーティクルの最大数
-
 // グローバル宣言 ==============================================
 
 Paticle3D g_aPaticle3D[MAX_SET_PARTCL3D];		// 3Dパーティクルの情報
@@ -53,6 +49,8 @@ void InitParticle3D(void)
 		g_aPaticle3D[nCntPaticle].bUse = false;								// 使用していない状況に設定
 
 		g_aPaticle3D[nCntPaticle].effecttype = EFFECTTYPE_NORMAL;			// エフェクトタイプを初期化
+
+		g_aPaticle3D[nCntPaticle].nParentIdx = -1;							// 親のインデックスを初期化
 	}
 
 }
@@ -141,6 +139,7 @@ void UpdateParticle3D(void)
 		if (g_aPaticle3D[nCntPaticle].nParticleLifeV <= g_aPaticle3D[nCntPaticle].nParticleLifeO - g_aPaticle3D[nCntPaticle].nEffectLife)
 		{// 寿命が尽きた
 
+			g_aPaticle3D[nCntPaticle].nParentIdx = -1;							// 親のインデックスを初期化
 			g_aPaticle3D[nCntPaticle].bUse = false;		// 使用していない状態に設定
 		}
 	}
@@ -159,7 +158,7 @@ void DrawParticle3D(void)
 //========================================================================
 int SetParticle3D
 (int nValue, int nLifeP, D3DXVECTOR3 posP, D3DXCOLOR col, D3DXVECTOR3 vec,   				// パーティクル(位置, 色, 生成量, 寿命) (移動方向, 移動速度)
-	float fSpeedE, int nLifeE, float fRadiusE, float faddRadiusE, EFFECTTYPE effecttype)	// エフェクト(移動速度, 寿命)(大きさ, 大きさの加算量, 用途)			     							
+	float fSpeedE, int nLifeE, float fRadiusE, float faddRadiusE, EFFECTTYPE effecttype, int nParentIdx)	// エフェクト(移動速度, 寿命)(大きさ, 大きさの加算量, 用途)			     							
 {
 	int Radian = 400;		//範囲
 
@@ -194,6 +193,8 @@ int SetParticle3D
 			g_aPaticle3D[nCntParticle].bUse = true;							// 使用状態をtrueに設定
 
 			g_aPaticle3D[nCntParticle].effecttype = effecttype;				// 用途を設定
+
+			g_aPaticle3D[nCntParticle].nParentIdx = nParentIdx;
 
 			return nCntParticle;	// ループを抜ける
 		}

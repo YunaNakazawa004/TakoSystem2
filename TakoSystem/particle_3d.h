@@ -10,6 +10,10 @@
 
 #include "effect_3d.h"		// 3Dエフェクトヘッダー
 
+// マクロ定義 ==================================================
+
+#define MAX_SET_PARTCL3D		(5096)	// パーティクルの最大数
+
 // 構造体の定義 ================================================
 
 // 3Dパーティクルの構造体
@@ -42,6 +46,8 @@ typedef struct
 	// 状態
 	bool bUse;						// 使用状況
 
+	int nParentIdx;					// 親のインデックス
+
 }Paticle3D;
 
 // プロトタイプ宣言 ============================================
@@ -56,7 +62,8 @@ int SetParticle3D				// 3Dパーティクルの設定処理
     D3DXVECTOR3 posP, D3DXCOLOR col, D3DXVECTOR3 vec,   // パーティクル(位置, 移動方向, 移動速度)
     float fSpeedE, int nLifeE,                          // エフェクト(移動速度, 寿命)
     float fRadiusE, float faddRadiusE,                  // エフェクト(大きさ, 大きさの加算量)
-    EFFECTTYPE effecttype);                             // エフェクト(用途)
+    EFFECTTYPE effecttype,
+	int nParentIdx);                             // エフェクト(用途)
 
 void SetPosionParticle3D		             // 3Dパーティクルの位置設定処理
 (int nIdx,                                   // インデックス, 

@@ -29,7 +29,7 @@
 //*****************************************************************************
 #define MOVEMENT				(D3DXVECTOR3(0.3f, 0.3f, 0.3f))			// 移動量
 #define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// 向き移動量
-#define SEA_GRAVITY				(-0.02f)								// 重力
+#define GRAVITY					(-0.45f)								// 重力
 #define INERTIA_MOVE			(0.05f)									// 移動の慣性
 #define DASH_MOVE				(0.04f)									// 高速移動の速さ
 #define DASH_RATE				(0.15f)									// 高速移動の速さ
@@ -277,7 +277,7 @@ void UpdatePlayer(void)
 				}
 				else if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_S) == true : GetKeyboardPress(DIK_DOWN) == true) || GetJoypadPress(nCntPlayer, JOYKEY_DOWN) == true)
 				{// 手前に移動
-					if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_A) == true :GetKeyboardPress(DIK_LEFT) == true) || GetJoypadPress(nCntPlayer, JOYKEY_LEFT) == true)
+					if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_A) == true : GetKeyboardPress(DIK_LEFT) == true) || GetJoypadPress(nCntPlayer, JOYKEY_LEFT) == true)
 					{// 左手前に移動
 						pPlayer->move.x += sinf(-D3DX_PI * 0.25f - pCamera->rot.y) * MOVEMENT.x;
 						pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * -MOVEMENT.y;
@@ -341,6 +341,19 @@ void UpdatePlayer(void)
 				{// プレイヤーの入力がない
 					pPlayer->bMove = false;
 				}
+			}
+
+			if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_LSHIFT) == true : GetKeyboardPress(DIK_NUMPAD2) == true) || GetJoypadPress(nCntPlayer, JOYKEY_LEFT_SHOULDER) == true)
+			{// 上昇
+				pPlayer->move.y += -MOVEMENT.y;
+
+				pPlayer->bMove = true;
+			}
+			else if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_LCONTROL) == true : GetKeyboardPress(DIK_NUMPAD0) == true) || GetJoypadPress(nCntPlayer, JOYKEY_RIGHT_SHOULDER) == true)
+			{// 下降
+				pPlayer->move.y += MOVEMENT.y;
+
+				pPlayer->bMove = true;
 			}
 
 			switch (pPlayer->TentacleState)
@@ -529,9 +542,6 @@ void UpdatePlayer(void)
 
 			//PrintDebugProc("プレイヤーのmove ( %f %f %f )\n", pPlayer->move.x, pPlayer->move.y, pPlayer->move.z);
 
-			// 重力
-			pPlayer->move.y += SEA_GRAVITY;
-
 			if (CollisionObjectArea(pPlayer->pos) == false)
 			{// 安地外のときに渦潮
 				MoveOceanCurrents(&pPlayer->pos);
@@ -588,7 +598,8 @@ void UpdatePlayer(void)
 
 			if (pPlayer->pos.y > *GetWaterSurf_Height() - (PLAYER_HEIGHT * 0.5f))
 			{// 上									  
-				pPlayer->pos.y = *GetWaterSurf_Height() - (PLAYER_HEIGHT * 0.5f);
+				// 重力
+				pPlayer->move.y += GRAVITY;
 
 				if (nCounter % RIPPLE_COUNT == 0)
 				{// 定期的に波紋
@@ -598,6 +609,9 @@ void UpdatePlayer(void)
 			}
 
 			//PrintDebugProc("fAngle : %f", pCamera->fAngle);
+
+			// 墨の当たり判定
+			CollisionInk(pPlayer->pos, &pPlayer->bBlind, &pPlayer->nBlindCounter, pPlayer->nIdx + 100);
 
 			pPlayer->fFogStart = (pPlayer->pos.y * 0.4f + (-pCamera->fAngle * 0.2f)) + FOGS_MIN;
 
@@ -721,11 +735,9 @@ void UpdatePlayer(void)
 
 				SetMotionPlayer(nCntPlayer, MOTIONTYPE_INK, true, 20);
 
-				SetParticle3D(14, 30, pPlayer->pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pPlayer->rot.x, pPlayer->rot.y - D3DX_PI, pPlayer->rot.z), 4.0f, 420, 8.0f, 0.06f, EFFECTTYPE_OCTOINK);
-				SetParticle3D(14, 30, pPlayer->pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pPlayer->rot.x, pPlayer->rot.y - D3DX_PI, pPlayer->rot.z), 4.0f, 420, 8.0f, 0.06f, EFFECTTYPE_OCTOINK);
-				SetParticle3D(14, 30, pPlayer->pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pPlayer->rot.x, pPlayer->rot.y - D3DX_PI, pPlayer->rot.z), 4.0f, 420, 8.0f, 0.06f, EFFECTTYPE_OCTOINK);
-
-				CollisionInk(nCntPlayer, false, pPlayer->pos);
+				SetParticle3D(14, 30, pPlayer->pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pPlayer->rot.x, pPlayer->rot.y - D3DX_PI, pPlayer->rot.z), 4.0f, 420, 8.0f, 0.06f, EFFECTTYPE_OCTOINK, pPlayer->nIdx + 100);
+				SetParticle3D(14, 30, pPlayer->pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pPlayer->rot.x, pPlayer->rot.y - D3DX_PI, pPlayer->rot.z), 4.0f, 420, 8.0f, 0.06f, EFFECTTYPE_OCTOINK, pPlayer->nIdx + 100);
+				SetParticle3D(14, 30, pPlayer->pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pPlayer->rot.x, pPlayer->rot.y - D3DX_PI, pPlayer->rot.z), 4.0f, 420, 8.0f, 0.06f, EFFECTTYPE_OCTOINK, pPlayer->nIdx + 100);
 
 				// クールダウンを設定
 				pPlayer->nInkCooldown = INK_CT;
