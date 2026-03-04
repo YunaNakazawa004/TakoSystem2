@@ -720,9 +720,9 @@ void UpdatePlayer(void)
 
 				SetMotionPlayer(nCntPlayer, MOTIONTYPE_INK, true, 20);
 
-				SetParticle3D(14, 30, pPlayer->pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pPlayer->rot.x, pPlayer->rot.y - D3DX_PI, pPlayer->rot.z), 4.0f, 200, 8.0f, 0.06f, EFFECTTYPE_OCTOINK);
-				SetParticle3D(14, 30, pPlayer->pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pPlayer->rot.x, pPlayer->rot.y - D3DX_PI, pPlayer->rot.z), 4.0f, 200, 8.0f, 0.06f, EFFECTTYPE_OCTOINK);
-				SetParticle3D(14, 30, pPlayer->pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pPlayer->rot.x, pPlayer->rot.y - D3DX_PI, pPlayer->rot.z), 4.0f, 200, 8.0f, 0.06f, EFFECTTYPE_OCTOINK);
+				SetParticle3D(14, 30, pPlayer->pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pPlayer->rot.x, pPlayer->rot.y - D3DX_PI, pPlayer->rot.z), 4.0f, 420, 8.0f, 0.06f, EFFECTTYPE_OCTOINK);
+				SetParticle3D(14, 30, pPlayer->pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pPlayer->rot.x, pPlayer->rot.y - D3DX_PI, pPlayer->rot.z), 4.0f, 420, 8.0f, 0.06f, EFFECTTYPE_OCTOINK);
+				SetParticle3D(14, 30, pPlayer->pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pPlayer->rot.x, pPlayer->rot.y - D3DX_PI, pPlayer->rot.z), 4.0f, 420, 8.0f, 0.06f, EFFECTTYPE_OCTOINK);
 
 				CollisionInk(nCntPlayer, false, pPlayer->pos);
 

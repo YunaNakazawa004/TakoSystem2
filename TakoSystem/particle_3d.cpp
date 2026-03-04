@@ -72,8 +72,8 @@ void InitParticle3D(void)
 		g_aPaticle3D[nCntPaticle].fVecMoveParticle = { .0f,0.0f,0.0f };		// パーティクルの移動方向を初期化
 
 		g_aPaticle3D[nCntPaticle].nParticleValue = 0;						// パーティクルの生成量を初期化
-		g_aPaticle3D[nCntPaticle].nParticleLifeO = 0;						// パーティクルの寿命を初期化
-		g_aPaticle3D[nCntPaticle].nParticleLifeV = 0;						// パーティクルの寿命の最大値の初期化	
+		g_aPaticle3D[nCntPaticle].nParticleLifeO = 0;						// パーティクルの寿命の最大値の初期化
+		g_aPaticle3D[nCntPaticle].nParticleLifeV = 0;						// パーティクルの寿命を初期化
 
 		// エフェクト
 		g_aPaticle3D[nCntPaticle].fSpeedEffect = 0.0f;						// エフェクトの移動速度を初期化
@@ -123,8 +123,12 @@ void UpdateParticle3D(void)
 				// パーティクル本体の位置を移動
 				g_aPaticle3D[nCntPaticle].pos += (g_aPaticle3D[nCntPaticle].fVecMoveParticle * g_aPaticle3D[nCntPaticle].fSpeedPaticle);
 
+				if (g_aPaticle3D[nCntPaticle].nParticleLifeV <= 0)
+				{ // パーティクルが出ない
+
+				}
 				// パーティクルの生成
-				if (g_aPaticle3D[nCntPaticle].nParticleLifeV < g_aPaticle3D[nCntPaticle].nParticleLifeO / 6)
+				else if (g_aPaticle3D[nCntPaticle].nParticleLifeV < g_aPaticle3D[nCntPaticle].nParticleLifeO / 6)
 				{ //発射から一定時間経過
 
 					for (int nCntAppear = 0; nCntAppear < g_aPaticle3D[nCntPaticle].nParticleValue; nCntAppear++)
@@ -172,7 +176,7 @@ void UpdateParticle3D(void)
 			g_aPaticle3D[nCntPaticle].nParticleLifeV--;	// 寿命を減らす
 		}
 
-		if (g_aPaticle3D[nCntPaticle].nParticleLifeV <= 0)
+		if (g_aPaticle3D[nCntPaticle].nParticleLifeV <= g_aPaticle3D[nCntPaticle].nParticleLifeO - g_aPaticle3D[nCntPaticle].nEffectLife)
 		{// 寿命が尽きた
 
 			g_aPaticle3D[nCntPaticle].bUse = false;		// 使用していない状態に設定
