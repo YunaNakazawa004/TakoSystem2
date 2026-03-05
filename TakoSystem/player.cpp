@@ -446,6 +446,8 @@ void UpdatePlayer(void)
 				if (pPlayer->aModel[2].scale.y > 1.0f)
 				{// GŽè‚ð’Z‚­‚·‚é
 					pPlayer->aModel[2].scale.y += (1.0f - pPlayer->aModel[2].scale.y) * 0.5f;
+
+					PlaySound(SOUND_SE_TENTACLE_RETRACT);
 				}
 				else
 				{// Œ³‚Ì’·‚³‚É–ß‚·
@@ -469,6 +471,7 @@ void UpdatePlayer(void)
 				pPlayer->vecX.z += (0.0f - pPlayer->vecX.z) * DASH_MOVE;
 
 				SetVibration(nCntPlayer, 1000, 1300, 1);
+				PlaySound(SOUND_SE_HIGHSPEED);
 
 				if (pPlayer->vecX.x < MOVE_ERROR && pPlayer->vecX.x > -MOVE_ERROR &&
 					pPlayer->vecX.y < MOVE_ERROR && pPlayer->vecX.y > -MOVE_ERROR &&
@@ -510,6 +513,8 @@ void UpdatePlayer(void)
 				{// •’Ê‚ÉˆÚ“®‚µ‚Ä‚¢‚é‚Æ‚«
 					pPlayer->state = PLAYERSTATE_MOVE;
 					SetMotionPlayer(nCntPlayer, MOTIONTYPE_MOVE, true, 20);
+
+					PlaySound(SOUND_SE_SWIM);
 				}
 				else if (pPlayer->bMove == false && pPlayer->state != PLAYERSTATE_DASH &&
 					pPlayer->state != PLAYERSTATE_INK && pPlayer->TentacleState == PLTENTACLESTATE_NORMAL)
@@ -611,6 +616,8 @@ void UpdatePlayer(void)
 				{// ‚Â‚¢‚Ä‚È‚©‚Á‚½ê‡
 					SetSprayCircle(D3DXVECTOR3(pPlayer->pos.x, pPlayer->pos.y + 30.0f, pPlayer->pos.z), 
 						D3DXCOLOR(0.75f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_CIRCLE);
+				
+					PlaySound(SOUND_SE_LANDING);
 				}
 
 				pPlayer->bLand = true;
@@ -764,6 +771,8 @@ void UpdatePlayer(void)
 
 				// ƒN[ƒ‹ƒ_ƒEƒ“‚ðÝ’è
 				pPlayer->nTentacleCooldown = TENTACLE_CT;
+
+				PlaySound(SOUND_SE_TENTACLE_STRETCH);
 			}
 
 			if (((nCntPlayer == 0 ? GetKeyboardPress(DIK_Q) == true : GetKeyboardPress(DIK_RSHIFT) == true) ||

@@ -11,6 +11,7 @@
 #include "input.h"
 #include "esa.h"
 #include "ui_esa.h"
+#include "sound.h"
 
 //*****************************************************************************
 // ƒ}ƒNƒ’è‹`
@@ -440,6 +441,8 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 
 						Enqueue(&pPot->esaQueue, nIdx);
 						pPot->nFood++;
+
+						PlaySound(SOUND_SE_INBAIT);
 					}
 				}
 				else if (pPot->nFood > 0 && pPlayer->Potstate != POTSTATE_HIDE)
@@ -463,6 +466,8 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 								//pPlayer->nFood++;
 							}
 						}
+
+						PlaySound(SOUND_SE_OUTBAIT);
 					}
 					else if (bTentacle == false)
 					{// ‚à‚µGè‚ğL‚Î‚µ‚Ä‚È‚¢
