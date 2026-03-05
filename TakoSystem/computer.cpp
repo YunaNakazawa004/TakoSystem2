@@ -680,7 +680,7 @@ void UpdateComputer(void)
 			D3DXVECTOR2 XZdist = D3DXVECTOR2(pComputer->phys.pos.x, pComputer->phys.pos.z);
 			float fDist = D3DXVec2Length(&XZdist);
 
-			if (fDist > OUTCYLINDER_RADIUS + 30.0f)
+			if (fDist > OUTCYLINDER_RADIUS + ((OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) / 2))
 			{// ˆÚ“®§ŒÀ
 				pComputer->phys.fAngleY = atan2f(pComputer->phys.pos.x, pComputer->phys.pos.z);
 				pComputer->state = CPUSTATE_BACKAREA;
