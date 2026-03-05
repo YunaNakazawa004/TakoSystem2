@@ -11,7 +11,7 @@
 // É}ÉNÉçíËã`
 //*****************************************************************************
 #define MOVEMENT				(D3DXVECTOR3(0.5f, 0.5f, 0.5f))			// à⁄ìÆó 
-#define SEAWEED_HEIGHT			(20.0f)									// äCëîÇÃçÇÇ≥
+#define SEAWEED_HEIGHT			(40.0f)									// äCëîÇÃçÇÇ≥
 #define MAX_SEAWEED				(128)									// äCëîÇÃç≈ëÂó 
 
 //*****************************************************************************
@@ -19,7 +19,7 @@
 //*****************************************************************************
 Seaweed g_aSeaweed[MAX_SEAWEED];						// äCëîÇÃèÓïÒ
 Model_Info g_SeaweedModel[SEAWEEDTYPE_MAX];			// äCëîÉÇÉfÉãÇÃèÓïÒ
-const char* c_apFilenameSeaweed[SEAWEEDTYPE_MAX] = 
+const char* c_apFilenameSeaweed[SEAWEEDTYPE_MAX] =
 {
 	"data\\MODEL\\seaweed\\seaweed000.x",
 	"data\\MODEL\\seaweed\\seaweed001.x",
@@ -74,10 +74,8 @@ void InitSeaweed(void)
 		}
 	}
 
-#if 0
 	// ÉâÉìÉ_ÉÄÇ»à íuÇ…ê›íË
 	SetRandomSeaweed(50);
-#endif
 }
 
 //=============================================================================
@@ -223,7 +221,7 @@ void SetSeaweed(D3DXVECTOR3 pos, int nLength)
 		if (pSeaweed->bUse == false)
 		{// égópÇµÇƒÇ¢Ç»Ç¢
 			pSeaweed->pos = pos;
-			pSeaweed->rot = FIRST_POS;
+			pSeaweed->rot = D3DXVECTOR3(0.0f, (float)(rand() % 629 - 314) / 1000.0f, 0.0f);
 			pSeaweed->nIdxSafe = -1;
 			pSeaweed->bUse = true;
 			pSeaweed->nNumModel = nLength;
@@ -244,8 +242,11 @@ void SetSeaweed(D3DXVECTOR3 pos, int nLength)
 					pSeaweed->aModel[nCntModel].posOff = D3DXVECTOR3(0.0f, SEAWEED_HEIGHT, 0.0f);
 				}
 
-				pSeaweed->aModel[nCntModel].rot = FIRST_POS;
-				pSeaweed->aModel[nCntModel].rotOff = FIRST_POS;
+				D3DXVECTOR3 rot = FIRST_POS;
+				rot.y = (float)(rand() % 629 - 314) / 1000.0f;
+
+				pSeaweed->aModel[nCntModel].rot = rot;
+				pSeaweed->aModel[nCntModel].rotOff = rot;
 
 				if (nCntModel != nLength - 1)
 				{// ç≈å„à»äO
@@ -282,10 +283,10 @@ void SetRandomSeaweed(int nAmount)
 		//float fsin = sinf(fAngle);
 
 		pos.x = sinf(fAngle) * (OUTCYLINDER_RADIUS + (((float)(rand() % (int)((OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) / 2) + 1))));
-		pos.y = 0.0f;
+		pos.y = -20.0f;
 		pos.z = cosf(fAngle) * (OUTCYLINDER_RADIUS + (((float)(rand() % (int)((OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) / 2) + 1))));
 
-		int nLength = rand() % 70 + 30;
+		int nLength = rand() % 10 + 40;
 
 		SetSeaweed(pos, nLength);
 	}

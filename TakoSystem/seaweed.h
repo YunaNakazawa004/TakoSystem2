@@ -15,8 +15,8 @@
 //*****************************************************************************4
 typedef enum 
 {
-	SEAWEEDTYPE_BOTTOM,			// 茎
-	SEAWEEDTYPE_TOP,			// 一番上
+	SEAWEEDTYPE_BOTTOM,					// 茎
+	SEAWEEDTYPE_TOP,					// 一番上
 	SEAWEEDTYPE_MAX
 } SEAWEEDTYPE;
 
@@ -25,14 +25,14 @@ typedef enum
 //*****************************************************************************
 typedef struct
 {
-	int nIdx;					// モデルのインデックス
-	int nIdxModelParent;		// 親モデルのインデックス
-	D3DXVECTOR3 pos;			// 位置
-	D3DXVECTOR3 rot;			// 向き
-	D3DXVECTOR3 posOff;			// 位置(オフセット)
-	D3DXVECTOR3 rotOff;			// 向き(オフセット)
-	D3DXMATRIX mtxWorld;		// ワールドマトリックス
-	SEAWEEDTYPE type;			// 種類
+	int nIdx;									// モデルのインデックス
+	int nIdxModelParent;						// 親モデルのインデックス
+	D3DXVECTOR3 pos;							// 位置
+	D3DXVECTOR3 rot;							// 向き
+	D3DXVECTOR3 posOff;							// 位置(オフセット)
+	D3DXVECTOR3 rotOff;							// 向き(オフセット)
+	D3DXMATRIX mtxWorld;						// ワールドマトリックス
+	SEAWEEDTYPE type;							// 種類
 }Seaweed_Model;
 
 //*****************************************************************************
@@ -46,8 +46,8 @@ typedef struct
 	int nIdxSafe;				// 安地インデックス
 	bool bUse;					// 使用しているかどうか
 
-	Seaweed_Model aModel[100];	// モデル(パーツ)
-	int nNumModel;				// モデル(パーツ)の総数
+	Seaweed_Model aModel[MAX_NUMMODEL];	// モデル(パーツ)
+	int nNumModel;						// モデル(パーツ)の総数
 }Seaweed;
 											
 //*****************************************************************************

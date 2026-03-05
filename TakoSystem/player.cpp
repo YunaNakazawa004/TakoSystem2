@@ -591,7 +591,7 @@ void UpdatePlayer(void)
 			D3DXVECTOR2 XZdist = D3DXVECTOR2(pPlayer->pos.x, pPlayer->pos.z);
 			float fDist = D3DXVec2Length(&XZdist);
 
-			if (fDist > OUTCYLINDER_RADIUS + 30.0f)
+			if (fDist > OUTCYLINDER_RADIUS + ((OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) / 2))
 			{// ˆÚ“®§ŒÀ
 				pPlayer->fAngleY = atan2f(pPlayer->pos.x, pPlayer->pos.z);
 				pPlayer->state = PLAYERSTATE_BACKAREA;
@@ -738,7 +738,7 @@ void UpdatePlayer(void)
 			if (((nCntPlayer == 0 ? GetKeyboardPress(DIK_E) == true : (GetKeyboardPress(DIK_END) == true || GetKeyboardPress(DIK_NUMPAD1) == true)) ||
 				GetJoypadShoulder(nCntPlayer, JOYKEY_RIGHTTRIGGER, &nValue) == true)
 				&& pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG && pPlayer->state != PLAYERSTATE_DASH &&
-				pPlayer->nTentacleCooldown == 0)
+				pPlayer->nTentacleCooldown == 0 && pPlayer->pos.y < *GetWaterSurf_Height())
 			{// GŽèL‚Î‚µƒAƒNƒVƒ‡ƒ“
 				pPlayer->TentacleState = PLTENTACLESTATE_TENTACLELONG;
 
@@ -769,7 +769,8 @@ void UpdatePlayer(void)
 			if (((nCntPlayer == 0 ? GetKeyboardPress(DIK_Q) == true : GetKeyboardPress(DIK_RSHIFT) == true) ||
 				/*GetJoypadShoulder(nCntPlayer, JOYKEY_LEFTTRIGGER, &nValue) == true*/
 				GetJoypadPress(nCntPlayer, JOYKEY_RIGHT_SHOULDER) == true)
-				&& pPlayer->state != PLAYERSTATE_INK && pPlayer->nInkCooldown == 0)
+				&& pPlayer->state != PLAYERSTATE_INK && pPlayer->nInkCooldown == 0 && 
+				pPlayer->pos.y < *GetWaterSurf_Height())
 			{// –n“f‚«ƒAƒNƒVƒ‡ƒ“
 				pPlayer->state = PLAYERSTATE_INK;
 
