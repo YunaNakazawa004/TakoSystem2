@@ -130,6 +130,9 @@
     <ClCompile Include="confetti.cpp">
       <Filter>cppファイル</Filter>
     </ClCompile>
+    <ClCompile Include="spray.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h">
@@ -259,6 +262,9 @@
       <Filter>hファイル</Filter>
     </ClInclude>
     <ClInclude Include="confetti.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="spray.h">
       <Filter>hファイル</Filter>
     </ClInclude>
   </ItemGroup>

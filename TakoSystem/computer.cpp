@@ -21,6 +21,7 @@
 #include "camera.h"
 #include "input.h"
 #include "debugproc.h"
+#include "spray.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -147,6 +148,7 @@ void InitComputer(void)
 		pComputer->phys.fAngleX = 0.0f;
 		pComputer->phys.fRadius = CPU_WIDTH;
 		pComputer->phys.fHeight = CPU_HEIGHT;
+		pComputer->bLand = false;
 		pComputer->bUse = false;
 
 		pComputer->nTargetFoodIdx = -1;
@@ -688,6 +690,18 @@ void UpdateComputer(void)
 			if (pComputer->phys.pos.y < 0.0f)
 			{// 底
 				pComputer->phys.pos.y = 0.0f;
+
+				if (pComputer->bLand == false)
+				{// ついてなかった場合
+					SetSprayCircle(D3DXVECTOR3(pComputer->phys.pos.x, pComputer->phys.pos.y + 30.0f, pComputer->phys.pos.z),
+						D3DXCOLOR(0.75f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_0);
+				}
+
+				pComputer->bLand = true;
+			}
+			else
+			{// ついていないとき
+				pComputer->bLand = false;
 			}
 
 			if (pComputer->phys.pos.y > *GetWaterSurf_Height() - CPU_HEIGHT)
@@ -699,6 +713,9 @@ void UpdateComputer(void)
 				{// 定期的に波紋
 					SetMeshRing(D3DXVECTOR3(pComputer->phys.pos.x + (rand() % 6 - 3), *GetWaterSurf_Height(), pComputer->phys.pos.z + (rand() % 6 - 3)), FIRST_POS,
 						D3DXVECTOR2(24.0f, 1.0f), D3DXVECTOR2(10.0f, 7.0f), D3DXCOLOR(WHITE_VTX.r, WHITE_VTX.g, WHITE_VTX.b, 0.5f));
+
+					SetSprayCircle(D3DXVECTOR3(pComputer->phys.pos.x, *GetWaterSurf_Height(), pComputer->phys.pos.z),
+						WHITE_VTX, SPRAYTYPE_0);
 				}
 			}
 
@@ -2499,6 +2516,7 @@ void SetComputer(D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType)
 			pComputer->phys.fAngleX = 0.0f;
 			pComputer->phys.fRadius = CPU_WIDTH;
 			pComputer->phys.fHeight = CPU_HEIGHT;
+			pComputer->bLand = false;
 			pComputer->bUse = true;
 
 			pComputer->nTargetFoodIdx = -1;

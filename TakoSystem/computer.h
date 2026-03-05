@@ -76,6 +76,7 @@ typedef struct
 	CPUTENTACLESTATE TentState;	// 触手の状態
 	Physics phys;				// 物理情報
 	bool bUse;					// 使用しているかどうか
+	bool bLand;					// 地面についているかどうか
 
 	// ターゲット情報
 	int nTargetFoodIdx;			// 狙っているエサ

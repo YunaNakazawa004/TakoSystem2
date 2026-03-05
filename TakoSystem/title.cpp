@@ -17,6 +17,7 @@
 #include "meshorbit.h"	// 消えない
 #include "waterSurf.h"
 #include "computer.h"
+#include "spray.h"
 
 // マクロ定義
 #define	MAX_TITLE	(8)	// タイトルで表示するテクスチャの最大数
@@ -233,6 +234,9 @@ void InitTitle(void)
 	// メッシュフィールドの初期化処理
 	InitMeshField();
 
+	// 飛沫の初期化処理
+	InitSpray();
+
 	// メッシュオービットの初期化処理
 	InitMeshOrbit();
 
@@ -280,6 +284,9 @@ void UninitTitle(void)
 
 	// メッシュフィールドの終了処理
 	UninitMeshField();
+
+	// 飛沫の終了処理
+	UninitSpray();
 
 	// メッシュオービットの終了処理
 	UninitMeshOrbit();
@@ -337,6 +344,9 @@ void UpdateTitle(void)
 
 	// メッシュフィールドの更新処理
 	UpdateMeshField();
+
+	// 飛沫の更新処理
+	UpdateSpray();
 
 	// メッシュオービットの更新処理
 	UpdateMeshOrbit();
@@ -623,6 +633,9 @@ void DrawTitle(void)
 #if 1
 	// メッシュフィールドの描画処理
 	DrawMeshField();
+
+	// 飛沫の描画処理
+	DrawSpray();
 
 	// メッシュオービットの描画処理
 	DrawMeshOrbit();

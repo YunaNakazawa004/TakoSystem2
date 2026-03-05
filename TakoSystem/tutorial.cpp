@@ -35,6 +35,7 @@
 #include "particle_3d.h"
 #include "title.h"
 #include "tutorialtxt.h"
+#include "spray.h"
 
 // マクロ定義
 #define	MAX_TUTORIAL	(3)	// タイトルで表示するテクスチャの最大数
@@ -83,6 +84,9 @@ void InitTutorial(void)
 
 	// 塵の初期化処理
 	InitSeaDust();
+
+	// 飛沫の初期化処理
+	InitSpray();
 
 	// 3Dエフェクトの初期化処理
 	InitEffect3D();
@@ -247,6 +251,9 @@ void UninitTutorial(void)
 	// 塵の終了処理
 	UninitSeaDust();
 
+	// 飛沫の終了処理
+	UninitSpray();
+
 	// 3Dエフェクトの終了処理
 	UninitEffect3D(); 
 
@@ -334,6 +341,9 @@ void UpdateTutorial(void)
 	// 塵の更新処理
 	UpdateSeaDust();
 
+	// 飛沫の更新処理
+	UpdateSpray();
+
 	// 3Dエフェクトの更新処理
 	UpdateEffect3D();
 
@@ -417,6 +427,9 @@ void DrawTutorial(void)
 
 	// 塵の描画処理
 	DrawSeaDust();
+
+	// 飛沫の描画処理
+	DrawSpray();
 
 	// 3Dエフェクトの描画処理
 	DrawEffect3D();

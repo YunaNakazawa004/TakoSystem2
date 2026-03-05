@@ -23,6 +23,7 @@
 #include "sound.h"
 #include "debugproc.h"
 #include "readygo.h"
+#include "spray.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -597,6 +598,18 @@ void UpdatePlayer(void)
 			if (pPlayer->pos.y < 0.0f)
 			{// 底
 				pPlayer->pos.y = 0.0f;
+
+				if (pPlayer->bLand == false)
+				{// ついてなかった場合
+					SetSprayCircle(D3DXVECTOR3(pPlayer->pos.x, pPlayer->pos.y + 30.0f, pPlayer->pos.z), 
+						D3DXCOLOR(0.75f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_0);
+				}
+
+				pPlayer->bLand = true;
+			}
+			else
+			{// ついていないとき
+				pPlayer->bLand = false;
 			}
 
 			if (pPlayer->pos.y > *GetWaterSurf_Height() - (PLAYER_HEIGHT * 0.5f))
@@ -608,6 +621,9 @@ void UpdatePlayer(void)
 				{// 定期的に波紋
 					SetMeshRing(D3DXVECTOR3(pPlayer->pos.x + (rand() % 6 - 3), *GetWaterSurf_Height(), pPlayer->pos.z + (rand() % 6 - 3)), FIRST_POS,
 						D3DXVECTOR2(24.0f, 1.0f), D3DXVECTOR2(10.0f, 7.0f), D3DXCOLOR(WHITE_VTX.r, WHITE_VTX.g, WHITE_VTX.b, 0.5f));
+				
+					SetSprayCircle(D3DXVECTOR3(pPlayer->pos.x, *GetWaterSurf_Height(), pPlayer->pos.z),
+						WHITE_VTX, SPRAYTYPE_0);
 				}
 			}
 

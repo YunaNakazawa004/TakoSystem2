@@ -36,6 +36,7 @@
 
 #include "effect_3d.h"
 #include "particle_3d.h"
+#include "spray.h"
 #include "pause.h"
 #include "input.h"
 #include "fade.h"
@@ -103,6 +104,9 @@ void InitGame(void)
 
 	// 塵の初期化処理
 	InitSeaDust();
+
+	// 飛沫の初期化処理
+	InitSpray();
 
 	// 3Dエフェクトの初期化処理
 	InitEffect3D(); 
@@ -192,6 +196,9 @@ void UninitGame(void)
 
 	// 塵の終了処理
 	UninitSeaDust();
+
+	// 飛沫の終了処理
+	UninitSpray();
 
 	// 3Dエフェクトの終了処理
 	UninitEffect3D();
@@ -405,6 +412,9 @@ void UpdateGame(void)
 		// 塵の更新処理
 		UpdateSeaDust(); FileLogPass("setdest");
 
+		// 飛沫の更新処理
+		UpdateSpray();
+
 		// 3Dエフェクトの更新処理
 		UpdateEffect3D(); FileLogPass("effect");
 
@@ -465,6 +475,9 @@ void DrawGame(void)
 
 	// 塵の描画処理
 	DrawSeaDust();
+
+	// 飛沫の描画処理
+	DrawSpray();
 
 	// 3Dエフェクトの描画処理
 	DrawEffect3D();
