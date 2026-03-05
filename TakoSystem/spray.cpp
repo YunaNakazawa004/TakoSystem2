@@ -45,6 +45,7 @@ D3DXMATRIX g_mtxWorldSpray;								// ワールドマトリックス
 const char* c_apFilernamaSpray[SPRAYTYPE_MAX] =
 {
 	"data\\TEXTURE\\spray000.png",
+	"data\\TEXTURE\\spray000.png",
 };
 
 //=============================================================================
@@ -70,7 +71,7 @@ void InitSpray(void)
 		g_aSpray[nCntSpray].col = WHITE_VTX;
 		g_aSpray[nCntSpray].fWidth = SIZE_SPRAY;
 		g_aSpray[nCntSpray].fDepth = SIZE_SPRAY;
-		g_aSpray[nCntSpray].type = SPRAYTYPE_0;
+		g_aSpray[nCntSpray].type = SPRAYTYPE_CIRCLE;
 		g_aSpray[nCntSpray].bUse = false;		// 使用していない状態にする
 	}
 
@@ -158,7 +159,7 @@ void UpdateSpray(void)
 		{// 飛沫が使用されている
 			switch (g_aSpray[nCntSpray].type)
 			{
-			case SPRAYTYPE_0:
+			case SPRAYTYPE_CIRCLE:
 				g_aSpray[nCntSpray].col.a -= 0.05f;
 
 				if (g_aSpray[nCntSpray].col.a < 0.0f)
@@ -166,10 +167,24 @@ void UpdateSpray(void)
 					g_aSpray[nCntSpray].bUse = false;
 				}
 
+				g_aSpray[nCntSpray].move.y += GRAVITY;
+
+				break;
+
+			case SPRAYTYPE_FLOW:
+				g_aSpray[nCntSpray].col.a -= 0.03f;
+
+				if (g_aSpray[nCntSpray].col.a < 0.0f)
+				{// 透明になった
+					g_aSpray[nCntSpray].bUse = false;
+				}
+
+				g_aSpray[nCntSpray].move.x += (0.0f - g_aSpray[nCntSpray].move.x) * 0.01f;
+				g_aSpray[nCntSpray].move.z += (0.0f - g_aSpray[nCntSpray].move.z) * 0.01f;
+
 				break;
 			}
 
-			g_aSpray[nCntSpray].move.y += GRAVITY;
 			g_aSpray[nCntSpray].pos += g_aSpray[nCntSpray].move;
 
 			// 頂点カラーの設定
@@ -316,4 +331,16 @@ void SetSprayCircle(D3DXVECTOR3 pos, D3DXCOLOR col, SPRAYTYPE type)
 		SetSpray(pos, D3DXVECTOR3(sinf(D3DX_PI * (nCntSpray * 0.25f)) * 4.0f, 0.6f, cosf(D3DX_PI * (nCntSpray * 0.25f)) * 4.0f),
 			col, SIZE_SPRAY, type);
 	}
+}
+
+//=============================================================================
+// 飛沫の波形設定処理
+//=============================================================================
+void SetSprayFlow(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXCOLOR col, SPRAYTYPE type)
+{
+	SetSpray(pos, D3DXVECTOR3(sinf(rot.y + (D3DX_PI * 0.5f)) * 2.0f, 0.0f, cosf(rot.y + (D3DX_PI * 0.5f)) * 2.0f),
+		col, SIZE_SPRAY, type);
+
+	SetSpray(pos, D3DXVECTOR3(sinf(rot.y - (D3DX_PI * 0.5f)) * 2.0f, 0.0f, cosf(rot.y - (D3DX_PI * 0.5f)) * 2.0f),
+		col, SIZE_SPRAY, type);
 }

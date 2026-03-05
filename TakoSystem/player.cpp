@@ -48,6 +48,7 @@
 #define TENTACLE_CT				(ONE_SECOND * 1 + ONE_SECOND)			// 触手のクールダウン
 #define INK_CT					(ONE_SECOND * 5 + ONE_SECOND)			// 墨吐きのクールダウン
 #define RIPPLE_COUNT			(20)									// 水面に波紋が出る間隔
+#define FLOW_COUNT				(10)									// 波が出る間隔
 #define PLAYER_TENTACLE			(8)										// プレイヤーの足の数
 #define PLAYER_RADIUS			(25.0f)									// 半径
 #define PLAYER_HEIGHT			(100.0f)								// 高さ
@@ -79,6 +80,7 @@ void InitPlayer(void)
 	for (int nCntPlayer = 0; nCntPlayer < MAX_PLAYER; nCntPlayer++, pPlayer++)
 	{
 		pPlayer->nIdx = nCntPlayer;
+		pPlayer->nCounter = 0;
 		pPlayer->pos = FIRST_POS;
 		pPlayer->posOld = FIRST_POS;
 		pPlayer->move = FIRST_POS;
@@ -86,6 +88,7 @@ void InitPlayer(void)
 		pPlayer->state = PLAYERSTATE_APPEAR;
 		pPlayer->TentacleState = PLTENTACLESTATE_NORMAL;
 		pPlayer->nCounterState = 0;
+		pPlayer->fAutoY = 0.0f;
 		pPlayer->fAngleX = 0.0f;
 		pPlayer->fAngleY = 0.0f;
 		pPlayer->fFogStart = (pPlayer->pos.y * 0.4f) + FOGS_MIN;
@@ -160,7 +163,6 @@ void UpdatePlayer(void)
 	{
 		if (pPlayer->bUse == true)
 		{// 使用している
-			static int nCounter = 0;		// 色々なものに使えるカウンター
 			int nValueH, nValueV;
 			int nValue;
 			float fmoveAngle = 0.0f;
@@ -343,7 +345,7 @@ void UpdatePlayer(void)
 					pPlayer->bMove = false;
 				}
 
-				if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_LSHIFT) == true : GetKeyboardPress(DIK_NUMPAD2) == true) || 
+				if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_LSHIFT) == true : GetKeyboardPress(DIK_NUMPAD0) == true) || 
 					/*GetJoypadPress(nCntPlayer, JOYKEY_LEFT_SHOULDER) == true*/
 					GetJoypadShoulder(nCntPlayer, JOYKEY_LEFTTRIGGER, &nValue) == true)
 				{// 上昇
@@ -351,7 +353,7 @@ void UpdatePlayer(void)
 
 					pPlayer->bMove = true;
 				}
-				else if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_LCONTROL) == true : GetKeyboardPress(DIK_NUMPAD0) == true) || 
+				else if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_LCONTROL) == true : GetKeyboardPress(DIK_NUMPAD2) == true) || 
 					GetJoypadPress(nCntPlayer, JOYKEY_LEFT_SHOULDER) == true)
 				{// 下降
 					pPlayer->move.y += MOVEMENT.y;
@@ -494,6 +496,12 @@ void UpdatePlayer(void)
 				}
 			}
 
+			if (pPlayer->bMove == false)
+			{// 動いてないとき
+				pPlayer->fAutoY += 0.05f;
+				pPlayer->move.y += cosf(pPlayer->fAutoY) * 0.03f;
+			}
+
 			if (GetOceanCurrents() != OCEANCURRENTSSTATE_WIRLPOOL ||
 				(GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL && CollisionObjectArea(pPlayer->pos) == true))
 			{
@@ -560,7 +568,7 @@ void UpdatePlayer(void)
 						SetVibration(nCntPlayer, 10000, 10000, 1);
 					}
 
-					if (pPlayer->nFood > 0 && nCounter % 15 == 0)
+					if (pPlayer->nFood > 0 && pPlayer->nCounter % 15 == 0)
 					{// エサを持っている
 						pPlayer->nFood--;
 						int nIdx = Dequeue(&pPlayer->esaQueue);
@@ -602,7 +610,7 @@ void UpdatePlayer(void)
 				if (pPlayer->bLand == false)
 				{// ついてなかった場合
 					SetSprayCircle(D3DXVECTOR3(pPlayer->pos.x, pPlayer->pos.y + 30.0f, pPlayer->pos.z), 
-						D3DXCOLOR(0.75f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_0);
+						D3DXCOLOR(0.75f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_CIRCLE);
 				}
 
 				pPlayer->bLand = true;
@@ -612,18 +620,30 @@ void UpdatePlayer(void)
 				pPlayer->bLand = false;
 			}
 
+			if (pPlayer->pos.y < 10.0f && pPlayer->nCounter % FLOW_COUNT == 0 && pPlayer->bMove == true)
+			{// 地面に近かったら
+				SetSprayFlow(D3DXVECTOR3(pPlayer->pos.x, pPlayer->pos.y + 20.0f, pPlayer->pos.z), pPlayer->rot,
+					D3DXCOLOR(0.75f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_FLOW);
+			}
+
 			if (pPlayer->pos.y > *GetWaterSurf_Height() - (PLAYER_HEIGHT * 0.5f))
 			{// 上									  
 				// 重力
 				pPlayer->move.y += GRAVITY;
 
-				if (nCounter % RIPPLE_COUNT == 0)
+				if (pPlayer->nCounter % RIPPLE_COUNT == 0)
 				{// 定期的に波紋
 					SetMeshRing(D3DXVECTOR3(pPlayer->pos.x + (rand() % 6 - 3), *GetWaterSurf_Height(), pPlayer->pos.z + (rand() % 6 - 3)), FIRST_POS,
 						D3DXVECTOR2(24.0f, 1.0f), D3DXVECTOR2(10.0f, 7.0f), D3DXCOLOR(WHITE_VTX.r, WHITE_VTX.g, WHITE_VTX.b, 0.5f));
 				
 					SetSprayCircle(D3DXVECTOR3(pPlayer->pos.x, *GetWaterSurf_Height(), pPlayer->pos.z),
-						WHITE_VTX, SPRAYTYPE_0);
+						WHITE_VTX, SPRAYTYPE_CIRCLE);
+				}
+
+				if (pPlayer->nCounter % FLOW_COUNT == 0 && pPlayer->bMove == true)
+				{// 波
+					SetSprayFlow(D3DXVECTOR3(pPlayer->pos.x, *GetWaterSurf_Height(), pPlayer->pos.z), pPlayer->rot,
+						WHITE_VTX, SPRAYTYPE_FLOW);
 				}
 			}
 
@@ -691,7 +711,7 @@ void UpdatePlayer(void)
 				CorrectAngle(&pPlayer->rot.x, pPlayer->rot.x);
 			}
 
-			if (nCounter % (ONE_SECOND * 30) == 0 && GetTime() != ONE_GAME)
+			if (pPlayer->nCounter % (ONE_SECOND * 30) == 0 && GetTime() != ONE_GAME)
 			{// 持てるエサの最大値が増える
 				pPlayer->nMaxFood++;
 			}
@@ -802,7 +822,7 @@ void UpdatePlayer(void)
 
 			CollisionPotArea(pPlayer->pos, pPlayer->fRadius, pPlayer, NULL, false);
 
-			nCounter++;
+			pPlayer->nCounter++;
 
 		}
 	}
@@ -929,6 +949,7 @@ void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType
 	Player* pPlayer = GetPlayer();
 
 	pPlayer[nIdx].nIdx = nIdx;
+	pPlayer[nIdx].nCounter = 0;
 	pPlayer[nIdx].pos = pos;
 	pPlayer[nIdx].posOld = pos;
 	pPlayer[nIdx].rot = rot;

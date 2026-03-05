@@ -103,6 +103,7 @@
 #define INK_CT					(ONE_SECOND * 5 + ONE_SECOND)			// 墨吐きのクールダウン
 #define CAMERA_HEIGHT			(100.0f)								// 仮想カメラの高さ
 #define RIPPLE_COUNT			(20)									// 水面に波紋が出る間隔
+#define FLOW_COUNT				(10)									// 波が出る間隔
 #define CPU_THINK				(15)									// 思考間隔
 #define CPU_WIDTH				(25.0f)									// 幅
 #define CPU_HEIGHT				(100.0f)								// 高さ
@@ -137,6 +138,7 @@ void InitComputer(void)
 	for (int nCntComputer = 0; nCntComputer < MAX_COMPUTER; nCntComputer++, pComputer++)
 	{
 		pComputer->nIdx = nCntComputer;
+		pComputer->nCounter = 0;
 		pComputer->state = CPUSTATE_APPEAR;
 		pComputer->nCounterState = 0;
 		pComputer->phys.pos = FIRST_POS;
@@ -374,8 +376,6 @@ void UpdateComputer(void)
 			}
 
 			PrintDebugProc("ENEMY : [ %d ]\n", pComputer->nIdx);
-
-			static int nCounter = 0;
 
 			pComputer->phys.posOld = pComputer->phys.pos;
 
@@ -636,7 +636,7 @@ void UpdateComputer(void)
 						SetMotionComputer(nCntComputer, MOTIONTYPE_OCEANCULLENT, true, 20);
 					}
 
-					if (pComputer->nFoodCount > 0 && nCounter % 15 == 0)
+					if (pComputer->nFoodCount > 0 && pComputer->nCounter % 15 == 0)
 					{// エサを持っている
 						pComputer->nFoodCount--;
 						int nIdx = Dequeue(&pComputer->esaQueue);
@@ -694,7 +694,7 @@ void UpdateComputer(void)
 				if (pComputer->bLand == false)
 				{// ついてなかった場合
 					SetSprayCircle(D3DXVECTOR3(pComputer->phys.pos.x, pComputer->phys.pos.y + 30.0f, pComputer->phys.pos.z),
-						D3DXCOLOR(0.75f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_0);
+						D3DXCOLOR(0.75f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_CIRCLE);
 				}
 
 				pComputer->bLand = true;
@@ -704,18 +704,30 @@ void UpdateComputer(void)
 				pComputer->bLand = false;
 			}
 
+			if (pComputer->phys.pos.y < 10.0f && pComputer->nCounter % FLOW_COUNT == 0)
+			{// 地面に近かったら
+				SetSprayFlow(D3DXVECTOR3(pComputer->phys.pos.x, pComputer->phys.pos.y + 20.0f, pComputer->phys.pos.z), pComputer->phys.rot,
+					D3DXCOLOR(0.75f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_FLOW);
+			}
+
 			if (pComputer->phys.pos.y > *GetWaterSurf_Height() - CPU_HEIGHT)
 			{// 上											  
 				// 重力
 				pComputer->phys.move.y += GRAVITY;
 
-				if (nCounter % RIPPLE_COUNT == 0)
+				if (pComputer->nCounter % RIPPLE_COUNT == 0)
 				{// 定期的に波紋
 					SetMeshRing(D3DXVECTOR3(pComputer->phys.pos.x + (rand() % 6 - 3), *GetWaterSurf_Height(), pComputer->phys.pos.z + (rand() % 6 - 3)), FIRST_POS,
 						D3DXVECTOR2(24.0f, 1.0f), D3DXVECTOR2(10.0f, 7.0f), D3DXCOLOR(WHITE_VTX.r, WHITE_VTX.g, WHITE_VTX.b, 0.5f));
 
 					SetSprayCircle(D3DXVECTOR3(pComputer->phys.pos.x, *GetWaterSurf_Height(), pComputer->phys.pos.z),
-						WHITE_VTX, SPRAYTYPE_0);
+						WHITE_VTX, SPRAYTYPE_CIRCLE);
+				}
+
+				if (pComputer->nCounter % FLOW_COUNT == 0)
+				{// 波
+					SetSprayFlow(D3DXVECTOR3(pComputer->phys.pos.x, *GetWaterSurf_Height(), pComputer->phys.pos.z), pComputer->phys.rot,
+						WHITE_VTX, SPRAYTYPE_FLOW);
 				}
 			}
 
@@ -759,7 +771,7 @@ void UpdateComputer(void)
 				CorrectAngle(&pComputer->phys.rot.x, pComputer->phys.rot.x);
 			}
 
-			if (nCounter % (ONE_SECOND * 30) == 0 && GetTime() != ONE_GAME)
+			if (pComputer->nCounter % (ONE_SECOND * 30) == 0 && GetTime() != ONE_GAME)
 			{// 持てるエサの最大値が増える
 				pComputer->nMaxFood++;
 			}
@@ -807,7 +819,7 @@ void UpdateComputer(void)
 
 			CollisionPotArea(pComputer->phys.pos, pComputer->phys.fRadius, NULL, pComputer, false);
 
-			nCounter++;
+			pComputer->nCounter++;
 
 			// モーションの更新処理
 			UpdateMotionComputer(nCntComputer);
@@ -2505,6 +2517,7 @@ void SetComputer(D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType)
 		if (pComputer->bUse == false)
 		{// 使用していない
 			pComputer->nIdx = nCntComputer;
+			pComputer->nCounter = 0;
 			pComputer->state = CPUSTATE_APPEAR;
 			pComputer->nCounterState = 0;
 			pComputer->phys.pos = pos;

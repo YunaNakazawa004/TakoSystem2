@@ -69,6 +69,7 @@ typedef enum
 typedef struct
 {
 	int nIdx;									// プレイヤーのインデックス
+	int nCounter;								// 万能カウンター
 	D3DXVECTOR3 pos;							// 現在の位置
 	D3DXVECTOR3 posOld;							// 前回の位置
 	D3DXVECTOR3 move;							// 移動量
@@ -77,6 +78,7 @@ typedef struct
 	float fAngleY;								// Y向きの最終地点
 	float fRadius;								// 半径
 	float fHeight;								// 高さ
+	float fAutoY;								// 自動上下移動
 	D3DXVECTOR3 posX;							// リーチの位置(クロスヘアの位置)
 	D3DXVECTOR3 vecX;							// posVからposRへのベクトル(リーチへのベクトル)
 	D3DXMATRIX mtxWorld;						// ワールドマトリックス

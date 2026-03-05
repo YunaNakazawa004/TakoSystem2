@@ -71,6 +71,7 @@ typedef struct
 typedef struct 
 {
 	int nIdx;					// タコのID
+	int nCounter;				// 万能カウンター
 	CPUSTATE state;				// 現在の状態
 	int nCounterState;			// 状態カウンター
 	CPUTENTACLESTATE TentState;	// 触手の状態

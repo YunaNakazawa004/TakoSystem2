@@ -14,7 +14,8 @@
 //*****************************************************************************
 typedef enum
 {
-	SPRAYTYPE_0 = 0,			// タイプ0
+	SPRAYTYPE_CIRCLE = 0,		// 円形用
+	SPRAYTYPE_FLOW,				// 波形用
 	SPRAYTYPE_MAX
 }SPRAYTYPE;
 
@@ -27,5 +28,6 @@ void UpdateSpray(void);
 void DrawSpray(void);
 void SetSpray(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXCOLOR col, float length, SPRAYTYPE type);
 void SetSprayCircle(D3DXVECTOR3 pos, D3DXCOLOR col, SPRAYTYPE type);
+void SetSprayFlow(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXCOLOR col, SPRAYTYPE type);
 
 #endif
