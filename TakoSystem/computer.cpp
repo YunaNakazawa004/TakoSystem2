@@ -780,7 +780,7 @@ void UpdateComputer(void)
 			//	pComputer->phys.pos.x, pComputer->phys.pos.y, pComputer->phys.pos.z);
 			//PrintDebugProc("ENEMY : move ( %f %f %f )\n",
 			//	pComputer->phys.move.x, pComputer->phys.move.y, pComputer->phys.move.z);
-			//PrintDebugProc("ENEMY : nFood ( %d )\n", pComputer->nFoodCount);
+			PrintDebugProc("ENEMY : nFood ( %d )\n", pComputer->nFoodCount);
 			//PrintDebugProc("ENEMY : TargetPot ( %d )\n", pComputer->nTargetPotIdx);
 			//PrintDebugProc("ENEMY : TargetEnemy ( %d )\n", pComputer->nTargetEnemyIdx);
 			//PrintDebugProc("ENEMY : ƒm[ƒh ( %f %f %f )\n",
@@ -1144,8 +1144,28 @@ void HideFood(Computer* pComputer)
 	Pot* pPot = GetPot();
 	pPot = &pPot[pComputer->nTargetPotIdx];
 
-	// ‰B‚µI‚í‚Á‚½‚ç’Tõ‚Ö–ß‚é
-	pComputer->state = CPUSTATE_EXPLORE;
+	// GŽè‚ÅƒGƒT‚ð“ü‚ê‚é
+	D3DXVECTOR3 posDiff = pPot->pos - pComputer->phys.pos;
+	float dist = D3DXVec3Length(&posDiff);
+
+	if (dist < TENTACLE_RADIUS * 0.5f)
+	{// GŽè‚Ì”ÍˆÍ“à
+		pComputer->targetWall = pPot->pos;
+		UseTentacle(pComputer);
+
+		pComputer->state = CPUSTATE_EXPLORE;
+
+		return;
+	}
+
+	// ‚Ü‚¾‹——£‚ª‰“‚¢‚È‚ç‹ß‚Ã‚­
+	D3DXVECTOR3 dir = pPot->pos - pComputer->phys.pos;
+	D3DXVec3Normalize(&dir, &dir);
+
+	// Šµ«ˆÚ“®
+	pComputer->phys.move.x += dir.x * MOVEMENT.x;
+	pComputer->phys.move.y += dir.y * MOVEMENT.y;
+	pComputer->phys.move.z += dir.z * MOVEMENT.z;
 }
 
 //=============================================================================
