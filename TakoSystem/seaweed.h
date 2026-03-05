@@ -30,6 +30,7 @@ typedef struct
 	D3DXVECTOR3 pos;							// 位置
 	D3DXVECTOR3 rot;							// 向き
 	D3DXVECTOR3 rotDest;						// 目的の向き
+	float fAngle;								// 
 	D3DXVECTOR3 posOff;							// 位置(オフセット)
 	D3DXVECTOR3 rotOff;							// 向き(オフセット)
 	D3DXMATRIX mtxWorld;						// ワールドマトリックス

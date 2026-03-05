@@ -17,7 +17,7 @@
 #define FIRST_ROT_X				(200.0f)								// Ž‹“_‚Æ’Ž‹“_ŠÔ‚Ì‹——£
 #define HEIGHT					(100.0f)								// Ž‹“_‚Ì‚‚³
 #define MOVEMENT				(D3DXVECTOR3(5.0f, 5.0f, 5.0f))			// ˆÚ“®—Ê
-#define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// Œü‚«ˆÚ“®—Ê
+#define ROT						(D3DXVECTOR3(0.035f, 0.035f, 0.035f))	// Œü‚«ˆÚ“®—Ê
 #define AUTO_ROT				(D3DXVECTOR3(0.005f, 0.005f, 0.005f))	// Ž©“®‰ñ“]ˆÚ“®—Ê
 #define DEFAULT_VIEW_ANGLE		(45.0f)									// ‹K’è‚ÌŽ‹–ìŠp
 #define INERTIA_VIEW_ANGLE		(0.05f)									// Ž‹–ìŠp‚ÌŠµ«

@@ -6,6 +6,7 @@
 //=============================================================================
 #include "seaweed.h"
 #include "debugproc.h"
+#include "input.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -75,7 +76,7 @@ void InitSeaweed(void)
 	}
 
 	// ランダムな位置に設定
-	SetRandomSeaweed(50);
+	SetRandomSeaweed(100);
 }
 
 //=============================================================================
@@ -129,10 +130,44 @@ void UpdateSeaweed(void)
 
 		for (int nCntModel = 0; nCntModel < pSeaweed->nNumModel; nCntModel++)
 		{
+			if (nCntModel == 0)
+			{// 根本
+				pSeaweed->aModel[nCntModel].fAngle += 0.01f;
+			}
+			else
+			{// それ以外
+				pSeaweed->aModel[nCntModel].fAngle = 0.01f + pSeaweed->aModel[nCntModel - 1].fAngle;
+			}
 
-			CorrectAngle(&pSeaweed->aModel[nCntModel].rot.x, pSeaweed->aModel[nCntModel].rot.x);
-			CorrectAngle(&pSeaweed->aModel[nCntModel].rot.y, pSeaweed->aModel[nCntModel].rot.y);
-			CorrectAngle(&pSeaweed->aModel[nCntModel].rot.z, pSeaweed->aModel[nCntModel].rot.z);
+#if 0
+			if (nCounter % (ONE_SECOND * 3) == 0)
+			{// 定期的に目的の値を設定しなおす
+				if (nCntModel == 0)
+				{
+					D3DXVECTOR3 rotDest;
+
+					rotDest.x = (float)(rand() % 629 - 314) / 100.0f;
+					rotDest.y = (float)(rand() % 629 - 314) / 100.0f;
+					rotDest.z = (float)(rand() % 629 - 314) / 100.0f;
+
+					pSeaweed->aModel[nCntModel].rotDest = rotDest + pSeaweed->aModel[nCntModel].rotOff;
+				}
+				else
+				{
+					pSeaweed->aModel[nCntModel].rotDest = -pSeaweed->aModel[nCntModel - 1].rotDest;
+				}
+			}
+		
+			pSeaweed->aModel[nCntModel].rot +=
+				(pSeaweed->aModel[nCntModel].rotDest - pSeaweed->aModel[nCntModel].rot) * 0.005f;
+#endif
+
+			CorrectAngle(&pSeaweed->aModel[nCntModel].fAngle, pSeaweed->aModel[nCntModel].fAngle);
+
+			pSeaweed->aModel[nCntModel].pos.x = pSeaweed->aModel[nCntModel].posOff.x + 
+				(sinf(pSeaweed->aModel[nCntModel].fAngle) * 3.0f);
+			pSeaweed->aModel[nCntModel].pos.z = pSeaweed->aModel[nCntModel].posOff.z +
+				(cosf(pSeaweed->aModel[nCntModel].fAngle) * 3.0f);
 		}
 	}
 
@@ -306,7 +341,7 @@ void SetRandomSeaweed(int nAmount)
 		pos.y = -20.0f;
 		pos.z = cosf(fAngle) * (OUTCYLINDER_RADIUS + (((float)(rand() % (int)((OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) / 2) + 1))));
 
-		int nLength = rand() % 10 + 40;
+		int nLength = rand() % 25 + 10;
 
 		SetSeaweed(pos, nLength);
 	}

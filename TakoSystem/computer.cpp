@@ -41,7 +41,7 @@
 #define TENTACLE_RANDOM			(20.0f)									// 触手移動の高さ乱数
 #define CPU_TENTACLE			(8)										// 足の数
 
-#define FAR_DISTANCE			(500.0f)								// 遠すぎる
+#define FAR_DISTANCE			(300.0f)								// 遠すぎる
 #define DISTANCE_SCORE			(0.01f)									// 距離スコアの減衰
 #define NEAR_WALL_DISTANCE		(200.0f)								// 壁際の距離
 #define NEAR_PILLAR_DISTANCE	(200.0f)								// 柱に近いかの距離
@@ -53,15 +53,15 @@
 #define ESA_WATER_SCORE			(1.0f)									// 浮いているエサのスコア
 #define ESA_NEAR_WALL_SCORE		(2.0f)									// 壁際のエサのスコア
 
-#define ENEMY_DOT_SCORE			(4.0f)									// 敵が進行方向にいるスコア
-#define ENEMY_FAR_WALL_SCORE	(3.0f)									// 敵が壁から離れているスコア
+#define ENEMY_DOT_SCORE			(2.0f)									// 敵が進行方向にいるスコア
+#define ENEMY_FAR_WALL_SCORE	(2.0f)									// 敵が壁から離れているスコア
 #define ENEMY_PILLAR_SCORE		(2.0f)									// 敵が柱の裏にいないスコア
 #define ENEMY_BLIND_SCORE		(3.0f)									// 敵の視界が悪いスコア
 #define	ENEMY_TENTACLE_SCORE	(2.0f)									// 敵の触手がクールダウン中のスコア
 #define ENEMY_COUNT_SCORE		(5.0f)									// 敵が複数いるときのスコア
 #define ENEMY_COUNT_DIST		(200.0f)								// 敵が複数いるときの距離
 
-#define ESCAPE_ENEMY_DIST		(500.0f)								// 遠すぎる敵とは判定しない
+#define ESCAPE_ENEMY_DIST		(400.0f)								// 遠すぎる敵とは判定しない
 #define ESCAPE_DOT				(-0.3f)									// 逃げるかの角度
 #define	ESCAPE_DOT_SCORE		(6.0f)									// 追われているときのスコア
 #define ESCAPE_ENEMY_MOVE		(5.0f)									// 敵の速度が速いときのスコア
@@ -1558,7 +1558,7 @@ void CalcAttackScore(Computer* pComputer)
 		score += (((pComputer->bBlinded) ? FAR_DISTANCE * 0.5f : FAR_DISTANCE) - dist) * DISTANCE_SCORE;
 
 		// 敵がエサを多く持っている
-		score += pEnemy->nFoodCount * 0.5f;
+		score += pEnemy->nFoodCount * 0.4f;
 
 		if (pEnemy->nFoodCount == 0)
 		{// 敵がエサを持っていない

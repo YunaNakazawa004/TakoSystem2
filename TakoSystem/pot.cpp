@@ -428,7 +428,7 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 			{// プレイヤーの判定
 				if ((pPot->nFood == 0 && pPlayer->Potstate == POTSTATE_NONE) || pPlayer->Potstate == POTSTATE_HIDE)
 				{// 中身が空
-					if (bTentacle == false && pPlayer->nFood > 0)
+					if (bTentacle == true && pPlayer->nFood > 0)
 					{// 触手じゃない
 						pPlayer->Potstate = POTSTATE_HIDE;
 

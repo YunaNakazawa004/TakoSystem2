@@ -234,7 +234,7 @@ void UpdateEsa(void)
 				g_aEsa[nCntEsa].pos.y = *pWaterSurfHeight - g_aEsaData[g_aEsa[nCntEsa].nIdxModel].fHitRadius;
 			}
 
-			SetEffect3D(70, g_aEsa[nCntEsa].pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0.0f, 30.0f, -0.1f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f),EFFECTTYPE_NORMAL);
+			//SetEffect3D(70, g_aEsa[nCntEsa].pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0.0f, 30.0f, -0.1f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f),EFFECTTYPE_NORMAL);
 
 #if 0
 			
