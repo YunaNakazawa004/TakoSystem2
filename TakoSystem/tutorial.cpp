@@ -36,6 +36,7 @@
 #include "title.h"
 #include "tutorialtxt.h"
 #include "spray.h"
+#include "seaweed.h"
 
 // マクロ定義
 #define	MAX_TUTORIAL	(3)	// タイトルで表示するテクスチャの最大数
@@ -108,6 +109,9 @@ void InitTutorial(void)
 
 	// 配置物の初期化処理
 	InitObject("data\\objpos001.txt");
+
+	// 海藻の初期化処理
+	InitSeaweed();
 
 	// チュートリアルテキストの初期化処理
 	InitTutorialTxt();
@@ -278,6 +282,9 @@ void UninitTutorial(void)
 	// 配置物の終了処理
 	UninitObject();
 
+	// 海藻の終了処理
+	UninitSeaweed();
+
 	// チュートリアルテキストの終了処理
 	UninitTutorialTxt();
 
@@ -368,6 +375,9 @@ void UpdateTutorial(void)
 	// 配置物の更新処理
 	UpdateObject();
 
+	// 海藻の更新処理
+	UpdateSeaweed();
+
 	// チュートリアルテキストの更新処理
 	UpdateTutorialTxt();
 
@@ -412,6 +422,9 @@ void DrawTutorial(void)
 
 	// 配置物の描画処理
 	DrawObject();
+
+	// 海藻の描画処理
+	DrawSeaweed();
 
 	// メッシュドームの描画処理
 	DrawMeshDome();

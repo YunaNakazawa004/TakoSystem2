@@ -20,6 +20,7 @@
 #include "computer.h"
 #include "pot.h"
 #include "object.h"
+#include "seaweed.h"
 #include "stage.h"
 #include "esa.h"		// エサ
 #include "fishes.h"
@@ -129,6 +130,9 @@ void InitGame(void)
 	// 配置物の初期化処理
 	InitObject("data\\objpos001.txt");
 
+	// 海藻の初期化処理
+	InitSeaweed();
+
 	// レディの初期化処理
 	InitReady(); 
 
@@ -181,6 +185,9 @@ void UninitGame(void)
 
 	// 配置物の終了処理
 	UninitObject();
+
+	// 海藻の終了処理
+	UninitSeaweed();
 
 	// メッシュシリンダーの終了処理
 	UninitMeshCylinder();
@@ -397,6 +404,9 @@ void UpdateGame(void)
 		// 配置物の更新処理
 		UpdateObject(); FileLogPass("object");
 
+		// 海藻の更新処理
+		UpdateSeaweed();
+
 		// メッシュシリンダーの更新処理
 		UpdateMeshCylinder(); FileLogPass("mesh_cy");
 
@@ -460,6 +470,9 @@ void DrawGame(void)
 
 	// 配置物の描画処理
 	DrawObject();
+
+	// 海藻の描画処理
+	DrawSeaweed();
 
 	// メッシュドームの描画処理
 	DrawMeshDome();

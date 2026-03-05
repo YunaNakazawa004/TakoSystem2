@@ -76,7 +76,7 @@ void InitSeaweed(void)
 
 #if 0
 	// ÉâÉìÉ_ÉÄÇ»à íuÇ…ê›íË
-	SetRandomSeaweed(ALL_OCTO - GetNumCamera());
+	SetRandomSeaweed(50);
 #endif
 }
 
@@ -281,9 +281,9 @@ void SetRandomSeaweed(int nAmount)
 		float fAngle = (D3DX_PI * 2.0f) * ((float)((nCntCPU + 1) * (360.0f / nAmount)) / 360.0f);
 		//float fsin = sinf(fAngle);
 
-		pos.x = sinf(fAngle) * (INCYLINDER_RADIUS + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) + 1))));
+		pos.x = sinf(fAngle) * (OUTCYLINDER_RADIUS + (((float)(rand() % (int)((OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) / 2) + 1))));
 		pos.y = 0.0f;
-		pos.z = cosf(fAngle) * (INCYLINDER_RADIUS + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) + 1))));
+		pos.z = cosf(fAngle) * (OUTCYLINDER_RADIUS + (((float)(rand() % (int)((OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) / 2) + 1))));
 
 		int nLength = rand() % 70 + 30;
 
