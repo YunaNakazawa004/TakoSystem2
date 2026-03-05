@@ -8,6 +8,7 @@
 #include "debugproc.h"
 #include "player.h"
 #include "input.h"
+#include "game.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -82,6 +83,11 @@ void UpdateCamera(void)
 {
 	Camera* pCamera = &g_aCamera[0];
 	Player* pPlayer = GetPlayer();
+
+	if (GetPause() == true)
+	{// ポーズ中
+		return;
+	}
 
 	// それぞれのカメラの処理
 	for (int nCntCamera = 0; nCntCamera < g_nNumCamera; nCntCamera++, pCamera++, pPlayer++)

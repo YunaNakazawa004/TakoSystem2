@@ -117,6 +117,26 @@ void UninitSeaweed(void)
 //=============================================================================
 void UpdateSeaweed(void)
 {
+	Seaweed* pSeaweed = GetSeaweed();
+	static int nCounter = 0;
+
+	for (int nCntSeaweed = 0; nCntSeaweed < MAX_SEAWEED; nCntSeaweed++, pSeaweed++)
+	{
+		if (pSeaweed->bUse == false)
+		{// Žg—p‚µ‚Ä‚È‚¢‚Æ‚«
+			continue;
+		}
+
+		for (int nCntModel = 0; nCntModel < pSeaweed->nNumModel; nCntModel++)
+		{
+
+			CorrectAngle(&pSeaweed->aModel[nCntModel].rot.x, pSeaweed->aModel[nCntModel].rot.x);
+			CorrectAngle(&pSeaweed->aModel[nCntModel].rot.y, pSeaweed->aModel[nCntModel].rot.y);
+			CorrectAngle(&pSeaweed->aModel[nCntModel].rot.z, pSeaweed->aModel[nCntModel].rot.z);
+		}
+	}
+
+	nCounter++;
 }
 
 //=============================================================================
