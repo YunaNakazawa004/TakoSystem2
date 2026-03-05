@@ -9,8 +9,11 @@
 #include "game.h"
 #include "time.h"
 
+#include "oceancurrents.h"	// 海流ヘッダー
+
 // グローバル変数
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffScreen = NULL;	// 頂点バッファへのポインタ
+LPDIRECT3DTEXTURE9 g_pTextureScreen = NULL;	// テクスチャへのポインタ
 
 D3DXCOLOR g_colorScreen;	// ポリゴン（画面）の色
 float g_ScreenStock;	// ピンチの色を保存
@@ -28,6 +31,11 @@ void InitScreen(void)
 
 	// デバイスの取得
 	pDevice = GetDevice();
+
+	// テクスチャの読み込み
+	D3DXCreateTextureFromFile(pDevice,
+		"data/TEXTURE/shadow001.jpg",
+		&g_pTextureScreen);
 
 	// 頂点バッファの生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4,
@@ -73,6 +81,12 @@ void InitScreen(void)
 // 画面の終了処理
 void UninitScreen(void)
 {
+	if (g_pTextureScreen != NULL)
+	{// テクスチャの破棄
+		g_pTextureScreen->Release();
+		g_pTextureScreen = NULL;
+	}
+
 	// 頂点バッファの破棄
 	if (g_pVtxBuffScreen != NULL)
 	{
@@ -84,19 +98,26 @@ void UninitScreen(void)
 // 画面の更新処理
 void UpdateScreen(void)
 {
-	// ポーズ情報の取得
-	bool bPause = GetPause();
-
-	// タイム情報の取得
-	int pTime = GetTime();
-
-	if (bPause == true)
+	if (GetPause() == true)
 	{
 		g_colorScreen = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.33f);
 	}
 	else
 	{
-		if (pTime <= (PINCH_TIME / 2))
+		if (GetOceanCurrents() == OCEANCURRENTSSTATE_WAIT)
+		{// 渦潮警報
+
+			// 黄ランプ調整
+			if (g_bPinchScreen == true) g_ScreenStock += 0.0025f;
+			else g_ScreenStock -= 0.0025f;
+
+			// 黄ランプ切り替え
+			if (g_ScreenStock >= 0.33f) g_bPinchScreen = false;
+			else if (g_ScreenStock <= 0.165f) g_bPinchScreen = true;
+
+			g_colorScreen = D3DXCOLOR(1.0f, 1.0f, 0.0f, g_ScreenStock);
+		}
+		else if (GetTime() <= (PINCH_TIME / 2))
 		{// 制限時間がピンチ
 
 			// 赤ランプ調整
@@ -109,7 +130,7 @@ void UpdateScreen(void)
 
 			g_colorScreen = D3DXCOLOR(1.0f, 0.0f, 0.0f, g_ScreenStock);
 		}
-		else if (pTime <= PINCH_TIME)
+		else if (GetTime() <= PINCH_TIME)
 		{// 制限時間がピンチ
 
 			// 赤ランプ調整
@@ -159,7 +180,8 @@ void DrawScreen(void)
 	pDevice->SetFVF(FVF_VERTEX_2D);
 
 	// テクスチャの設定
-	pDevice->SetTexture(0, NULL);	// テクスチャを使用しない時は必ずNULLを指定する
+	if (GetPause() == true) pDevice->SetTexture(0, NULL);	// テクスチャを使用しない時は必ずNULLを指定する
+	else  pDevice->SetTexture(0, g_pTextureScreen);	// テクスチャを使用しない時は必ずNULLを指定する
 
 	// ポリゴンの描画
 	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
