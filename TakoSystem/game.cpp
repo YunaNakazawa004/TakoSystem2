@@ -174,6 +174,8 @@ void InitGame(void)
 //===================================================================
 void UninitGame(void)
 {
+	g_bPause = false;	// ポーズ解除
+
 	// サウンドの停止
 	StopSound();
 
