@@ -724,7 +724,7 @@ void UpdatePlayer(void)
 				CorrectAngle(&pPlayer->rot.x, pPlayer->rot.x);
 			}
 
-			if (pPlayer->nCounter % (ONE_SECOND * 30) == 0 && GetTime() != ONE_GAME)
+			if (pPlayer->nCounter % (ONE_SECOND * 60) == 0 && GetTime() != ONE_GAME)
 			{// Ž‚Ä‚éƒGƒT‚ÌÅ‘å’l‚ª‘‚¦‚é
 				pPlayer->nMaxFood++;
 			}

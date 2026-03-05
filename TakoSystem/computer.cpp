@@ -771,7 +771,7 @@ void UpdateComputer(void)
 				CorrectAngle(&pComputer->phys.rot.x, pComputer->phys.rot.x);
 			}
 
-			if (pComputer->nCounter % (ONE_SECOND * 30) == 0 && GetTime() != ONE_GAME)
+			if (pComputer->nCounter % (ONE_SECOND * 60) == 0 && GetTime() != ONE_GAME)
 			{// Ž‚Ä‚éƒGƒT‚ÌÅ‘å’l‚ª‘‚¦‚é
 				pComputer->nMaxFood++;
 			}

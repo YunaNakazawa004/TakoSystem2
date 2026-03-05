@@ -430,18 +430,25 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 				if ((pPot->nFood == 0 && pPlayer->Potstate == POTSTATE_NONE) || pPlayer->Potstate == POTSTATE_HIDE)
 				{// ’†g‚ª‹ó
 					if (bTentacle == true && pPlayer->nFood > 0)
-					{// GŽè‚¶‚á‚È‚¢
+					{// GŽè
 						pPlayer->Potstate = POTSTATE_HIDE;
-
-						int nIdx = Dequeue(&pPlayer->esaQueue);
-						pPlayer->nFood--;
 						pPlayer->nPotIdx = nCntPot;
-						SetSubUiEsa(pPlayer->nIdx);
-						SetEsa(nIdx, true, ESA_ACTTYPE_GOTO_POT, pPlayer->nPotIdx, pPlayer->pos, FIRST_POS);
+						int nFood = pPlayer->nFood;
 
-						Enqueue(&pPot->esaQueue, nIdx);
-						pPot->nFood++;
+						for (int nCnt = 0; nCnt < nFood; nCnt++)
+						{
+							if (pPlayer->nFood > 0)
+							{// “ü‚ê‚ê‚é”‚¾‚¯“ü‚ê‚é
+								int nIdx = Dequeue(&pPlayer->esaQueue);
+								pPlayer->nFood--;
+								SetSubUiEsa(pPlayer->nIdx);
+								SetEsa(nIdx, true, ESA_ACTTYPE_GOTO_POT, pPlayer->nPotIdx, pPlayer->pos, FIRST_POS);
 
+								Enqueue(&pPot->esaQueue, nIdx);
+								pPot->nFood++;
+							}
+						}
+						
 						PlaySound(SOUND_SE_INBAIT);
 					}
 				}
@@ -479,15 +486,22 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 			{// CPU‚Ì”»’è
 				if ((pPot->nFood == 0 && pComputer->Potstate == POTSTATE_NONE) || pComputer->Potstate == POTSTATE_HIDE)
 				{// ’†g‚ª‹ó
-					if (bTentacle == false && pComputer->nFoodCount > 0)
-					{// GŽè‚¶‚á‚È‚¢
+					if (bTentacle == true && pComputer->nFoodCount > 0)
+					{// GŽè
 						pComputer->Potstate = POTSTATE_HIDE;
+						int nFood = pComputer->nFoodCount;
 
-						int nIdx = Dequeue(&pComputer->esaQueue);
-						pComputer->nFoodCount--;
+						for (int nCnt = 0; nCnt < nFood; nCnt++)
+						{
+							if (pComputer->nFoodCount > 0)
+							{// “ü‚ê‚ê‚é”‚¾‚¯“ü‚ê‚é
+								int nIdx = Dequeue(&pComputer->esaQueue);
+								pComputer->nFoodCount--;
 
-						Enqueue(&pPot->esaQueue, nIdx);
-						pPot->nFood++;
+								Enqueue(&pPot->esaQueue, nIdx);
+								pPot->nFood++;
+							}
+						}
 					}
 				}
 				else if (pPot->nFood > 0 && pComputer->Potstate != POTSTATE_HIDE)
