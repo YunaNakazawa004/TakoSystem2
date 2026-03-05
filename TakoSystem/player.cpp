@@ -616,7 +616,9 @@ void UpdatePlayer(void)
 				{// ‚Â‚¢‚Ä‚È‚©‚Á‚½ê‡
 					SetSprayCircle(D3DXVECTOR3(pPlayer->pos.x, pPlayer->pos.y + 30.0f, pPlayer->pos.z), 
 						D3DXCOLOR(0.75f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_CIRCLE);
-				
+
+					SetVibration(nCntPlayer, 10000, 10000, 3);
+
 					PlaySound(SOUND_SE_LANDING);
 				}
 
@@ -631,6 +633,8 @@ void UpdatePlayer(void)
 			{// ’n–Ê‚É‹ß‚©‚Á‚½‚ç
 				SetSprayFlow(D3DXVECTOR3(pPlayer->pos.x, pPlayer->pos.y + 20.0f, pPlayer->pos.z), pPlayer->rot,
 					D3DXCOLOR(0.75f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_FLOW);
+
+				SetVibration(nCntPlayer, 3000, 2500, 2);
 			}
 
 			if (pPlayer->pos.y > *GetWaterSurf_Height() - (PLAYER_HEIGHT * 0.5f))
@@ -651,6 +655,8 @@ void UpdatePlayer(void)
 				{// ”g
 					SetSprayFlow(D3DXVECTOR3(pPlayer->pos.x, *GetWaterSurf_Height(), pPlayer->pos.z), pPlayer->rot,
 						WHITE_VTX, SPRAYTYPE_FLOW);
+
+					SetVibration(nCntPlayer, 3000, 2500, 2);
 				}
 			}
 

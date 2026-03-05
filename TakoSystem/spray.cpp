@@ -11,7 +11,7 @@
 // マクロ定義
 //*****************************************************************************
 #define MAX_SPRAY				(256)									// 飛沫の数
-#define SIZE_SPRAY				(30.0f)									// 飛沫のサイズ半径
+#define SIZE_SPRAY				(15.0f)									// 飛沫のサイズ半径
 #define MAX_SIZE				(2.0f)									// 大きさ補正
 #define START_ALPHA				(2)										// 透明度補正を始めるパターン数
 #define MAX_ALPHA				(0.1f)									// 透明度補正
@@ -169,6 +169,9 @@ void UpdateSpray(void)
 
 				g_aSpray[nCntSpray].move.y += GRAVITY;
 
+				g_aSpray[nCntSpray].fWidth += MAX_SIZE;
+				g_aSpray[nCntSpray].fDepth += MAX_SIZE;
+
 				break;
 
 			case SPRAYTYPE_FLOW:
@@ -182,10 +185,19 @@ void UpdateSpray(void)
 				g_aSpray[nCntSpray].move.x += (0.0f - g_aSpray[nCntSpray].move.x) * 0.01f;
 				g_aSpray[nCntSpray].move.z += (0.0f - g_aSpray[nCntSpray].move.z) * 0.01f;
 
+				g_aSpray[nCntSpray].fWidth += MAX_SIZE;
+				g_aSpray[nCntSpray].fDepth += MAX_SIZE;
+
 				break;
 			}
 
 			g_aSpray[nCntSpray].pos += g_aSpray[nCntSpray].move;
+
+			// 頂点座標の設定
+			pVtx[0].pos = D3DXVECTOR3(-g_aSpray[nCntSpray].fWidth, g_aSpray[nCntSpray].fDepth, 0.0f);
+			pVtx[1].pos = D3DXVECTOR3(g_aSpray[nCntSpray].fWidth, g_aSpray[nCntSpray].fDepth, 0.0f);
+			pVtx[2].pos = D3DXVECTOR3(-g_aSpray[nCntSpray].fWidth, -g_aSpray[nCntSpray].fDepth, 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(g_aSpray[nCntSpray].fWidth, -g_aSpray[nCntSpray].fDepth, 0.0f);
 
 			// 頂点カラーの設定
 			pVtx[0].col = g_aSpray[nCntSpray].col;
