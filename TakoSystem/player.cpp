@@ -21,6 +21,7 @@
 #include "input.h"
 #include "time.h"
 #include "sound.h"
+#include "seaweed.h"
 #include "debugproc.h"
 #include "readygo.h"
 #include "spray.h"
@@ -806,6 +807,7 @@ void UpdatePlayer(void)
 
 			// “–‚½‚è”»’è
 			CollisionMeshField(pPlayer->pos, pPlayer->rot, pPlayer->fRadius, pPlayer->fHeight);
+			CollisionSeaweed(pPlayer->pos);
 			CollisionPot(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight);
 			CollisionObject(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight, false);
 			CollisionMeshCylinder(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight, false);
@@ -1020,9 +1022,9 @@ void SetRandomPlayer(int nAmount)
 		float fAngle = (D3DX_PI * 2.0f) * ((float)((nCntPlayer + 1) * (360.0f / nAmount)) / 360.0f);
 		//float fsin = sinf(fAngle);
 
-		pos.x = sinf(fAngle) * (INCYLINDER_RADIUS + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) + 1))));
+		pos.x = sinf(fAngle) * ((INCYLINDER_RADIUS * 1.5f) + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - (INCYLINDER_RADIUS * 1.5f)) + 1))));
 		pos.y = (float)(rand() % (int)(CYLINDER_HEIGHT * 0.6f)) + (CYLINDER_HEIGHT * 0.2f);
-		pos.z = cosf(fAngle) * (INCYLINDER_RADIUS + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) + 1))));
+		pos.z = cosf(fAngle) * ((INCYLINDER_RADIUS * 1.5f) + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - (INCYLINDER_RADIUS * 1.5f)) + 1))));
 
 		SetPlayer(nCntPlayer, pos, D3DXVECTOR3(0.0f, fAngle, 0.0f), MOTIONTYPE_NEUTRAL);
 	}

@@ -29,6 +29,7 @@ typedef struct
 	int nIdxModelParent;						// 親モデルのインデックス
 	D3DXVECTOR3 pos;							// 位置
 	D3DXVECTOR3 rot;							// 向き
+	D3DXVECTOR3 rotDest;						// 目的の向き
 	float fAngle;								// 自動ゆらゆら
 	D3DXVECTOR3 posOff;							// 位置(オフセット)
 	D3DXVECTOR3 rotOff;							// 向き(オフセット)
@@ -61,5 +62,6 @@ void DrawSeaweed(void);
 void SetSeaweed(D3DXVECTOR3 pos, int nLength);
 void SetRandomSeaweed(int nAmount);
 Seaweed* GetSeaweed(void);
+void CollisionSeaweed(D3DXVECTOR3 pos);
 
 #endif
