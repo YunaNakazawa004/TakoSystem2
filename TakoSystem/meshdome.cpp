@@ -15,7 +15,6 @@
 #define MOVEMENT				(D3DXVECTOR3(1.0f, 1.0f, 1.0f))			// 移動量
 #define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// 向き移動量
 #define FIRST_SIZE				(D3DXVECTOR2(0.0f, 0.0f))				// 初期サイズ
-#define MESHDOME_TEX			"data\\TEXTURE\\Sky_Texture.jpg"		// メッシュドームのテクスチャ
 
 //*****************************************************************************
 // メッシュドームの構造体
@@ -29,14 +28,25 @@ typedef struct
 	D3DXVECTOR2 block;						// 分割数
 	float fRadius;							// 半径
 	D3DXMATRIX mtxWorld;					// ワールドマトリックス
+	bool bInside;							// 内側かどうか
+	MESHDOMETYPE type;						// 種類
 	bool bUse;
 }MeshDome;
 
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
-LPDIRECT3DTEXTURE9 g_pTextureMeshDome = NULL;				// テクスチャへのポインタ
+LPDIRECT3DTEXTURE9 g_apTextureMeshDome[MESHDOMETYPE_MAX] = {};				// テクスチャへのポインタ
 MeshDome g_aMeshDome[MAX_MESHDOME];			// メッシュドームの情報
+
+//*****************************************************************************
+// テクスチャファイル名
+//*****************************************************************************
+const char* c_apFilenameMeshDome[MESHDOMETYPE_MAX] =
+{
+	"data\\TEXTURE\\Sky_Texture.jpg",
+	"data\\TEXTURE\\rock.jpg",
+};
 
 //=============================================================================
 // メッシュドームの初期化処理
@@ -47,7 +57,10 @@ void InitMeshDome(void)
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();			// デバイスへのポインタ
 
 	// テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice, MESHDOME_TEX, &g_pTextureMeshDome);
+	for (int nCntTex = 0; nCntTex < MESHDOMETYPE_MAX; nCntTex++)
+	{
+		D3DXCreateTextureFromFile(pDevice, c_apFilenameMeshDome[nCntTex], &g_apTextureMeshDome[nCntTex]);
+	}
 
 	// メッシュドーム情報の初期化
 	for (int nCntMeshDome = 0; nCntMeshDome < MAX_MESHDOME; nCntMeshDome++)
@@ -58,6 +71,8 @@ void InitMeshDome(void)
 		g_aMeshDome[nCntMeshDome].rot = FIRST_POS;
 		g_aMeshDome[nCntMeshDome].block = FIRST_SIZE;
 		g_aMeshDome[nCntMeshDome].fRadius = RADIUS_MESHDOME;
+		g_aMeshDome[nCntMeshDome].bInside = true;
+		g_aMeshDome[nCntMeshDome].type = MESHDOMETYPE_SKY;
 		g_aMeshDome[nCntMeshDome].bUse = false;
 	}
 }
@@ -68,10 +83,13 @@ void InitMeshDome(void)
 void UninitMeshDome(void)
 {
 	// テクスチャの破棄
-	if (g_pTextureMeshDome != NULL)
+	for (int nCntTex = 0; nCntTex < MESHDOMETYPE_MAX; nCntTex++)
 	{
-		g_pTextureMeshDome->Release();
-		g_pTextureMeshDome = NULL;
+		if (g_apTextureMeshDome[nCntTex] != NULL)
+		{
+			g_apTextureMeshDome[nCntTex]->Release();
+			g_apTextureMeshDome[nCntTex] = NULL;
+		}
 	}
 
 	for (int nCntMeshDome = 0; nCntMeshDome < MAX_MESHDOME; nCntMeshDome++)
@@ -136,7 +154,7 @@ void DrawMeshDome(void)
 			pDevice->SetFVF(FVF_VERTEX_3D);
 
 			// テクスチャの設定
-			pDevice->SetTexture(0, g_pTextureMeshDome);
+			pDevice->SetTexture(0, g_apTextureMeshDome[g_aMeshDome[nCntMeshDome].type]);
 
 			// ポリゴンの描画(FAN)
 			pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLEFAN, 0, 0, 
@@ -155,7 +173,7 @@ void DrawMeshDome(void)
 //=============================================================================
 // メッシュドームの設定処理
 //=============================================================================
-void SetMeshDome(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, float fRadius)
+void SetMeshDome(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, float fRadius, bool bInside, MESHDOMETYPE type)
 {
 	for (int nCntMeshDome = 0; nCntMeshDome < MAX_MESHDOME; nCntMeshDome++)
 	{
@@ -165,6 +183,8 @@ void SetMeshDome(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, float fRad
 			g_aMeshDome[nCntMeshDome].rot = rot;
 			g_aMeshDome[nCntMeshDome].block = block;
 			g_aMeshDome[nCntMeshDome].fRadius = fRadius;
+			g_aMeshDome[nCntMeshDome].bInside = bInside;
+			g_aMeshDome[nCntMeshDome].type = type;
 			g_aMeshDome[nCntMeshDome].bUse = true;
 
 			LPDIRECT3DDEVICE9 pDevice = GetDevice();			// デバイスへのポインタ
@@ -194,6 +214,9 @@ void SetMeshDome(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, float fRad
 					pVtx[0].pos.x = 0.0f;
 					pVtx[0].pos.y = g_aMeshDome[nCntMeshDome].fRadius;
 					pVtx[0].pos.z = 0.0f;
+
+					// テクスチャ座標の設定
+					pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
 				}
 				else
 				{// 真ん中以外
@@ -201,6 +224,9 @@ void SetMeshDome(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, float fRad
 					pVtx[0].pos.x = sinf(-nCntMeshDome1 * fAngleX) * g_aMeshDome[nCntMeshDome].fRadius * sinf(fAngleY);
 					pVtx[0].pos.y = cosf(-fAngleY) * g_aMeshDome[nCntMeshDome].fRadius;
 					pVtx[0].pos.z = cosf(-nCntMeshDome1 * fAngleX) * g_aMeshDome[nCntMeshDome].fRadius * sinf(fAngleY);
+
+					// テクスチャ座標の設定
+					pVtx[0].tex = D3DXVECTOR2(0.5f, 0.5f);
 				}
 
 				// rhwの設定
@@ -209,9 +235,6 @@ void SetMeshDome(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, float fRad
 
 				// 頂点カラーの設定
 				pVtx[0].col = WHITE_VTX;
-
-				// テクスチャ座標の設定
-				pVtx[0].tex = D3DXVECTOR2(0.0f, (float)nCntMeshDome1);
 
 				pVtx++;
 			}
