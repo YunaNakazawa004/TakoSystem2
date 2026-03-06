@@ -600,7 +600,7 @@ void UpdateTitle(void)
 		g_TitleDeley = TITLE_DELEY_MAX;
 	}
 
-	if (GetFade() == FADE_NONE || g_PressEnterDeley > RANKING_DELEY)
+	if (GetFade() == FADE_NONE && g_PressEnterDeley > RANKING_DELEY)
 	{// 時間経過でランキングへ移行
 
 		SetFade(MODE_LOGO);
