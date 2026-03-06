@@ -137,8 +137,6 @@ void InitPlayer(void)
 		pPlayer->nFrameBlend = 0;
 		pPlayer->nCounterBlend = 0;
 	}
-
-	SetRandomPlayer(GetNumCamera());
 }
 
 //=============================================================================
@@ -1025,7 +1023,7 @@ void SetRandomPlayer(int nAmount)
 	for (int nCntPlayer = 0; nCntPlayer < nAmount; nCntPlayer++)
 	{
 		D3DXVECTOR3 pos;
-		float fAngle = (D3DX_PI * 2.0f) * ((float)((nCntPlayer + 1) * (360.0f / nAmount)) / 360.0f);
+		float fAngle = (D3DX_PI * 2.0f) * ((float)((nCntPlayer) * (360.0f / nAmount)) / 360.0f);
 		//float fsin = sinf(fAngle);
 
 		pos.x = sinf(fAngle) * ((INCYLINDER_RADIUS * 1.5f) + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - (INCYLINDER_RADIUS * 1.5f)) + 1))));

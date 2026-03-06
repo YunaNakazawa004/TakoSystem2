@@ -417,18 +417,6 @@ void SetCameraPos(int nIdx, D3DXVECTOR3 posV, D3DXVECTOR3 posR, D3DXVECTOR3 rot,
 	pCamera[nIdx].posRDest = posR;
 	pCamera[nIdx].rot = rot;
 	pCamera[nIdx].type = type;
-
-	if (type == CAMERATYPE_PLAYER)
-	{// プレイヤーカメラだった場合
-		if (GetNumCamera() == 1 && nIdx == 0)
-		{// 1人
-			pCamera[nIdx].rot.y = D3DX_PI;
-		}
-		else if(GetNumCamera() == 2 && nIdx == 1)
-		{// 2人
-			pCamera[nIdx].rot.y = D3DX_PI;
-		}
-	}
 }
 
 //=============================================================================

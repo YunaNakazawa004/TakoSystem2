@@ -77,7 +77,7 @@ void InitGame(void)
 
 	// カメラの初期化処理
 	SetNumCamera(GetPlayerSelect());
-	SetCameraPos(0, FIRST_POS, FIRST_POS, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CAMERATYPE_PLAYER);
+	SetCameraPos(0, FIRST_POS, FIRST_POS, D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), CAMERATYPE_PLAYER);
 	SetCameraPos(1, FIRST_POS, FIRST_POS, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CAMERATYPE_PLAYER);
 
 	g_gameState = GAMESTATE_BEGIN;	// ゲームの状態を開始状態に設定
@@ -90,6 +90,7 @@ void InitGame(void)
 
 	// プレイヤーの初期化処理
 	InitPlayer();
+	SetRandomPlayer(GetNumCamera());
 
 	// CPUの初期化処理
 	InitComputer(); 
