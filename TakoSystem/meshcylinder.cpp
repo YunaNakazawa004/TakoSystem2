@@ -314,8 +314,17 @@ int SetMeshCylinder(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVEC
 					// 頂点カラーの設定
 					pVtx[0].col = col;
 
-					// テクスチャ座標の設定
-					pVtx[0].tex = D3DXVECTOR2((float)nCntMeshCylinder2, (float)nCntMeshCylinder1);
+					if (type == MESHCYLINDERTYPE_SEA)
+					{// 海
+						// テクスチャ座標の設定
+						pVtx[0].tex = D3DXVECTOR2((float)nCntMeshCylinder2, (float)nCntMeshCylinder1);
+					}
+					else
+					{// 岩とか
+						// テクスチャ座標の設定
+						pVtx[0].tex = D3DXVECTOR2((float)nCntMeshCylinder2 / g_aMeshCylinder[nCntMeshCylinder].block.x
+							, (float)nCntMeshCylinder1);
+					}
 
 					pVtx++;
 				}

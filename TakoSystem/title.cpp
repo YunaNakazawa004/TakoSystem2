@@ -247,7 +247,6 @@ void InitTitle(void)
 	InitObject("data\\objpos001.txt");	// 必ず最後(メッシュ後)に初期化する
 
 	// サウンドの再生
-
 	PlaySound(SOUND_BGM_TITLE);	
 }
 

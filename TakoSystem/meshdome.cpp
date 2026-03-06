@@ -130,6 +130,11 @@ void DrawMeshDome(void)
 	{
 		if (g_aMeshDome[nCntMeshDome].bUse == true)
 		{// 使用しているとき
+			if (g_aMeshDome[nCntMeshDome].bInside == false)
+			{// 内側じゃない
+				pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
+			}
+
 			// ワールドマトリックスの初期化
 			D3DXMatrixIdentity(&g_aMeshDome[nCntMeshDome].mtxWorld);
 
@@ -166,6 +171,9 @@ void DrawMeshDome(void)
 				((int)g_aMeshDome[nCntMeshDome].block.x + 1) * ((int)g_aMeshDome[nCntMeshDome].block.y + 1),
 				((int)g_aMeshDome[nCntMeshDome].block.x + 2),
 				(((int)g_aMeshDome[nCntMeshDome].block.x) * ((int)g_aMeshDome[nCntMeshDome].block.y) * 2) + (((int)g_aMeshDome[nCntMeshDome].block.y - 1) * 4));
+		
+			// 元に戻す（通常は裏面カリング）
+			pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 		}
 	}
 }

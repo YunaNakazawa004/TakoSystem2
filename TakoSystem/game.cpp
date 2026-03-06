@@ -106,6 +106,8 @@ void InitGame(void)
 	// メッシュドームの初期化処理
 	InitMeshDome();
 	SetMeshDome(FIRST_POS, FIRST_POS, D3DXVECTOR2(16.0f,5.0f), OUTCYLINDER_RADIUS * 2.5f, true, MESHDOMETYPE_SKY);
+	SetMeshDome(D3DXVECTOR3(0.0f, CYLINDER_HEIGHT, 0.0f), FIRST_POS,
+		D3DXVECTOR2(16.0f, 5.0f), INCYLINDER_RADIUS, false, MESHDOMETYPE_ROCK);
 
 	// メッシュフィールドの初期化処理
 	InitMeshField();
