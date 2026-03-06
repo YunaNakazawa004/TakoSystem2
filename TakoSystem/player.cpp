@@ -25,6 +25,7 @@
 #include "debugproc.h"
 #include "readygo.h"
 #include "spray.h"
+#include "bubble.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -136,8 +137,6 @@ void InitPlayer(void)
 		pPlayer->nFrameBlend = 0;
 		pPlayer->nCounterBlend = 0;
 	}
-
-	SetRandomPlayer(GetNumCamera());
 }
 
 //=============================================================================
@@ -395,14 +394,15 @@ void UpdatePlayer(void)
 
 							if (pEsa[nIdx].esaType != ESA_ACTTYPE_GOTO_POT)
 							{// タコつぼに入れてる最中じゃない
-								pEsa[nIdx].bUse = false;
-								DeleteMeshOrbit(pEsa[nIdx].nOrbitIdx);
-								pEsa[nIdx].nOrbitIdx = -1;
-								pEsa[nIdx].bOrbit = false;
-								SetAddUiEsa(nCntPlayer, pEsa[nIdx].nIdxModel);
 
-								pPlayer->nFood++;
-								Enqueue(&pPlayer->esaQueue, pEsa[nIdx].nIdxModel);
+								// エサの削除処理
+								int nIdxEsaType = DelEsa(nIdx, true, nCntPlayer);	// 削除したエサの種類を獲得
+
+								if (nIdxEsaType != -1)
+								{
+									pPlayer->nFood++;
+									Enqueue(&pPlayer->esaQueue, nIdxEsaType);
+								}
 							}
 						}
 						else if (CollisionPotArea(tentaclePos, TENTACLE_RADIUS * 0.5f, pPlayer, NULL, true) == true ||
@@ -616,7 +616,7 @@ void UpdatePlayer(void)
 				if (pPlayer->bLand == false)
 				{// ついてなかった場合
 					SetSprayCircle(D3DXVECTOR3(pPlayer->pos.x, pPlayer->pos.y + 30.0f, pPlayer->pos.z),
-						D3DXCOLOR(0.75f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_CIRCLE);
+						D3DXCOLOR(0.9f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_CIRCLE);
 
 					SetVibration(nCntPlayer, 10000, 10000, 3);
 
@@ -633,7 +633,7 @@ void UpdatePlayer(void)
 			if (pPlayer->pos.y < 10.0f && pPlayer->nCounter % FLOW_COUNT == 0 && pPlayer->bMove == true)
 			{// 地面に近かったら
 				SetSprayFlow(D3DXVECTOR3(pPlayer->pos.x, pPlayer->pos.y + 20.0f, pPlayer->pos.z), pPlayer->rot,
-					D3DXCOLOR(0.75f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_FLOW);
+					D3DXCOLOR(0.9f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_FLOW);
 
 				SetVibration(nCntPlayer, 3000, 2500, 2);
 			}
@@ -822,14 +822,15 @@ void UpdatePlayer(void)
 
 				if (pEsa[nIdx].esaType != ESA_ACTTYPE_GOTO_POT)
 				{// タコつぼに入れてる最中じゃない
-					pEsa[nIdx].bUse = false;
-					pEsa[nIdx].bOrbit = false;
-					DeleteMeshOrbit(pEsa[nIdx].nOrbitIdx);
-					pEsa[nIdx].nOrbitIdx = -1;
-					SetAddUiEsa(nCntPlayer, pEsa[nIdx].nIdxModel);
 
-					pPlayer->nFood++;
-					Enqueue(&pPlayer->esaQueue, pEsa[nIdx].nIdxModel);
+					// エサの削除処理
+					int nIdxEsaType = DelEsa(nIdx, true, nCntPlayer);	// 削除したエサの種類を獲得
+
+					if (nIdxEsaType != -1)
+					{
+						pPlayer->nFood++;
+						Enqueue(&pPlayer->esaQueue, nIdxEsaType);
+					}
 				}
 			}
 
@@ -1009,6 +1010,9 @@ void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType
 	pPlayer[nIdx].nCounterBlend = 0;
 
 	SetMotionPlayer(nIdx, MotionType, false, 0);
+
+	// 泡の設定
+	SetBubbleParticle(&pPlayer[nIdx].pos, true, -1, 30, 1, 30, 5.0f, 3.0f);
 }
 
 //=============================================================================
@@ -1019,7 +1023,7 @@ void SetRandomPlayer(int nAmount)
 	for (int nCntPlayer = 0; nCntPlayer < nAmount; nCntPlayer++)
 	{
 		D3DXVECTOR3 pos;
-		float fAngle = (D3DX_PI * 2.0f) * ((float)((nCntPlayer + 1) * (360.0f / nAmount)) / 360.0f);
+		float fAngle = (D3DX_PI * 2.0f) * ((float)((nCntPlayer) * (360.0f / nAmount)) / 360.0f);
 		//float fsin = sinf(fAngle);
 
 		pos.x = sinf(fAngle) * ((INCYLINDER_RADIUS * 1.5f) + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - (INCYLINDER_RADIUS * 1.5f)) + 1))));

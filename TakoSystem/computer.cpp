@@ -22,6 +22,7 @@
 #include "input.h"
 #include "debugproc.h"
 #include "spray.h"
+#include "bubble.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -530,14 +531,15 @@ void UpdateComputer(void)
 							pComputer->nFoodCount < pComputer->nMaxFood * CPU_TENTACLE &&
 							pComputer->motionType != MOTIONTYPE_OCEANCULLENT)
 						{// エサと接触した
-							Esa* pEsa = GetEsa();
-							pEsa[nIdx].bUse = false;
-							pEsa[nIdx].bOrbit = false;
-							DeleteMeshOrbit(pEsa[nIdx].nOrbitIdx);
-							pEsa[nIdx].nOrbitIdx = -1;
+							
+							// エサの削除処理
+							int nIdxEsaType = DelEsa(nIdx, false, -1);	// 削除したエサの種類を獲得
 
-							pComputer->nFoodCount++;
-							Enqueue(&pComputer->esaQueue, pEsa[nIdx].nIdxModel);
+							if (nIdxEsaType != -1)
+							{
+								pComputer->nFoodCount++;
+								Enqueue(&pComputer->esaQueue, nIdxEsaType);
+							}
 
 							pComputer->state = CPUSTATE_EXPLORE;
 						}
@@ -694,7 +696,7 @@ void UpdateComputer(void)
 				if (pComputer->bLand == false)
 				{// ついてなかった場合
 					SetSprayCircle(D3DXVECTOR3(pComputer->phys.pos.x, pComputer->phys.pos.y + 30.0f, pComputer->phys.pos.z),
-						D3DXCOLOR(0.75f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_CIRCLE);
+						D3DXCOLOR(0.9f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_CIRCLE);
 				}
 
 				pComputer->bLand = true;
@@ -707,7 +709,7 @@ void UpdateComputer(void)
 			if (pComputer->phys.pos.y < 10.0f && pComputer->nCounter % FLOW_COUNT == 0)
 			{// 地面に近かったら
 				SetSprayFlow(D3DXVECTOR3(pComputer->phys.pos.x, pComputer->phys.pos.y + 20.0f, pComputer->phys.pos.z), pComputer->phys.rot,
-					D3DXCOLOR(0.75f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_FLOW);
+					D3DXCOLOR(0.9f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_FLOW);
 			}
 
 			if (pComputer->phys.pos.y > *GetWaterSurf_Height() - CPU_HEIGHT)
@@ -802,13 +804,15 @@ void UpdateComputer(void)
 
 				if (pEsa[nIdx].esaType != ESA_ACTTYPE_GOTO_POT)
 				{// タコつぼに入れてる最中じゃない
-					pEsa[nIdx].bUse = false;
-					pEsa[nIdx].bOrbit = false;
-					DeleteMeshOrbit(pEsa[nIdx].nOrbitIdx);
-					pEsa[nIdx].nOrbitIdx = -1;
 
-					pComputer->nFoodCount++;
-					Enqueue(&pComputer->esaQueue, pEsa[nIdx].nIdxModel);
+					// エサの削除処理
+					int nIdxEsaType = DelEsa(nIdx, false, -1);	// 削除したエサの種類を獲得
+
+					if (nIdxEsaType != -1)
+					{
+						pComputer->nFoodCount++;
+						Enqueue(&pComputer->esaQueue, nIdxEsaType);
+					}
 				}
 			}
 

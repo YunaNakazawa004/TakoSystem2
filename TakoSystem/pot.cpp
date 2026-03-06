@@ -206,10 +206,9 @@ void UpdatePot(void)
 
 				if (pEsa[nIdx].esaType == ESA_ACTTYPE_GOTO_POT)
 				{// タコつぼに入れてる最中
-					pEsa[nIdx].bUse = false;
-					pEsa[nIdx].bOrbit = false;
-					DeleteMeshOrbit(pEsa[nIdx].nOrbitIdx);
-					pEsa[nIdx].nOrbitIdx = -1;
+					
+					// エサの削除処理
+					DelEsa(nIdx, false, -1);	// 削除したエサの種類を獲得
 				}
 			}
 

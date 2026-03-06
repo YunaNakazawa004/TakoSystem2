@@ -9,7 +9,7 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define NUM_TUTORIALTXT			(2)										// チュートリアルテキストの数
+#define NUM_TUTORIALTXT			(3)										// チュートリアルテキストの数
 #define MOVEMENT				(D3DXVECTOR3(1.0f, 1.0f, 1.0f))			// 移動量
 #define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// 向き移動量
 
@@ -37,6 +37,7 @@ const char* c_apFilernamaTutorialTxt[NUM_TUTORIALTXT] =
 {
 	"data\\TEXTURE\\tutorialtxt000.png",
 	"data\\TEXTURE\\tutorialtxt001.png",
+	"data\\TEXTURE\\tutorialtxt002.png",
 };
 
 //=============================================================================
@@ -107,6 +108,7 @@ void InitTutorialTxt(void)
 	// 頂点バッファをアンロックする
 	g_pVtxBuffTutorialTxt->Unlock();
 
+	SetTutorialTxt(D3DXVECTOR3(0.0f, 700.0f, -600.0f));
 	SetTutorialTxt(D3DXVECTOR3(750.0f, 700.0f, 0.0f));
 	SetTutorialTxt(D3DXVECTOR3(-750.0f, 700.0f, 0.0f));
 }

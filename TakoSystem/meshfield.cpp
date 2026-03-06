@@ -212,12 +212,10 @@ void DrawMeshField(void)
 			// テクスチャの設定
 			if (g_aMeshField[nCntMeshField].type != -1 && g_aMeshField[nCntMeshField].type < MESHFIELDTYPE_MAX)
 			{// テクスチャがある場合
-
 				pDevice->SetTexture(0, g_apTextureMeshField[g_aMeshField[nCntMeshField].type]);
 			}
 			else
 			{
-
 				pDevice->SetTexture(0, NULL);
 			}
 

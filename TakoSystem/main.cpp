@@ -716,7 +716,7 @@ void SetFog(D3DXCOLOR col, float fFogStart, float fFogEnd, bool bUse)
 	g_pD3DDevice->SetRenderState(D3DRS_FOGCOLOR, col);
 
 	// バーテックスフォグ(線形公式)を使用
-	g_pD3DDevice->SetRenderState(D3DRS_FOGTABLEMODE, D3DFOG_LINEAR);		// D3DRS_FOGTABLEMODE (ピクセルフォグ) / D3DRS_FOGVERTEXMODE (バーテックスフォグ)
+	g_pD3DDevice->SetRenderState(D3DRS_FOGVERTEXMODE, D3DFOG_LINEAR);		// D3DRS_FOGTABLEMODE (ピクセルフォグ) / D3DRS_FOGVERTEXMODE (バーテックスフォグ)
 
 	// フォグ範囲設定
 	g_pD3DDevice->SetRenderState(D3DRS_FOGSTART, *((LPDWORD)(&fFogStart)));

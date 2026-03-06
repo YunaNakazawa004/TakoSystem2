@@ -37,6 +37,8 @@
 #include "tutorialtxt.h"
 #include "spray.h"
 #include "seaweed.h"
+#include "bubble.h"
+#include "spotlight.h"
 
 // マクロ定義
 #define	MAX_TUTORIAL	(3)	// タイトルで表示するテクスチャの最大数
@@ -55,6 +57,9 @@ void InitTutorial(void)
 	SetLightColor(1, D3DXCOLOR(0.4f, 0.5f, 0.7f, 0.7f));
 	SetLightColor(2, D3DXCOLOR(0.1f, 0.1f, 0.3f, 0.3f));
 
+	// スポットライトの設定
+	InitSpotLight();
+
 	// カメラの初期化処理
 	SetNumCamera(GetPlayerSelect());
 	SetCameraPos(0, FIRST_POS, FIRST_POS, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CAMERATYPE_PLAYER);
@@ -63,8 +68,20 @@ void InitTutorial(void)
 	// メッシュオービットの初期化処理
 	InitMeshOrbit();
 
+	// 泡の初期化
+	InitBubble();
+
 	// プレイヤーの初期化処理
 	InitPlayer();
+	if (GetPlayerSelect() == 1)
+	{// 1人
+		SetPlayer(0, D3DXVECTOR3(0.0f, 500.0f, -1000.0f), D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), MOTIONTYPE_NEUTRAL);
+	}
+	else
+	{// 2人
+		SetPlayer(0, D3DXVECTOR3(200.0f, 500.0f, -1000.0f), D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), MOTIONTYPE_NEUTRAL);
+		SetPlayer(1, D3DXVECTOR3(-200.0f, 500.0f, -1000.0f), D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), MOTIONTYPE_NEUTRAL);
+	}
 
 	// CPUの初期化処理
 	InitComputer();
@@ -75,7 +92,9 @@ void InitTutorial(void)
 
 	// メッシュドームの初期化処理
 	InitMeshDome();
-	SetMeshDome(FIRST_POS, FIRST_POS, D3DXVECTOR2(16.0f, 5.0f), OUTCYLINDER_RADIUS * 2.5f);
+	SetMeshDome(FIRST_POS, FIRST_POS, D3DXVECTOR2(16.0f, 5.0f), OUTCYLINDER_RADIUS * 2.5f, true, MESHDOMETYPE_SKY);
+	SetMeshDome(D3DXVECTOR3(0.0f,CYLINDER_HEIGHT, 0.0f), FIRST_POS, 
+		D3DXVECTOR2(16.0f, 5.0f), INCYLINDER_RADIUS, false, MESHDOMETYPE_ROCK);
 
 	// メッシュフィールドの初期化処理
 	InitMeshField();
@@ -112,6 +131,8 @@ void InitTutorial(void)
 
 	// 海藻の初期化処理
 	InitSeaweed();
+
+
 
 	// チュートリアルテキストの初期化処理
 	InitTutorialTxt();
@@ -172,7 +193,7 @@ void InitTutorial(void)
 			pVtx[2].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 			pVtx[3].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		}
-		else if(nCntTutorial == 1)
+		else if (nCntTutorial == 1)
 		{// RESULTロゴ
 			pVtx[0].pos = D3DXVECTOR3(460.0f, 0.0f, 0.0f);	// 右回りで設定する
 			pVtx[1].pos = D3DXVECTOR3(820.0f, 0.0f, 0.0f);	// 2Dの場合Zの値は0にする
@@ -234,6 +255,9 @@ void UninitTutorial(void)
 	// サウンドの停止
 	StopSound();
 
+	// スポットライトの終了処理
+	UninitSpotLight();
+
 	// プレイヤーの終了処理
 	UninitPlayer();
 
@@ -247,10 +271,10 @@ void UninitTutorial(void)
 	UninitMeshDome();
 
 	// メッシュフィールドの終了処理
-	UninitMeshField(); 
+	UninitMeshField();
 
 	// メッシュリングの終了処理
-	UninitMeshRing(); 
+	UninitMeshRing();
 
 	// 塵の終了処理
 	UninitSeaDust();
@@ -259,7 +283,7 @@ void UninitTutorial(void)
 	UninitSpray();
 
 	// 3Dエフェクトの終了処理
-	UninitEffect3D(); 
+	UninitEffect3D();
 
 	// 3Dパーティクルの終了処理
 	UninitParticle3D();
@@ -268,13 +292,13 @@ void UninitTutorial(void)
 	UninitFishes();
 
 	// タコつぼの終了処理
-	UninitPot(); 
+	UninitPot();
 
 	// エサの終了処理
-	UninitEsa(); 
+	UninitEsa();
 
 	// メッシュオービットの終了処理
-	UninitMeshOrbit(); 
+	UninitMeshOrbit();
 
 	// 水面の終了処理
 	UninitWaterSurf();
@@ -285,17 +309,20 @@ void UninitTutorial(void)
 	// 海藻の終了処理
 	UninitSeaweed();
 
+	// 泡の終了
+	UninitBubble();
+
 	// チュートリアルテキストの終了処理
 	UninitTutorialTxt();
 
 	// クロスヘアの終了処理
-	UninitCrossHair(); 
+	UninitCrossHair();
 
 	// UIゲージアイコンの終了処理
-	UninitUiGaugeIcon(); 
+	UninitUiGaugeIcon();
 
 	// エサUIの終了処理
-	UninitUiEsa(); 
+	UninitUiEsa();
 
 	// マップの終了処理
 	UninitMap();
@@ -327,6 +354,9 @@ void UninitTutorial(void)
 //===================================================================
 void UpdateTutorial(void)
 {
+	// スポットライトの更新処理
+	UpdateSpotLight();
+
 	// プレイヤーの更新処理
 	UpdatePlayer();
 
@@ -377,6 +407,9 @@ void UpdateTutorial(void)
 
 	// 海藻の更新処理
 	UpdateSeaweed();
+
+	// 泡の更新
+	UpdateBubble();
 
 	// チュートリアルテキストの更新処理
 	UpdateTutorialTxt();
@@ -464,6 +497,11 @@ void DrawTutorial(void)
 
 	// 水面の描画処理
 	DrawWaterSurf();
+
+	// 泡の描画
+	DrawBubble();
+
+	SetFog(WHITE_VTX, 0.0f, 0.0f, false);
 
 	// チュートリアルテキストの描画処理
 	DrawTutorialTxt();

@@ -176,7 +176,7 @@ void UpdateEffect3D(void)
 
 	// 3Dエフェクトの表示切り替え
 #ifdef _DEBUG
-	if (GetKeyboardTrigger(DIK_F2) || GetJoypadTrigger(0,JOYKEY_LEFT_SHOULDER))
+	if (GetKeyboardTrigger(DIK_F2) /*|| GetJoypadTrigger(0,JOYKEY_LEFT_SHOULDER)*/)
 	{
 		g_bDispEffect3D = (g_bDispEffect3D == true) ? false : true;
 	}

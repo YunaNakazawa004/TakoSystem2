@@ -37,6 +37,9 @@
 
 #include "effect_3d.h"
 #include "particle_3d.h"
+#include "bubble.h"
+
+#include "spotlight.h"
 #include "spray.h"
 #include "pause.h"
 #include "input.h"
@@ -69,9 +72,12 @@ void InitGame(void)
 	SetLightColor(1, D3DXCOLOR(0.4f, 0.5f, 0.7f, 0.7f));
 	SetLightColor(2, D3DXCOLOR(0.1f, 0.1f, 0.3f, 0.3f));
 
+	// スポットライトの設定
+	InitSpotLight();
+
 	// カメラの初期化処理
 	SetNumCamera(GetPlayerSelect());
-	SetCameraPos(0, FIRST_POS, FIRST_POS, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CAMERATYPE_PLAYER);
+	SetCameraPos(0, FIRST_POS, FIRST_POS, D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), CAMERATYPE_PLAYER);
 	SetCameraPos(1, FIRST_POS, FIRST_POS, D3DXVECTOR3(0.0f, 0.0f, 0.0f), CAMERATYPE_PLAYER);
 
 	g_gameState = GAMESTATE_BEGIN;	// ゲームの状態を開始状態に設定
@@ -79,8 +85,12 @@ void InitGame(void)
 	// メッシュオービットの初期化処理
 	InitMeshOrbit(); 
 
+	// 泡の初期化
+	InitBubble();
+
 	// プレイヤーの初期化処理
 	InitPlayer();
+	SetRandomPlayer(GetNumCamera());
 
 	// CPUの初期化処理
 	InitComputer(); 
@@ -95,7 +105,9 @@ void InitGame(void)
 
 	// メッシュドームの初期化処理
 	InitMeshDome();
-	SetMeshDome(FIRST_POS, FIRST_POS, D3DXVECTOR2(16.0f,5.0f), OUTCYLINDER_RADIUS * 2.5f);
+	SetMeshDome(FIRST_POS, FIRST_POS, D3DXVECTOR2(16.0f,5.0f), OUTCYLINDER_RADIUS * 2.5f, true, MESHDOMETYPE_SKY);
+	SetMeshDome(D3DXVECTOR3(0.0f, CYLINDER_HEIGHT, 0.0f), FIRST_POS,
+		D3DXVECTOR2(16.0f, 5.0f), INCYLINDER_RADIUS, false, MESHDOMETYPE_ROCK);
 
 	// メッシュフィールドの初期化処理
 	InitMeshField();
@@ -179,6 +191,9 @@ void UninitGame(void)
 	// サウンドの停止
 	StopSound();
 
+	// スポットライトの終了処理
+	UninitSpotLight();
+
 	// プレイヤーの終了処理
 	UninitPlayer();
 
@@ -227,6 +242,9 @@ void UninitGame(void)
 	// メッシュオービットの終了処理
 	UninitMeshOrbit();
 
+	// 泡の終了
+	UninitBubble();
+
 	// 水面の終了処理
 	UninitWaterSurf();
 
@@ -263,6 +281,9 @@ void UninitGame(void)
 //===================================================================
 void UpdateGame(void)
 {
+	// スポットライトの更新処理
+	UpdateSpotLight();
+
 	// フェード情報の取得
 	//FADE pFade = GetFade();
 	bool bGameStart = GetGameStart();
@@ -320,7 +341,7 @@ void UpdateGame(void)
 	}
 
 	// レディの更新処理
-	UpdateReady(); FileLogPass("ready");
+	UpdateReady();
 
 #ifdef _DEBUG
 #if 0
@@ -367,7 +388,7 @@ void UpdateGame(void)
 	{// ポーズしている場合
 
 		// ポーズの更新処理
-		UpdatePause(); FileLogPass("pause");
+		UpdatePause();
 	}
 	else
 	{// ポーズしていない場合
@@ -376,77 +397,77 @@ void UpdateGame(void)
 		if (bGameStart == true)
 		{
 			// CPUの更新処理
-			UpdateComputer(); FileLogPass("computer");
+			UpdateComputer(); 
 
 			// 水面の更新処理
-			UpdateWaterSurf(); FileLogPass("waterserf");
+			UpdateWaterSurf(); 
 
 			// クロスヘアの更新処理
-			UpdateCrossHair(); FileLogPass("crosshair");
+			UpdateCrossHair();
 
 			// UIゲージアイコンの更新処理
-			UpdateUiGaugeIcon(); FileLogPass("gaugeicon");
+			UpdateUiGaugeIcon();
 
 			// エサUIの更新処理
-			UpdateUiEsa(); FileLogPass("uiesa");
+			UpdateUiEsa(); 
 
 			// 時間の更新処理
-			UpdateTime(); FileLogPass("time");
+			UpdateTime(); 
 
 			// 海流の更新処理
-			UpdateOceanCurrents(); FileLogPass("ocean_c");
+			UpdateOceanCurrents();
 		}
 
 		// プレイヤーの更新処理
-		UpdatePlayer(); FileLogPass("player");
+		UpdatePlayer(); 
 
 		// ステージの更新処理
 		//UpdateStage();
 
 		// 配置物の更新処理
-		UpdateObject(); FileLogPass("object");
+		UpdateObject();
 
 		// 海藻の更新処理
 		UpdateSeaweed();
 
 		// メッシュシリンダーの更新処理
-		UpdateMeshCylinder(); FileLogPass("mesh_cy");
+		UpdateMeshCylinder();
 
 		// メッシュドームの更新処理
-		UpdateMeshDome(); FileLogPass("mesh_do");
+		UpdateMeshDome(); 
 
 		// メッシュフィールドの更新処理
-		UpdateMeshField(); FileLogPass("mesh_fi");
+		UpdateMeshField();
 
 		// メッシュリングの更新処理
-		UpdateMeshRing(); FileLogPass("mesh_ri");
+		UpdateMeshRing(); 
 
 		// 塵の更新処理
-		UpdateSeaDust(); FileLogPass("setdest");
+		UpdateSeaDust();
 
 		// 飛沫の更新処理
 		UpdateSpray();
 
 		// 3Dエフェクトの更新処理
-		UpdateEffect3D(); FileLogPass("effect");
+		UpdateEffect3D(); 
 
 		// 3Dパーティクルの更新処理
-		UpdateParticle3D(); FileLogPass("particle");
-
-		// 生き物の更新処理
-		//UpdateFishes(); FileLogPass("fishee");
+		UpdateParticle3D();
 
 		// タコつぼの更新処理
-		UpdatePot(); FileLogPass("pot");
+		UpdatePot();
 
 		// エサの更新処理
-		UpdateEsa(); FileLogPass("esa");
+		UpdateEsa();
 
 		// マップの更新処理
-		UpdateMap(); FileLogPass("map");
+		UpdateMap(); 
 
 		// メッシュオービットの更新処理
-		UpdateMeshOrbit(); FileLogPass("obit");
+		UpdateMeshOrbit();
+
+		// 泡の更新
+		UpdateBubble();
 #endif
 	}
 
@@ -500,8 +521,8 @@ void DrawGame(void)
 	// 3Dパーティクルの描画処理
 	DrawParticle3D();
 
-	// 生き物の描画処理
-	//DrawFishes();
+	// 泡の描画
+	DrawBubble();
 
 	// タコつぼの描画処理
 	DrawPot();
@@ -514,6 +535,8 @@ void DrawGame(void)
 
 	// 水面の描画処理
 	DrawWaterSurf();
+
+	SetFog(WHITE_VTX, 0.0f, 0.0f, false);
 
 	// レディの描画処理
 	DrawReady();

@@ -25,6 +25,8 @@ typedef struct
 	D3DXVECTOR2 block;						// 分割数
 	D3DXMATRIX mtxWorld;
 	D3DXVECTOR2 size;						// サイズ
+	D3DXVECTOR3 posPoint;					// 位置補正情報
+	float fHeight[5000];					// 高さ情報の保存先
 	bool bUse;								// 使用しているか
 	bool bUp;								// 上昇か
 }WaterSurf;
@@ -42,7 +44,7 @@ WaterSurf g_aWatersurf[MAX_WATERSURF];
 void InitWaterSurf(void)
 {
 	LPDIRECT3DDEVICE9 pDevice;		// デバイスへのポインタ
-	float pRadius = 1000.0f;
+	float pRadius = 4000.0f;
 
 	// デバイスの取得
 	pDevice = GetDevice();
@@ -62,11 +64,13 @@ void InitWaterSurf(void)
 		g_aWatersurf[nCntSurf].block = { 1,1 };						// 分割数
 		g_aWatersurf[nCntSurf].mtxWorld;
 		g_aWatersurf[nCntSurf].size = { 1.0f,1.0f };				// サイズ
+		g_aWatersurf[nCntSurf].posPoint = FIRST_POS;
+		memset(&g_aWatersurf[nCntSurf].fHeight, 0, sizeof(float[5000]));
 		g_aWatersurf[nCntSurf].bUse = false;						// 使用しているか
 		g_aWatersurf[nCntSurf].bUp = false;							// 上昇か
 	}
 
-	SetWaterSurf({ 0.0f,CYLINDER_HEIGHT,0.0f }, { 0.0f,0.0f,0.0f }, { 4,4 }, { pRadius * 2, pRadius * 2 }, D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.4f));
+	SetWaterSurf({ 0.0f,CYLINDER_HEIGHT,0.0f }, { 0.0f,0.0f,0.0f }, { 64,64 }, { (pRadius * 2) / 64, (pRadius * 2) / 64 }, D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.4f));
 }
 
 //=========================================
@@ -137,12 +141,31 @@ void UpdateWaterSurf(void)
 				g_aWatersurf[nCntWaterSurf].pos.y -= CYLINDER_HEIGHT / 10000;
 			}
 
-			for (int nCntWaterSurf1 = 0; nCntWaterSurf1 < ((int)g_aWatersurf[nCntWaterSurf].block.x + 1) * ((int)g_aWatersurf[nCntWaterSurf].block.y + 1); nCntWaterSurf1++)
+			// 頂点情報の設定
+			for (int nCntWaterSurf1 = 0; nCntWaterSurf1 < (int)g_aWatersurf[nCntWaterSurf].block.y + 1; nCntWaterSurf1++)
 			{
-				pVtx[0].tex.x += move.x;
-				pVtx[0].tex.y += move.y;
+				for (int nCntWaterSurf2 = 0; nCntWaterSurf2 < (int)g_aWatersurf[nCntWaterSurf].block.x + 1; nCntWaterSurf2++)
+				{
+					g_aWatersurf[nCntWaterSurf].posPoint.x += 0.98f;
+					g_aWatersurf[nCntWaterSurf].posPoint.z += 0.98f;
+					CorrectAngle(&g_aWatersurf[nCntWaterSurf].posPoint.x, g_aWatersurf[nCntWaterSurf].posPoint.x);
+					CorrectAngle(&g_aWatersurf[nCntWaterSurf].posPoint.z, g_aWatersurf[nCntWaterSurf].posPoint.z);
 
-				pVtx++;
+					// 頂点座標の設定
+					pVtx[0].pos.x = -((g_aWatersurf[nCntWaterSurf].block.x * g_aWatersurf[nCntWaterSurf].size.x) * 0.5f) + (nCntWaterSurf2 * g_aWatersurf[nCntWaterSurf].size.x)
+						+ (sinf(g_aWatersurf[nCntWaterSurf].posPoint.x) * 2.0f);
+					pVtx[0].pos.z = ((g_aWatersurf[nCntWaterSurf].block.y * g_aWatersurf[nCntWaterSurf].size.y) * 0.5f) - (nCntWaterSurf1 * g_aWatersurf[nCntWaterSurf].size.y)
+						+ (cosf(g_aWatersurf[nCntWaterSurf].posPoint.z) * 2.0f);
+
+					g_aWatersurf[nCntWaterSurf].posPoint.y = pVtx[0].pos.y;
+					pVtx[0].pos.y += (g_aWatersurf[nCntWaterSurf].fHeight[nCntWaterSurf2 + (nCntWaterSurf1 * ((int)g_aWatersurf[nCntWaterSurf].block.x + 1))]
+						- g_aWatersurf[nCntWaterSurf].posPoint.y) * 0.05f;
+
+					pVtx[0].tex.x += move.x;
+					pVtx[0].tex.y += move.y;
+
+					pVtx++;
+				}
 			}
 
 			// 頂点バッファをアンロックする
@@ -214,6 +237,8 @@ void SetWaterSurf(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVECTO
 			g_aWatersurf[nCntWaterSurf].rot = rot;
 			g_aWatersurf[nCntWaterSurf].block = block;
 			g_aWatersurf[nCntWaterSurf].size = size;
+			g_aWatersurf[nCntWaterSurf].posPoint = FIRST_POS;
+			memset(&g_aWatersurf[nCntWaterSurf].fHeight, 0, sizeof(float[5000]));
 			g_aWatersurf[nCntWaterSurf].bUse = true;
 
 			LPDIRECT3DDEVICE9 pDevice = GetDevice();			// デバイスへのポインタ
@@ -248,7 +273,7 @@ void SetWaterSurf(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVECTO
 					pVtx[0].col = col;
 
 					// テクスチャ座標の設定
-					pVtx[0].tex = D3DXVECTOR2((float)nCntWaterSurf2, (float)nCntWaterSurf1);
+					pVtx[0].tex = D3DXVECTOR2((float)nCntWaterSurf2 / 5.0f, (float)nCntWaterSurf1 / 5.0f);
 
 					pVtx++;
 				}

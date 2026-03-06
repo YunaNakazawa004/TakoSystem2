@@ -439,8 +439,7 @@ void UpdateResult(void)
 	SetFade(MODE_RANKING);
 	return;
 #endif
-	// リザルトの獲得スコアUIの更新
-	UpdateUiResultGetScore();
+	
 
 #if _DEBUG	// デバッグ
 #if 0
@@ -690,6 +689,9 @@ void UpdateResult(void)
 #endif
 		}
 	}
+
+	// リザルトの獲得スコアUIの更新
+	UpdateUiResultGetScore();
 
 	// 次のモードへの移動処理
 #if 1

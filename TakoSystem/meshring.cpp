@@ -38,6 +38,12 @@ typedef struct
 LPDIRECT3DTEXTURE9 g_pTextureMeshRing = NULL;				// テクスチャへのポインタ
 MeshRing g_aMeshRing[MAX_MESHRING];			// メッシュリングの情報
 
+const char* g_apFilenameMeshRing[] =
+{
+	"data\\TEXTURE\\ski000.jpg",
+
+};
+
 //=============================================================================
 // メッシュリングの初期化処理
 //=============================================================================
