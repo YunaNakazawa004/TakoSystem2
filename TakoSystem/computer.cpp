@@ -22,6 +22,7 @@
 #include "input.h"
 #include "debugproc.h"
 #include "spray.h"
+#include "bubble.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -530,14 +531,15 @@ void UpdateComputer(void)
 							pComputer->nFoodCount < pComputer->nMaxFood * CPU_TENTACLE &&
 							pComputer->motionType != MOTIONTYPE_OCEANCULLENT)
 						{// エサと接触した
-							Esa* pEsa = GetEsa();
-							pEsa[nIdx].bUse = false;
-							pEsa[nIdx].bOrbit = false;
-							DeleteMeshOrbit(pEsa[nIdx].nOrbitIdx);
-							pEsa[nIdx].nOrbitIdx = -1;
+							
+							// エサの削除処理
+							int nIdxEsaType = DelEsa(nIdx, false, -1);	// 削除したエサの種類を獲得
 
-							pComputer->nFoodCount++;
-							Enqueue(&pComputer->esaQueue, pEsa[nIdx].nIdxModel);
+							if (nIdxEsaType != -1)
+							{
+								pComputer->nFoodCount++;
+								Enqueue(&pComputer->esaQueue, nIdxEsaType);
+							}
 
 							pComputer->state = CPUSTATE_EXPLORE;
 						}
@@ -802,13 +804,15 @@ void UpdateComputer(void)
 
 				if (pEsa[nIdx].esaType != ESA_ACTTYPE_GOTO_POT)
 				{// タコつぼに入れてる最中じゃない
-					pEsa[nIdx].bUse = false;
-					pEsa[nIdx].bOrbit = false;
-					DeleteMeshOrbit(pEsa[nIdx].nOrbitIdx);
-					pEsa[nIdx].nOrbitIdx = -1;
 
-					pComputer->nFoodCount++;
-					Enqueue(&pComputer->esaQueue, pEsa[nIdx].nIdxModel);
+					// エサの削除処理
+					int nIdxEsaType = DelEsa(nIdx, false, -1);	// 削除したエサの種類を獲得
+
+					if (nIdxEsaType != -1)
+					{
+						pComputer->nFoodCount++;
+						Enqueue(&pComputer->esaQueue, nIdxEsaType);
+					}
 				}
 			}
 

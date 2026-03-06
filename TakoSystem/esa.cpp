@@ -12,12 +12,15 @@
 #include "debugproc.h"
 
 #include "effect_3d.h"
+#include "bubble.h"
 
 #include "meshcylinder.h"
 #include "meshorbit.h"
 #include "watersurf.h"
 #include "player.h"
 #include "pot.h"
+
+#include "ui_esa.h"
 
 #include "oceancurrents.h"
 
@@ -76,7 +79,14 @@ void InitEsa(bool bSet)
 {
 	// 変数宣言 ===========================================
 
-	int nCntEsa;
+	int nCntEsa;	// カウンタ
+
+	// 設定項目
+	int nSetType;		// 設定する種類
+	float fRandRadius;	// 設定する中心からの距離
+	float fRandAngle;	// 設定する角度
+	float fRandHeight;	// 設定する高さ
+	int nIdx;			// 設定したインデックス
 
 	// ====================================================
 
@@ -93,6 +103,7 @@ void InitEsa(bool bSet)
 	for (nCntEsa = 0; nCntEsa < MAX_SET_ESA; nCntEsa++)
 	{
 		g_aEsa[nCntEsa].nIdxModel = -1;							// モデルのインデックスを初期化
+		g_aEsa[nCntEsa].nIdxBubble = -1;						// 泡のインデックスを初期化
 		g_aEsa[nCntEsa].nOrbitIdx = -1;							// 軌跡のインデックスを初期化
 		g_aEsa[nCntEsa].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 位置を初期化
 		g_aEsa[nCntEsa].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 角度を初期化
@@ -132,10 +143,10 @@ void InitEsa(bool bSet)
 		for (nCntEsa = 0; nCntEsa < 30; nCntEsa++)
 		{// 配置する数だけ繰り返す
 
-			int nSetType = rand() % g_nNumEsatype;																// ランダムで種類を設定
-			float fRandRadius =(float)(rand() % (int)(OUTCYLINDER_RADIUS - 100.0f) + (int)INCYLINDER_RADIUS);			// 中心からの距離を設定
-			float fRandAngle = ((float)(rand() % ((int)(D3DX_PI * 2000)) - (int)(D3DX_PI * 1000))) / 1000.0f;	// 角度(xy位置)を設定
-			float fRandHeight = (float)(rand() % (int)CYLINDER_HEIGHT);													// 高さを設定
+			nSetType = rand() % g_nNumEsatype;																// ランダムで種類を設定
+			fRandRadius =(float)(rand() % (int)(OUTCYLINDER_RADIUS - 100.0f) + (int)INCYLINDER_RADIUS);	// 中心からの距離を設定
+			fRandAngle = ((float)(rand() % ((int)(D3DX_PI * 2000)) - (int)(D3DX_PI * 1000))) / 1000.0f;	// 角度(xy位置)を設定
+			fRandHeight = (float)(rand() % (int)CYLINDER_HEIGHT);											// 高さを設定
 
 			// 位置を設定
 			D3DXVECTOR3 setPos = D3DXVECTOR3(sinf(fRandAngle) * fRandRadius,
@@ -143,7 +154,6 @@ void InitEsa(bool bSet)
 											 cosf(fRandAngle) * fRandRadius);
 
 			// エサの設定処理
-
 			SetEsa(nSetType, true, ESA_ACTTYPE_SWIM, 0, setPos, D3DXVECTOR3(0.0f,0.0f,0.0f));
 		}
 
@@ -480,6 +490,8 @@ int SetEsa(int nEsaType, bool bSetOrbit, ESA_ACTTYPE esaType, int nBehavior, D3D
 			g_aEsa[nCntEsa].bDisp = true;							// 表示している状態に設定
 			g_aEsa[nCntEsa].bUse = true;							// 使用している状態に設定
 
+			// 泡の設定
+			g_aEsa[nCntEsa].nIdxBubble = SetBubbleParticle(&g_aEsa[nCntEsa].pos, true, -1, 10, 1, 30, 5.0f, 3.0f);
 
 			return nCntEsa;	// 設定した場所を返す
 		}
@@ -498,6 +510,43 @@ void ChangeEsaState(int nIdxEsa, ESA_ACTTYPE changeState, int nValue)
 
 		g_aEsa[nIdxEsa].esaType = changeState;	// 挙動の状態を設定
 		g_aEsa[nIdxEsa].nNumBehavior = nValue;	// 挙動の値を設定
+	}
+}
+
+//========================================================================
+// エサの削除処理
+//========================================================================
+int DelEsa(int nIdxEsa, bool bPlayer, int nIdxPlayer)
+{
+	if (g_aEsa[nIdxEsa].bUse == true)
+	{// 使用されている場合
+
+		g_aEsa[nIdxEsa].bUse = false;	// 使用していない状態に設定
+		g_aEsa[nIdxEsa].bOrbit = false;	// 軌道状態をOFFに設定
+		g_aEsa[nIdxEsa].nOrbitIdx = -1;	// 軌道のインデックスを初期化
+
+		// オービットの削除
+		DeleteMeshOrbit(g_aEsa[nIdxEsa].nOrbitIdx);
+
+		if (g_aEsa[nIdxEsa].nIdxBubble != -1)
+		{// インデックスがある場合
+
+			// 泡パーティクルの削除
+			DelBubbleParticle(g_aEsa[nIdxEsa].nIdxBubble);
+		}
+
+		if (bPlayer == true)
+		{// プレイヤーの場合
+			
+			// エサUIの追加
+			SetAddUiEsa(nIdxPlayer, g_aEsa[nIdxEsa].nIdxModel);
+		}
+
+		return g_aEsa[nIdxEsa].nIdxModel;
+	}
+	else
+	{
+		return -1;
 	}
 }
 

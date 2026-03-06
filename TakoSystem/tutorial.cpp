@@ -37,6 +37,7 @@
 #include "tutorialtxt.h"
 #include "spray.h"
 #include "seaweed.h"
+#include "bubble.h"
 
 // マクロ定義
 #define	MAX_TUTORIAL	(3)	// タイトルで表示するテクスチャの最大数
@@ -62,6 +63,9 @@ void InitTutorial(void)
 
 	// メッシュオービットの初期化処理
 	InitMeshOrbit();
+
+	// 泡の初期化
+	InitBubble();
 
 	// プレイヤーの初期化処理
 	InitPlayer();
@@ -112,6 +116,8 @@ void InitTutorial(void)
 
 	// 海藻の初期化処理
 	InitSeaweed();
+
+	
 
 	// チュートリアルテキストの初期化処理
 	InitTutorialTxt();
@@ -285,6 +291,9 @@ void UninitTutorial(void)
 	// 海藻の終了処理
 	UninitSeaweed();
 
+	// 泡の終了
+	UninitBubble();
+
 	// チュートリアルテキストの終了処理
 	UninitTutorialTxt();
 
@@ -378,6 +387,9 @@ void UpdateTutorial(void)
 	// 海藻の更新処理
 	UpdateSeaweed();
 
+	// 泡の更新
+	UpdateBubble();
+
 	// チュートリアルテキストの更新処理
 	UpdateTutorialTxt();
 
@@ -464,6 +476,9 @@ void DrawTutorial(void)
 
 	// 水面の描画処理
 	DrawWaterSurf();
+
+	// 泡の描画
+	DrawBubble();
 
 	// チュートリアルテキストの描画処理
 	DrawTutorialTxt();

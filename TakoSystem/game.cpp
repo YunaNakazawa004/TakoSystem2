@@ -37,6 +37,8 @@
 
 #include "effect_3d.h"
 #include "particle_3d.h"
+#include "bubble.h"
+
 #include "spray.h"
 #include "pause.h"
 #include "input.h"
@@ -78,6 +80,9 @@ void InitGame(void)
 
 	// メッシュオービットの初期化処理
 	InitMeshOrbit(); 
+
+	// 泡の初期化
+	InitBubble();
 
 	// プレイヤーの初期化処理
 	InitPlayer();
@@ -227,6 +232,9 @@ void UninitGame(void)
 	// メッシュオービットの終了処理
 	UninitMeshOrbit();
 
+	// 泡の終了
+	UninitBubble();
+
 	// 水面の終了処理
 	UninitWaterSurf();
 
@@ -320,7 +328,7 @@ void UpdateGame(void)
 	}
 
 	// レディの更新処理
-	UpdateReady(); FileLogPass("ready");
+	UpdateReady();
 
 #ifdef _DEBUG
 #if 0
@@ -367,7 +375,7 @@ void UpdateGame(void)
 	{// ポーズしている場合
 
 		// ポーズの更新処理
-		UpdatePause(); FileLogPass("pause");
+		UpdatePause();
 	}
 	else
 	{// ポーズしていない場合
@@ -376,77 +384,77 @@ void UpdateGame(void)
 		if (bGameStart == true)
 		{
 			// CPUの更新処理
-			UpdateComputer(); FileLogPass("computer");
+			UpdateComputer(); 
 
 			// 水面の更新処理
-			UpdateWaterSurf(); FileLogPass("waterserf");
+			UpdateWaterSurf(); 
 
 			// クロスヘアの更新処理
-			UpdateCrossHair(); FileLogPass("crosshair");
+			UpdateCrossHair();
 
 			// UIゲージアイコンの更新処理
-			UpdateUiGaugeIcon(); FileLogPass("gaugeicon");
+			UpdateUiGaugeIcon();
 
 			// エサUIの更新処理
-			UpdateUiEsa(); FileLogPass("uiesa");
+			UpdateUiEsa(); 
 
 			// 時間の更新処理
-			UpdateTime(); FileLogPass("time");
+			UpdateTime(); 
 
 			// 海流の更新処理
-			UpdateOceanCurrents(); FileLogPass("ocean_c");
+			UpdateOceanCurrents();
 		}
 
 		// プレイヤーの更新処理
-		UpdatePlayer(); FileLogPass("player");
+		UpdatePlayer(); 
 
 		// ステージの更新処理
 		//UpdateStage();
 
 		// 配置物の更新処理
-		UpdateObject(); FileLogPass("object");
+		UpdateObject();
 
 		// 海藻の更新処理
 		UpdateSeaweed();
 
 		// メッシュシリンダーの更新処理
-		UpdateMeshCylinder(); FileLogPass("mesh_cy");
+		UpdateMeshCylinder();
 
 		// メッシュドームの更新処理
-		UpdateMeshDome(); FileLogPass("mesh_do");
+		UpdateMeshDome(); 
 
 		// メッシュフィールドの更新処理
-		UpdateMeshField(); FileLogPass("mesh_fi");
+		UpdateMeshField();
 
 		// メッシュリングの更新処理
-		UpdateMeshRing(); FileLogPass("mesh_ri");
+		UpdateMeshRing(); 
 
 		// 塵の更新処理
-		UpdateSeaDust(); FileLogPass("setdest");
+		UpdateSeaDust();
 
 		// 飛沫の更新処理
 		UpdateSpray();
 
 		// 3Dエフェクトの更新処理
-		UpdateEffect3D(); FileLogPass("effect");
+		UpdateEffect3D(); 
 
 		// 3Dパーティクルの更新処理
-		UpdateParticle3D(); FileLogPass("particle");
-
-		// 生き物の更新処理
-		//UpdateFishes(); FileLogPass("fishee");
+		UpdateParticle3D();
 
 		// タコつぼの更新処理
-		UpdatePot(); FileLogPass("pot");
+		UpdatePot();
 
 		// エサの更新処理
-		UpdateEsa(); FileLogPass("esa");
+		UpdateEsa();
 
 		// マップの更新処理
-		UpdateMap(); FileLogPass("map");
+		UpdateMap(); 
 
 		// メッシュオービットの更新処理
-		UpdateMeshOrbit(); FileLogPass("obit");
+		UpdateMeshOrbit();
+
+		// 泡の更新
+		UpdateBubble();
 #endif
 	}
 
@@ -500,8 +508,8 @@ void DrawGame(void)
 	// 3Dパーティクルの描画処理
 	DrawParticle3D();
 
-	// 生き物の描画処理
-	//DrawFishes();
+	// 泡の描画
+	DrawBubble();
 
 	// タコつぼの描画処理
 	DrawPot();

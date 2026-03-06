@@ -101,6 +101,7 @@ typedef struct
 typedef struct
 {
 	int nIdxModel;			// モデルのインデックス
+	int nIdxBubble;			// 泡パーティクルのインデックス
 
 	int nOrbitIdx;			// 軌跡のインデックス
 
@@ -147,6 +148,10 @@ int SetEsa					// エサの設定処理
 void ChangeEsaState			// エサの状態切り替え処理
 (int nIdxEsa,							// エサのインテックス
  ESA_ACTTYPE changeState, int nValue);	// 切り替える挙動, 挙動の値
+
+int DelEsa					// エサの削除処理
+(int nIdxEsa,							// エサのインデックス
+ bool bPlayer, int nIdxPlayer);			// プレイヤーか, プレイヤーのインデックス
 
 // 更新処理 ================================
 

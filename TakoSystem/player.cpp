@@ -24,6 +24,7 @@
 #include "debugproc.h"
 #include "readygo.h"
 #include "spray.h"
+#include "bubble.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -394,14 +395,15 @@ void UpdatePlayer(void)
 
 							if (pEsa[nIdx].esaType != ESA_ACTTYPE_GOTO_POT)
 							{// タコつぼに入れてる最中じゃない
-								pEsa[nIdx].bUse = false;
-								DeleteMeshOrbit(pEsa[nIdx].nOrbitIdx);
-								pEsa[nIdx].nOrbitIdx = -1;
-								pEsa[nIdx].bOrbit = false;
-								SetAddUiEsa(nCntPlayer, pEsa[nIdx].nIdxModel);
 
-								pPlayer->nFood++;
-								Enqueue(&pPlayer->esaQueue, pEsa[nIdx].nIdxModel);
+								// エサの削除処理
+								int nIdxEsaType = DelEsa(nIdx, true, nCntPlayer);	// 削除したエサの種類を獲得
+
+								if (nIdxEsaType != -1)
+								{
+									pPlayer->nFood++;
+									Enqueue(&pPlayer->esaQueue, nIdxEsaType);
+								}
 							}
 						}
 						else if (CollisionPotArea(tentaclePos, TENTACLE_RADIUS * 0.5f, pPlayer, NULL, true) == true ||
@@ -820,14 +822,15 @@ void UpdatePlayer(void)
 
 				if (pEsa[nIdx].esaType != ESA_ACTTYPE_GOTO_POT)
 				{// タコつぼに入れてる最中じゃない
-					pEsa[nIdx].bUse = false;
-					pEsa[nIdx].bOrbit = false;
-					DeleteMeshOrbit(pEsa[nIdx].nOrbitIdx);
-					pEsa[nIdx].nOrbitIdx = -1;
-					SetAddUiEsa(nCntPlayer, pEsa[nIdx].nIdxModel);
 
-					pPlayer->nFood++;
-					Enqueue(&pPlayer->esaQueue, pEsa[nIdx].nIdxModel);
+					// エサの削除処理
+					int nIdxEsaType = DelEsa(nIdx, true, nCntPlayer);	// 削除したエサの種類を獲得
+
+					if (nIdxEsaType != -1)
+					{
+						pPlayer->nFood++;
+						Enqueue(&pPlayer->esaQueue, nIdxEsaType);
+					}
 				}
 			}
 
@@ -1006,6 +1009,9 @@ void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType
 	pPlayer[nIdx].nCounterBlend = 0;
 
 	SetMotionPlayer(nIdx, MotionType, false, 0);
+
+	// 泡の設定
+	SetBubbleParticle(&pPlayer[nIdx].pos, true, -1, 30, 1, 30, 5.0f, 3.0f);
 }
 
 //=============================================================================

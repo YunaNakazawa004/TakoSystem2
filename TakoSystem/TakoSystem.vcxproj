@@ -148,6 +148,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="bubble.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="computer.cpp" />
     <ClCompile Include="confetti.cpp" />
@@ -195,6 +196,7 @@
     <ClCompile Include="oceancurrents.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="bubble.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="computer.h" />
     <ClInclude Include="confetti.h" />
