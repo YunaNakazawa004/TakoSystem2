@@ -14,6 +14,7 @@
 #define MOVEMENT				(D3DXVECTOR3(0.5f, 0.5f, 0.5f))			// à⁄ìÆó 
 #define SEAWEED_HEIGHT			(40.0f)									// äCëîÇÃçÇÇ≥
 #define MAX_SEAWEED				(128)									// äCëîÇÃç≈ëÂó 
+#define SEAWEED_DIST			(60.0f)									// äCëîÇ™åXÇ≠ãóó£
 
 //*****************************************************************************
 // ÉOÉçÅ[ÉoÉãïœêî
@@ -157,17 +158,32 @@ void UpdateSeaweed(void)
 					pSeaweed->aModel[nCntModel].rotDest = -pSeaweed->aModel[nCntModel - 1].rotDest;
 				}
 			}
-		
+
 			pSeaweed->aModel[nCntModel].rot +=
 				(pSeaweed->aModel[nCntModel].rotDest - pSeaweed->aModel[nCntModel].rot) * 0.005f;
 #endif
 
 			CorrectAngle(&pSeaweed->aModel[nCntModel].fAngle, pSeaweed->aModel[nCntModel].fAngle);
 
-			pSeaweed->aModel[nCntModel].pos.x = pSeaweed->aModel[nCntModel].posOff.x + 
+			pSeaweed->aModel[nCntModel].pos.x = pSeaweed->aModel[nCntModel].posOff.x +
 				(sinf(pSeaweed->aModel[nCntModel].fAngle) * 3.0f);
 			pSeaweed->aModel[nCntModel].pos.z = pSeaweed->aModel[nCntModel].posOff.z +
 				(cosf(pSeaweed->aModel[nCntModel].fAngle) * 3.0f);
+
+			pSeaweed->aModel[nCntModel].rot.x +=
+				(pSeaweed->aModel[nCntModel].rotDest.x - pSeaweed->aModel[nCntModel].rot.x) * 0.01f;
+			pSeaweed->aModel[nCntModel].rot.x +=
+				(pSeaweed->aModel[nCntModel].rotDest.z - pSeaweed->aModel[nCntModel].rot.z) * 0.01f;
+
+			pSeaweed->aModel[nCntModel].rot.x +=
+				(pSeaweed->aModel[nCntModel].rotOff.x - pSeaweed->aModel[nCntModel].rot.x) * 0.01f;
+			pSeaweed->aModel[nCntModel].rot.z +=
+				(pSeaweed->aModel[nCntModel].rotOff.z - pSeaweed->aModel[nCntModel].rot.z) * 0.01f;
+
+			pSeaweed->aModel[nCntModel].rotDest.x +=
+				(0.0f - pSeaweed->aModel[nCntModel].rotDest.x) * 0.01f;
+			pSeaweed->aModel[nCntModel].rotDest.z +=
+				(0.0f - pSeaweed->aModel[nCntModel].rotDest.z) * 0.01f;
 		}
 	}
 
@@ -302,6 +318,7 @@ void SetSeaweed(D3DXVECTOR3 pos, int nLength)
 
 				pSeaweed->aModel[nCntModel].rot = rot;
 				pSeaweed->aModel[nCntModel].rotOff = rot;
+				pSeaweed->aModel[nCntModel].rotDest = FIRST_POS;
 
 				if (nCntModel != nLength - 1)
 				{// ç≈å„à»äO
@@ -344,5 +361,44 @@ void SetRandomSeaweed(int nAmount)
 		int nLength = rand() % 25 + 10;
 
 		SetSeaweed(pos, nLength);
+	}
+}
+
+//=============================================================================
+// äCëîÇÃìñÇΩÇËîªíË
+//=============================================================================
+void CollisionSeaweed(D3DXVECTOR3 pos)
+{
+	Seaweed* pSeaweed = GetSeaweed();
+
+	for (int nCntSeaweed = 0; nCntSeaweed < MAX_SEAWEED; nCntSeaweed++, pSeaweed++)
+	{
+		if (pSeaweed->bUse == false)
+		{// égópÇµÇƒÇ»Ç¢Ç∆Ç´
+			continue;
+		}
+
+		for (int nCntModel = 0; nCntModel < pSeaweed->nNumModel; nCntModel++)
+		{
+			D3DXVECTOR3 SeaweedPos = D3DXVECTOR3(pSeaweed->aModel[nCntModel].mtxWorld._41,
+				pSeaweed->aModel[nCntModel].mtxWorld._42, pSeaweed->aModel[nCntModel].mtxWorld._43);
+			D3DXVECTOR3 dist = SeaweedPos - pos;
+
+			if (D3DXVec3Length(&dist) < SEAWEED_DIST)
+			{// ãﬂÇ¢
+				D3DXVec3Normalize(&dist, &dist);
+
+				pSeaweed->aModel[nCntModel].rotDest.x = sinf(dist.z);
+				pSeaweed->aModel[nCntModel].rotDest.z = cosf(dist.x);
+
+				if (nCntModel != pSeaweed->nNumModel - 1)
+				{// ç≈å„Ç∂Ç·Ç»Ç¢Ç∆Ç´
+					pSeaweed->aModel[nCntModel + 1].rotDest.x = -pSeaweed->aModel[nCntModel].rotDest.x;
+					pSeaweed->aModel[nCntModel + 1].rotDest.z = -pSeaweed->aModel[nCntModel].rotDest.z;
+				}
+
+				break;
+			}
+		}
 	}
 }

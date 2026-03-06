@@ -2549,7 +2549,7 @@ void SetComputer(D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType)
 			pComputer->phys.move = FIRST_POS;
 			pComputer->phys.rot = rot;
 			pComputer->phys.dir = FIRST_POS;
-			pComputer->phys.fAngleY = 0.0f;
+			pComputer->phys.fAngleY = rot.y;
 			pComputer->phys.fAngleX = 0.0f;
 			pComputer->phys.fRadius = CPU_WIDTH;
 			pComputer->phys.fHeight = CPU_HEIGHT;
@@ -2622,7 +2622,7 @@ void SetRandomComputer(int nAmount)
 		pos.y = (float)(rand() % (int)(CYLINDER_HEIGHT * 0.6f)) + (CYLINDER_HEIGHT * 0.2f);
 		pos.z = cosf(fAngle) * (INCYLINDER_RADIUS + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) + 1))));
 
-		SetComputer(pos, FIRST_POS, MOTIONTYPE_NEUTRAL);
+		SetComputer(pos, D3DXVECTOR3(0.0f, fAngle, 0.0f), MOTIONTYPE_NEUTRAL);
 	}
 }
 

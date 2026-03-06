@@ -21,6 +21,7 @@
 #include "input.h"
 #include "time.h"
 #include "sound.h"
+#include "seaweed.h"
 #include "debugproc.h"
 #include "readygo.h"
 #include "spray.h"
@@ -346,7 +347,7 @@ void UpdatePlayer(void)
 					pPlayer->bMove = false;
 				}
 
-				if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_LSHIFT) == true : GetKeyboardPress(DIK_NUMPAD0) == true) || 
+				if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_LSHIFT) == true : GetKeyboardPress(DIK_NUMPAD0) == true) ||
 					/*GetJoypadPress(nCntPlayer, JOYKEY_LEFT_SHOULDER) == true*/
 					GetJoypadShoulder(nCntPlayer, JOYKEY_LEFTTRIGGER, &nValue) == true)
 				{// ã¸
@@ -354,7 +355,7 @@ void UpdatePlayer(void)
 
 					pPlayer->bMove = true;
 				}
-				else if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_LCONTROL) == true : GetKeyboardPress(DIK_NUMPAD2) == true) || 
+				else if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_LCONTROL) == true : GetKeyboardPress(DIK_NUMPAD2) == true) ||
 					GetJoypadPress(nCntPlayer, JOYKEY_LEFT_SHOULDER) == true)
 				{// ‰º~
 					pPlayer->move.y += MOVEMENT.y;
@@ -616,7 +617,7 @@ void UpdatePlayer(void)
 
 				if (pPlayer->bLand == false)
 				{// ‚Â‚¢‚Ä‚È‚©‚Á‚½ê‡
-					SetSprayCircle(D3DXVECTOR3(pPlayer->pos.x, pPlayer->pos.y + 30.0f, pPlayer->pos.z), 
+					SetSprayCircle(D3DXVECTOR3(pPlayer->pos.x, pPlayer->pos.y + 30.0f, pPlayer->pos.z),
 						D3DXCOLOR(0.75f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_CIRCLE);
 
 					SetVibration(nCntPlayer, 10000, 10000, 3);
@@ -648,7 +649,7 @@ void UpdatePlayer(void)
 				{// ’èŠú“I‚É”g–ä
 					SetMeshRing(D3DXVECTOR3(pPlayer->pos.x + (rand() % 6 - 3), *GetWaterSurf_Height(), pPlayer->pos.z + (rand() % 6 - 3)), FIRST_POS,
 						D3DXVECTOR2(24.0f, 1.0f), D3DXVECTOR2(10.0f, 7.0f), D3DXCOLOR(WHITE_VTX.r, WHITE_VTX.g, WHITE_VTX.b, 0.5f));
-				
+
 					SetSprayCircle(D3DXVECTOR3(pPlayer->pos.x, *GetWaterSurf_Height(), pPlayer->pos.z),
 						WHITE_VTX, SPRAYTYPE_CIRCLE);
 				}
@@ -786,7 +787,7 @@ void UpdatePlayer(void)
 			if (((nCntPlayer == 0 ? GetKeyboardPress(DIK_Q) == true : GetKeyboardPress(DIK_RSHIFT) == true) ||
 				/*GetJoypadShoulder(nCntPlayer, JOYKEY_LEFTTRIGGER, &nValue) == true*/
 				GetJoypadPress(nCntPlayer, JOYKEY_RIGHT_SHOULDER) == true)
-				&& pPlayer->state != PLAYERSTATE_INK && pPlayer->nInkCooldown == 0 && 
+				&& pPlayer->state != PLAYERSTATE_INK && pPlayer->nInkCooldown == 0 &&
 				pPlayer->pos.y < *GetWaterSurf_Height())
 			{// –n“f‚«ƒAƒNƒVƒ‡ƒ“
 				pPlayer->state = PLAYERSTATE_INK;
@@ -808,6 +809,7 @@ void UpdatePlayer(void)
 
 			// “–‚½‚è”»’è
 			CollisionMeshField(pPlayer->pos, pPlayer->rot, pPlayer->fRadius, pPlayer->fHeight);
+			CollisionSeaweed(pPlayer->pos);
 			CollisionPot(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight);
 			CollisionObject(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight, false);
 			CollisionMeshCylinder(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight, false);
@@ -977,6 +979,7 @@ void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType
 	pPlayer[nIdx].nCounterState = 0;
 	pPlayer[nIdx].fFogStart = (pPlayer[nIdx].pos.y * 0.4f) + FOGS_MIN;
 	pPlayer[nIdx].fFogEnd = (pPlayer[nIdx].pos.y * 1.1f) + FOGE_MIN;
+	pPlayer[nIdx].fAngleY = rot.y;
 	pPlayer[nIdx].bJump = true;
 	pPlayer[nIdx].bLand = false;
 	pPlayer[nIdx].bAct = false;
@@ -1025,11 +1028,11 @@ void SetRandomPlayer(int nAmount)
 		float fAngle = (D3DX_PI * 2.0f) * ((float)((nCntPlayer + 1) * (360.0f / nAmount)) / 360.0f);
 		//float fsin = sinf(fAngle);
 
-		pos.x = sinf(fAngle) * (INCYLINDER_RADIUS + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) + 1))));
+		pos.x = sinf(fAngle) * ((INCYLINDER_RADIUS * 1.5f) + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - (INCYLINDER_RADIUS * 1.5f)) + 1))));
 		pos.y = (float)(rand() % (int)(CYLINDER_HEIGHT * 0.6f)) + (CYLINDER_HEIGHT * 0.2f);
-		pos.z = cosf(fAngle) * (INCYLINDER_RADIUS + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) + 1))));
+		pos.z = cosf(fAngle) * ((INCYLINDER_RADIUS * 1.5f) + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - (INCYLINDER_RADIUS * 1.5f)) + 1))));
 
-		SetPlayer(nCntPlayer, pos, FIRST_POS, MOTIONTYPE_NEUTRAL);
+		SetPlayer(nCntPlayer, pos, D3DXVECTOR3(0.0f, fAngle, 0.0f), MOTIONTYPE_NEUTRAL);
 	}
 }
 
