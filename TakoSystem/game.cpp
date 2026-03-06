@@ -536,6 +536,8 @@ void DrawGame(void)
 	// …–Ê‚Ì•`‰æˆ—
 	DrawWaterSurf();
 
+	SetFog(WHITE_VTX, 0.0f, 0.0f, false);
+
 	// ƒŒƒfƒB‚Ì•`‰æˆ—
 	DrawReady();
 

@@ -501,6 +501,8 @@ void DrawTutorial(void)
 	// 泡の描画
 	DrawBubble();
 
+	SetFog(WHITE_VTX, 0.0f, 0.0f, false);
+
 	// チュートリアルテキストの描画処理
 	DrawTutorialTxt();
 
