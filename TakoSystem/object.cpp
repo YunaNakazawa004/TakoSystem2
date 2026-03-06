@@ -547,7 +547,7 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 					{
 						D3DXVECTOR3 move = vecMove;
 						move.y = 0.0f;
-						D3DXVec3Normalize(&move, &move);
+						//D3DXVec3Normalize(&move, &move);
 
 						float fDotN = D3DXVec3Dot(&move, &vecNor);
 

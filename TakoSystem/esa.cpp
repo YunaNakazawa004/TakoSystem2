@@ -523,10 +523,10 @@ int DelEsa(int nIdxEsa, bool bPlayer, int nIdxPlayer)
 
 		g_aEsa[nIdxEsa].bUse = false;	// 使用していない状態に設定
 		g_aEsa[nIdxEsa].bOrbit = false;	// 軌道状態をOFFに設定
-		g_aEsa[nIdxEsa].nOrbitIdx = -1;	// 軌道のインデックスを初期化
 
 		// オービットの削除
 		DeleteMeshOrbit(g_aEsa[nIdxEsa].nOrbitIdx);
+		g_aEsa[nIdxEsa].nOrbitIdx = -1;	// 軌道のインデックスを初期化
 
 		if (g_aEsa[nIdxEsa].nIdxBubble != -1)
 		{// インデックスがある場合

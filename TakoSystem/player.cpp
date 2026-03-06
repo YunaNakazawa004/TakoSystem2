@@ -816,7 +816,8 @@ void UpdatePlayer(void)
 
 			if (CollisionEsa(&nIdx, false, &pPlayer->pos, pPlayer->fRadius) == true &&
 				pPlayer->nFood < pPlayer->nMaxFood * PLAYER_TENTACLE &&
-				pPlayer->motionType != MOTIONTYPE_OCEANCULLENT)
+				(pPlayer->motionType != MOTIONTYPE_OCEANCULLENT || pPlayer->motionType != MOTIONTYPE_OCEANCULLENT) &&
+				GetOceanCurrents() != OCEANCURRENTSSTATE_WIRLPOOL)
 			{// ÉGÉTÇ∆ê⁄êGÇµÇΩ
 				Esa* pEsa = GetEsa();
 

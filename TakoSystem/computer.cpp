@@ -798,7 +798,8 @@ void UpdateComputer(void)
 
 			if (CollisionEsa(&nIdx, false, &pComputer->phys.pos, pComputer->phys.fRadius) == true &&
 				pComputer->nFoodCount < pComputer->nMaxFood * CPU_TENTACLE &&
-				pComputer->motionType != MOTIONTYPE_OCEANCULLENT)
+				(pComputer->motionType != MOTIONTYPE_OCEANCULLENT || pComputer->motionType != MOTIONTYPE_OCEANCULLENT) &&
+				GetOceanCurrents() != OCEANCURRENTSSTATE_WIRLPOOL)
 			{// ÉGÉTÇ∆ê⁄êGÇµÇΩ
 				Esa* pEsa = GetEsa();
 

@@ -409,5 +409,11 @@ MeshOrbit* GetMeshOrbit(void)
 //=============================================================================
 void DeleteMeshOrbit(int nIdx)
 {
+	if (nIdx < 0 || nIdx >= MAX_MESHORBIT)
+	{// インデックスがない場合は無視
+		OutputDebugStringA("DeleteMeshOrbitPos: invalid idx\n");
+		return;
+	}
+
 	g_aMeshOrbit[nIdx].bUse = false;
 }
