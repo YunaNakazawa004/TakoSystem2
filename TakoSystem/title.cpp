@@ -356,8 +356,6 @@ void UpdateTitle(void)
 
 	// 水面の更新処理
 	UpdateWaterSurf();
-	// フェード情報の取得
-	FADE pFade = GetFade();
 
 	if (g_TitleDeley < TITLE_DELEY_MAX)
 	{// 特定の位置まで繰り返す
@@ -406,7 +404,7 @@ void UpdateTitle(void)
 		}
 		else if (nCntTitle == 2)
 		{// タイトル：PRESS ENTER
-			if (pFade == FADE_OUT && g_PressEnterDeley <= RANKING_DELEY)
+			if (GetFade() == FADE_OUT && g_PressEnterDeley <= RANKING_DELEY)
 			{// PRESSENTERをクリック
 				pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f * (g_PressEnterDeley % 3));	// 0~255の値を設定
 				pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f * (g_PressEnterDeley % 3));
@@ -537,24 +535,26 @@ void UpdateTitle(void)
 	g_pVtxBuffTitle->Unlock();
 
 	if ((GetKeyboardRepeat(DIK_W) || GetJoypadRepeat(0, JOYKEY_UP) ||
-		(GetJoypadStick(0, JOYKEY_LEFTSTICK_UP, NULL, NULL) == true && (g_CursorDeley % CURSOR_DELEY == 0))))
+		(GetJoypadStick(0, JOYKEY_LEFTSTICK_UP, NULL, NULL) == true && 
+			(GetFade() == FADE_NONE && g_CursorDeley % CURSOR_DELEY == 0))))
 	{// カーソル下移動
 
 		g_CursorPos--;
 
 		if (g_CursorPos < 0) g_CursorPos = TITLECURSOR_PLAY_START;
 		PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
-		if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
+		if (GetFade() != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 	}
 	else if ((GetKeyboardRepeat(DIK_S) || GetJoypadRepeat(0, JOYKEY_DOWN) ||
-		(GetJoypadStick(0, JOYKEY_LEFTSTICK_DOWN, NULL, NULL) == true && (g_CursorDeley % CURSOR_DELEY == 0))))
+		(GetJoypadStick(0, JOYKEY_LEFTSTICK_DOWN, NULL, NULL) == true && 
+		(GetFade() == FADE_NONE && g_CursorDeley % CURSOR_DELEY == 0))))
 	{// カーソル上移動
 
 		g_CursorPos++;
 
 		if (g_CursorPos >= TITLECURSOR_MAX) g_CursorPos = TITLECURSOR_PLAYER_SELECT;
 		PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
-		if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
+		if (GetFade() != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 	}
 
 	if (g_CursorPos == TITLECURSOR_PLAYER_SELECT)
@@ -567,7 +567,7 @@ void UpdateTitle(void)
 			g_PlayerSelect--;
 
 			PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
-			if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
+			if (GetFade() != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 		}
 		else if ((GetKeyboardPress(DIK_D) || GetJoypadPress(0, JOYKEY_RIGHT) ||
 			(GetJoypadStick(0, JOYKEY_LEFTSTICK_RIGHT, NULL, NULL) == true) && 
@@ -577,7 +577,7 @@ void UpdateTitle(void)
 			g_PlayerSelect++;
 
 			PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
-			if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
+			if (GetFade() != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 		}
 	}
 	else if (g_CursorPos == TITLECURSOR_PLAY_START)
@@ -585,7 +585,7 @@ void UpdateTitle(void)
 		if ((GetKeyboardTrigger(DIK_RETURN) == true ||
 			GetJoypadTrigger(0, JOYKEY_START) == true ||
 			GetJoypadTrigger(0, JOYKEY_A) == true) &&
-			pFade == FADE_NONE && g_TitleDeley == TITLE_DELEY_MAX)
+			GetFade() == FADE_NONE && g_TitleDeley == TITLE_DELEY_MAX)
 		{// 決定キー（ENTERキー）が押された
 			// モード設定
 			PlaySound(SOUND_SE_DECISION);
@@ -601,7 +601,7 @@ void UpdateTitle(void)
 		g_TitleDeley = TITLE_DELEY_MAX;
 	}
 
-	if (pFade == FADE_NONE && g_PressEnterDeley > RANKING_DELEY)
+	if (GetFade() == FADE_NONE || g_PressEnterDeley > RANKING_DELEY)
 	{// 時間経過でランキングへ移行
 
 		SetFade(MODE_LOGO);
@@ -623,14 +623,14 @@ void DrawTitle(void)
 	// 配置物の描画処理
 	DrawObject();
 
-#if 1
+#if 0
 	// CPUの描画処理
 	DrawComputer();
 #endif
+
 	// メッシュシリンダーの描画処理
 	DrawMeshCylinder();
 
-#if 1
 	// メッシュフィールドの描画処理
 	DrawMeshField();
 
@@ -639,7 +639,7 @@ void DrawTitle(void)
 
 	// メッシュオービットの描画処理
 	DrawMeshOrbit();
-#endif
+
 	// 水面の描画処理
 	DrawWaterSurf();
 
