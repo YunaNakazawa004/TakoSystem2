@@ -696,7 +696,7 @@ void UpdateComputer(void)
 				if (pComputer->bLand == false)
 				{// ‚Â‚¢‚Ä‚È‚©‚Á‚½ê‡
 					SetSprayCircle(D3DXVECTOR3(pComputer->phys.pos.x, pComputer->phys.pos.y + 30.0f, pComputer->phys.pos.z),
-						D3DXCOLOR(0.75f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_CIRCLE);
+						D3DXCOLOR(0.9f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_CIRCLE);
 				}
 
 				pComputer->bLand = true;
@@ -709,7 +709,7 @@ void UpdateComputer(void)
 			if (pComputer->phys.pos.y < 10.0f && pComputer->nCounter % FLOW_COUNT == 0)
 			{// ’n–Ê‚É‹ß‚©‚Á‚½‚ç
 				SetSprayFlow(D3DXVECTOR3(pComputer->phys.pos.x, pComputer->phys.pos.y + 20.0f, pComputer->phys.pos.z), pComputer->phys.rot,
-					D3DXCOLOR(0.75f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_FLOW);
+					D3DXCOLOR(0.9f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_FLOW);
 			}
 
 			if (pComputer->phys.pos.y > *GetWaterSurf_Height() - CPU_HEIGHT)

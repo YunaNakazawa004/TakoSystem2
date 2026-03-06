@@ -39,6 +39,7 @@
 #include "particle_3d.h"
 #include "bubble.h"
 
+#include "spotlight.h"
 #include "spray.h"
 #include "pause.h"
 #include "input.h"
@@ -70,6 +71,9 @@ void InitGame(void)
 	SetLightColor(0, D3DXCOLOR(0.7f, 0.9f, 1.0f, 1.0f));
 	SetLightColor(1, D3DXCOLOR(0.4f, 0.5f, 0.7f, 0.7f));
 	SetLightColor(2, D3DXCOLOR(0.1f, 0.1f, 0.3f, 0.3f));
+
+	// スポットライトの設定
+	InitSpotLight();
 
 	// カメラの初期化処理
 	SetNumCamera(GetPlayerSelect());
@@ -184,6 +188,9 @@ void UninitGame(void)
 	// サウンドの停止
 	StopSound();
 
+	// スポットライトの終了処理
+	UninitSpotLight();
+
 	// プレイヤーの終了処理
 	UninitPlayer();
 
@@ -271,6 +278,9 @@ void UninitGame(void)
 //===================================================================
 void UpdateGame(void)
 {
+	// スポットライトの更新処理
+	UpdateSpotLight();
+
 	// フェード情報の取得
 	//FADE pFade = GetFade();
 	bool bGameStart = GetGameStart();

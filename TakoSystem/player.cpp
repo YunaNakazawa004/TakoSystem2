@@ -618,7 +618,7 @@ void UpdatePlayer(void)
 				if (pPlayer->bLand == false)
 				{// ‚Â‚¢‚Ä‚È‚©‚Á‚½ê‡
 					SetSprayCircle(D3DXVECTOR3(pPlayer->pos.x, pPlayer->pos.y + 30.0f, pPlayer->pos.z),
-						D3DXCOLOR(0.75f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_CIRCLE);
+						D3DXCOLOR(0.9f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_CIRCLE);
 
 					SetVibration(nCntPlayer, 10000, 10000, 3);
 
@@ -635,7 +635,7 @@ void UpdatePlayer(void)
 			if (pPlayer->pos.y < 10.0f && pPlayer->nCounter % FLOW_COUNT == 0 && pPlayer->bMove == true)
 			{// ’n–Ê‚É‹ß‚©‚Á‚½‚ç
 				SetSprayFlow(D3DXVECTOR3(pPlayer->pos.x, pPlayer->pos.y + 20.0f, pPlayer->pos.z), pPlayer->rot,
-					D3DXCOLOR(0.75f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_FLOW);
+					D3DXCOLOR(0.9f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_FLOW);
 
 				SetVibration(nCntPlayer, 3000, 2500, 2);
 			}

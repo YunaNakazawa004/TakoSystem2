@@ -139,6 +139,9 @@
     <ClCompile Include="bubble.cpp">
       <Filter>cppファイル</Filter>
     </ClCompile>
+    <ClCompile Include="spotlight.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h">
@@ -277,6 +280,9 @@
       <Filter>hファイル</Filter>
     </ClInclude>
     <ClInclude Include="bubble.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="spotlight.h">
       <Filter>hファイル</Filter>
     </ClInclude>
   </ItemGroup>

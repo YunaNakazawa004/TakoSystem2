@@ -38,6 +38,7 @@
 #include "spray.h"
 #include "seaweed.h"
 #include "bubble.h"
+#include "spotlight.h"
 
 // マクロ定義
 #define	MAX_TUTORIAL	(3)	// タイトルで表示するテクスチャの最大数
@@ -55,6 +56,9 @@ void InitTutorial(void)
 	SetLightColor(0, D3DXCOLOR(0.7f, 0.9f, 1.0f, 1.0f));
 	SetLightColor(1, D3DXCOLOR(0.4f, 0.5f, 0.7f, 0.7f));
 	SetLightColor(2, D3DXCOLOR(0.1f, 0.1f, 0.3f, 0.3f));
+
+	// スポットライトの設定
+	InitSpotLight();
 
 	// カメラの初期化処理
 	SetNumCamera(GetPlayerSelect());
@@ -240,6 +244,9 @@ void UninitTutorial(void)
 	// サウンドの停止
 	StopSound();
 
+	// スポットライトの終了処理
+	UninitSpotLight();
+
 	// プレイヤーの終了処理
 	UninitPlayer();
 
@@ -336,6 +343,9 @@ void UninitTutorial(void)
 //===================================================================
 void UpdateTutorial(void)
 {
+	// スポットライトの更新処理
+	UpdateSpotLight();
+
 	// プレイヤーの更新処理
 	UpdatePlayer();
 

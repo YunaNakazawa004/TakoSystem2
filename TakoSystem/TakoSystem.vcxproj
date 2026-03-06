@@ -183,6 +183,7 @@
     <ClCompile Include="seadust.cpp" />
     <ClCompile Include="seaweed.cpp" />
     <ClCompile Include="sound.cpp" />
+    <ClCompile Include="spotlight.cpp" />
     <ClCompile Include="spray.cpp" />
     <ClCompile Include="stage.cpp" />
     <ClCompile Include="time.cpp" />
@@ -231,6 +232,7 @@
     <ClInclude Include="seadust.h" />
     <ClInclude Include="seaweed.h" />
     <ClInclude Include="sound.h" />
+    <ClInclude Include="spotlight.h" />
     <ClInclude Include="spray.h" />
     <ClInclude Include="stage.h" />
     <ClInclude Include="time.h" />
