@@ -112,8 +112,8 @@ void UpdateScreen(void)
 			else g_ScreenStock -= 0.0025f;
 
 			// ‰©ƒ‰ƒ“ƒvØ‚è‘Ö‚¦
-			if (g_ScreenStock >= 0.33f) g_bPinchScreen = false;
-			else if (g_ScreenStock <= 0.165f) g_bPinchScreen = true;
+			if (g_ScreenStock >= 0.165f) g_bPinchScreen = false;
+			else if (g_ScreenStock <= 0.0f) g_bPinchScreen = true;
 
 			g_colorScreen = D3DXCOLOR(1.0f, 1.0f, 0.0f, g_ScreenStock);
 		}

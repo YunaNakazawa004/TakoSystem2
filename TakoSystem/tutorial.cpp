@@ -465,7 +465,8 @@ void DrawTutorial(void)
 	// メッシュフィールドの描画処理
 	DrawMeshField();
 
-	
+	// メッシュリングの描画処理
+	DrawMeshRing();
 
 	// メッシュシリンダーの描画処理
 	DrawMeshCylinder();
@@ -494,15 +495,11 @@ void DrawTutorial(void)
 	// メッシュオービットの描画処理
 	DrawMeshOrbit();
 
+	// 水面の描画処理
+	DrawWaterSurf();
 
 	// 泡の描画
 	DrawBubble();
-
-	// メッシュリングの描画処理
-	DrawMeshRing();
-	
-	// 水面の描画処理
-	DrawWaterSurf();
 
 	SetFog(WHITE_VTX, 0.0f, 0.0f, false);
 
