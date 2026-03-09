@@ -179,6 +179,7 @@ D3DXVECTOR3 GetNearestEnemy(Computer* pComputer);
 D3DXVECTOR3 GetHidePosition(Computer* pComputer);
 
 // スコア計算
+void CalcScore(Computer* pComputer);
 void CalcFoodScore(Computer* pComputer);
 void CalcAttackScore(Computer* pComputer);
 void CalcEscapeScore(Computer* pComputer);

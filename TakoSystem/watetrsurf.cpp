@@ -58,7 +58,7 @@ void InitWaterSurf(void)
 	// 初期化
 	for (int nCntSurf = 0; nCntSurf < MAX_WATERSURF; nCntSurf++)
 	{
-		g_aWatersurf[nCntSurf].pos = {0.0f,0.0f,0.0f};				// 位置
+		g_aWatersurf[nCntSurf].pos = { 0.0f,0.0f,0.0f };				// 位置
 		g_aWatersurf[nCntSurf].rot = { 0.0f,0.0f,0.0f };			// 角度
 		g_aWatersurf[nCntSurf].col = { 1.0f,1.0f,1.0f,1.0f };		// 色
 		g_aWatersurf[nCntSurf].block = { 1,1 };						// 分割数
@@ -157,9 +157,17 @@ void UpdateWaterSurf(void)
 					pVtx[0].pos.z = ((g_aWatersurf[nCntWaterSurf].block.y * g_aWatersurf[nCntWaterSurf].size.y) * 0.5f) - (nCntWaterSurf1 * g_aWatersurf[nCntWaterSurf].size.y)
 						+ (cosf(g_aWatersurf[nCntWaterSurf].posPoint.z) * 2.0f);
 
+					if (rand() % 30 == 0)
+					{// ランダムなタイミングで上下
+						g_aWatersurf[nCntWaterSurf].fHeight[nCntWaterSurf2 + (nCntWaterSurf1 * ((int)g_aWatersurf[nCntWaterSurf].block.x + 1))]
+							+= (float)(rand() % 10) - 5.0f;
+					}
+
 					g_aWatersurf[nCntWaterSurf].posPoint.y = pVtx[0].pos.y;
 					pVtx[0].pos.y += (g_aWatersurf[nCntWaterSurf].fHeight[nCntWaterSurf2 + (nCntWaterSurf1 * ((int)g_aWatersurf[nCntWaterSurf].block.x + 1))]
 						- g_aWatersurf[nCntWaterSurf].posPoint.y) * 0.05f;
+					g_aWatersurf[nCntWaterSurf].fHeight[nCntWaterSurf2 + (nCntWaterSurf1 * ((int)g_aWatersurf[nCntWaterSurf].block.x + 1))]
+						+= (0.0f - g_aWatersurf[nCntWaterSurf].fHeight[nCntWaterSurf2 + (nCntWaterSurf1 * ((int)g_aWatersurf[nCntWaterSurf].block.x + 1))]) * 0.01f;
 
 					pVtx[0].tex.x += move.x;
 					pVtx[0].tex.y += move.y;
@@ -227,7 +235,7 @@ void DrawWaterSurf(void)
 //=========================================
 // 水面の設定処理
 //=========================================
-void SetWaterSurf(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVECTOR2 size,D3DXCOLOR col)
+void SetWaterSurf(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVECTOR2 size, D3DXCOLOR col)
 {
 	for (int nCntWaterSurf = 0; nCntWaterSurf < MAX_WATERSURF; nCntWaterSurf++)
 	{

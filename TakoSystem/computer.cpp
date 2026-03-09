@@ -47,6 +47,7 @@
 #define NEAR_WALL_DISTANCE		(200.0f)								// 壁際の距離
 #define NEAR_PILLAR_DISTANCE	(200.0f)								// 柱に近いかの距離
 
+#define ESA_DISTANCE			(300.0f)								// 遠すぎる
 #define ESA_DOT_SCORE			(3.0f)									// エサの進行方向スコア
 #define ESA_ENEMY_DISTANCE		(200.0f)								// 近い敵との距離
 #define ESA_ENEMY_DIST_SCORE	(4.0f)									// 近い敵のスコア
@@ -304,72 +305,8 @@ void UpdateComputer(void)
 			{// 5フレームに1回判断
 				pComputer->nThinkCooldown = CPU_THINK;
 
-				if (pComputer->state != CPUSTATE_BACKAREA)
-				{// エリア戻り状態じゃないときだけ
-					// スコア計算
-					CalcFoodScore(pComputer);
-					CalcAttackScore(pComputer);
-					CalcEscapeScore(pComputer);
-					CalcInkScore(pComputer);
-					CalcPotScore(pComputer);
-
-					// 最優先行動を決定
-					float best = pComputer->fFoodScore;
-					pComputer->state = CPUSTATE_MOVE_TO_FOOD;
-
-					if (pComputer->fAttackScore > best)
-					{// 攻撃
-						best = pComputer->fAttackScore;
-						pComputer->state = CPUSTATE_ATTACK;
-					}
-
-					if (pComputer->fEscapeScore > best)
-					{// 回避
-						best = pComputer->fEscapeScore;
-						pComputer->state = CPUSTATE_ESCAPE;
-					}
-
-					if (pComputer->fInkScore > best)
-					{// 墨吐き
-						best = pComputer->fInkScore;
-						pComputer->state = CPUSTATE_INK_ATTACK;
-					}
-
-					if (pComputer->fPotScore > best)
-					{// タコつぼ
-						best = pComputer->fPotScore;
-						pComputer->state = CPUSTATE_GO_TO_POT;
-					}
-
-					float exploreThreshold = EXPLORE_THRESHOLD;
-
-
-					if (pComputer->nFoodCount < EXPLORE_ESA)
-					{// エサが少ないほど探索しやすくする
-						exploreThreshold = EXPLORE_THRESHOLD * 2.0f;
-					}
-					else if (pComputer->nFoodCount < EXPLORE_LITTLE_ESA)
-					{// 少し探索しやすい
-						exploreThreshold = EXPLORE_LIT_THRESHOLD;
-					}
-					else
-					{// 通常
-						exploreThreshold = EXPLORE_THRESHOLD;
-					}
-
-					if (best < exploreThreshold)
-					{// 閾値以下なら探索
-						pComputer->state = CPUSTATE_EXPLORE;
-					}
-
-					if (GetOceanCurrents() == OCEANCURRENTSSTATE_WAIT)
-					{// 渦潮が来そうなとき
-						if (pComputer->nFoodCount > 0)
-						{// エサを持っている
-							pComputer->state = CPUSTATE_HIDE;
-						}
-					}
-				}
+				// スコア計算
+				CalcScore(pComputer);
 
 				// ノードの設置
 				CreateOuterNodes3D();
@@ -957,10 +894,12 @@ void MoveToFood(Computer* pComputer)
 {
 	if (pComputer->nTargetFoodIdx < 0)
 	{// どのエサもターゲットしてない
+		pComputer->state = CPUSTATE_EXPLORE;
+
 		return;
 	}
 
-	PrintDebugProc("ENEMY : targetFood ( %d )\n", pComputer->nTargetFoodIdx);
+	//PrintDebugProc("ENEMY : targetFood ( %d )\n", pComputer->nTargetFoodIdx);
 
 	D3DXVECTOR3 target = GetFoodPosition(pComputer);
 	D3DXVECTOR3 dir = target - pComputer->phys.pos;
@@ -1460,6 +1399,79 @@ D3DXVECTOR3 GetHidePosition(Computer* pComputer)
 }
 
 //=============================================================================
+// スコア計算全体
+//=============================================================================
+void CalcScore(Computer* pComputer)
+{
+	if (pComputer->state != CPUSTATE_BACKAREA)
+	{// エリア戻り状態じゃないときだけ
+		// スコア計算
+		CalcFoodScore(pComputer);
+		CalcAttackScore(pComputer);
+		CalcEscapeScore(pComputer);
+		CalcInkScore(pComputer);
+		CalcPotScore(pComputer);
+
+		// 最優先行動を決定
+		float best = pComputer->fFoodScore;
+		pComputer->state = CPUSTATE_MOVE_TO_FOOD;
+
+		if (pComputer->fAttackScore > best)
+		{// 攻撃
+			best = pComputer->fAttackScore;
+			pComputer->state = CPUSTATE_ATTACK;
+		}
+
+		if (pComputer->fEscapeScore > best)
+		{// 回避
+			best = pComputer->fEscapeScore;
+			pComputer->state = CPUSTATE_ESCAPE;
+		}
+
+		if (pComputer->fInkScore > best)
+		{// 墨吐き
+			best = pComputer->fInkScore;
+			pComputer->state = CPUSTATE_INK_ATTACK;
+		}
+
+		if (pComputer->fPotScore > best)
+		{// タコつぼ
+			best = pComputer->fPotScore;
+			pComputer->state = CPUSTATE_GO_TO_POT;
+		}
+
+		float exploreThreshold = EXPLORE_THRESHOLD;
+
+
+		if (pComputer->nFoodCount < EXPLORE_ESA)
+		{// エサが少ないほど探索しやすくする
+			exploreThreshold = EXPLORE_THRESHOLD * 2.0f;
+		}
+		else if (pComputer->nFoodCount < EXPLORE_LITTLE_ESA)
+		{// 少し探索しやすい
+			exploreThreshold = EXPLORE_LIT_THRESHOLD;
+		}
+		else
+		{// 通常
+			exploreThreshold = EXPLORE_THRESHOLD;
+		}
+
+		if (best < exploreThreshold && pComputer->state != CPUSTATE_MOVE_TO_FOOD)
+		{// 閾値以下なら探索 エサを見つけていたらそのまま
+			pComputer->state = CPUSTATE_EXPLORE;
+		}
+
+		if (GetOceanCurrents() == OCEANCURRENTSSTATE_WAIT)
+		{// 渦潮が来そうなとき
+			if (pComputer->nFoodCount > 0)
+			{// エサを持っている
+				pComputer->state = CPUSTATE_HIDE;
+			}
+		}
+	}
+}
+
+//=============================================================================
 // エサのスコア計算
 //=============================================================================
 void CalcFoodScore(Computer* pComputer)
@@ -1490,7 +1502,7 @@ void CalcFoodScore(Computer* pComputer)
 
 			float dist = D3DXVec3Length(&toFood);
 
-			if (dist > ((pComputer->bBlinded) ? FAR_DISTANCE * 0.5f : FAR_DISTANCE))
+			if (dist > ((pComputer->bBlinded) ? ESA_DISTANCE * 0.5f : ESA_DISTANCE))
 			{// 遠すぎるエサは無視
 				continue;
 			}
@@ -1498,7 +1510,7 @@ void CalcFoodScore(Computer* pComputer)
 			float score = 0.0f;
 
 			// 距離が近いほど高スコア
-			score += (((pComputer->bBlinded) ? FAR_DISTANCE * 0.5f : FAR_DISTANCE) - dist) * DISTANCE_SCORE;
+			score += (((pComputer->bBlinded) ? ESA_DISTANCE * 0.5f : ESA_DISTANCE) - dist) * DISTANCE_SCORE;
 
 			// 進行方向にあるか（dir と toFood の内積）
 			D3DXVECTOR3 dirNorm, toFoodNorm;
