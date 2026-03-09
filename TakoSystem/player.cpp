@@ -234,9 +234,9 @@ void UpdatePlayer(void)
 
 					fAngle = atan2f((float)(nValueH), (float)(nValueV));
 
-					pPlayer->move.x += sinf(fAngle + pCamera->rot.y) * MOVEMENT.x * sinf((D3DX_PI * 0.5f) + pCamera->fAngle);
+					pPlayer->move.x += sinf(fAngle + pCamera->rot.y) * MOVEMENT.x/* * sinf((D3DX_PI * 0.5f) + pCamera->fAngle)*/;
 					//pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * (nValueV / 30300) * MOVEMENT.y;
-					pPlayer->move.z += cosf(fAngle + pCamera->rot.y) * MOVEMENT.z * sinf((D3DX_PI * 0.5f) + pCamera->fAngle);
+					pPlayer->move.z += cosf(fAngle + pCamera->rot.y) * MOVEMENT.z /** sinf((D3DX_PI * 0.5f) + pCamera->fAngle)*/;
 
 					pPlayer->bMove = true;
 				}
