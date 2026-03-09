@@ -117,7 +117,7 @@ void UpdateScreen(void)
 
 			g_colorScreen = D3DXCOLOR(1.0f, 1.0f, 0.0f, g_ScreenStock);
 		}
-		else if (GetTime() <= (PINCH_TIME / 2))
+		else if (GetTime() <= (PINCH_TIME / 2) && GetMode() == MODE_GAME)
 		{// 制限時間がピンチ
 
 			// 赤ランプ調整
@@ -130,7 +130,7 @@ void UpdateScreen(void)
 
 			g_colorScreen = D3DXCOLOR(1.0f, 0.0f, 0.0f, g_ScreenStock);
 		}
-		else if (GetTime() <= PINCH_TIME)
+		else if (GetTime() <= PINCH_TIME && GetMode() == MODE_GAME)
 		{// 制限時間がピンチ
 
 			// 赤ランプ調整
