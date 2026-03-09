@@ -734,8 +734,7 @@ void UpdatePlayer(void)
 			dist *= TENTACLE_REACH;
 			dist += pPlayer->pos;
 
-			if (CollisionMeshCylinder(&dist, &pPlayer->pos, &pPlayer->move,
-				0.0f, 0.0f, true) == true ||
+			if (CollisionMeshCylinder(&dist, &pPlayer->pos, &pPlayer->move,0.0f, 0.0f, true) == true ||
 				dist.y < 0.0f ||
 				CollisionObject(&dist, &pPlayer->pos, &pPlayer->move, 0.0f, 0.0f, true) == true)
 			{// 壁に当たった・オブジェクトに当たった・エサに当たった

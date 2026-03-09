@@ -234,11 +234,11 @@ void UpdateObject(void)
 
 				g_aObject[nCntObject].nIdxSafe = SetMeshCylinder(SafePos, FIRST_POS, D3DXVECTOR2(16.0f, 2.0f), D3DXVECTOR2(fLength, (g_aObject[nCntObject].pos.y + pObjectModel->VtxMax.y)),
 					D3DXCOLOR(0.3f, 1.0f, 0.0f, 1.0f), false, false, MESHCYLINDERTYPE_NONE, MESHCYLINDERSTATE_FADEIN);
-				
+
 				SetMeshCylinderDisp(g_aObject[nCntObject].nIdxSafe, false);
 			}
 
-			if (GetOceanCurrents() != OCEANCURRENTSSTATE_NOMAL && 
+			if (GetOceanCurrents() != OCEANCURRENTSSTATE_NOMAL &&
 				(GetMode() == MODE_TUTORIAL || GetMode() == MODE_GAME))
 			{// 通常状態じゃない
 				SetMeshCylinderDisp(g_aObject[nCntObject].nIdxSafe, true);
@@ -552,8 +552,6 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 						insec.x = start.x + (vecLine.x * (fRate));
 						insec.y = pPos->y;
 						insec.z = start.z + (vecLine.z * (fRate));
-
-						bReach = true;
 					}
 					else if ((pObject->posOff.y + pObjectModel->VtxMin.y - fHeight <= pPos->y) &&
 						(pObject->posOff.y + pObjectModel->VtxMax.y >= pPos->y))
@@ -582,10 +580,16 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 			{// 今の位置が内側にいる
 				nCntLand++;
 
-				if (bInsec == false)
-				{// 交点じゃない
-					if (nCntLand == 4)
-					{// 全ての内側に入っていたら
+				if (nCntLand == 4)
+				{// 全ての内側に入っていたら
+					if ((pObject->posOff.y + pObjectModel->VtxMin.y - fHeight <= pPos->y) &&
+						(pObject->posOff.y + pObjectModel->VtxMax.y >= pPos->y))
+					{// 範囲内
+						bReach = true;
+					}
+
+					if (bInsec == false)
+					{// 交点じゃない
 						if ((pObject->posOff.y + pObjectModel->VtxMin.y - fHeight >= pPosOld->y) &&
 							(pObject->posOff.y + pObjectModel->VtxMin.y - fHeight <= pPos->y))
 						{// 下からの当たり判定
