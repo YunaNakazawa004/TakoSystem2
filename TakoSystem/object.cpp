@@ -210,6 +210,32 @@ void UpdateObject(void)
 				}
 			}
 
+			if (g_aObject[nCntObject].nIdxSafe == -1)
+			{// ‰‰ñ
+				// ˆÀ’nÝ’è
+				ObjectModel* pObjectModel = &g_aObjectModel[g_aObject[nCntObject].nType];
+
+				float fXLength = pObjectModel->VtxMax.x - pObjectModel->VtxMin.x;
+				float fZLength = pObjectModel->VtxMax.z - pObjectModel->VtxMin.z;
+				float fLength = sqrtf((fXLength * fXLength) + (fZLength * fZLength)) * 0.5f;	// ‘ÎŠpü‚Ì’·‚³ = ”¼Œa
+
+				float fDistRadius = sqrtf(g_aObject[nCntObject].pos.x * g_aObject[nCntObject].pos.x + g_aObject[nCntObject].pos.z * g_aObject[nCntObject].pos.z);	// ’†S‚©‚ç‚Ì‹——£
+
+				float fVerDist = sqrtf((fDistRadius * fDistRadius) - ((fLength / 2.0f) * (fLength / 2.0f)));
+				float fNowAngle = atan2f(g_aObject[nCntObject].pos.x, g_aObject[nCntObject].pos.z);
+				float fAngle = cosf(fVerDist / fDistRadius) * 0.2f;
+				fAngle += fNowAngle;
+				CorrectAngle(&fAngle, fAngle);
+
+				D3DXVECTOR3 SafePos;
+				SafePos.x = sinf(fAngle) * fDistRadius;
+				SafePos.y = 0.0f;
+				SafePos.z = cosf(fAngle) * fDistRadius;
+
+				g_aObject[nCntObject].nIdxSafe = SetMeshCylinder(SafePos, FIRST_POS, D3DXVECTOR2(16.0f, 2.0f), D3DXVECTOR2(fLength, (g_aObject[nCntObject].pos.y + pObjectModel->VtxMax.y)),
+					D3DXCOLOR(0.3f, 1.0f, 0.0f, 1.0f), false, false, MESHCYLINDERTYPE_NONE, MESHCYLINDERSTATE_FADEIN);
+			}
+
 			if (GetOceanCurrents() != OCEANCURRENTSSTATE_NOMAL)
 			{// ’Êíó‘Ô‚¶‚á‚È‚¢
 				SetMeshCylinderDisp(g_aObject[nCntObject].nIdxSafe, true);
@@ -299,30 +325,6 @@ void SetObject(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nIdx, bool bCollision)
 			g_aObject[nCntObject].bCollision = bCollision;
 			g_aObject[nCntObject].bUse = true;		// Žg—p‚µ‚Ä‚¢‚éó‘Ô‚É‚·‚é
 			strcpy(g_aObject[nCntObject].sFileName, g_apFilenameObject[nIdx]);
-
-			// ˆÀ’nÝ’è
-			ObjectModel* pObjectModel = &g_aObjectModel[g_aObject[nCntObject].nType];
-
-			float fXLength = pObjectModel->VtxMax.x - pObjectModel->VtxMin.x;
-			float fZLength = pObjectModel->VtxMax.z - pObjectModel->VtxMin.z;
-			float fLength = sqrtf((fXLength * fXLength) + (fZLength * fZLength)) * 0.5f;	// ‘ÎŠpü‚Ì’·‚³ = ”¼Œa
-
-			float fDistRadius = sqrtf(g_aObject[nCntObject].pos.x * g_aObject[nCntObject].pos.x + g_aObject[nCntObject].pos.z * g_aObject[nCntObject].pos.z);	// ’†S‚©‚ç‚Ì‹——£
-
-			float fVerDist = sqrtf((fDistRadius * fDistRadius) - ((fLength / 2.0f) * (fLength / 2.0f)));
-			float fNowAngle = atan2f(g_aObject[nCntObject].pos.x, g_aObject[nCntObject].pos.z);
-			float fAngle = cosf(fVerDist / fDistRadius) * 0.2f;
-			fAngle += fNowAngle;
-			CorrectAngle(&fAngle, fAngle);
-
-			D3DXVECTOR3 SafePos;
-			SafePos.x = sinf(fAngle) * fDistRadius;
-			SafePos.y = 0.0f;
-			SafePos.z = cosf(fAngle) * fDistRadius;
-
-			g_aObject[nCntObject].nIdxSafe = SetMeshCylinder(SafePos, FIRST_POS, D3DXVECTOR2(16.0f, 2.0f), D3DXVECTOR2(fLength, (g_aObject[nCntObject].pos.y + pObjectModel->VtxMax.y)),
-				D3DXCOLOR(0.3f, 1.0f, 0.0f, 1.0f), false, false, MESHCYLINDERTYPE_NONE, MESHCYLINDERSTATE_FADEIN);
-			SetMeshCylinderDisp(g_aObject[nCntObject].nIdxSafe, false);
 
 			g_nNumObject++;
 
