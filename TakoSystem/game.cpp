@@ -503,8 +503,7 @@ void DrawGame(void)
 	// メッシュフィールドの描画処理
 	DrawMeshField();
 
-	// メッシュリングの描画処理
-	DrawMeshRing();
+	
 
 	// メッシュシリンダーの描画処理
 	DrawMeshCylinder();
@@ -532,6 +531,9 @@ void DrawGame(void)
 
 	// メッシュオービットの描画処理
 	DrawMeshOrbit();
+
+	// メッシュリングの描画処理
+	DrawMeshRing();
 
 	// 水面の描画処理
 	DrawWaterSurf();
