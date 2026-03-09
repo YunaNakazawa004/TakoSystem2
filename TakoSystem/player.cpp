@@ -345,17 +345,17 @@ void UpdatePlayer(void)
 					pPlayer->bMove = false;
 				}
 
-				if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_LSHIFT) == true : GetKeyboardPress(DIK_NUMPAD0) == true) ||
+				if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_LCONTROL) == true : GetKeyboardPress(DIK_NUMPAD0) == true) ||
 					/*GetJoypadPress(nCntPlayer, JOYKEY_LEFT_SHOULDER) == true*/
 					GetJoypadShoulder(nCntPlayer, JOYKEY_LEFTTRIGGER, &nValue) == true)
-				{// ã¸
+				{// ‰º~
 					pPlayer->move.y += -MOVEMENT.y;
 
 					pPlayer->bMove = true;
 				}
-				else if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_LCONTROL) == true : GetKeyboardPress(DIK_NUMPAD2) == true) ||
+				else if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_LSHIFT) == true : GetKeyboardPress(DIK_NUMPAD2) == true) ||
 					GetJoypadPress(nCntPlayer, JOYKEY_LEFT_SHOULDER) == true)
-				{// ‰º~
+				{// ã¸
 					pPlayer->move.y += MOVEMENT.y;
 
 					pPlayer->bMove = true;

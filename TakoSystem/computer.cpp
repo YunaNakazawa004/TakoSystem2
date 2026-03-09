@@ -1461,7 +1461,8 @@ void CalcScore(Computer* pComputer)
 			pComputer->state = CPUSTATE_EXPLORE;
 		}
 
-		if (GetOceanCurrents() == OCEANCURRENTSSTATE_WAIT)
+		if (GetOceanCurrents() == OCEANCURRENTSSTATE_WAIT || 
+			GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL)
 		{// ‰Q’ª‚ª—ˆ‚»‚¤‚È‚Æ‚«
 			if (pComputer->nFoodCount > 0)
 			{// ƒGƒT‚ðŽ‚Á‚Ä‚¢‚é

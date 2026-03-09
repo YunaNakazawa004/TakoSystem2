@@ -57,6 +57,7 @@ void InitMeshCylinder(void)
 		g_aMeshCylinder[nCntMeshCylinder].block = FIRST_SIZE;
 		g_aMeshCylinder[nCntMeshCylinder].size = FIRST_SIZE;
 		g_aMeshCylinder[nCntMeshCylinder].state = MESHCYLINDERSTATE_NONE;
+		g_aMeshCylinder[nCntMeshCylinder].type = MESHCYLINDERTYPE_NONE;
 		g_aMeshCylinder[nCntMeshCylinder].nCounterState = 0;
 		g_aMeshCylinder[nCntMeshCylinder].bInside = false;
 		g_aMeshCylinder[nCntMeshCylinder].bColl = true;
