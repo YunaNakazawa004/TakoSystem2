@@ -158,6 +158,12 @@ void UpdateMeshField(void)
 					pVtx[0].pos.z = ((g_aMeshField[nCntMeshField].block.y * g_aMeshField[nCntMeshField].size.y) * 0.5f) - (nCntMeshField1 * g_aMeshField[nCntMeshField].size.y)
 						+ (cosf(g_aMeshField[nCntMeshField].posPoint.z) * 2.0f);
 
+					if (rand() % 100 == 0)
+					{// ランダムなタイミングで上下
+						g_aMeshField[nCntMeshField].fHeight[nCntMeshField2 + (nCntMeshField1 * ((int)g_aMeshField[nCntMeshField].block.x + 1))] 
+							+= (float)(rand() % 10) - 5.0f;
+					}
+
 					g_aMeshField[nCntMeshField].posPoint.y = pVtx[0].pos.y;
 					pVtx[0].pos.y += (g_aMeshField[nCntMeshField].fHeight[nCntMeshField2 + (nCntMeshField1 * ((int)g_aMeshField[nCntMeshField].block.x + 1))]
 						- g_aMeshField[nCntMeshField].posPoint.y) * 0.05f;
