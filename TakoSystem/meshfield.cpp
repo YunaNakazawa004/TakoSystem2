@@ -177,12 +177,6 @@ void UpdateMeshField(void)
 					// 頂点情報の設定
 					pVtx[0].texM.x += move.x;
 					pVtx[0].texM.y += move.y;
-					pVtx[1].texM.x += move.x;
-					pVtx[1].texM.y += move.y;
-					pVtx[2].texM.x += move.x;
-					pVtx[2].texM.y += move.y;
-					pVtx[3].texM.x += move.x;
-					pVtx[3].texM.y += move.y;
 
 					pVtx++;
 				}
@@ -210,7 +204,6 @@ void DrawMeshField(void)
 			// テクスチャステージステートの設定
 			pDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
 			pDevice->SetTextureStageState(1, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-			pDevice->SetTextureStageState(1, D3DTSS_ALPHAARG2, D3DTA_CURRENT);
 			pDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_ADDSMOOTH);
 
 			// ワールドマトリックスの初期化
@@ -245,6 +238,7 @@ void DrawMeshField(void)
 			else
 			{
 				pDevice->SetTexture(0, NULL);
+				pDevice->SetTexture(1, NULL);
 			}
 
 			// ポリゴンの描画

@@ -606,11 +606,6 @@ void UpdatePlayer(void)
 				pPlayer->state = PLAYERSTATE_BACKAREA;
 				pPlayer->nCounterState = ONE_SECOND;
 			}
-			else if (fDist < INCYLINDER_RADIUS + 0.1f)
-			{// “à‘¤‚ÌŠâ
-				D3DXVECTOR3 correct = -pPlayer->pos;
-				pPlayer->move += *D3DXVec3Normalize(&pPlayer->move, &correct);
-			}
 
 			if (pPlayer->pos.y < 0.0f)
 			{// ’ê

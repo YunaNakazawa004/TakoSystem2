@@ -230,7 +230,7 @@ void SetMeshDome(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, float fRad
 					pVtx[0].pos.z = 0.0f;
 
 					// テクスチャ座標の設定
-					pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
+					pVtx[0].tex = D3DXVECTOR2(0.0f, 0.5f);
 				}
 				else
 				{// 真ん中以外
@@ -240,7 +240,7 @@ void SetMeshDome(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, float fRad
 					pVtx[0].pos.z = cosf(-nCntMeshDome1 * fAngleX) * g_aMeshDome[nCntMeshDome].fRadius * sinf(fAngleY);
 
 					// テクスチャ座標の設定
-					pVtx[0].tex = D3DXVECTOR2(0.5f, 0.5f);
+					pVtx[0].tex = D3DXVECTOR2(0.5f, 1.0f);
 				}
 
 				// rhwの設定
