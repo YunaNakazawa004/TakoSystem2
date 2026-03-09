@@ -35,7 +35,7 @@ typedef struct
 // グローバル宣言
 //=======================================
 
-LPDIRECT3DTEXTURE9 g_pTextureWaterSurf = NULL;			// テクスチャへのポインタ
+LPDIRECT3DTEXTURE9 g_apTextureWaterSurf[2] = {};			// テクスチャへのポインタ
 WaterSurf g_aWatersurf[MAX_WATERSURF];
 
 //=============================================================================
@@ -53,7 +53,13 @@ void InitWaterSurf(void)
 	D3DXCreateTextureFromFile(
 		pDevice,
 		"data/TEXTURE/sea3.jpg",
-		&g_pTextureWaterSurf);
+		&g_apTextureWaterSurf[0]);
+
+	// テクスチャの読み込み
+	D3DXCreateTextureFromFile(
+		pDevice,
+		"data/TEXTURE/watersurface.jpg",
+		&g_apTextureWaterSurf[1]);
 
 	// 初期化
 	for (int nCntSurf = 0; nCntSurf < MAX_WATERSURF; nCntSurf++)
@@ -79,10 +85,13 @@ void InitWaterSurf(void)
 void UninitWaterSurf(void)
 {
 	// テクスチャの破棄
-	if (g_pTextureWaterSurf != NULL)
+	for (int nCntTex = 0; nCntTex < 2; nCntTex++)
 	{
-		g_pTextureWaterSurf->Release();
-		g_pTextureWaterSurf = NULL;
+		if (g_apTextureWaterSurf[nCntTex] != NULL)
+		{
+			g_apTextureWaterSurf[nCntTex]->Release();
+			g_apTextureWaterSurf[nCntTex] = NULL;
+		}
 	}
 	// 頂点バッファの破棄
 	for (int nCntSurf = 0; nCntSurf < MAX_WATERSURF; nCntSurf++)
@@ -106,7 +115,7 @@ void UninitWaterSurf(void)
 //=========================================
 void UpdateWaterSurf(void)
 {
-	VERTEX_3D* pVtx;							// 頂点情報へのポインタ
+	VERTEX_3D_MALTI* pVtx;							// 頂点情報へのポインタ
 	static float speedX = 0.0002f;			// 速度
 	static float speedY = 0.0002f;			// 速度
 	static D3DXVECTOR2 move = { 0.0f,0.0f };	// 移動量
@@ -172,6 +181,9 @@ void UpdateWaterSurf(void)
 					pVtx[0].tex.x += move.x;
 					pVtx[0].tex.y += move.y;
 
+					pVtx[0].texM.x += -move.x;
+					pVtx[0].texM.y += -move.y;
+
 					pVtx++;
 				}
 			}
@@ -195,6 +207,11 @@ void DrawWaterSurf(void)
 	{
 		if (g_aWatersurf[nCntWaterSurf].bUse == true)
 		{
+			// テクスチャステージステートの設定
+			pDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+			pDevice->SetTextureStageState(1, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+			pDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_ADD);
+
 			// ワールドマトリックスの初期化
 			D3DXMatrixIdentity(&g_aWatersurf[nCntWaterSurf].mtxWorld);
 
@@ -213,19 +230,24 @@ void DrawWaterSurf(void)
 			pDevice->SetTransform(D3DTS_WORLD, &g_aWatersurf[nCntWaterSurf].mtxWorld);
 
 			// 選択バッファをデータストリームに設定
-			pDevice->SetStreamSource(0, g_aWatersurf[nCntWaterSurf].pVtxBuff, 0, sizeof(VERTEX_3D));
+			pDevice->SetStreamSource(0, g_aWatersurf[nCntWaterSurf].pVtxBuff, 0, sizeof(VERTEX_3D_MALTI));
 
 			// インデックスバッファをデータストリームに設定
 			pDevice->SetIndices(g_aWatersurf[nCntWaterSurf].pIdxBuff);
 
 			// 頂点フォーマットの設定
-			pDevice->SetFVF(FVF_VERTEX_3D);
+			pDevice->SetFVF(FVF_VERTEX_3D_MALTI);
 
 			// テクスチャの設定
-			pDevice->SetTexture(0, g_pTextureWaterSurf);
+			pDevice->SetTexture(0, g_apTextureWaterSurf[0]);
+			pDevice->SetTexture(1, g_apTextureWaterSurf[1]);
+
 			// ポリゴンの描画
 			pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, ((int)g_aWatersurf[nCntWaterSurf].block.x + 1) * ((int)g_aWatersurf[nCntWaterSurf].block.y + 1), 0,
 				(((int)g_aWatersurf[nCntWaterSurf].block.x) * ((int)g_aWatersurf[nCntWaterSurf].block.y) * 2) + (((int)g_aWatersurf[nCntWaterSurf].block.y - 1) * 4));
+
+			// テクスチャステージステートの設定
+			pDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
 		}
 		// 元に戻す（通常は裏面カリング）
 		pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
@@ -250,13 +272,13 @@ void SetWaterSurf(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVECTO
 			g_aWatersurf[nCntWaterSurf].bUse = true;
 
 			LPDIRECT3DDEVICE9 pDevice = GetDevice();			// デバイスへのポインタ
-			VERTEX_3D* pVtx;					// 頂点情報へのポインタ
+			VERTEX_3D_MALTI* pVtx;					// 頂点情報へのポインタ
 			WORD* pIdx;							// インデックス情報へのポインタ
 
 			// 頂点バッファの生成
-			pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * ((int)g_aWatersurf[nCntWaterSurf].block.x + 1) * ((int)g_aWatersurf[nCntWaterSurf].block.y + 1),
+			pDevice->CreateVertexBuffer(sizeof(VERTEX_3D_MALTI) * ((int)g_aWatersurf[nCntWaterSurf].block.x + 1) * ((int)g_aWatersurf[nCntWaterSurf].block.y + 1),
 				D3DUSAGE_WRITEONLY,
-				FVF_VERTEX_3D,
+				FVF_VERTEX_3D_MALTI,
 				D3DPOOL_MANAGED,
 				&g_aWatersurf[nCntWaterSurf].pVtxBuff,
 				NULL);
@@ -282,6 +304,7 @@ void SetWaterSurf(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVECTO
 
 					// テクスチャ座標の設定
 					pVtx[0].tex = D3DXVECTOR2((float)nCntWaterSurf2 / 5.0f, (float)nCntWaterSurf1 / 5.0f);
+					pVtx[0].texM = D3DXVECTOR2((float)nCntWaterSurf2 / 2.0f, (float)nCntWaterSurf1 / 2.0f);
 
 					pVtx++;
 				}

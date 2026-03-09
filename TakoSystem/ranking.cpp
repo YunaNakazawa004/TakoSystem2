@@ -115,7 +115,7 @@ void InitRanking(void)
 
 	// メッシュフィールドの初期化処理
 	InitMeshField();
-	SetMeshField(MESHFIELDTYPE_SNOW, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,0.0f }, { 1,1 }, { 600,600 });
+	SetMeshField(MESHFIELDTYPE_SAND, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,0.0f }, { 1,1 }, { 600,600 });
 
 	// 3Dエフェクトの初期化処理
 	InitEffect3D();
