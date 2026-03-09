@@ -44,7 +44,7 @@ MeshDome g_aMeshDome[MAX_MESHDOME];			// メッシュドームの情報
 //*****************************************************************************
 const char* c_apFilenameMeshDome[MESHDOMETYPE_MAX] =
 {
-	"data\\TEXTURE\\Sky_Texture.jpg",
+	"data\\TEXTURE\\Sky_Texture000.jpg",
 	"data\\TEXTURE\\rock.jpg",
 };
 

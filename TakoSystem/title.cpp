@@ -603,7 +603,7 @@ void UpdateTitle(void)
 	if (GetFade() == FADE_NONE && g_PressEnterDeley > RANKING_DELEY)
 	{// 時間経過でランキングへ移行
 
-		SetFade(MODE_LOGO);
+		SetFade(MODE_TITLE);
 	}
 }
 
@@ -622,7 +622,7 @@ void DrawTitle(void)
 	// 配置物の描画処理
 	DrawObject();
 
-#if 0
+#if 1
 	// CPUの描画処理
 	DrawComputer();
 #endif
