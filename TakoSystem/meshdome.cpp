@@ -126,6 +126,9 @@ void DrawMeshDome(void)
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();			// デバイスへのポインタ
 	D3DXMATRIX mtxRot, mtxTrans;		// 計算用マトリックス
 
+	// ライティングの設定
+	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);				// ライティングをオフに設定
+
 	for (int nCntMeshDome = 0; nCntMeshDome < MAX_MESHDOME; nCntMeshDome++)
 	{
 		if (g_aMeshDome[nCntMeshDome].bUse == true)
@@ -176,6 +179,9 @@ void DrawMeshDome(void)
 			pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 		}
 	}
+
+	// ライティングの設定
+	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);					// ライティングをオンに設定
 }
 
 //=============================================================================

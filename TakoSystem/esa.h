@@ -16,18 +16,16 @@
 
 // 列挙型の定義 ================================================
 
-// エサの種類（ファイル追加まで）
+// エサのレアリティ
 typedef enum
 {
-	ESATYPE_SHRIMP,		// [2]エビ
-	ESATYPE_CRAB = 0,	// [0]カニ
-	ESATYPE_SHELL,		// [1]貝
-	ESATYPE_YA,			// [2]エビ
-	ESATYPE_ISE,		// [2]エビ
+	ESARARITY_0 = 0,	// [0]普通レア(最初からいる)
+	ESARARITY_1,		// [1]レア()
+	ESARARITY_2,		// [2]激レア(乱入)
 
-	ESATYPE_MAX			// 最大値
+	ESARARITY_MAX,		// 最大値
 
-}ESATYPE;
+}ESARARITY;
 
 // エサの挙動の種類
 typedef enum

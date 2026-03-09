@@ -39,6 +39,7 @@
 #include "seaweed.h"
 #include "bubble.h"
 #include "spotlight.h"
+#include "screen.h"
 
 // マクロ定義
 #define	MAX_TUTORIAL	(3)	// タイトルで表示するテクスチャの最大数
@@ -151,6 +152,8 @@ void InitTutorial(void)
 
 	// 海流の初期化処理
 	InitOceanCurrents();
+
+	InitScreen();
 
 	LPDIRECT3DDEVICE9 pDevice;	// デバイスへのポインタ
 
@@ -330,6 +333,8 @@ void UninitTutorial(void)
 	// 海流の終了処理
 	UninitOceanCurrents();
 
+	UninitScreen();
+
 	// テクスチャの破棄
 	for (int nCntTutorial = 0; nCntTutorial < MAX_TUTORIAL; nCntTutorial++)
 	{// タイトルの数だけ確認する
@@ -429,6 +434,8 @@ void UpdateTutorial(void)
 	// 海流の更新処理
 	UpdateOceanCurrents();
 
+	UpdateScreen();
+
 	// フェード情報の取得
 	FADE pFade = GetFade();
 
@@ -465,8 +472,7 @@ void DrawTutorial(void)
 	// メッシュフィールドの描画処理
 	DrawMeshField();
 
-	// メッシュリングの描画処理
-	DrawMeshRing();
+	
 
 	// メッシュシリンダーの描画処理
 	DrawMeshCylinder();
@@ -501,11 +507,17 @@ void DrawTutorial(void)
 	// 泡の描画
 	DrawBubble();
 
+	// メッシュリングの描画処理
+	DrawMeshRing();
+
 	SetFog(WHITE_VTX, 0.0f, 0.0f, false);
 
 	// チュートリアルテキストの描画処理
 	DrawTutorialTxt();
-
+	
+	// 画面の描画
+	DrawScreen();
+	
 	// クロスヘアの描画処理
 	DrawCrossHair();
 
@@ -520,6 +532,8 @@ void DrawTutorial(void)
 
 	// 海流の描画処理
 	DrawOceanCurrents();
+
+	
 
 	LPDIRECT3DDEVICE9 pDevice;	// デバイスへのポインタ
 
