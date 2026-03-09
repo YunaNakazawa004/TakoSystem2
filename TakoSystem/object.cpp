@@ -501,10 +501,14 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 			vecToPosOld.z = pPosOld->z - (start.z);
 
 			// 法線ベクトル
-			vecNor.x = (vecLine.x * cosf(-D3DX_PI * 0.5f)) + (vecLine.z * sinf(-D3DX_PI * 0.5f));
+			//vecNor.x = (vecLine.x * cosf(-D3DX_PI * 0.5f)) + (vecLine.z * sinf(-D3DX_PI * 0.5f));
+			//vecNor.y = 0.0f;
+			//vecNor.z = (vecLine.x * sinf(D3DX_PI * 0.5f)) - (vecLine.z * cosf(D3DX_PI * 0.5f));
+			//D3DXVec3Normalize(&vecNor, &vecNor);		// ベクトルを正規化する
+			vecNor.x = -vecLine.z;
 			vecNor.y = 0.0f;
-			vecNor.z = (vecLine.x * sinf(D3DX_PI * 0.5f)) - (vecLine.z * cosf(D3DX_PI * 0.5f));
-			D3DXVec3Normalize(&vecNor, &vecNor);		// ベクトルを正規化する
+			vecNor.z = vecLine.x;
+			D3DXVec3Normalize(&vecNor, &vecNor);
 
 			// 内積
 			fDot = (-vecMove.x * vecNor.x) + (-vecMove.z * vecNor.z);
@@ -563,8 +567,8 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 						pPos->x = start.x + (vecLine.x * fRate) + vecMoveDest.x;
 						pPos->z = start.z + (vecLine.z * fRate) + vecMoveDest.z;
 
-						pMove->x = vecMoveDest.x;
-						pMove->z = vecMoveDest.z;
+						//pMove->x = vecMoveDest.x;
+						//pMove->z = vecMoveDest.z;
 					}
 				}
 			}
