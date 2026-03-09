@@ -656,7 +656,7 @@ void UpdateComputer(void)
 
 				if (pComputer->nCounter % RIPPLE_COUNT == 0)
 				{// ’èŠú“I‚É”g–ä
-					SetMeshRing(D3DXVECTOR3(pComputer->phys.pos.x + (rand() % 6 - 3), *GetWaterSurf_Height(), pComputer->phys.pos.z + (rand() % 6 - 3)), FIRST_POS,
+					SetMeshRing(MESHRINGTYPE_RIPPLES,D3DXVECTOR3(pComputer->phys.pos.x + (rand() % 6 - 3), *GetWaterSurf_Height(), pComputer->phys.pos.z + (rand() % 6 - 3)), FIRST_POS,
 						D3DXVECTOR2(24.0f, 1.0f), D3DXVECTOR2(10.0f, 7.0f), D3DXCOLOR(WHITE_VTX.r, WHITE_VTX.g, WHITE_VTX.b, 0.5f));
 
 					SetSprayCircle(D3DXVECTOR3(pComputer->phys.pos.x, *GetWaterSurf_Height(), pComputer->phys.pos.z),

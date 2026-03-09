@@ -214,7 +214,7 @@ void UpdatePot(void)
 
 			if (nCounter % ((rand() % 300 + 1)) == 0)
 			{// 一定時間ごとに波紋
-				SetMeshRing(D3DXVECTOR3(pPot->pos.x, 0.0f, pPot->pos.z), FIRST_POS,
+				SetMeshRing(MESHRINGTYPE_RIPPLES, D3DXVECTOR3(pPot->pos.x, 0.0f, pPot->pos.z), FIRST_POS,
 					D3DXVECTOR2(24.0f, 1.0f), D3DXVECTOR2(13.0f, 8.0f), D3DXCOLOR(WHITE_VTX.r, WHITE_VTX.g, WHITE_VTX.b, 0.8f));
 			}
 
@@ -441,12 +441,15 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 								int nIdx = Dequeue(&pPlayer->esaQueue);
 								pPlayer->nFood--;
 								SetSubUiEsa(pPlayer->nIdx);
-								//SetEsa(nIdx, true, ESA_ACTTYPE_GOTO_POT, pPlayer->nPotIdx, pPlayer->pos, FIRST_POS);
+								SetEsa(nIdx, true, ESA_ACTTYPE_GOTO_POT, pPlayer->nPotIdx, pPlayer->pos, FIRST_POS);
 
 								Enqueue(&pPot->esaQueue, nIdx);
 								pPot->nFood++;
 							}
 						}
+						
+						// 衝撃波エフェクトの生成
+						SetMeshRing(MESHRINGTYPE_SHOCKWAVE, pPot->pos, CalcShockWaveRot(pPot->pos, pPlayer->pos),D3DXVECTOR2(16.0f,1.0f),D3DXVECTOR2(10.0f,7.0f),D3DXCOLOR(1.0f,1.0f,1.0f,1.0f));
 						
 						PlaySound(SOUND_SE_INBAIT);
 					}
@@ -472,6 +475,9 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 								//pPlayer->nFood++;
 							}
 						}
+
+						// 衝撃波エフェクトの生成
+						SetMeshRing(MESHRINGTYPE_SHOCKWAVE, pPot->pos, CalcShockWaveRot(pPot->pos, pPlayer->pos), D3DXVECTOR2(16.0f, 1.0f), D3DXVECTOR2(10.0f, 7.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 
 						PlaySound(SOUND_SE_OUTBAIT);
 					}

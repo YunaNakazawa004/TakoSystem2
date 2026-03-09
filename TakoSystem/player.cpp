@@ -424,6 +424,9 @@ void UpdatePlayer(void)
 							SetMotionPlayer(nCntPlayer, MOTIONTYPE_DASH, true, 20);
 
 							SetCameraViewAngle(nCntPlayer, 15.0f);
+
+							// ÕŒ‚”gƒGƒtƒFƒNƒg‚Ì¶¬
+							SetMeshRing(MESHRINGTYPE_SHOCKWAVE, tentaclePos, CalcShockWaveRot(tentaclePos, pPlayer->pos), D3DXVECTOR2(16.0f, 1.0f), D3DXVECTOR2(10.0f, 7.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 						}
 						else
 						{// GŽè‚ðL‚Î‚·
@@ -635,7 +638,7 @@ void UpdatePlayer(void)
 				SetSprayFlow(D3DXVECTOR3(pPlayer->pos.x, pPlayer->pos.y + 20.0f, pPlayer->pos.z), pPlayer->rot,
 					D3DXCOLOR(0.9f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_FLOW);
 
-				SetVibration(nCntPlayer, 3000, 2500, 2);
+				SetVibration(nCntPlayer, 256, 0, 1);
 			}
 
 			if (pPlayer->pos.y > *GetWaterSurf_Height() - (PLAYER_HEIGHT * 0.5f))
@@ -645,7 +648,7 @@ void UpdatePlayer(void)
 
 				if (pPlayer->nCounter % RIPPLE_COUNT == 0)
 				{// ’èŠú“I‚É”g–ä
-					SetMeshRing(D3DXVECTOR3(pPlayer->pos.x + (rand() % 6 - 3), *GetWaterSurf_Height(), pPlayer->pos.z + (rand() % 6 - 3)), FIRST_POS,
+					SetMeshRing(MESHRINGTYPE_RIPPLES, D3DXVECTOR3(pPlayer->pos.x + (rand() % 6 - 3), *GetWaterSurf_Height(), pPlayer->pos.z + (rand() % 6 - 3)), FIRST_POS,
 						D3DXVECTOR2(24.0f, 1.0f), D3DXVECTOR2(10.0f, 7.0f), D3DXCOLOR(WHITE_VTX.r, WHITE_VTX.g, WHITE_VTX.b, 0.5f));
 
 					SetSprayCircle(D3DXVECTOR3(pPlayer->pos.x, *GetWaterSurf_Height(), pPlayer->pos.z),
@@ -657,7 +660,7 @@ void UpdatePlayer(void)
 					SetSprayFlow(D3DXVECTOR3(pPlayer->pos.x, *GetWaterSurf_Height(), pPlayer->pos.z), pPlayer->rot,
 						WHITE_VTX, SPRAYTYPE_FLOW);
 
-					SetVibration(nCntPlayer, 3000, 2500, 2);
+					SetVibration(nCntPlayer, 1000, 3500, 2);
 				}
 			}
 

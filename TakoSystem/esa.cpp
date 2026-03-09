@@ -64,6 +64,8 @@ int g_nNumEsatype;						// エサの種類の総数
 
 Esa g_aEsa[MAX_SET_ESA];				// エサの情報
 
+int g_nNumEsa;
+
 // エサの配置情報
 Esa_info g_aEsaInfo[] =
 {// {モデル種類, エサの挙動, 挙動の値, 位置, 角度}
@@ -119,6 +121,8 @@ void InitEsa(bool bSet)
 
 	g_nNumEsatype = 0;									// エサの種類の総数を初期化
 	
+	g_nNumEsa = 0;
+
 	// エサの種類別情報の読み取り
 	SetLoadEsaData(&g_aEsaData[0], "data/FILE/esa.txt");
 
@@ -217,6 +221,8 @@ void UpdateEsa(void)
 
 	// ====================================================
 	
+	PrintDebugProc("\nESA_NUM %d\n", g_nNumEsa);
+
 	for (int nCntEsa = 0; nCntEsa < MAX_SET_ESA; nCntEsa++)
 	{
 		if (g_aEsa[nCntEsa].bUse == true)
@@ -224,7 +230,6 @@ void UpdateEsa(void)
 
 			// エサの挙動処理
 			BehaviorEsa(&g_aEsa[nCntEsa]);
-
 
 			// エサの移動処理
 			MoveEsa(&g_aEsa[nCntEsa]);
@@ -493,6 +498,8 @@ int SetEsa(int nEsaType, bool bSetOrbit, ESA_ACTTYPE esaType, int nBehavior, D3D
 			// 泡の設定
 			g_aEsa[nCntEsa].nIdxBubble = SetBubbleParticle(&g_aEsa[nCntEsa].pos, true, -1, 10, 1, 30, 5.0f, 3.0f);
 
+			g_nNumEsa++;	// エサの総数をインクリメント
+
 			return nCntEsa;	// 設定した場所を返す
 		}
 	}
@@ -541,6 +548,8 @@ int DelEsa(int nIdxEsa, bool bPlayer, int nIdxPlayer)
 			// エサUIの追加
 			SetAddUiEsa(nIdxPlayer, g_aEsa[nIdxEsa].nIdxModel);
 		}
+
+		g_nNumEsa--;
 
 		return g_aEsa[nIdxEsa].nIdxModel;
 	}
@@ -650,7 +659,7 @@ void MoveEsa(Esa* pEsa)
 		break;
 
 	case ESA_ACTTYPE_GOTO_PLAYER:	// プレイヤーに向かう
-
+#if 0
 		// 距離を求める
 		fWidth  = pPlayer[pEsa->nNumBehavior].pos.x - pEsa->pos.x;	// 幅の値を求める
 		fHeight = pPlayer[pEsa->nNumBehavior].pos.y - pEsa->pos.y;	// 高さの値を求める
@@ -666,7 +675,12 @@ void MoveEsa(Esa* pEsa)
 		pEsa->pos.x += fWidth * ESA_HOMING_SPEED;
 		pEsa->pos.y += fHeight * ESA_HOMING_SPEED;
 		pEsa->pos.z += fDipth * ESA_HOMING_SPEED;
+#endif
 
+		// ポットの位置にホーミング
+		pEsa->pos.x += (pPlayer[pEsa->nNumBehavior].pos.x - pEsa->pos.x) * ESA_HOMING_SPEED;
+		pEsa->pos.y += (pPlayer[pEsa->nNumBehavior].pos.y - pEsa->pos.y) * ESA_HOMING_SPEED;
+		pEsa->pos.z += (pPlayer[pEsa->nNumBehavior].pos.z - pEsa->pos.z) * ESA_HOMING_SPEED;
 		//PrintDebugProc("\nESA_ROT %f", fToTagetAngle);
 
 		break;
@@ -674,9 +688,9 @@ void MoveEsa(Esa* pEsa)
 	case ESA_ACTTYPE_GOTO_POT:		// ポットに向かう
 
 		// ポットの位置にホーミング
-		pEsa->pos.x += pPot[pEsa->nNumBehavior].pos.x - pEsa->pos.x * ESA_HOMING_SPEED;
-		pEsa->pos.y += pPot[pEsa->nNumBehavior].pos.y - pEsa->pos.y * ESA_HOMING_SPEED;
-		pEsa->pos.z += pPot[pEsa->nNumBehavior].pos.z - pEsa->pos.z * ESA_HOMING_SPEED;
+		pEsa->pos.x += (pPot[pEsa->nNumBehavior].pos.x - pEsa->pos.x) * ESA_HOMING_SPEED;
+		pEsa->pos.y += (pPot[pEsa->nNumBehavior].pos.y - pEsa->pos.y) * ESA_HOMING_SPEED;
+		pEsa->pos.z += (pPot[pEsa->nNumBehavior].pos.z - pEsa->pos.z) * ESA_HOMING_SPEED;
 
 		break;
 	}
