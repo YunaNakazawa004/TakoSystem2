@@ -162,11 +162,26 @@ void UpdateMeshField(void)
 					{// ランダムなタイミングで上下
 						g_aMeshField[nCntMeshField].fHeight[nCntMeshField2 + (nCntMeshField1 * ((int)g_aMeshField[nCntMeshField].block.x + 1))] 
 							+= (float)(rand() % 10) - 5.0f;
+
+						if (g_aMeshField[nCntMeshField].fHeight[nCntMeshField2 + (nCntMeshField1 * ((int)g_aMeshField[nCntMeshField].block.x + 1))]
+							> 50.0f)
+						{// 高すぎ
+							g_aMeshField[nCntMeshField].fHeight[nCntMeshField2 + (nCntMeshField1 * ((int)g_aMeshField[nCntMeshField].block.x + 1))]
+								= 50.0f;
+						}
+						else if (g_aMeshField[nCntMeshField].fHeight[nCntMeshField2 + (nCntMeshField1 * ((int)g_aMeshField[nCntMeshField].block.x + 1))]
+								< -20.0f)
+						{// 低すぎ
+							g_aMeshField[nCntMeshField].fHeight[nCntMeshField2 + (nCntMeshField1 * ((int)g_aMeshField[nCntMeshField].block.x + 1))]
+								= -20.0f;
+						}
 					}
 
 					g_aMeshField[nCntMeshField].posPoint.y = pVtx[0].pos.y;
 					pVtx[0].pos.y += (g_aMeshField[nCntMeshField].fHeight[nCntMeshField2 + (nCntMeshField1 * ((int)g_aMeshField[nCntMeshField].block.x + 1))]
 						- g_aMeshField[nCntMeshField].posPoint.y) * 0.05f;
+					//g_aMeshField[nCntMeshField].fHeight[nCntMeshField2 + (nCntMeshField1 * ((int)g_aMeshField[nCntMeshField].block.x + 1))]
+					//	+= (0.0f - g_aMeshField[nCntMeshField].fHeight[nCntMeshField2 + (nCntMeshField1 * ((int)g_aMeshField[nCntMeshField].block.x + 1))]) * 0.01f;
 
 					pVtx++;
 				}
