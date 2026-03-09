@@ -358,7 +358,7 @@ void SetObjectRandom(int nType, D3DXVECTOR3 posMin, D3DXVECTOR3 posMax, int nAmo
 //=============================================================================
 bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, float fRadius, float fHeight, bool bInsec)
 {
-	bool bLand = false;		// 着地しているか
+	bool bReach = false;		// 着地しているか
 	Object* pObject = GetObjectAll();
 
 	for (int nCntObject = 0; nCntObject < MAX_OBJECT; nCntObject++, pObject++)
@@ -445,6 +445,8 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 			}
 		}
 #else
+		static int nCntLand = 0;
+
 		for (int nCnt = 0; nCnt < 4; nCnt++)
 		{
 			ObjectModel* pObjectModel = &g_aObjectModel[pObject->nType];
@@ -499,10 +501,14 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 			vecToPosOld.z = pPosOld->z - (start.z);
 
 			// 法線ベクトル
-			vecNor.x = (vecLine.x * cosf(-D3DX_PI * 0.5f)) + (vecLine.z * sinf(-D3DX_PI * 0.5f));
+			//vecNor.x = (vecLine.x * cosf(-D3DX_PI * 0.5f)) + (vecLine.z * sinf(-D3DX_PI * 0.5f));
+			//vecNor.y = 0.0f;
+			//vecNor.z = (vecLine.x * sinf(D3DX_PI * 0.5f)) - (vecLine.z * cosf(D3DX_PI * 0.5f));
+			//D3DXVec3Normalize(&vecNor, &vecNor);		// ベクトルを正規化する
+			vecNor.x = -vecLine.z;
 			vecNor.y = 0.0f;
-			vecNor.z = (vecLine.x * sinf(D3DX_PI * 0.5f)) - (vecLine.z * cosf(D3DX_PI * 0.5f));
-			D3DXVec3Normalize(&vecNor, &vecNor);		// ベクトルを正規化する
+			vecNor.z = vecLine.x;
+			D3DXVec3Normalize(&vecNor, &vecNor);
 
 			// 内積
 			fDot = (-vecMove.x * vecNor.x) + (-vecMove.z * vecNor.z);
@@ -529,11 +535,11 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 			vecMoveRef.y = 0.0f;
 			vecMoveRef.z = vecMove.z + ((vecNor.z * fDot) * 2);
 
+			float fPosLine = (float)((int)(((vecLine.z * vecToPos.x) - (vecLine.x * vecToPos.z)) * 1.0f) / (int)1);
+			float fPosOldLine = (float)((int)(((vecLine.z * vecToPosOld.x) - (vecLine.x * vecToPosOld.z)) * 1.0f) / (int)1);
+
 			if (fRate >= 0.0f && fRate <= 1.0f)
 			{// 交点の割合が範囲内
-				float fPosLine = (float)((int)(((vecLine.z * vecToPos.x) - (vecLine.x * vecToPos.z)) * 1.0f) / (int)1);
-				float fPosOldLine = (float)((int)(((vecLine.z * vecToPosOld.x) - (vecLine.x * vecToPosOld.z)) * 1.0f) / (int)1);
-
 				if (fPosLine > 0.0f && (fPosOldLine <= 0.0f))
 				{// 交差した
 					if (bInsec == true)
@@ -541,6 +547,8 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 						insec.x = start.x + (vecLine.x * (fRate));
 						insec.y = pPos->y;
 						insec.z = start.z + (vecLine.z * (fRate));
+
+						bReach = true;
 					}
 					else if ((pObject->posOff.y + pObjectModel->VtxMin.y - fHeight <= pPos->y) &&
 						(pObject->posOff.y + pObjectModel->VtxMax.y >= pPos->y))
@@ -559,15 +567,20 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 						pPos->x = start.x + (vecLine.x * fRate) + vecMoveDest.x;
 						pPos->z = start.z + (vecLine.z * fRate) + vecMoveDest.z;
 
-						pMove->x = vecMoveDest.x;
-						pMove->z = vecMoveDest.z;
+						//pMove->x = vecMoveDest.x;
+						//pMove->z = vecMoveDest.z;
 					}
 				}
+			}
 
-				if (fPosLine > 0.0f)
-				{// 今の位置が内側にいる
-					if (bInsec == false)
-					{// 交点じゃない
+			if (fPosLine > 0.0f)
+			{// 今の位置が内側にいる
+				nCntLand++;
+
+				if (bInsec == false)
+				{// 交点じゃない
+					if (nCntLand == 4)
+					{// 全ての内側に入っていたら
 						if ((pObject->posOff.y + pObjectModel->VtxMin.y - fHeight >= pPosOld->y) &&
 							(pObject->posOff.y + pObjectModel->VtxMin.y - fHeight <= pPos->y))
 						{// 下からの当たり判定
@@ -579,17 +592,17 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 						{// 上からの当たり判定
 							pPos->y = pObject->posOff.y + pObjectModel->VtxMax.y;
 							pMove->y = 0.0f;							// 移動量を0にする
-
-							bLand = true;
 						}
 					}
 				}
 			}
 		}
+
+		nCntLand = 0;
 #endif
 	}
 
-	return bLand;
+	return bReach;
 }
 
 //=============================================================================

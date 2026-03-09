@@ -565,7 +565,7 @@ bool CollisionMeshCylinder(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3*
 
 						D3DXVECTOR3 move = vecMove;
 						move.y = 0.0f;
-						D3DXVec3Normalize(&move, &move);
+						//D3DXVec3Normalize(&move, &move);
 
 						float fDotN = D3DXVec3Dot(&move, &vecNor);
 
@@ -579,8 +579,8 @@ bool CollisionMeshCylinder(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3*
 						pPos->x = start.x + (vecLine.x * fRate) + vecMoveDest.x;
 						pPos->z = start.z + (vecLine.z * fRate) + vecMoveDest.z;
 
-						pMove->x = vecMoveDest.x;
-						pMove->z = vecMoveDest.z;
+						//pMove->x = vecMoveDest.x;
+						//pMove->z = vecMoveDest.z;
 					}
 				}
 			}
