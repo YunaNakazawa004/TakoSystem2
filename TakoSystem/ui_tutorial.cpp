@@ -266,7 +266,8 @@ void UpdateUiTutorial(void)
 			case UI_TUTORIALTYPE_SKIPTEXT:		// [1]開始テキスト
 				
 				if (GetJoypadPress(0, JOYKEY_START)
-				 || GetJoypadPress(1, JOYKEY_START))
+				 || GetJoypadPress(1, JOYKEY_START)
+				 || GetKeyboardPress(DIK_RETURN))
 				{// SKIPのボタンが押されている場合
 
 					g_aUiTutorialPolygon[nCntUiTutorial].fValue = D3DX_PI * 0.5f;									// 角度を透明度が0になる角度に設定
