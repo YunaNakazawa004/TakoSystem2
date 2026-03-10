@@ -9,7 +9,7 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define NUM_TUTORIALTXT			(3)										// チュートリアルテキストの数
+#define NUM_TUTORIALTXT			(6)										// チュートリアルテキストの数
 #define MOVEMENT				(D3DXVECTOR3(1.0f, 1.0f, 1.0f))			// 移動量
 #define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// 向き移動量
 
@@ -38,6 +38,9 @@ const char* c_apFilernamaTutorialTxt[NUM_TUTORIALTXT] =
 	"data\\TEXTURE\\tutorialtxt000.png",
 	"data\\TEXTURE\\tutorialtxt001.png",
 	"data\\TEXTURE\\tutorialtxt002.png",
+	"data\\TEXTURE\\tutorialtxt003.png",
+	"data\\TEXTURE\\tutorialtxt004.png",
+	"data\\TEXTURE\\tutorialtxt005.png",
 };
 
 //=============================================================================
@@ -108,9 +111,13 @@ void InitTutorialTxt(void)
 	// 頂点バッファをアンロックする
 	g_pVtxBuffTutorialTxt->Unlock();
 
-	SetTutorialTxt(D3DXVECTOR3(0.0f, 700.0f, -600.0f));
-	SetTutorialTxt(D3DXVECTOR3(750.0f, 700.0f, 0.0f));
-	SetTutorialTxt(D3DXVECTOR3(-750.0f, 700.0f, 0.0f));
+	SetTutorialTxt(D3DXVECTOR3(0.0f, 700.0f, -600.0f));		// [0]移動・カメラ
+	SetTutorialTxt(D3DXVECTOR3(750.0f, 700.0f, 300.0f));	// [1]墨吐き・触手伸ばし
+	SetTutorialTxt(D3DXVECTOR3(-750.0f, 700.0f, 300.0f));	// [2]上昇・下降
+
+	SetTutorialTxt(D3DXVECTOR3(0.0f, 400.0f, 600.0f));		// [3]エサの取り方
+	SetTutorialTxt(D3DXVECTOR3(750.0f, 400.0f, -300.0f));	// [4]タコつぼ
+	SetTutorialTxt(D3DXVECTOR3(-750.0f, 400.0f, -300.0f));	// [5]渦潮について
 }
 
 //=============================================================================
