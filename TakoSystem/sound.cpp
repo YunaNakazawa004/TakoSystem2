@@ -53,6 +53,9 @@ SOUNDINFO g_aSoundInfo[SOUND_MAX] =
 	{"data/SE/mud000.wav",0},				//水音
 	{"data/SE/drumroll001.wav",0},			//ドラムロール
 	{"data/SE/jan000.wav",0},				//ジャン
+	{"data/SE/esa000.wav",0},				//エサ低い
+	{"data/SE/esa001.wav",0},				//エサ普通
+	{"data/SE/esa002.wav",0},				//エサ高い
 };
 
 //=============================================================================
@@ -414,4 +417,28 @@ HRESULT ReadChunkData(HANDLE hFile, void* pBuffer, DWORD dwBuffersize, DWORD dwB
 	}
 
 	return S_OK;
+}
+
+//=============================================================================
+// 獲得エサによるSE再生
+//=============================================================================
+void EsaPlaySE(int nType)
+{
+	if (nType < 0 || nType > MAX_ESATYPE)
+	{// 範囲外
+		return;
+	}
+
+	if (nType == 2 || nType == 3 || nType == 4)
+	{// 低い
+		PlaySound(SOUND_SE_ESALOW);
+	}
+	else if (nType == 0 || nType == 1)
+	{// 普通
+		PlaySound(SOUND_SE_ESANORMAL);
+	}
+	else if (nType == 5 || nType == 6)
+	{// 高い
+		PlaySound(SOUND_SE_ESAHIGH);
+	}
 }

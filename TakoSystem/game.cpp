@@ -543,19 +543,19 @@ void DrawGame(void)
 	// レディの描画処理
 	DrawReady();
 
+	// UIゲージアイコンの描画処理
+	DrawUiGaugeIcon();
+
+	// エサUIの描画処理
+	DrawUiEsa();
+
+	// 時間の描画処理
+	DrawTime();
+
 	if (bGameStart == true)
 	{
 		// クロスヘアの描画処理
 		DrawCrossHair();
-
-		// UIゲージアイコンの描画処理
-		DrawUiGaugeIcon();
-
-		// エサUIの描画処理
-		DrawUiEsa();
-
-		// 時間の描画処理
-		DrawTime();
 
 		// マップの描画処理
 		DrawMap();

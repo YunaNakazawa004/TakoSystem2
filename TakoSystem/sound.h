@@ -5,6 +5,7 @@
 #define _SOUND_H_
 
 #include "main.h"
+#include "esa.h"
 
 //*****************************************************************************
 // サウンド一覧
@@ -34,6 +35,9 @@ typedef enum
 	SOUND_SE_MUD,						//水音(べちゃっ)
 	SOUND_SE_DRUMROLL,					//ドラムロール
 	SOUND_SE_JAN,						//ジャン
+	SOUND_SE_ESALOW,					//エサ低い
+	SOUND_SE_ESANORMAL,					//エサ普通
+	SOUND_SE_ESAHIGH,					//エサ高い
 	SOUND_MAX,
 } SOUND_LABEL;
 
@@ -45,5 +49,7 @@ void UninitSound(void);
 HRESULT PlaySound(SOUND_LABEL label);
 void StopSound(SOUND_LABEL label);
 void StopSound(void);
+
+void EsaPlaySE(int nType);
 
 #endif

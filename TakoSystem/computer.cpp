@@ -2727,6 +2727,7 @@ bool CollisionOcto(int nIdx, bool bCPU, D3DXVECTOR3 pos)
 				Enqueue(&pPlayer[nIdx].esaQueue, nEsaIdx);
 				pPlayer[nIdx].nFood++;
 				SetAddUiEsa(nIdx, nEsaIdx);
+				EsaPlaySE(nEsaIdx);
 			}
 
 			return bColl;
@@ -2767,6 +2768,7 @@ bool CollisionOcto(int nIdx, bool bCPU, D3DXVECTOR3 pos)
 				Enqueue(&pPlayer[nIdx].esaQueue, nEsaIdx);
 				pPlayer[nIdx].nFood++;
 				SetAddUiEsa(nIdx, nEsaIdx);
+				EsaPlaySE(nEsaIdx);
 			}
 
 			return bColl;

@@ -402,12 +402,13 @@ void UpdatePlayer(void)
 								{
 									pPlayer->nFood++;
 									Enqueue(&pPlayer->esaQueue, nIdxEsaType);
+									EsaPlaySE(nIdxEsaType);
 								}
 							}
 						}
 						else if (CollisionPotArea(tentaclePos, TENTACLE_RADIUS * 0.5f, pPlayer, NULL, true) == true ||
 							CollisionOcto(nCntPlayer, false, tentaclePos) == true)
-						{// タコつぼからエサをとる
+						{// エサをとる
 							pPlayer->TentacleState = PLTENTACLESTATE_TENTACLESHORT;
 
 							SetMotionPlayer(nCntPlayer, MOTIONTYPE_TENTACLESHORT, true, 20);
@@ -828,6 +829,7 @@ void UpdatePlayer(void)
 					{
 						pPlayer->nFood++;
 						Enqueue(&pPlayer->esaQueue, nIdxEsaType);
+						EsaPlaySE(nIdxEsaType);
 					}
 				}
 			}
