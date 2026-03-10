@@ -133,14 +133,14 @@ void InitGame(void)
 	// タコつぼの初期化処理
 	InitPot();
 
-	// エサの初期化処理
-	InitEsa(true);
-
 	// 水面の初期化処理
 	InitWaterSurf();
 
 	// 配置物の初期化処理
 	InitObject("data\\objpos001.txt");
+
+	// エサの初期化処理
+	InitEsa(true);
 
 	// 海藻の初期化処理
 	InitSeaweed();

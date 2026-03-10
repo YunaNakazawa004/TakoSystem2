@@ -19,9 +19,9 @@
 // エサのレアリティ
 typedef enum
 {
-	ESARARITY_0 = 0,	// [0]普通レア(最初からいる)
-	ESARARITY_1,		// [1]レア()
-	ESARARITY_2,		// [2]激レア(乱入)
+	ESARARITY_NOMAL = 0,// [0]普通
+	ESARARITY_RARE,		// [1]レア
+	ESARARITY_SRARE,	// [2]激レア
 
 	ESARARITY_MAX,		// 最大値
 
