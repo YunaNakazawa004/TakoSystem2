@@ -1201,10 +1201,14 @@ void Hide(Computer* pComputer)
 	D3DXVECTOR3 dir = target - pComputer->phys.pos;
 	D3DXVec3Normalize(&dir, &dir);
 
-	// 慣性移動
-	pComputer->phys.move.x += dir.x * MOVEMENT.x;
-	pComputer->phys.move.y += dir.y * MOVEMENT.y;
-	pComputer->phys.move.z += dir.z * MOVEMENT.z;
+	D3DXVECTOR3 dist = target - pComputer->phys.pos;
+
+	if (D3DXVec3Length(&dist) > 10.0f)
+	{// 遠いなら慣性移動
+		pComputer->phys.move.x += dir.x * MOVEMENT.x;
+		pComputer->phys.move.y += dir.y * MOVEMENT.y;
+		pComputer->phys.move.z += dir.z * MOVEMENT.z;
+	}
 }
 
 //=============================================================================
@@ -1459,6 +1463,10 @@ void CalcScore(Computer* pComputer)
 
 		if (best < exploreThreshold && pComputer->state != CPUSTATE_MOVE_TO_FOOD)
 		{// 閾値以下なら探索 エサを見つけていたらそのまま
+			pComputer->state = CPUSTATE_EXPLORE;
+		}
+		else if (best == -9999.0f)
+		{// 初期値のまま
 			pComputer->state = CPUSTATE_EXPLORE;
 		}
 
@@ -1961,11 +1969,6 @@ void CalcInkScore(Computer* pComputer)
 		// 自分のエサが多い
 		score += pComputer->nFoodCount * INK_ESA_COUNT;
 
-		if (IsNearPillar(pComputer->phys.pos) == true)
-		{// 柱が近い
-			score += INK_PILLAR_SCORE;
-		}
-
 		if (score > bestScore)
 		{// 最も墨が有効な敵を採用
 			bestScore = score;
@@ -2021,11 +2024,6 @@ void CalcInkScore(Computer* pComputer)
 
 		// 自分のエサが多い
 		score += pComputer->nFoodCount * INK_ESA_COUNT;
-
-		if (IsNearPillar(pComputer->phys.pos) == true)
-		{// 柱が近い
-			score += INK_PILLAR_SCORE;
-		}
 
 		if (score > bestScore)
 		{// 最も墨が有効な敵を採用
@@ -2301,7 +2299,7 @@ void FindTentacleTarget(Computer* pComputer)
 
 		float score = D3DXVec3Dot(&dirNorm, &dir);
 
-		if (dist < 200.0f)
+		if (dist < 100.0f)
 		{// 距離が近すぎると触手が短くなるので少し減点
 			score -= 1.0f;
 		}
@@ -2405,11 +2403,6 @@ bool ShouldUseTentacle(Computer* pComputer)
 	if (pComputer->aModel[2].scale.y > 1.0f)
 	{// 触手の長さが戻っていない
 		return false;
-	}
-
-	if (D3DXVec3Length(&pComputer->phys.move) < 5.0f)
-	{// 速度が遅いときは使う（加速目的）
-		return true;
 	}
 
 	if (pComputer->state == CPUSTATE_ESCAPE)
