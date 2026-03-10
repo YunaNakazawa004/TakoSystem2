@@ -112,8 +112,8 @@ void InitTutorialTxt(void)
 	g_pVtxBuffTutorialTxt->Unlock();
 
 	SetTutorialTxt(D3DXVECTOR3(0.0f, 700.0f, -600.0f));		// [0]移動・カメラ
-	SetTutorialTxt(D3DXVECTOR3(750.0f, 700.0f, 300.0f));		// [1]墨吐き・触手伸ばし
-	SetTutorialTxt(D3DXVECTOR3(-750.0f, 700.0f, 300.0f));		// [2]上昇・下降
+	SetTutorialTxt(D3DXVECTOR3(750.0f, 700.0f, 300.0f));	// [1]墨吐き・触手伸ばし
+	SetTutorialTxt(D3DXVECTOR3(-750.0f, 700.0f, 300.0f));	// [2]上昇・下降
 
 	SetTutorialTxt(D3DXVECTOR3(0.0f, 400.0f, 600.0f));		// [3]エサの取り方
 	SetTutorialTxt(D3DXVECTOR3(750.0f, 400.0f, -300.0f));	// [4]タコつぼ
