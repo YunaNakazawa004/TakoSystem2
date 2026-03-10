@@ -7,6 +7,7 @@
 #include "main.h"
 
 #include "esa.h"
+#include "object.h"
 
 #include "input.h"
 #include "debugproc.h"
@@ -86,10 +87,14 @@ void InitEsa(bool bSet)
 
 	// 設定項目
 	int nSetType;		// 設定する種類
+	int nSetActType;	// 設定する行動種類
 	float fRandRadius;	// 設定する中心からの距離
 	float fRandAngle;	// 設定する角度
 	float fRandHeight;	// 設定する高さ
 	int nIdx;			// 設定したインデックス
+	D3DXVECTOR3 setPos;
+	D3DXVECTOR3 tmpVec3 = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
 
 	// ====================================================
 
@@ -148,18 +153,35 @@ void InitEsa(bool bSet)
 		for (nCntEsa = 0; nCntEsa < 30; nCntEsa++)
 		{// 配置する数だけ繰り返す
 
-			nSetType = rand() % g_nNumEsatype;																// ランダムで種類を設定
-			fRandRadius =(float)(rand() % (int)(OUTCYLINDER_RADIUS - 100.0f) + (int)INCYLINDER_RADIUS);	// 中心からの距離を設定
-			fRandAngle = ((float)(rand() % ((int)(D3DX_PI * 2000)) - (int)(D3DX_PI * 1000))) / 1000.0f;	// 角度(xy位置)を設定
-			fRandHeight = (float)(rand() % (int)CYLINDER_HEIGHT);											// 高さを設定
+			nSetType = rand() % g_nNumEsatype;	// ランダムで種類を設定
+			nSetActType = rand() % 2 + 1;		// 行動タイプを設定
+			
+			if (nSetActType == ESA_ACTTYPE_LAND)
+			{// エサの設定する行動種類が地面の場合
 
-			// 位置を設定
-			D3DXVECTOR3 setPos = D3DXVECTOR3(sinf(fRandAngle) * fRandRadius,
-											 fRandHeight,
-											 cosf(fRandAngle) * fRandRadius);
+				fRandHeight = 0.0f;
+			}
+			else
+			{
+				fRandHeight = (float)(rand() % (int)CYLINDER_HEIGHT);										// 高さを設定
+			}
+
+			do
+			{// 行動タイプが地面ではない。又はオブジェクトに接触していない状態まで設定し直す
+
+				// 設定位置(XZ)を求める 
+				fRandRadius = (float)(rand() % (int)(OUTCYLINDER_RADIUS - 100.0f) + (int)INCYLINDER_RADIUS);	// 中心からの距離を設定
+				fRandAngle = ((float)(rand() % ((int)(D3DX_PI * 2000)) - (int)(D3DX_PI * 1000))) / 1000.0f;		// 角度(xy位置)を設定
+
+				// 位置を設定
+				setPos = D3DXVECTOR3(sinf(fRandAngle) * fRandRadius,
+									 fRandHeight,
+									 cosf(fRandAngle) * fRandRadius);
+
+			} while (CollisionObject(&setPos, &setPos, &tmpVec3, 0.0f, 0.0f, true) && nSetActType == ESA_ACTTYPE_LAND);
 
 			// エサの設定処理
-			SetEsa(nSetType, true, ESA_ACTTYPE_SWIM, 0, setPos, D3DXVECTOR3(0.0f,0.0f,0.0f));
+			SetEsa(nSetType, true, (ESA_ACTTYPE)nSetActType, 0, setPos, D3DXVECTOR3(0.0f,0.0f,0.0f));
 		}
 
 #endif
@@ -236,7 +258,8 @@ void UpdateEsa(void)
 			MoveEsa(&g_aEsa[nCntEsa]);
 
 			if (g_aEsa[nCntEsa].esaType != ESA_ACTTYPE_GOTO_PLAYER
-			 && g_aEsa[nCntEsa].esaType != ESA_ACTTYPE_GOTO_POT)
+			 && g_aEsa[nCntEsa].esaType != ESA_ACTTYPE_GOTO_POT
+			 && g_aEsa[nCntEsa].esaType != ESA_ACTTYPE_LAND)
 			{// プレイヤーとポットにむかっている状態でない場合
 
 				// 海流の処理
