@@ -316,7 +316,8 @@ void UpdateUiTutorial(void)
 				{// スキップ状態でない
 
 					if (GetJoypadPress(0, JOYKEY_START)
-					 || GetJoypadPress(1, JOYKEY_START))
+					 || GetJoypadPress(1, JOYKEY_START)
+					 || GetKeyboardPress(DIK_RETURN))
 					{// SKIPのボタンが押されている場合
 
 						if (g_aUiTutorialPolygon[nCntUiTutorial].fValue >= g_aUiTutorialPolygon[nCntUiTutorial].fSizeWidth)

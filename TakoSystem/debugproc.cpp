@@ -11,7 +11,7 @@
 // グローバル変数
 //*****************************************************************************
 LPD3DXFONT g_pFont = NULL;				// フォントへのポインタ
-char g_aStrDebug[4096];					// 文字列(デバッグ情報)を格納するバッファ
+char g_aStrDebug[2048];					// 文字列(デバッグ情報)を格納するバッファ
 bool g_bDebug = true;					// デバッグ表示のON/OFF
 
 //=============================================================================
@@ -72,7 +72,7 @@ void DrawDebugProc(void)
 	if (g_bDebug == true)
 	{// 表示するときだけ
 		// テキストの描画
-		g_pFont->DrawText(NULL, &g_aStrDebug[0], -1, &rect, DT_LEFT, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+		g_pFont->DrawText(NULL, &g_aStrDebug[0], -1, &rect, DT_RIGHT, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 	}
 
 	// デバッグ情報バッファのクリア

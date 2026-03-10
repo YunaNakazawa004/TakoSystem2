@@ -106,8 +106,9 @@ void UpdateMeshCylinder(void)
 {
 	for (int nCntMeshC = 0; nCntMeshC < MAX_MESHCYLINDER; nCntMeshC++)
 	{
-		if (g_aMeshCylinder[nCntMeshC].bUse == false)
-		{
+		if (g_aMeshCylinder[nCntMeshC].bUse == false || 
+			g_aMeshCylinder[nCntMeshC].bDisp == false)
+		{// ”ò‚Î‚·
 			continue;
 		}
 
