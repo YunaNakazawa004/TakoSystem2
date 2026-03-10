@@ -12,7 +12,7 @@
 // É}ÉNÉçíËã`
 //*****************************************************************************
 #define MOVEMENT				(D3DXVECTOR3(0.5f, 0.5f, 0.5f))			// à⁄ìÆó 
-#define SEAWEED_HEIGHT			(40.0f)									// äCëîÇÃçÇÇ≥
+#define SEAWEED_HEIGHT			(80.0f)									// äCëîÇÃçÇÇ≥
 #define MAX_SEAWEED				(128)									// äCëîÇÃç≈ëÂó 
 #define SEAWEED_DIST			(60.0f)									// äCëîÇ™åXÇ≠ãóó£
 
@@ -43,7 +43,6 @@ void InitSeaweed(void)
 		pSeaweed->pos = FIRST_POS;
 		pSeaweed->rot = FIRST_POS;
 		pSeaweed->bUse = false;
-		pSeaweed->nIdxSafe = -1;
 		pSeaweed->nNumModel = 0;
 	}
 
@@ -77,7 +76,7 @@ void InitSeaweed(void)
 	}
 
 	// ÉâÉìÉ_ÉÄÇ»à íuÇ…ê›íË
-	SetRandomSeaweed(100);
+	SetRandomSeaweed(80);
 }
 
 //=============================================================================
@@ -120,7 +119,7 @@ void UninitSeaweed(void)
 void UpdateSeaweed(void)
 {
 	Seaweed* pSeaweed = GetSeaweed();
-	static int nCounter = 0;
+	//static int nCounter = 0;
 
 	for (int nCntSeaweed = 0; nCntSeaweed < MAX_SEAWEED; nCntSeaweed++, pSeaweed++)
 	{
@@ -187,7 +186,7 @@ void UpdateSeaweed(void)
 		}
 	}
 
-	nCounter++;
+	//nCounter++;
 }
 
 //=============================================================================
@@ -293,7 +292,6 @@ void SetSeaweed(D3DXVECTOR3 pos, int nLength)
 		{// égópÇµÇƒÇ¢Ç»Ç¢
 			pSeaweed->pos = pos;
 			pSeaweed->rot = D3DXVECTOR3(0.0f, (float)(rand() % 629 - 314) / 1000.0f, 0.0f);
-			pSeaweed->nIdxSafe = -1;
 			pSeaweed->bUse = true;
 			pSeaweed->nNumModel = nLength;
 
@@ -358,7 +356,7 @@ void SetRandomSeaweed(int nAmount)
 		pos.y = -20.0f;
 		pos.z = cosf(fAngle) * (OUTCYLINDER_RADIUS + (((float)(rand() % (int)((OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) / 2) + 1))));
 
-		int nLength = rand() % 25 + 10;
+		int nLength = rand() % 10 + 5;
 
 		SetSeaweed(pos, nLength);
 	}

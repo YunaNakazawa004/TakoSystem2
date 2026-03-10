@@ -45,7 +45,6 @@ typedef struct
 	D3DXVECTOR3 pos;			// 位置
 	D3DXVECTOR3 rot;			// 向き
 	D3DXMATRIX mtxWorld;		// ワールドマトリックス
-	int nIdxSafe;				// 安地インデックス
 	bool bUse;					// 使用しているかどうか
 
 	Seaweed_Model aModel[MAX_NUMMODEL];	// モデル(パーツ)

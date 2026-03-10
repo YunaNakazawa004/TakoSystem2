@@ -1203,7 +1203,7 @@ void Hide(Computer* pComputer)
 
 	D3DXVECTOR3 dist = target - pComputer->phys.pos;
 
-	if (D3DXVec3Length(&dist) > 10.0f)
+	if (D3DXVec3Length(&dist) > 20.0f)
 	{// ‰“‚¢‚È‚çŠµ«ˆÚ“®
 		pComputer->phys.move.x += dir.x * MOVEMENT.x;
 		pComputer->phys.move.y += dir.y * MOVEMENT.y;
