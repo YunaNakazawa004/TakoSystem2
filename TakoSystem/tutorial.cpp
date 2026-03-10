@@ -40,6 +40,7 @@
 #include "bubble.h"
 #include "spotlight.h"
 #include "screen.h"
+#include "ui_tutorial.h"
 
 // マクロ定義
 #define	MAX_TUTORIAL	(3)	// タイトルで表示するテクスチャの最大数
@@ -153,6 +154,8 @@ void InitTutorial(void)
 	// 海流の初期化処理
 	InitOceanCurrents();
 
+	InitUiTutorial();
+
 	InitScreen();
 
 	LPDIRECT3DDEVICE9 pDevice;	// デバイスへのポインタ
@@ -216,10 +219,10 @@ void InitTutorial(void)
 			}
 			else
 			{
-				pVtx[0].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 0.0f) - 110.0f, ((SCREEN_HEIGHT / 2) + 235.0f) - 120.0f, 0.0f);	// 右回りで設定する
-				pVtx[1].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 0.0f) + 110.0f, ((SCREEN_HEIGHT / 2) + 235.0f) - 120.0f, 0.0f);	// 2Dの場合Zの値は0にする
-				pVtx[2].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 0.0f) - 110.0f, ((SCREEN_HEIGHT / 2) + 235.0f) + 120.0f, 0.0f);
-				pVtx[3].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 0.0f) + 110.0f, ((SCREEN_HEIGHT / 2) + 235.0f) + 120.0f, 0.0f);
+				pVtx[0].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 0.0f) - 110.0f, ((SCREEN_HEIGHT / 2) + 160.0f) - 145.0f, 0.0f);	// 右回りで設定する
+				pVtx[1].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 0.0f) + 110.0f, ((SCREEN_HEIGHT / 2) + 160.0f) - 145.0f, 0.0f);	// 2Dの場合Zの値は0にする
+				pVtx[2].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 0.0f) - 110.0f, ((SCREEN_HEIGHT / 2) + 160.0f) + 145.0f, 0.0f);
+				pVtx[3].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 0.0f) + 110.0f, ((SCREEN_HEIGHT / 2) + 160.0f) + 145.0f, 0.0f);
 			}
 		}
 
@@ -333,6 +336,8 @@ void UninitTutorial(void)
 	// 海流の終了処理
 	UninitOceanCurrents();
 
+	UninitUiTutorial();
+
 	UninitScreen();
 
 	// テクスチャの破棄
@@ -434,15 +439,15 @@ void UpdateTutorial(void)
 	// 海流の更新処理
 	UpdateOceanCurrents();
 
+	UpdateUiTutorial();
+
 	UpdateScreen();
 
 	// フェード情報の取得
 	FADE pFade = GetFade();
 
-	if ((GetKeyboardTrigger(DIK_RETURN) == true ||
-		GetJoypadTrigger(0, JOYKEY_START) == true ||
-		GetJoypadTrigger(0, JOYKEY_A) == true) && pFade == FADE_NONE)
-	{// 決定キー（ENTERキー）が押された
+	if (GetSkipTutorial() == true && pFade == FADE_NONE)
+	{// 次の画面に転移する条件(SKIP長押し)を満たした
 
 		// モード設定
 		SetFade(MODE_GAME);
@@ -533,7 +538,7 @@ void DrawTutorial(void)
 	// 海流の描画処理
 	DrawOceanCurrents();
 
-	
+	DrawUiTutorial();
 
 	LPDIRECT3DDEVICE9 pDevice;	// デバイスへのポインタ
 
