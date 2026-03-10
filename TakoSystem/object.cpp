@@ -232,7 +232,7 @@ void UpdateObject(void)
 				SafePos.y = 0.0f;
 				SafePos.z = cosf(fAngle) * fDistRadius;
 
-				g_aObject[nCntObject].nIdxSafe = SetMeshCylinder(SafePos, FIRST_POS, D3DXVECTOR2(16.0f, 2.0f), D3DXVECTOR2(fLength, (g_aObject[nCntObject].pos.y + pObjectModel->VtxMax.y)),
+				g_aObject[nCntObject].nIdxSafe = SetMeshCylinder(SafePos, FIRST_POS, D3DXVECTOR2(10.0f, 1.0f), D3DXVECTOR2(fLength, (g_aObject[nCntObject].pos.y + pObjectModel->VtxMax.y)),
 					D3DXCOLOR(0.3f, 1.0f, 0.0f, 1.0f), false, false, MESHCYLINDERTYPE_NONE, MESHCYLINDERSTATE_FADEIN);
 
 				SetMeshCylinderDisp(g_aObject[nCntObject].nIdxSafe, false);
