@@ -287,19 +287,7 @@ void DrawMeshOrbit(void)
 			pDevice->SetTexture(0, g_apTextureMeshOrbit[0]);
 
 			// ポリゴンの描画
-			//int primitiveCount = (MAX_ORBIT_VTX / 2 - 1) * 2;
-			/*HRESULT hr = */pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, MAX_ORBIT_VTX, 0, MAX_ORBIT_VTX - 2);
-			//pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, MAX_ORBIT_VTX - 2);
-			//OutputDebugStringA("Before DrawMeshOrbit\n");
-			//HRESULT hr = pDevice->DrawPrimitive(D3DPT_LINELIST, 0, MAX_ORBIT_VTX / 2);
-			//OutputDebugStringA("After DrawMeshOrbit\n");
-
-			//if (FAILED(hr))
-			//{
-			//	char buf[128];
-			//	sprintf_s(buf, "DrawMeshOrbit FAILED hr=0x%08X\n", hr);y
-			//	OutputDebugStringA(buf);
-			//}
+			pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, MAX_ORBIT_VTX, 0, MAX_ORBIT_VTX - 2);
 		}
 
 		// レンダーステートを元に戻す
