@@ -6,9 +6,11 @@
 //==================================================================================
 #include "main.h"					// メインヘッダー
 #include "ui_result_getscore.h"		// リザルトの獲得スコアのUI
+#include "result.h"					// リザルト
 
 #include "debugproc.h"
 #include "input.h"
+#include "sound.h"
 
 // マクロ定義 ==================================================
 
@@ -358,6 +360,10 @@ void UpdateUiResultGetScore(void)
 				{// 今のスコアが低い場合
 
 					g_aResultGS[nCntUiResultGS].nNowHave++;		// 今のスコアをインクリメント
+
+					// エサの種類別のSEを鳴らす
+					EsaPlaySE(GetNowEsaTypeResult());
+
 
 					if (g_aResultGS[nCntUiResultGS].nNowHave == g_aResultGS[nCntUiResultGS].nMaxHave)
 					{// 目標のスコアと同じになった

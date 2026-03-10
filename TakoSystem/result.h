@@ -91,5 +91,7 @@ int GetRankingForResult		// リザルトからランキングに情報を渡す処理
 void SetLoadResult			// リザルトの読み取り処理
 (const char* pFilename);
 
+int GetNowEsaTypeResult		// リザルトの集計中のエサの種類を返す処理
+(void);	
 
 #endif

@@ -193,6 +193,7 @@
     <ClCompile Include="ui_esa.cpp" />
     <ClCompile Include="ui_gaugeicon.cpp" />
     <ClCompile Include="ui_result_getscore.cpp" />
+    <ClCompile Include="ui_tutorial.cpp" />
     <ClCompile Include="watetrsurf.cpp" />
     <ClCompile Include="oceancurrents.cpp" />
   </ItemGroup>
@@ -242,6 +243,7 @@
     <ClInclude Include="ui_esa.h" />
     <ClInclude Include="ui_gaugeicon.h" />
     <ClInclude Include="ui_result_getscore.h" />
+    <ClInclude Include="ui_tutorial.h" />
     <ClInclude Include="watersurf.h" />
     <ClInclude Include="oceancurrents.h" />
   </ItemGroup>
