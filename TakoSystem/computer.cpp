@@ -984,9 +984,9 @@ void InkAttack(Computer* pComputer)
 	}
 
 	// –n‚ð“f‚­ˆ—
-	SetParticle3D(14, 30, pComputer->phys.pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pComputer->phys.rot.x, pComputer->phys.rot.y - D3DX_PI, pComputer->phys.rot.z), 4.0f, 200, 8.0f, 0.06f, EFFECTTYPE_OCTOINK, pComputer->nIdx);
-	SetParticle3D(14, 30, pComputer->phys.pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pComputer->phys.rot.x, pComputer->phys.rot.y - D3DX_PI, pComputer->phys.rot.z), 4.0f, 200, 8.0f, 0.06f, EFFECTTYPE_OCTOINK, pComputer->nIdx);
-	SetParticle3D(14, 30, pComputer->phys.pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pComputer->phys.rot.x, pComputer->phys.rot.y - D3DX_PI, pComputer->phys.rot.z), 4.0f, 200, 8.0f, 0.06f, EFFECTTYPE_OCTOINK, pComputer->nIdx);
+	SetParticle3D(14, 30, pComputer->phys.pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pComputer->phys.rot.x, pComputer->phys.rot.y - D3DX_PI, pComputer->phys.rot.z), 4.0f, 420, 8.0f, 0.06f, EFFECTTYPE_OCTOINK, pComputer->nIdx);
+	SetParticle3D(14, 30, pComputer->phys.pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pComputer->phys.rot.x, pComputer->phys.rot.y - D3DX_PI, pComputer->phys.rot.z), 4.0f, 420, 8.0f, 0.06f, EFFECTTYPE_OCTOINK, pComputer->nIdx);
+	SetParticle3D(14, 30, pComputer->phys.pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pComputer->phys.rot.x, pComputer->phys.rot.y - D3DX_PI, pComputer->phys.rot.z), 4.0f, 420, 8.0f, 0.06f, EFFECTTYPE_OCTOINK, pComputer->nIdx);
 
 	// –n“f‚«ƒ‚[ƒVƒ‡ƒ“
 	SetMotionComputer(pComputer->nIdx, MOTIONTYPE_INK, true, 20);
@@ -2678,6 +2678,8 @@ void CollisionInk(D3DXVECTOR3 pos, bool* bBlind, int* pCounter, int nIdx)
 		{// –n‚Ì”ÍˆÍ“à
 			*bBlind = true;
 			*pCounter = ONE_SECOND * 3;
+
+			PlaySound(SOUND_SE_INKED);
 		}
 	}
 }
@@ -2756,6 +2758,7 @@ bool CollisionOcto(int nIdx, bool bCPU, D3DXVECTOR3 pos)
 			int nEsaIdx = Dequeue(&pPlayer->esaQueue);
 			pPlayer->nFood--;
 			SetSubUiEsa(pPlayer->nIdx);
+			PlaySound(SOUND_SE_STOLEN);
 
 			if (bCPU == true)
 			{// CPU‚ª’D‚Á‚½

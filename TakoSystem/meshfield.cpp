@@ -168,6 +168,17 @@ void UpdateMeshField(void)
 					{// ランダムなタイミングで上下
 						g_aMeshField[nCntMeshField].fHeight[nCntMeshField2 + (nCntMeshField1 * ((int)g_aMeshField[nCntMeshField].block.x + 1))] 
 							+= (float)(rand() % 10) - 5.0f;
+
+						if (g_aMeshField[nCntMeshField].fHeight[nCntMeshField2 + (nCntMeshField1 * ((int)g_aMeshField[nCntMeshField].block.x + 1))]
+							< -10.0f)
+						{// 低すぎ
+							g_aMeshField[nCntMeshField].fHeight[nCntMeshField2 + (nCntMeshField1 * ((int)g_aMeshField[nCntMeshField].block.x + 1))] = -10.0f;
+						}
+						else if (g_aMeshField[nCntMeshField].fHeight[nCntMeshField2 + (nCntMeshField1 * ((int)g_aMeshField[nCntMeshField].block.x + 1))]
+							> 40.0f)
+						{// 高すぎ
+							g_aMeshField[nCntMeshField].fHeight[nCntMeshField2 + (nCntMeshField1 * ((int)g_aMeshField[nCntMeshField].block.x + 1))] = 40.0f;
+						}
 					}
 
 					g_aMeshField[nCntMeshField].posPoint.y = pVtx[0].pos.y;
@@ -414,7 +425,7 @@ void CollisionMeshField(D3DXVECTOR3 pos, D3DXVECTOR3 rot, float fRadius, float f
 
 			if (D3DXVec2Length(&dist) < fRadius * 2.0f)
 			{// 近い頂点
-				g_aMeshField[nCntMeshField].fHeight[nCntPoint] = -15.0f;
+				g_aMeshField[nCntMeshField].fHeight[nCntPoint] = -5.0f;
 			}
 			else if (D3DXVec2Length(&dist) < fRadius * 6.0f)
 			{// 周辺

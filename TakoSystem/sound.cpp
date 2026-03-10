@@ -56,6 +56,10 @@ SOUNDINFO g_aSoundInfo[SOUND_MAX] =
 	{"data/SE/esa000.wav",0},				//エサ低い
 	{"data/SE/esa001.wav",0},				//エサ普通
 	{"data/SE/esa002.wav",0},				//エサ高い
+	{"data/SE/flow.wav",0},					//波
+	{"data/SE/pool.wav",0},					//渦潮
+	{"data/SE/stolen.wav",0},				//盗まれた
+	{"data/SE/ink.wav",0},					//視界悪化
 };
 
 //=============================================================================
