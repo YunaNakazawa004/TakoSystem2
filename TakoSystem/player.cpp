@@ -423,6 +423,7 @@ void UpdatePlayer(void)
 							pPlayer->state = PLAYERSTATE_DASH;
 							pPlayer->TentacleState = PLTENTACLESTATE_TENTACLESHORT;
 							SetMotionPlayer(nCntPlayer, MOTIONTYPE_DASH, true, 20);
+							PlaySound(SOUND_SE_HIGHSPEED);
 
 							SetCameraViewAngle(nCntPlayer, 15.0f);
 
@@ -476,7 +477,6 @@ void UpdatePlayer(void)
 				pPlayer->vecX.z += (0.0f - pPlayer->vecX.z) * DASH_MOVE;
 
 				SetVibration(nCntPlayer, 1000, 1300, 1);
-				PlaySound(SOUND_SE_HIGHSPEED);
 
 				if (pPlayer->vecX.x < MOVE_ERROR && pPlayer->vecX.x > -MOVE_ERROR &&
 					pPlayer->vecX.y < MOVE_ERROR && pPlayer->vecX.y > -MOVE_ERROR &&
@@ -510,6 +510,11 @@ void UpdatePlayer(void)
 				pPlayer->move.y += cosf(pPlayer->fAutoY) * 0.03f;
 			}
 
+			if (pPlayer->nCounter % (ONE_SECOND * 10) == 0)
+			{// 泳いでいる音
+				PlaySound(SOUND_SE_SWIM);
+			}
+
 			if (GetOceanCurrents() != OCEANCURRENTSSTATE_WIRLPOOL ||
 				(GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL && CollisionObjectArea(pPlayer->pos) == true))
 			{
@@ -518,8 +523,6 @@ void UpdatePlayer(void)
 				{// 普通に移動しているとき
 					pPlayer->state = PLAYERSTATE_MOVE;
 					SetMotionPlayer(nCntPlayer, MOTIONTYPE_MOVE, true, 20);
-
-					PlaySound(SOUND_SE_SWIM);
 				}
 				else if (pPlayer->bMove == false && pPlayer->state != PLAYERSTATE_DASH &&
 					pPlayer->state != PLAYERSTATE_INK && pPlayer->TentacleState == PLTENTACLESTATE_NORMAL)
@@ -618,8 +621,6 @@ void UpdatePlayer(void)
 						D3DXCOLOR(0.9f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_CIRCLE);
 
 					SetVibration(nCntPlayer, 10000, 10000, 3);
-
-					PlaySound(SOUND_SE_LANDING);
 				}
 
 				pPlayer->bLand = true;
@@ -635,12 +636,24 @@ void UpdatePlayer(void)
 					D3DXCOLOR(0.9f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_FLOW);
 
 				SetVibration(nCntPlayer, 256, 0, 1);
+				PlaySound(SOUND_SE_LANDING);
 			}
 
 			if (pPlayer->pos.y > *GetWaterSurf_Height() - (PLAYER_HEIGHT * 0.5f))
-			{// 上									  
+			{// 水上
 				// 重力
 				pPlayer->move.y += GRAVITY;
+			}
+
+			if (pPlayer->pos.y > *GetWaterSurf_Height() - (PLAYER_HEIGHT * 0.5f) && 
+				pPlayer->pos.y < *GetWaterSurf_Height() + (PLAYER_HEIGHT * 0.5f))
+			{// 水面付近				
+				if (pPlayer->bJump == false)
+				{// 水の中から
+					PlaySound(SOUND_SE_FLOW);
+
+					pPlayer->bJump = true;
+				}
 
 				if (pPlayer->nCounter % RIPPLE_COUNT == 0)
 				{// 定期的に波紋
@@ -658,6 +671,10 @@ void UpdatePlayer(void)
 
 					SetVibration(nCntPlayer, 1000, 3500, 2);
 				}
+			}
+			else
+			{// 水の中
+				pPlayer->bJump = false;
 			}
 
 			//PrintDebugProc("fAngle : %f", pCamera->fAngle);
@@ -735,7 +752,7 @@ void UpdatePlayer(void)
 			dist *= TENTACLE_REACH;
 			dist += pPlayer->pos;
 
-			if (CollisionMeshCylinder(&dist, &pPlayer->pos, &pPlayer->move,0.0f, 0.0f, true) == true ||
+			if (CollisionMeshCylinder(&dist, &pPlayer->pos, &pPlayer->move, 0.0f, 0.0f, true) == true ||
 				dist.y < 0.0f ||
 				CollisionObject(&dist, &pPlayer->pos, &pPlayer->move, 0.0f, 0.0f, true) == true)
 			{// 壁に当たった・オブジェクトに当たった・エサに当たった
@@ -796,6 +813,8 @@ void UpdatePlayer(void)
 
 				// クールダウンを設定
 				pPlayer->nInkCooldown = INK_CT;
+
+				PlaySound(SOUND_SE_MUD);
 			}
 
 			if (pPlayer->state == PLAYERSTATE_INK && pPlayer->bFinishMotion == true)

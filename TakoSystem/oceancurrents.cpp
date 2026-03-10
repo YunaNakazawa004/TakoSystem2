@@ -14,6 +14,7 @@
 #include "input.h"
 #include "debugproc.h"
 #include "camera.h"
+#include "sound.h"
 
 // マクロ定義 ==================================================
 
@@ -706,6 +707,7 @@ void UpdateOceanCurrentsState(void)
 
 		if (g_nCounterOceanCurrents >= OCEANCURRECT_TIME_WAIT)
 		{// 渦潮待機時の継続時間を過ぎた
+			PlaySound(SOUND_SE_POOL);
 
 			g_OceanCurrentsState = OCEANCURRENTSSTATE_WIRLPOOL;		// 渦潮状態に設定
 

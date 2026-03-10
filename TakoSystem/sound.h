@@ -38,6 +38,10 @@ typedef enum
 	SOUND_SE_ESALOW,					//エサ低い
 	SOUND_SE_ESANORMAL,					//エサ普通
 	SOUND_SE_ESAHIGH,					//エサ高い
+	SOUND_SE_FLOW,						//波
+	SOUND_SE_POOL,						//渦潮
+	SOUND_SE_STOLEN,					//盗まれた
+	SOUND_SE_INKED,						//視界悪化
 	SOUND_MAX,
 } SOUND_LABEL;
 
