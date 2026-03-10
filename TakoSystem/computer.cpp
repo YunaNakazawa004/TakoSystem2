@@ -23,6 +23,7 @@
 #include "debugproc.h"
 #include "spray.h"
 #include "bubble.h"
+#include "sound.h"
 
 //*****************************************************************************
 // É}ÉNÉçíËã`
