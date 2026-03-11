@@ -33,6 +33,16 @@ typedef enum
 }PLAYERSTATE;
 
 //*****************************************************************************
+// プレイヤーモード
+//*****************************************************************************
+typedef enum
+{
+	PLAYERMODE_GAME = 0,			// ゲームモード
+	PLAYERMODE_TUTORIAL,			// チュートリアルモード
+	PLAYERMODE_MAX
+}PLAYERMODE;
+
+//*****************************************************************************
 // 触手の状態
 //*****************************************************************************
 typedef enum
@@ -84,6 +94,7 @@ typedef struct
 	D3DXMATRIX mtxWorld;						// ワールドマトリックス
 
 	PLAYERSTATE state;							// 状態
+	PLAYERMODE mode;							// モード
 	PLTENTACLESTATE TentacleState;				// 触手の状態
 	int nCounterState;							// 状態カウンター
 
@@ -140,7 +151,7 @@ void InitPlayer(void);
 void UninitPlayer(void);
 void UpdatePlayer(void);
 void DrawPlayer(void);
-void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType);
+void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType, PLAYERMODE mode);
 void SetRandomPlayer(int nAmount);
 Player* GetPlayer(void);
 void UpdateMotionPlayer(void);

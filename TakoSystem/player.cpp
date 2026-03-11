@@ -26,6 +26,7 @@
 #include "readygo.h"
 #include "spray.h"
 #include "bubble.h"
+#include "tutorialtxt.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -53,7 +54,7 @@
 #define FLOW_COUNT				(10)									// 波が出る間隔
 #define PLAYER_TENTACLE			(8)										// プレイヤーの足の数
 #define PLAYER_RADIUS			(25.0f)									// 半径
-#define PLAYER_HEIGHT			(100.0f)								// 高さ
+#define PLAYER_HEIGHT			(50.0f)									// 高さ
 #define TENTACLE_RADIUS			(100.0f)								// 触手の当たり判定
 #define PLAYER_FILE				"data\\motion_octo_1.txt"				// プレイヤーのデータファイル
 
@@ -88,6 +89,7 @@ void InitPlayer(void)
 		pPlayer->move = FIRST_POS;
 		pPlayer->rot = FIRST_POS;
 		pPlayer->state = PLAYERSTATE_APPEAR;
+		pPlayer->mode = PLAYERMODE_TUTORIAL;
 		pPlayer->TentacleState = PLTENTACLESTATE_NORMAL;
 		pPlayer->nCounterState = 0;
 		pPlayer->fAutoY = 0.0f;
@@ -352,6 +354,11 @@ void UpdatePlayer(void)
 					pPlayer->move.y += -MOVEMENT.y;
 
 					pPlayer->bMove = true;
+
+					if (pPlayer->mode == PLAYERMODE_TUTORIAL)
+					{// チュートリアルモード
+						SetTutorialTxtState(TUTTXTTYPE_DOWN, TUTTXTSTATE_CLEAR);
+					}
 				}
 				else if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_LSHIFT) == true : GetKeyboardPress(DIK_NUMPAD2) == true) ||
 					GetJoypadPress(nCntPlayer, JOYKEY_LEFT_SHOULDER) == true)
@@ -359,6 +366,11 @@ void UpdatePlayer(void)
 					pPlayer->move.y += MOVEMENT.y;
 
 					pPlayer->bMove = true;
+
+					if (pPlayer->mode == PLAYERMODE_TUTORIAL)
+					{// チュートリアルモード
+						SetTutorialTxtState(TUTTXTTYPE_UP, TUTTXTSTATE_CLEAR);
+					}
 				}
 			}
 
@@ -509,6 +521,10 @@ void UpdatePlayer(void)
 				pPlayer->fAutoY += 0.05f;
 				pPlayer->move.y += cosf(pPlayer->fAutoY) * 0.03f;
 			}
+			else if(pPlayer->bMove == true && pPlayer->mode == PLAYERMODE_TUTORIAL)
+			{// 動いているとき
+				SetTutorialTxtState(TUTTXTTYPE_MOVE, TUTTXTSTATE_CLEAR);
+			}
 
 			if (pPlayer->nCounter % (ONE_SECOND * 10) == 0)
 			{// 泳いでいる音
@@ -569,25 +585,29 @@ void UpdatePlayer(void)
 
 			if (CollisionObjectArea(pPlayer->pos) == false)
 			{// 安地外のときに渦潮
-				MoveOceanCurrents(&pPlayer->pos);
 
-				if (GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL)
-				{// 安地外で渦潮
-					if (pPlayer->TentacleState == PLTENTACLESTATE_NORMAL && pPlayer->state != PLAYERSTATE_DASH &&
-						pPlayer->state != PLAYERSTATE_INK && pPlayer->state != PLAYERSTATE_BACKAREA)
-					{// 触手が通常状態のときだけ
-						SetMotionPlayer(nCntPlayer, MOTIONTYPE_OCEANCULLENT, true, 20);
+				if (pPlayer->mode != PLAYERMODE_TUTORIAL)
+				{// チュートリアル中以外
+					MoveOceanCurrents(&pPlayer->pos);
 
-						SetVibration(nCntPlayer, 10000, 10000, 1);
-					}
+					if (GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL)
+					{// 安地外で渦潮
+						if (pPlayer->TentacleState == PLTENTACLESTATE_NORMAL && pPlayer->state != PLAYERSTATE_DASH &&
+							pPlayer->state != PLAYERSTATE_INK && pPlayer->state != PLAYERSTATE_BACKAREA)
+						{// 触手が通常状態のときだけ
+							SetMotionPlayer(nCntPlayer, MOTIONTYPE_OCEANCULLENT, true, 20);
 
-					if (pPlayer->nFood > 0 && pPlayer->nCounter % 15 == 0)
-					{// エサを持っている
-						pPlayer->nFood--;
-						int nIdx = Dequeue(&pPlayer->esaQueue);
-						SetSubUiEsa(nCntPlayer);
+							SetVibration(nCntPlayer, 10000, 10000, 1);
+						}
 
-						SetEsa(nIdx, true, ESA_ACTTYPE_SWIM, 0, pPlayer->pos, FIRST_POS);
+						if (pPlayer->nFood > 0 && pPlayer->nCounter % 15 == 0)
+						{// エサを持っている
+							pPlayer->nFood--;
+							int nIdx = Dequeue(&pPlayer->esaQueue);
+							SetSubUiEsa(nCntPlayer);
+
+							SetEsa(nIdx, true, ESA_ACTTYPE_SWIM, 0, pPlayer->pos, FIRST_POS);
+						}
 					}
 				}
 			}
@@ -604,11 +624,35 @@ void UpdatePlayer(void)
 			D3DXVECTOR2 XZdist = D3DXVECTOR2(pPlayer->pos.x, pPlayer->pos.z);
 			float fDist = D3DXVec2Length(&XZdist);
 
-			if (fDist > OUTCYLINDER_RADIUS + ((OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) / 2))
+			if (fDist > OUTCYLINDER_RADIUS + ((OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) / 2) &&
+				pPlayer->mode != PLAYERMODE_TUTORIAL)
 			{// 移動制限
 				pPlayer->fAngleY = atan2f(pPlayer->pos.x, pPlayer->pos.z);
 				pPlayer->state = PLAYERSTATE_BACKAREA;
 				pPlayer->nCounterState = ONE_SECOND;
+			}
+			else if (fDist <= OUTCYLINDER_RADIUS + ((OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) / 2) &&
+				pPlayer->mode == PLAYERMODE_TUTORIAL)
+			{// エリア内に入ったらチュートリアルモード解除
+				if (pPlayer->mode == PLAYERMODE_TUTORIAL)
+				{// チュートリアルモード
+					SetTutorialTxtState(TUTTXTTYPE_RULE, TUTTXTSTATE_FADE);
+		
+					SetTutorialTxt(TUTTXTTYPE_POT, TUTTXTSTATE_DISP, D3DXVECTOR3(0.0f, 700.0f, 900.0f));
+					SetTutorialTxt(TUTTXTTYPE_ESA, TUTTXTSTATE_DISP, D3DXVECTOR3(700.0f, 400.0f, 700.0f));
+
+					SetTutorialTxt(TUTTXTTYPE_INK, TUTTXTSTATE_DISP, D3DXVECTOR3(-700.0f, 500.0f, 700.0f));
+					SetTutorialTxt(TUTTXTTYPE_TENT, TUTTXTSTATE_DISP, D3DXVECTOR3(-700.0f, 300.0f, 700.0f));
+					SetTutorialTxt(TUTTXTTYPE_UP, TUTTXTSTATE_DISP, D3DXVECTOR3(700.0f, 700.0f, -700.0f));
+					SetTutorialTxt(TUTTXTTYPE_DOWN, TUTTXTSTATE_DISP, D3DXVECTOR3(700.0f, 500.0f, -700.0f));
+					SetTutorialTxt(TUTTXTTYPE_CAMERA, TUTTXTSTATE_DISP, D3DXVECTOR3(-700.0f, 500.0f, -700.0f));
+					SetTutorialTxt(TUTTXTTYPE_MOVE, TUTTXTSTATE_DISP, D3DXVECTOR3(-700.0f, 700.0f, -700.0f));
+				}
+
+				pPlayer->mode = PLAYERMODE_GAME;
+
+				//// ランダムな位置に設定	このままじゃ2Pのとき2回目入るから一旦放置
+				//SetRandomComputer(ALL_OCTO - GetNumCamera());
 			}
 
 			if (pPlayer->pos.y < 0.0f)
@@ -641,6 +685,11 @@ void UpdatePlayer(void)
 
 			if (pPlayer->pos.y > *GetWaterSurf_Height() - (PLAYER_HEIGHT * 0.5f))
 			{// 水上
+				// 重力
+				pPlayer->move.y += GRAVITY;
+			}
+			else if (pPlayer->pos.y > 320.0f && pPlayer->mode == PLAYERMODE_TUTORIAL)
+			{// チュートリアルモード中の上方向制限
 				// 重力
 				pPlayer->move.y += GRAVITY;
 			}
@@ -795,6 +844,11 @@ void UpdatePlayer(void)
 				pPlayer->nTentacleCooldown = TENTACLE_CT;
 
 				PlaySound(SOUND_SE_TENTACLE_STRETCH);
+
+				if (pPlayer->mode == PLAYERMODE_TUTORIAL)
+				{// チュートリアルモード
+					SetTutorialTxtState(TUTTXTTYPE_TENT, TUTTXTSTATE_CLEAR);
+				}
 			}
 
 			if (((nCntPlayer == 0 ? GetKeyboardPress(DIK_Q) == true : GetKeyboardPress(DIK_RSHIFT) == true) ||
@@ -815,6 +869,11 @@ void UpdatePlayer(void)
 				pPlayer->nInkCooldown = INK_CT;
 
 				PlaySound(SOUND_SE_MUD);
+
+				if (pPlayer->mode == PLAYERMODE_TUTORIAL)
+				{// チュートリアルモード
+					SetTutorialTxtState(TUTTXTTYPE_INK, TUTTXTSTATE_CLEAR);
+				}
 			}
 
 			if (pPlayer->state == PLAYERSTATE_INK && pPlayer->bFinishMotion == true)
@@ -851,6 +910,11 @@ void UpdatePlayer(void)
 						EsaPlaySE(nIdxEsaType);
 					}
 				}
+			}
+
+			if (pPlayer->mode == PLAYERMODE_TUTORIAL && pPlayer->nFood > 0)
+			{// チュートリアルモード
+				SetTutorialTxtState(TUTTXTTYPE_ESA, TUTTXTSTATE_CLEAR);
 			}
 
 			if (pPlayer->nFood < 0)
@@ -982,7 +1046,7 @@ void DrawPlayer(void)
 //=============================================================================
 // プレイヤーの設定処理
 //=============================================================================
-void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType)
+void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType, PLAYERMODE mode)
 {
 	Player* pPlayer = GetPlayer();
 
@@ -992,6 +1056,7 @@ void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType
 	pPlayer[nIdx].posOld = pos;
 	pPlayer[nIdx].rot = rot;
 	pPlayer[nIdx].state = PLAYERSTATE_NORMAL;
+	pPlayer[nIdx].mode = mode;
 	pPlayer[nIdx].TentacleState = PLTENTACLESTATE_NORMAL;
 	pPlayer[nIdx].nCounterState = 0;
 	pPlayer[nIdx].fFogStart = (pPlayer[nIdx].pos.y * 0.4f) + FOGS_MIN;
@@ -1049,7 +1114,7 @@ void SetRandomPlayer(int nAmount)
 		pos.y = (float)(rand() % (int)(CYLINDER_HEIGHT * 0.6f)) + (CYLINDER_HEIGHT * 0.2f);
 		pos.z = cosf(fAngle) * ((INCYLINDER_RADIUS * 1.5f) + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - (INCYLINDER_RADIUS * 1.5f)) + 1))));
 
-		SetPlayer(nCntPlayer, pos, D3DXVECTOR3(0.0f, fAngle, 0.0f), MOTIONTYPE_NEUTRAL);
+		SetPlayer(nCntPlayer, pos, D3DXVECTOR3(0.0f, fAngle, 0.0f), MOTIONTYPE_NEUTRAL, PLAYERMODE_GAME);
 	}
 }
 

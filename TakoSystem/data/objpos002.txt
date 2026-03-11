@@ -20,7 +20,7 @@ TEXTURE_FILENAME = data/TEXTURE/suna.png				# [1]砂テクスチャ
 #------------------------------------------------------------------------------
 # モデル数
 #------------------------------------------------------------------------------
-NUM_MODEL = 14
+NUM_MODEL = 15
 
 #------------------------------------------------------------------------------
 # モデルファイル名
@@ -39,6 +39,7 @@ MODEL_FILENAME = data/MODEL/Others_Object/wakame001.x			# [10]わかめ
 MODEL_FILENAME = data/MODEL/stage/stage000.x					# [11]ステージの柱
 MODEL_FILENAME = data/MODEL/Others_Object/taru002.x				# [12]倒れてる樽
 MODEL_FILENAME = data/MODEL/Others_Object/taru003.x				# [13]少し回転している樽
+MODEL_FILENAME = data/MODEL/rock/iwa005.x						# [14]岩6
 
 #------------------------------------------------------------------------------
 # カメラ情報
@@ -89,7 +90,7 @@ FIELDSET
 	POS = 0 0 0
 	ROT = 0 0 0
 	BLOCK = 64 64
-	SIZE = 8000 8000
+	SIZE = 18000 18000
 END_FIELDSET
 
 #FIELDSET
@@ -111,6 +112,248 @@ END_FIELDSET
 #------------------------------------------------------------------------------
 # 壁情報
 #------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# チュートリアル部分モデル配置情報
+#------------------------------------------------------------------------------
+MODELSET
+	TYPE = 7
+	POS = -200 0 -8000
+	ROT = 0 -90 0
+	SHADOW = 0
+	TUTORIAL = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 7
+	POS = 200 0 -8000
+	ROT = 0 -90 0
+	SHADOW = 0
+	TUTORIAL = 1
+END_MODELSET
+
+#---------------------------------------
+
+MODELSET
+	TYPE = 7
+	POS = 600 0 -7700
+	ROT = 0 180 0
+	SHADOW = 0
+	TUTORIAL = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 7
+	POS = 600 0 -7200
+	ROT = 0 180 0
+	SHADOW = 0
+	TUTORIAL = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 7
+	POS = 600 0 -6700
+	ROT = 0 180 0
+	SHADOW = 0
+	TUTORIAL = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 7
+	POS = 600 0 -6200
+	ROT = 0 180 0
+	SHADOW = 0
+	TUTORIAL = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 7
+	POS = 600 0 -5700
+	ROT = 0 180 0
+	SHADOW = 0
+	TUTORIAL = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 7
+	POS = 600 0 -5200
+	ROT = 0 180 0
+	SHADOW = 0
+	TUTORIAL = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 7
+	POS = 600 0 -4700
+	ROT = 0 180 0
+	SHADOW = 0
+	TUTORIAL = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 7
+	POS = 600 0 -4200
+	ROT = 0 180 0
+	SHADOW = 0
+	TUTORIAL = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 7
+	POS = 600 0 -3700
+	ROT = 0 180 0
+	SHADOW = 0
+	TUTORIAL = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 7
+	POS = 600 0 -3200
+	ROT = 0 180 0
+	SHADOW = 0
+	TUTORIAL = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 7
+	POS = 600 0 -2700
+	ROT = 0 180 0
+	SHADOW = 0
+	TUTORIAL = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 7
+	POS = 600 0 -2200
+	ROT = 0 180 0
+	SHADOW = 0
+	TUTORIAL = 1
+END_MODELSET
+
+#---------------------------------------
+
+MODELSET
+	TYPE = 7
+	POS = -600 0 -7700
+	ROT = 0 0 0
+	SHADOW = 0
+	TUTORIAL = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 7
+	POS = -600 0 -7200
+	ROT = 0 0 0
+	SHADOW = 0
+	TUTORIAL = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 7
+	POS = -600 0 -6700
+	ROT = 0 0 0
+	SHADOW = 0
+	TUTORIAL = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 7
+	POS = -600 0 -6200
+	ROT = 0 0 0
+	SHADOW = 0
+	TUTORIAL = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 7
+	POS = -600 0 -5700
+	ROT = 0 0 0
+	SHADOW = 0
+	TUTORIAL = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 7
+	POS = -600 0 -5200
+	ROT = 0 0 0
+	SHADOW = 0
+	TUTORIAL = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 7
+	POS = -600 0 -4700
+	ROT = 0 0 0
+	SHADOW = 0
+	TUTORIAL = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 7
+	POS = -600 0 -4200
+	ROT = 0 0 0
+	SHADOW = 0
+	TUTORIAL = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 7
+	POS = -600 0 -3700
+	ROT = 0 0 0
+	SHADOW = 0
+	TUTORIAL = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 7
+	POS = -600 0 -3200
+	ROT = 0 0 0
+	SHADOW = 0
+	TUTORIAL = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 7
+	POS = -600 0 -2700
+	ROT = 0 0 0
+	SHADOW = 0
+	TUTORIAL = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 7
+	POS = -600 0 -2200
+	ROT = 0 0 0
+	SHADOW = 0
+	TUTORIAL = 1
+END_MODELSET
+
+#---------------------------------------
+
+MODELSET
+	TYPE = 14
+	POS = 0 200 -6000
+	ROT = 0 0 0
+	SHADOW = 0
+	TUTORIAL = 1
+END_MODELSET
+
+MODELSET
+	TYPE = 14
+	POS = 0 0 -5500
+	ROT = 0 0 0
+	SHADOW = 0
+	TUTORIAL = 1
+END_MODELSET
+
+#---------------------------------------
+
+MODELSET
+	TYPE = 8
+	POS = 0 0 -2700
+	ROT = 0 0 0
+	SHADOW = 0
+END_MODELSET
 
 #------------------------------------------------------------------------------
 # モデル配置情報

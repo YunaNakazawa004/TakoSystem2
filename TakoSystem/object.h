@@ -53,6 +53,7 @@ typedef struct
 	int nIdxSafe;							// 安地
 	bool bUse;								// 使用しているかどうか
 	bool bCollision;						// 当たり判定するかどうか
+	bool bTutorial;							// チュートリアルかどうか
 	char sFileName[128];					// モデル名
 }Object;
 
@@ -63,7 +64,7 @@ void InitObject(const char* pStr);
 void UninitObject(void);
 void UpdateObject(void);
 void DrawObject(void);
-void SetObject(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nIdx, bool bCollision);
+void SetObject(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nIdx, bool bCollision, bool bTutorial);
 void SetObjectRandom(int nType, D3DXVECTOR3 posMin, D3DXVECTOR3 posMax, int nAmount);
 Object* GetObjectAll(void);
 ObjectModel* GetObjectModel(void);

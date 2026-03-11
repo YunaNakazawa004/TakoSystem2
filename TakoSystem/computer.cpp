@@ -245,11 +245,6 @@ void InitComputer(void)
 		}
 
 	}
-
-#if 1
-	// ƒ‰ƒ“ƒ_ƒ€‚ÈˆÊ’u‚Éİ’è
-	SetRandomComputer(ALL_OCTO - GetNumCamera());
-#endif
 }
 
 //=============================================================================
