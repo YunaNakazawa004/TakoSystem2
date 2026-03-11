@@ -601,7 +601,7 @@ void UpdateTitle(void)
 		g_TitleDeley = TITLE_DELEY_MAX;
 	}
 
-	if (GetFade() == FADE_NONE && g_PressEnterDeley > RANKING_DELEY)
+	if (GetFade() == FADE_NONE || g_PressEnterDeley > RANKING_DELEY)
 	{// 時間経過でランキングへ移行
 
 		SetFade(MODE_LOGO);
@@ -620,16 +620,16 @@ void DrawTitle(void)
 		SetFog(D3DXCOLOR(0.0f, 0.1f, 0.2f, 1.0f), 1000.0f, 0.0f, false);
 	}
 
+#if 0
 	// 配置物の描画処理
 	DrawObject();
 
-#if 1
 	// CPUの描画処理
 	DrawComputer();
-#endif
 
 	// メッシュシリンダーの描画処理
 	DrawMeshCylinder();
+#endif
 
 	// メッシュフィールドの描画処理
 	DrawMeshField();
