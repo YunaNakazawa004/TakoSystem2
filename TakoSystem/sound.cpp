@@ -60,6 +60,7 @@ SOUNDINFO g_aSoundInfo[SOUND_MAX] =
 	{"data/SE/pool.wav",0},					//渦潮
 	{"data/SE/stolen.wav",0},				//盗まれた
 	{"data/SE/ink.wav",0},					//視界悪化
+	{"data/SE/clear.wav",0},				//クリア(チュートリアル)
 };
 
 //=============================================================================

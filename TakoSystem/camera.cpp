@@ -9,6 +9,7 @@
 #include "player.h"
 #include "input.h"
 #include "game.h"
+#include "tutorialtxt.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -117,6 +118,11 @@ void UpdateCamera(void)
 				pCamera->posVDest.x = pCamera->posRDest.x + sinf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance * sinf((D3DX_PI * 0.5f) - pCamera->fAngle);
 				pCamera->posVDest.y = pCamera->posRDest.y + cosf((D3DX_PI * 0.5f) - pCamera->fAngle) * pCamera->fDistance;
 				pCamera->posVDest.z = pCamera->posRDest.z + cosf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance * sinf((D3DX_PI * 0.5f) - pCamera->fAngle);
+			
+				if (pPlayer->mode == PLAYERMODE_TUTORIAL)
+				{// チュートリアルモード
+					SetTutorialTxtState(TUTTXTTYPE_CAMERA, TUTTXTSTATE_CLEAR);
+				}
 			}
 			else if ((nCntCamera == 0 ? GetKeyboardPress(DIK_L) == true : GetKeyboardPress(DIK_NUMPAD6) == true) || GetJoypadStick(nCntCamera, JOYKEY_RIGHTSTICK_RIGHT, &nValueH, &nValueV) == true)
 			{// 左に旋回
@@ -125,6 +131,11 @@ void UpdateCamera(void)
 				pCamera->posVDest.x = pCamera->posRDest.x + sinf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance * sinf((D3DX_PI * 0.5f) - pCamera->fAngle);
 				pCamera->posVDest.y = pCamera->posRDest.y + cosf((D3DX_PI * 0.5f) - pCamera->fAngle) * pCamera->fDistance;
 				pCamera->posVDest.z = pCamera->posRDest.z + cosf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance * sinf((D3DX_PI * 0.5f) - pCamera->fAngle);
+			
+				if (pPlayer->mode == PLAYERMODE_TUTORIAL)
+				{// チュートリアルモード
+					SetTutorialTxtState(TUTTXTTYPE_CAMERA, TUTTXTSTATE_CLEAR);
+				}
 			}
 
 			// 視点移動
@@ -142,6 +153,11 @@ void UpdateCamera(void)
 				pCamera->posVDest.x = pCamera->posRDest.x + sinf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance * sinf((D3DX_PI * 0.5f) - pCamera->fAngle);
 				pCamera->posVDest.y = pCamera->posRDest.y + cosf((D3DX_PI * 0.5f) - pCamera->fAngle) * pCamera->fDistance;
 				pCamera->posVDest.z = pCamera->posRDest.z + cosf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance * sinf((D3DX_PI * 0.5f) - pCamera->fAngle);
+			
+				if (pPlayer->mode == PLAYERMODE_TUTORIAL)
+				{// チュートリアルモード
+					SetTutorialTxtState(TUTTXTTYPE_CAMERA, TUTTXTSTATE_CLEAR);
+				}
 			}
 			else if ((nCntCamera == 0 ? GetKeyboardPress(DIK_I) == true : GetKeyboardPress(DIK_NUMPAD8) == true) || GetJoypadStick(nCntCamera, JOYKEY_RIGHTSTICK_UP, &nValueH, &nValueV) == true)
 			{// 下に移動
@@ -157,6 +173,11 @@ void UpdateCamera(void)
 				pCamera->posVDest.x = pCamera->posRDest.x + sinf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance * sinf((D3DX_PI * 0.5f) - pCamera->fAngle);
 				pCamera->posVDest.y = pCamera->posRDest.y + cosf((D3DX_PI * 0.5f) - pCamera->fAngle) * pCamera->fDistance;
 				pCamera->posVDest.z = pCamera->posRDest.z + cosf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance * sinf((D3DX_PI * 0.5f) - pCamera->fAngle);
+			
+				if (pPlayer->mode == PLAYERMODE_TUTORIAL)
+				{// チュートリアルモード
+					SetTutorialTxtState(TUTTXTTYPE_CAMERA, TUTTXTSTATE_CLEAR);
+				}
 			}
 
 			// カメラ向きを調整

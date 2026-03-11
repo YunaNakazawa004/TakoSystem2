@@ -75,8 +75,6 @@ void InitWaterSurf(void)
 		g_aWatersurf[nCntSurf].bUse = false;						// égópÇµÇƒÇ¢ÇÈÇ©
 		g_aWatersurf[nCntSurf].bUp = false;							// è„è∏Ç©
 	}
-
-	SetWaterSurf({ 0.0f,CYLINDER_HEIGHT,0.0f }, { 0.0f,0.0f,0.0f }, { 64,64 }, { (pRadius * 2) / 64, (pRadius * 2) / 64 }, D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.4f));
 }
 
 //=========================================

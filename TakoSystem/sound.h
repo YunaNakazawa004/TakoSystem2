@@ -42,6 +42,7 @@ typedef enum
 	SOUND_SE_POOL,						//渦潮
 	SOUND_SE_STOLEN,					//盗まれた
 	SOUND_SE_INKED,						//視界悪化
+	SOUND_SE_CLEAR,						//クリア(チュートリアル)
 	SOUND_MAX,
 } SOUND_LABEL;
 

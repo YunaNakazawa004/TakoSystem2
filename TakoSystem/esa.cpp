@@ -553,11 +553,14 @@ int DelEsa(int nIdxEsa, bool bPlayer, int nIdxPlayer)
 	{// 使用されている場合
 
 		g_aEsa[nIdxEsa].bUse = false;	// 使用していない状態に設定
-		g_aEsa[nIdxEsa].bOrbit = false;	// 軌道状態をOFFに設定
 
 		// オービットの削除
-		DeleteMeshOrbit(g_aEsa[nIdxEsa].nOrbitIdx);
-		g_aEsa[nIdxEsa].nOrbitIdx = -1;	// 軌道のインデックスを初期化
+		if (g_aEsa[nIdxEsa].bOrbit == true)
+		{// オービットを使ってる場合
+			DeleteMeshOrbit(g_aEsa[nIdxEsa].nOrbitIdx);
+			g_aEsa[nIdxEsa].nOrbitIdx = -1;	// 軌道のインデックスを初期化
+			g_aEsa[nIdxEsa].bOrbit = false;	// 軌道状態をOFFに設定
+		}
 
 		if (g_aEsa[nIdxEsa].nIdxBubble != -1)
 		{// インデックスがある場合

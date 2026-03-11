@@ -43,7 +43,7 @@
 #include "ui_tutorial.h"
 
 // マクロ定義
-#define	MAX_TUTORIAL	(3)	// タイトルで表示するテクスチャの最大数
+#define	MAX_TUTORIAL	(2)	// タイトルで表示するテクスチャの最大数
 
 // グローバル変数
 LPDIRECT3DTEXTURE9 g_pTextureTutorial[MAX_TUTORIAL] = {};	// テクスチャへのポインタ
@@ -77,12 +77,12 @@ void InitTutorial(void)
 	InitPlayer();
 	if (GetPlayerSelect() == 1)
 	{// 1人
-		SetPlayer(0, D3DXVECTOR3(0.0f, 500.0f, -1000.0f), D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), MOTIONTYPE_NEUTRAL);
+		SetPlayer(0, D3DXVECTOR3(0.0f, 200.0f, -7500.0f), D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), MOTIONTYPE_NEUTRAL, PLAYERMODE_TUTORIAL);
 	}
 	else
 	{// 2人
-		SetPlayer(0, D3DXVECTOR3(200.0f, 500.0f, -1000.0f), D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), MOTIONTYPE_NEUTRAL);
-		SetPlayer(1, D3DXVECTOR3(-200.0f, 500.0f, -1000.0f), D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), MOTIONTYPE_NEUTRAL);
+		SetPlayer(0, D3DXVECTOR3(200.0f, 200.0f, -7500.0f), D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), MOTIONTYPE_NEUTRAL, PLAYERMODE_TUTORIAL);
+		SetPlayer(1, D3DXVECTOR3(-200.0f, 200.0f, -7500.0f), D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), MOTIONTYPE_NEUTRAL, PLAYERMODE_TUTORIAL);
 	}
 
 	// CPUの初期化処理
@@ -94,7 +94,7 @@ void InitTutorial(void)
 
 	// メッシュドームの初期化処理
 	InitMeshDome();
-	SetMeshDome(FIRST_POS, FIRST_POS, D3DXVECTOR2(16.0f, 5.0f), OUTCYLINDER_RADIUS * 2.5f, true, MESHDOMETYPE_SKY);
+	SetMeshDome(FIRST_POS, FIRST_POS, D3DXVECTOR2(16.0f, 5.0f), OUTCYLINDER_RADIUS * 6.0f, true, MESHDOMETYPE_SKY);
 	SetMeshDome(D3DXVECTOR3(0.0f,CYLINDER_HEIGHT, 0.0f), FIRST_POS, 
 		D3DXVECTOR2(16.0f, 5.0f), INCYLINDER_RADIUS, false, MESHDOMETYPE_ROCK);
 
@@ -125,12 +125,19 @@ void InitTutorial(void)
 
 	// 水面の初期化処理
 	InitWaterSurf();
+	SetWaterSurf({ 0.0f,CYLINDER_HEIGHT,0.0f }, { 0.0f,0.0f,0.0f }, { 64,64 }, 
+		{ (OUTCYLINDER_RADIUS * 6.0f * 2.0f) / 64, (OUTCYLINDER_RADIUS * 6.0f * 2.0f) / 64 }, 
+		D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.4f));
 
 	// 配置物の初期化処理
-	InitObject("data\\objpos001.txt");
+	InitObject("data\\objpos002.txt");
 	
 	// エサの初期化処理
 	InitEsa(true);
+	SetEsa(0, false, ESA_ACTTYPE_LAND, 0, D3DXVECTOR3(-100.0f, 0.0f, -4000.0f), FIRST_POS);
+	SetEsa(1, false, ESA_ACTTYPE_LAND, 0, D3DXVECTOR3(150.0f, 200.0f, -3800.0f), FIRST_POS);
+	SetEsa(2, false, ESA_ACTTYPE_LAND, 0, D3DXVECTOR3(-150.0f, 250.0f, -3600.0f), FIRST_POS);
+	SetEsa(1, false, ESA_ACTTYPE_LAND, 0, D3DXVECTOR3(100.0f, 150.0f, -3400.0f), FIRST_POS);
 
 	// 海藻の初期化処理
 	InitSeaweed();
@@ -173,9 +180,9 @@ void InitTutorial(void)
 		"data/TEXTURE/TUTORIAL002.png",
 		&g_pTextureTutorial[1]);
 
-	D3DXCreateTextureFromFile(pDevice,
-		"data/TEXTURE/text_tmp_rule_explanation000.png",
-		&g_pTextureTutorial[2]);
+	//D3DXCreateTextureFromFile(pDevice,
+	//	"data/TEXTURE/text_tmp_rule_explanation000.png",
+	//	&g_pTextureTutorial[2]);
 
 	// 頂点バッファの生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4 * MAX_TUTORIAL,
@@ -207,25 +214,25 @@ void InitTutorial(void)
 			pVtx[2].pos = D3DXVECTOR3(460.0f, 180.0f, 0.0f);
 			pVtx[3].pos = D3DXVECTOR3(820.0f, 180.0f, 0.0f);
 		}
-		else
-		{// RESULTロゴ
+		//else
+		//{// RESULTロゴ
 
-			if (GetPlayerSelect() == 1)
-			{// 1人プレイ時
+		//	if (GetPlayerSelect() == 1)
+		//	{// 1人プレイ時
 
-				pVtx[0].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 470.0f) - 140.0f, ((SCREEN_HEIGHT / 2) - 150.0f) - 180.0f, 0.0f);	// 右回りで設定する
-				pVtx[1].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 470.0f) + 140.0f, ((SCREEN_HEIGHT / 2) - 150.0f) - 180.0f, 0.0f);	// 2Dの場合Zの値は0にする
-				pVtx[2].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 470.0f) - 140.0f, ((SCREEN_HEIGHT / 2) - 150.0f) + 180.0f, 0.0f);	// (位置(中央 +- 中央からずらす量)) +- (大きさ)
-				pVtx[3].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 470.0f) + 140.0f, ((SCREEN_HEIGHT / 2) - 150.0f) + 180.0f, 0.0f);
-			}
-			else
-			{
-				pVtx[0].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 0.0f) - 110.0f, ((SCREEN_HEIGHT / 2) + 160.0f) - 145.0f, 0.0f);	// 右回りで設定する
-				pVtx[1].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 0.0f) + 110.0f, ((SCREEN_HEIGHT / 2) + 160.0f) - 145.0f, 0.0f);	// 2Dの場合Zの値は0にする
-				pVtx[2].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 0.0f) - 110.0f, ((SCREEN_HEIGHT / 2) + 160.0f) + 145.0f, 0.0f);
-				pVtx[3].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 0.0f) + 110.0f, ((SCREEN_HEIGHT / 2) + 160.0f) + 145.0f, 0.0f);
-			}
-		}
+		//		pVtx[0].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 470.0f) - 140.0f, ((SCREEN_HEIGHT / 2) - 150.0f) - 180.0f, 0.0f);	// 右回りで設定する
+		//		pVtx[1].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 470.0f) + 140.0f, ((SCREEN_HEIGHT / 2) - 150.0f) - 180.0f, 0.0f);	// 2Dの場合Zの値は0にする
+		//		pVtx[2].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 470.0f) - 140.0f, ((SCREEN_HEIGHT / 2) - 150.0f) + 180.0f, 0.0f);	// (位置(中央 +- 中央からずらす量)) +- (大きさ)
+		//		pVtx[3].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 470.0f) + 140.0f, ((SCREEN_HEIGHT / 2) - 150.0f) + 180.0f, 0.0f);
+		//	}
+		//	else
+		//	{
+		//		pVtx[0].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 0.0f) - 110.0f, ((SCREEN_HEIGHT / 2) + 160.0f) - 145.0f, 0.0f);	// 右回りで設定する
+		//		pVtx[1].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 0.0f) + 110.0f, ((SCREEN_HEIGHT / 2) + 160.0f) - 145.0f, 0.0f);	// 2Dの場合Zの値は0にする
+		//		pVtx[2].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 0.0f) - 110.0f, ((SCREEN_HEIGHT / 2) + 160.0f) + 145.0f, 0.0f);
+		//		pVtx[3].pos = D3DXVECTOR3(((SCREEN_WIDTH / 2) - 0.0f) + 110.0f, ((SCREEN_HEIGHT / 2) + 160.0f) + 145.0f, 0.0f);
+		//	}
+		//}
 
 		// rhwの設定
 		pVtx[0].rhw = DEFAULT_RHW;	// 値は1.0fで固定

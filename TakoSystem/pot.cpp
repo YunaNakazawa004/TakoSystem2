@@ -12,6 +12,7 @@
 #include "esa.h"
 #include "ui_esa.h"
 #include "sound.h"
+#include "tutorialtxt.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -447,6 +448,11 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 								pPot->nFood++;
 							}
 						}
+
+						if (pPlayer->mode == PLAYERMODE_TUTORIAL)
+						{// チュートリアルモード
+							SetTutorialTxtState(TUTTXTTYPE_POT, TUTTXTSTATE_CLEAR);
+						}
 						
 						// 衝撃波エフェクトの生成
 						SetMeshRing(MESHRINGTYPE_SHOCKWAVE, pPot->pos, CalcShockWaveRot(pPot->pos, pPlayer->pos),D3DXVECTOR2(16.0f,1.0f),D3DXVECTOR2(10.0f,7.0f),D3DXCOLOR(1.0f,1.0f,1.0f,1.0f));
@@ -474,6 +480,11 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 								//Enqueue(&pPlayer->esaQueue, nIdx);
 								//pPlayer->nFood++;
 							}
+						}
+
+						if (pPlayer->mode == PLAYERMODE_TUTORIAL)
+						{// チュートリアルモード
+							SetTutorialTxtState(TUTTXTTYPE_POT, TUTTXTSTATE_CLEAR);
 						}
 
 						// 衝撃波エフェクトの生成
