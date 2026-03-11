@@ -242,6 +242,7 @@ void InitTitle(void)
 
 	// 水面の初期化処理
 	InitWaterSurf();
+	SetWaterSurf({ 0.0f,CYLINDER_HEIGHT,0.0f }, { 0.0f,0.0f,0.0f }, { 64,64 }, { (8000.0f) / 64, (8000.0f) / 64 }, D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.4f));
 
 	// 配置物の初期化処理
 	InitObject("data\\objpos001.txt");	// 必ず最後(メッシュ後)に初期化する

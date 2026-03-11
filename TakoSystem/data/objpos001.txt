@@ -20,7 +20,7 @@ TEXTURE_FILENAME = data/TEXTURE/suna.png				# [1]砂テクスチャ
 #------------------------------------------------------------------------------
 # モデル数
 #------------------------------------------------------------------------------
-NUM_MODEL = 14
+NUM_MODEL = 15
 
 #------------------------------------------------------------------------------
 # モデルファイル名
@@ -39,6 +39,7 @@ MODEL_FILENAME = data/MODEL/Others_Object/wakame001.x			# [10]わかめ
 MODEL_FILENAME = data/MODEL/stage/stage000.x					# [11]ステージの柱
 MODEL_FILENAME = data/MODEL/Others_Object/taru002.x				# [12]倒れてる樽
 MODEL_FILENAME = data/MODEL/Others_Object/taru003.x				# [13]少し回転している樽
+MODEL_FILENAME = data/MODEL/rock/rock000.x						# [14]小さい石
 
 #------------------------------------------------------------------------------
 # カメラ情報
@@ -272,6 +273,129 @@ MODELSET
 	POS = -513 50 -860
 	ROT = -45 110 0
 	SHADOW = 0
+END_MODELSET
+
+#------------------------------------------------------------------------------
+# 小さい岩モデル配置情報
+#------------------------------------------------------------------------------
+MODELSET
+	TYPE = 14
+	POS = 400 0 0
+	ROT = 0 0 0
+	SHADOW = 0
+	COLLISION = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 14
+	POS = 0 0 -400
+	ROT = 0 90 0
+	SHADOW = 0
+	COLLISION = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 14
+	POS = -400 0 0
+	ROT = 0 180 0
+	SHADOW = 0
+	COLLISION = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 14
+	POS = 0 0 400
+	ROT = 0 90 0
+	SHADOW = 0
+	COLLISION = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 14
+	POS = 1120 0 280
+	ROT = 0 90 0
+	SHADOW = 0
+	COLLISION = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 14
+	POS = 930 0 260
+	ROT = 0 45 0
+	SHADOW = 0
+	COLLISION = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 14
+	POS = 100 0 -670
+	ROT = 0 0 0
+	SHADOW = 0
+	COLLISION = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 14
+	POS = -60 0 -850
+	ROT = 0 135 0
+	SHADOW = 0
+	COLLISION = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 14
+	POS = -185 0 -1000
+	ROT = 0 45 0
+	SHADOW = 0
+	COLLISION = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 14
+	POS = -870 0 -340
+	ROT = 0 0 0
+	SHADOW = 0
+	COLLISION = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 14
+	POS = -970 0 -100
+	ROT = 0 90 0
+	SHADOW = 0
+	COLLISION = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 14
+	POS = -1110 0 240
+	ROT = 0 45 0
+	SHADOW = 0
+	COLLISION = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 14
+	POS = -230 0 1160
+	ROT = 0 180 0
+	SHADOW = 0
+	COLLISION = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 14
+	POS = 390 0 1220
+	ROT = 0 180 0
+	SHADOW = 0
+	COLLISION = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 14
+	POS = 570 0 645
+	ROT = 0 90 0
+	SHADOW = 0
+	COLLISION = 0
 END_MODELSET
 
 #------------------------------------------------------------------------------
