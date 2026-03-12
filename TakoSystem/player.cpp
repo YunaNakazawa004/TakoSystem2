@@ -178,37 +178,37 @@ void UpdatePlayer(void)
 			switch (pPlayer->state)
 			{
 			case PLAYERSTATE_NORMAL:			// 通常状態
-				PrintDebugProc("プレイヤーの状態 : [ PLAYERSTATE_NORMAL ]\n");
+				//PrintDebugProc("プレイヤーの状態 : [ PLAYERSTATE_NORMAL ]\n");
 
 				break;
 
 			case PLAYERSTATE_MOVE:				// 移動状態
-				PrintDebugProc("プレイヤーの状態 : [ PLAYERSTATE_MOVE ]\n");
+				//PrintDebugProc("プレイヤーの状態 : [ PLAYERSTATE_MOVE ]\n");
 
 				break;
 
 			case PLAYERSTATE_APPEAR:			// 出現状態
-				PrintDebugProc("プレイヤーの状態 : [ PLAYERSTATE_APPEAR ]\n");
+				//PrintDebugProc("プレイヤーの状態 : [ PLAYERSTATE_APPEAR ]\n");
 
 				break;
 
 			case PLAYERSTATE_WAIT:				// 待機状態
-				PrintDebugProc("プレイヤーの状態 : [ PLAYERSTATE_WAIT ]\n");
+				//PrintDebugProc("プレイヤーの状態 : [ PLAYERSTATE_WAIT ]\n");
 
 				break;
 
 			case PLAYERSTATE_DASH:				// 高速移動状態
-				PrintDebugProc("プレイヤーの状態 : [ PLAYERSTATE_DASH ]\n");
+				//PrintDebugProc("プレイヤーの状態 : [ PLAYERSTATE_DASH ]\n");
 
 				break;
 
 			case PLAYERSTATE_INK:				// 墨吐き状態
-				PrintDebugProc("プレイヤーの状態 : [ PLAYERSTATE_INK ]\n");
+				//PrintDebugProc("プレイヤーの状態 : [ PLAYERSTATE_INK ]\n");
 
 				break;
 
 			case PLAYERSTATE_BACKAREA:			// エリア戻り状態
-				PrintDebugProc("プレイヤーの状態 : [ PLAYERSTATE_BACKAREA ]\n");
+				//PrintDebugProc("プレイヤーの状態 : [ PLAYERSTATE_BACKAREA ]\n");
 
 				D3DXVECTOR3 correct = -pPlayer->pos;
 				pPlayer->move += *D3DXVec3Normalize(&pPlayer->move, &correct);
@@ -224,7 +224,7 @@ void UpdatePlayer(void)
 				break;
 			}
 
-			PrintDebugProc("エサの数 %d / %d\n", pPlayer->nFood, pPlayer->nMaxFood * PLAYER_TENTACLE);
+			//PrintDebugProc("エサの数 %d / %d\n", pPlayer->nFood, pPlayer->nMaxFood * PLAYER_TENTACLE);
 
 			if (pPlayer->state != PLAYERSTATE_APPEAR && pPlayer->state != PLAYERSTATE_DASH && pPlayer->state != PLAYERSTATE_BACKAREA)
 			{// 出現状態のときは移動できない
@@ -549,7 +549,7 @@ void UpdatePlayer(void)
 				}
 			}
 
-			PrintDebugProc("プレイヤーのpos ( %f %f %f )\n", pPlayer->pos.x, pPlayer->pos.y, pPlayer->pos.z);
+			//PrintDebugProc("プレイヤーのpos ( %f %f %f )\n", pPlayer->pos.x, pPlayer->pos.y, pPlayer->pos.z);
 
 #ifdef _DEBUG
 			if (GetKeyboardTrigger(DIK_BACKSPACE) == true || GetJoypadTrigger(nCntPlayer, JOYKEY_LEFT_THUMB) == true)
@@ -791,25 +791,28 @@ void UpdatePlayer(void)
 				CorrectAngle(&pPlayer->rot.x, pPlayer->rot.x);
 			}
 
-			if (pPlayer->nCounter % (ONE_SECOND * 50) == 0 && GetTime() != ONE_GAME && pPlayer->nCounter != 0)
-			{// 持てるエサの最大値が増える
-				pPlayer->nMaxFood++;
-				PlaySound(SOUND_SE_FOODNUMUP);
+			if (pPlayer->mode != PLAYERMODE_TUTORIAL)
+			{// チュートリアルモードじゃないとき
+				if (pPlayer->nCounter % (ONE_SECOND * 50) == 0 && GetTime() != ONE_GAME && pPlayer->nCounter != 0)
+				{// 持てるエサの最大値が増える
+					pPlayer->nMaxFood++;
+					PlaySound(SOUND_SE_FOODNUMUP);
 
-				if (GetNumCamera() == 1 && nCntPlayer == 0)
-				{// 1人プレイの1P
-					SetFoodNum(FOODNUMTYPE_UP, FOODNUMSTATE_MOVE,
-						D3DXVECTOR3(640.0f, 800.0f, 0.0f), 100.0f, 50.0f);
-				}
-				else if (GetNumCamera() == 2 && nCntPlayer == 0)
-				{// 2人プレイの1P
-					SetFoodNum(FOODNUMTYPE_UP, FOODNUMSTATE_MOVE,
-						D3DXVECTOR3(320.0f, 800.0f, 0.0f), 100.0f, 50.0f);
-				}
-				else if (GetNumCamera() == 2 && nCntPlayer == 1)
-				{// 2人プレイの2P
-					SetFoodNum(FOODNUMTYPE_UP, FOODNUMSTATE_MOVE,
-						D3DXVECTOR3(960.0f, 800.0f, 0.0f), 100.0f, 50.0f);
+					if (GetNumCamera() == 1 && nCntPlayer == 0)
+					{// 1人プレイの1P
+						SetFoodNum(FOODNUMTYPE_UP, FOODNUMSTATE_MOVE,
+							D3DXVECTOR3(640.0f, 800.0f, 0.0f), 100.0f, 50.0f);
+					}
+					else if (GetNumCamera() == 2 && nCntPlayer == 0)
+					{// 2人プレイの1P
+						SetFoodNum(FOODNUMTYPE_UP, FOODNUMSTATE_MOVE,
+							D3DXVECTOR3(320.0f, 800.0f, 0.0f), 100.0f, 50.0f);
+					}
+					else if (GetNumCamera() == 2 && nCntPlayer == 1)
+					{// 2人プレイの2P
+						SetFoodNum(FOODNUMTYPE_UP, FOODNUMSTATE_MOVE,
+							D3DXVECTOR3(960.0f, 800.0f, 0.0f), 100.0f, 50.0f);
+					}
 				}
 			}
 

@@ -49,6 +49,7 @@
 // グローバル変数
 LPDIRECT3DTEXTURE9 g_pTextureTutorial[MAX_TUTORIAL] = {};	// テクスチャへのポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffTutorial = NULL;	// 頂点バッファへのポインタ
+D3DXVECTOR3 g_aPlayerPos[MAX_PLAYER];
 
 //===================================================================
 // チュートリアルの初期化処理
@@ -85,6 +86,8 @@ void InitTutorial(void)
 		SetPlayer(0, D3DXVECTOR3(200.0f, 200.0f, -7500.0f), D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), MOTIONTYPE_NEUTRAL, PLAYERMODE_TUTORIAL);
 		SetPlayer(1, D3DXVECTOR3(-200.0f, 200.0f, -7500.0f), D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), MOTIONTYPE_NEUTRAL, PLAYERMODE_TUTORIAL);
 	}
+	g_aPlayerPos[0] = FIRST_POS;
+	g_aPlayerPos[1] = FIRST_POS;
 
 	// CPUの初期化処理
 	InitComputer();
@@ -96,7 +99,7 @@ void InitTutorial(void)
 	// メッシュドームの初期化処理
 	InitMeshDome();
 	SetMeshDome(FIRST_POS, FIRST_POS, D3DXVECTOR2(16.0f, 5.0f), OUTCYLINDER_RADIUS * 6.0f, true, MESHDOMETYPE_SKY);
-	SetMeshDome(D3DXVECTOR3(0.0f,CYLINDER_HEIGHT, 0.0f), FIRST_POS, 
+	SetMeshDome(D3DXVECTOR3(0.0f, CYLINDER_HEIGHT, 0.0f), FIRST_POS,
 		D3DXVECTOR2(16.0f, 5.0f), INCYLINDER_RADIUS, false, MESHDOMETYPE_ROCK);
 
 	// メッシュフィールドの初期化処理
@@ -126,13 +129,13 @@ void InitTutorial(void)
 
 	// 水面の初期化処理
 	InitWaterSurf();
-	SetWaterSurf({ 0.0f,CYLINDER_HEIGHT,0.0f }, { 0.0f,0.0f,0.0f }, { 64,64 }, 
-		{ (OUTCYLINDER_RADIUS * 6.0f * 2.0f) / 64, (OUTCYLINDER_RADIUS * 6.0f * 2.0f) / 64 }, 
+	SetWaterSurf({ 0.0f,CYLINDER_HEIGHT,0.0f }, { 0.0f,0.0f,0.0f }, { 64,64 },
+		{ (OUTCYLINDER_RADIUS * 6.0f * 2.0f) / 48, (OUTCYLINDER_RADIUS * 6.0f * 2.0f) / 48 },
 		D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.4f));
 
 	// 配置物の初期化処理
 	InitObject("data\\objpos002.txt");
-	
+
 	// エサの初期化処理
 	InitEsa(true);
 	SetEsa(0, false, ESA_ACTTYPE_LAND, 0, D3DXVECTOR3(-100.0f, 0.0f, -4000.0f), FIRST_POS);
@@ -467,6 +470,15 @@ void UpdateTutorial(void)
 	if (GetSkipTutorial() == true && pFade == FADE_NONE)
 	{// 次の画面に転移する条件(SKIP長押し)を満たした
 
+		Player* pPlayer = GetPlayer();
+		for (int nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++, pPlayer++)
+		{
+			if (pPlayer->mode == PLAYERMODE_GAME)
+			{// マップ内に入っていたら
+				g_aPlayerPos[nCntPlayer] = pPlayer->pos;
+			}
+		}
+
 		// モード設定
 		SetFade(MODE_GAME);
 	}
@@ -495,7 +507,7 @@ void DrawTutorial(void)
 	// メッシュフィールドの描画処理
 	DrawMeshField();
 
-	
+
 
 	// メッシュシリンダーの描画処理
 	DrawMeshCylinder();
@@ -537,16 +549,16 @@ void DrawTutorial(void)
 
 	// チュートリアルテキストの描画処理
 	DrawTutorialTxt();
-	
+
 	// 画面の描画
 	DrawScreen();
-	
+
 	// クロスヘアの描画処理
 	DrawCrossHair();
-	
+
 	// 海流の描画処理
 	DrawOceanCurrents();
-	
+
 	// UIゲージアイコンの描画処理
 	DrawUiGaugeIcon();
 
@@ -559,7 +571,7 @@ void DrawTutorial(void)
 	// マップの描画処理
 	DrawMap();
 
-	
+
 
 	DrawUiTutorial();
 
@@ -582,4 +594,12 @@ void DrawTutorial(void)
 		// ポリゴンの描画
 		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, nCntTutorial * 4, 2);
 	}
+}
+
+//===================================================================
+// チュートリアル終了時のプレイヤーの位置を取得
+//===================================================================
+D3DXVECTOR3 GetPlayerPos(int nIdx)
+{
+	return g_aPlayerPos[nIdx];
 }

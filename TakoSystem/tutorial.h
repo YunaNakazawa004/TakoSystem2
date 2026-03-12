@@ -13,4 +13,6 @@ void UninitTutorial(void);
 void UpdateTutorial(void);
 void DrawTutorial(void);
 
+D3DXVECTOR3 GetPlayerPos(int nIdx);
+
 #endif
