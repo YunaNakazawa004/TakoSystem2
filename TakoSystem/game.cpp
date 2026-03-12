@@ -545,6 +545,9 @@ void DrawGame(void)
 	// レディの描画処理
 	DrawReady();
 
+	// 海流の描画処理
+	DrawOceanCurrents();
+
 	// UIゲージアイコンの描画処理
 	DrawUiGaugeIcon();
 
@@ -562,9 +565,6 @@ void DrawGame(void)
 		// マップの描画処理
 		DrawMap();
 	}
-
-	// 海流の描画処理
-	DrawOceanCurrents();
 
 	// 画面の描画処理
 	DrawScreen();
