@@ -475,25 +475,25 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 			float fRate, fDot;
 			float fXLength = pObjectModel->VtxMax.x - pObjectModel->VtxMin.x;
 			float fZLength = pObjectModel->VtxMax.z - pObjectModel->VtxMin.z;
-			float fOffXS = (nCnt == 1 || nCnt == 0) ? +(fXLength * 0.5f) : -(fXLength * 0.5f);
-			float fOffZS = (nCnt == 1 || nCnt == 2) ? +(fZLength * 0.5f) : -(fZLength * 0.5f);
-			float fOffXE = (nCnt == 0 || nCnt == 3) ? +(fXLength * 0.5f) : -(fXLength * 0.5f);
-			float fOffZE = (nCnt == 0 || nCnt == 1) ? +(fZLength * 0.5f) : -(fZLength * 0.5f);
+			float fOffXS = (nCnt == 0 || nCnt == 3) ? +(fXLength * 0.5f) : -(fXLength * 0.5f);
+			float fOffZS = (nCnt == 0 || nCnt == 1) ? +(fZLength * 0.5f) : -(fZLength * 0.5f);
+			float fOffXE = (nCnt == 1 || nCnt == 0) ? +(fXLength * 0.5f) : -(fXLength * 0.5f);
+			float fOffZE = (nCnt == 1 || nCnt == 2) ? +(fZLength * 0.5f) : -(fZLength * 0.5f);
 			//float fLength = sqrtf((fXLength * fXLength) + (fZLength * fZLength)) * 0.5f;
 			//float fRotS = (nCnt * D3DX_PI * 0.5f) - (D3DX_PI * 0.25f) + pObject->rot.y;
 			//float fRotE = ((nCnt + 1) * D3DX_PI * 0.5f) - (D3DX_PI * 0.25f) + pObject->rot.y;
-			float fSin = sinf(pObject->rot.y);
-			float fCos = cosf(pObject->rot.y);
+			float fSin = sinf(-pObject->rot.y);
+			float fCos = cosf(-pObject->rot.y);
 
 			//CorrectAngle(&fRotS, fRotS);
 			//CorrectAngle(&fRotE, fRotE);
 			CorrectAngle(&pObject->rot.y, pObject->rot.y);
 
-			fXS = fOffXS * fCos + fOffZS * fSin;
-			fZS = fOffXS * fSin - fOffZS * fCos;
+			fXS = fOffXS * fCos - fOffZS * fSin;
+			fZS = fOffXS * fSin + fOffZS * fCos;
 
-			fXE = fOffXE * fCos + fOffZE * fSin;
-			fZE = fOffXE * fSin - fOffZE * fCos;
+			fXE = fOffXE * fCos - fOffZE * fSin;
+			fZE = fOffXE * fSin + fOffZE * fCos;
 			//fXS = sinf(fRotS) * (fXLength * 0.5f + fRadius);
 			//fZS = cosf(fRotS) * (fZLength * 0.5f + fRadius);
 

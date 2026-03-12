@@ -74,6 +74,7 @@ void InitTitle(void)
 
 	g_PressEnterDeley = 0;
 
+	g_PlayerSelect = 1;
 
 	for (int nCntTexture = 0; nCntTexture < sizeof c_apFilenameTitle / sizeof(c_apFilenameTitle[0]); nCntTexture++)
 	{

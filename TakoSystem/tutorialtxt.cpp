@@ -13,7 +13,7 @@
 #define MAX_TUTTXT				(30)									// 最大
 #define MOVEMENT				(D3DXVECTOR3(1.0f, 1.0f, 1.0f))			// 移動量
 #define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// 向き移動量
-#define CLEAR_COUNT				(30)									// クリア時のカウント
+#define CLEAR_COUNT				(90)									// クリア時のカウント
 #define FADE_MINUS				(0.03f)									// フェード時の透明度
 
 //*****************************************************************************

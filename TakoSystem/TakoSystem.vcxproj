@@ -159,6 +159,7 @@
     <ClCompile Include="fade.cpp" />
     <ClCompile Include="file.cpp" />
     <ClCompile Include="fishes.cpp" />
+    <ClCompile Include="foodnum.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="light.cpp" />
@@ -209,6 +210,7 @@
     <ClInclude Include="fade.h" />
     <ClInclude Include="file.h" />
     <ClInclude Include="fishes.h" />
+    <ClInclude Include="foodnum.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="light.h" />
