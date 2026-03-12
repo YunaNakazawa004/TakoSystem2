@@ -543,7 +543,10 @@ void DrawTutorial(void)
 	
 	// クロスヘアの描画処理
 	DrawCrossHair();
-
+	
+	// 海流の描画処理
+	DrawOceanCurrents();
+	
 	// UIゲージアイコンの描画処理
 	DrawUiGaugeIcon();
 
@@ -556,8 +559,7 @@ void DrawTutorial(void)
 	// マップの描画処理
 	DrawMap();
 
-	// 海流の描画処理
-	DrawOceanCurrents();
+	
 
 	DrawUiTutorial();
 

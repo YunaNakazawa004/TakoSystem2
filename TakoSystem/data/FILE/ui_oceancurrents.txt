@@ -1,0 +1,212 @@
+#=====================================================================
+#
+# 海流UIの設定情報[ui_oceancurrents.txt]
+# Author : Soki Inamura
+#
+#=====================================================================
+
+SCRIPT		# 読み取り開始
+#===========================================================
+# 海流UIの設定情報
+#===========================================================
+
+NUM_TEXTURE = 6		# 読み込むテクスチャ数
+
+TEXTURE_FILENAME = data/TEXTURE/whirlpool_warning.png		# [00]渦潮注意標識
+TEXTURE_FILENAME = data/TEXTURE/tex_alpha000.jpg			# [01]バックテクスチャ
+TEXTURE_FILENAME = data/TEXTURE/tex_warning000.jpg			# [02]トラテープ
+TEXTURE_FILENAME = data/TEXTURE/text_warning.png			# [03]テキスト「warning!」
+TEXTURE_FILENAME = data/TEXTURE/text_oc_warning.png			# [04]縦テキスト色々
+TEXTURE_FILENAME = data/TEXTURE/number000.png			  	# [05]数字
+
+#===========================================================
+# 海流UIの配置情報
+#===========================================================
+SET_LAYOUT	# 配置開始
+
+#---------------------------------------
+# [0]上の警告
+#---------------------------------------
+	SET_LAY[ 0 ]
+		
+		POS = 640.0 0.0 0.0
+		
+		SET_POLYGON2D	# 2Dポリゴン
+			TYPE      = 0				# 種類
+			TEXIDX    = 3				# [2]トラテープ
+			BLEND_A   = 0				# Aブレンド(0 しない, 1 する)
+			OFFPOS    = 0.0 0.0 0.0		# 位置
+			SIZE      = 640.0 10.0		# 大きさ
+			COL       = 1.0 1.0 1.0 1.0	# 色
+			TEXPOS    = 0.0 0.0			# テクスチャ座標
+			TEXADDPOS = 0.01 0.0		# 座標加算量
+			TEXSIZE   = 5.0 1.0			# テクスチャサイズ
+		END_POLYGON2D
+		
+	END_LAY
+
+#---------------------------------------
+# [1]下の警告
+#---------------------------------------
+	SET_LAY[ 1 ]
+		
+		POS = 640.0 720.0 0.0
+		
+		SET_POLYGON2D	# 2Dポリゴン
+			TYPE      = 0				# 種類
+			TEXIDX    = 3				# [2]トラテープ
+			BLEND_A   = 0				# Aブレンド(0 しない, 1 する)
+			OFFPOS    = 0.0 0.0 0.0		# 位置
+			SIZE      = 640.0 10.0		# 大きさ
+			COL       = 1.0 1.0 1.0 1.0	# 色
+			TEXPOS    = 0.0 0.0			# テクスチャ座標
+			TEXADDPOS = -0.01 0.0		# 座標加算量
+			TEXSIZE   = 5.0 1.0			# テクスチャサイズ
+		END_POLYGON2D
+		
+	END_LAY
+	
+#---------------------------------------
+# [2]左の警告文
+#---------------------------------------
+	SET_LAY[ 2 ]
+		
+		POS = 0.0 360.0 0.0
+		
+		SET_POLYGON2D	# 2Dポリゴン
+			TYPE      = 0				# 種類
+			TEXIDX    = 2				# [2]トラテープ
+			BLEND_A   = 0				# Aブレンド(0 しない, 1 する)
+			OFFPOS    = -35.0 0.0 0.0		# 位置
+			SIZE      = 35.0 360.0		# 大きさ
+			COL       = 1.0 1.0 1.0 1.0	# 色
+			TEXPOS    = 0.0 0.0			# テクスチャ座標
+			TEXADDPOS = 0.01 0.0		# 座標加算量
+			TEXSIZE   = 1.0 1.0			# テクスチャサイズ
+		END_POLYGON2D
+		
+		SET_POLYGON2D	# 2Dポリゴン
+			TYPE      = 0				# 種類
+			TEXIDX    = 0				# [0]渦潮標識
+			BLEND_A   = 0				# Aブレンド(0 しない, 1 する)
+			OFFPOS    = -35.0 -325.0 0.0	# 位置
+			SIZE      = 35.0 35.0		# 大きさ
+			COL       = 1.0 1.0 1.0 1.0	# 色
+			TEXPOS    = 0.0 0.0			# テクスチャ座標
+			TEXADDPOS = 0.0 0.0			# 座標加算量
+			TEXSIZE   = 1.0 1.0			# テクスチャサイズ
+		END_POLYGON2D
+		
+		SET_POLYGON2D	# 2Dポリゴン
+			TYPE      = 0				# 種類
+			TEXIDX    = 4				# [4]縦テキスト(渦潮警報)
+			BLEND_A   = 0				# Aブレンド(0 しない, 1 する)
+			OFFPOS    = -35.0 -177.0 0.0	# 位置
+			SIZE      = 35.0 105.0		# 大きさ
+			COL       = 1.0 1.0 1.0 1.0	# 色
+			TEXPOS    = 0.5 0.0			# テクスチャ座標
+			TEXADDPOS = 0.0 0.0			# 座標加算量
+			TEXSIZE   = 0.5 0.57		# テクスチャサイズ
+		END_POLYGON2D
+		
+		SET_POLYGON2D	# 2Dポリゴン
+			TYPE      = 0				# 種類
+			TEXIDX    = 4				# [4]縦テキスト(あと)
+			BLEND_A   = 0				# Aブレンド(0 しない, 1 する)
+			OFFPOS    = -35.0 25.0 0.0	# 位置
+			SIZE      = 40.0 46.0		# 大きさ
+			COL       = 1.0 1.0 1.0 1.0	# 色
+			TEXPOS    = 0.5 0.57		# テクスチャ座標
+			TEXADDPOS = 0.0 0.0			# 座標加算量
+			TEXSIZE   = 0.5 0.28		# テクスチャサイズ
+		END_POLYGON2D
+
+		SET_POLYGON2D	# 2Dポリゴン
+			TYPE      = 0				# 種類
+			TEXIDX    = 4				# [4]縦テキスト(秒)
+			BLEND_A   = 0				# Aブレンド(0 しない, 1 する)
+			OFFPOS    = -35.0 190.0 0.0	# 位置
+			SIZE      = 35.0 35.0		# 大きさ
+			COL       = 1.0 1.0 1.0 1.0	# 色
+			TEXPOS    = 0.5 0.85		# テクスチャ座標
+			TEXADDPOS = 0.0 0.0			# 座標加算量
+			TEXSIZE   = 0.5 0.15		# テクスチャサイズ
+		END_POLYGON2D
+		
+		SET_POLYGON2D	# 2Dポリゴン
+			TYPE      = 4				# 種類(残り時間)
+			TEXIDX    = 5				# [5]数字
+			BLEND_A   = 0				# Aブレンド(0 しない, 1 する)
+			OFFPOS    = -53.0 113.0 0.0	# 位置
+			SIZE      = 17.5 55.0		# 大きさ
+			COL       = 1.0 0.0 0.0 1.0	# 色
+			TEXPOS    = 0.0 0.0			# テクスチャ座標
+			TEXADDPOS = 0.0 0.0			# 座標加算量
+			TEXSIZE   = 0.1 1.0			# テクスチャサイズ
+		END_POLYGON2D
+		
+	END_LAY
+
+#---------------------------------------
+# [3]右の警告文
+#---------------------------------------
+	SET_LAY[ 3 ]
+		
+		POS = 1280.0 360.0 0.0
+		
+		SET_POLYGON2D	# 2Dポリゴン
+			TYPE      = 0				# 種類
+			TEXIDX    = 2				# [2]トラテープ
+			BLEND_A   = 0				# Aブレンド(0 しない, 1 する)
+			OFFPOS    = 35.0 0.0 0.0		# 位置
+			SIZE      = 35.0 360.0		# 大きさ
+			COL       = 1.0 1.0 1.0 1.0	# 色
+			TEXPOS    = 0.0 0.0			# テクスチャ座標
+			TEXADDPOS = 0.01 0.0		# 座標加算量
+			TEXSIZE   = 1.0 1.0			# テクスチャサイズ
+		END_POLYGON2D
+		
+		SET_POLYGON2D	# 2Dポリゴン
+			TYPE      = 0				# 種類
+			TEXIDX    = 0				# [0]渦潮標識
+			BLEND_A   = 0				# Aブレンド(0 しない, 1 する)
+			OFFPOS    = 35.0 -325.0 0.0	# 位置
+			SIZE      = 35.0 35.0		# 大きさ
+			COL       = 1.0 1.0 1.0 1.0	# 色
+			TEXPOS    = 0.0 0.0			# テクスチャ座標
+			TEXADDPOS = 0.0 0.0			# 座標加算量
+			TEXSIZE   = 1.0 1.0			# テクスチャサイズ
+		END_POLYGON2D
+		
+		SET_POLYGON2D	# 2Dポリゴン
+			TYPE      = 0				# 種類
+			TEXIDX    = 4				# [4]縦テキスト(渦潮警報)
+			BLEND_A   = 0				# Aブレンド(0 しない, 1 する)
+			OFFPOS    = 35.0 -177.0 0.0	# 位置
+			SIZE      = 35.0 105.0		# 大きさ
+			COL       = 1.0 1.0 1.0 1.0	# 色
+			TEXPOS    = 0.5 0.0			# テクスチャ座標
+			TEXADDPOS = 0.0 0.0			# 座標加算量
+			TEXSIZE   = 0.5 0.57		# テクスチャサイズ
+		END_POLYGON2D
+		
+		SET_POLYGON2D	# 2Dポリゴン
+			TYPE      = 0				# 種類
+			TEXIDX    = 4				# [4]縦テキスト(物影に隠れろ)
+			BLEND_A   = 0				# Aブレンド(0 しない, 1 する)
+			OFFPOS    = 35.0 107.0 0.0	# 位置
+			SIZE      = 40.0 130.0		# 大きさ
+			COL       = 1.0 1.0 1.0 1.0	# 色
+			TEXPOS    = 0.0 0.0			# テクスチャ座標
+			TEXADDPOS = 0.0 0.0			# 座標加算量
+			TEXSIZE   = 0.5 1.0			# テクスチャサイズ
+		END_POLYGON2D
+
+	END_LAY
+
+END_LAYOUT
+END_SCRIPT
+
+END_LAYOUT	# 配置終了
+
+END_SCRIPT	# 読み込み終了
