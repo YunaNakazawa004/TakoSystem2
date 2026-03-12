@@ -17,6 +17,8 @@
 #include "sound.h"
 
 #include "ui_result_getscore.h"
+#include "player.h"
+#include "camera.h"
 
 // マクロ定義 ==================================================
 
@@ -26,7 +28,7 @@
 
 #define WIRLPOOL_WAITTIME			(15)			// 待機時間の長さ
 
-#define OCEANCURRECT_TIME_NOMAL		(60 * 10)					// 通常状態の継続時間
+#define OCEANCURRECT_TIME_NOMAL		(60 * 60)					// 通常状態の継続時間
 #define OCEANCURRECT_SPEED_NOMAL	(0.005f)					// 通常時の海流の速さ	
 
 #define OCEANCURRECT_TIME_WAIT		(60 * WIRLPOOL_WAITTIME)	// 渦潮待機状態の継続時間
@@ -90,11 +92,12 @@ const char* c_apFilenameOceanCurrents[] =
 	"data/TEXTURE/number000.png",				// [6]数字
 };
 
+#if 0
 OCUI_info g_aOCUiInfo[] =
 {// {レイアウトの種類, 種類, テクスチャインデックス, アルファブレンドするか, オフセット, 幅, 高さ, テクスチャ座標, 座標加算量, テクスチャサイズ, 色}
 	
 	// 上の警告
-	{OCUITYPE_NULL, 3, false, D3DXVECTOR3(0.0f,0.0f,0.0f), 10.0f, 10.0f, D3DXVECTOR2(0.0f, 0.0f),D3DXVECTOR2(0.0f, 0.0f),D3DXVECTOR2(0.0f, 0.0f),D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f)},
+	//{OCUITYPE_NULL, 3, false, D3DXVECTOR3(0.0f,0.0f,0.0f), 10.0f, 10.0f, D3DXVECTOR2(0.0f, 0.0f),D3DXVECTOR2(0.0f, 0.0f),D3DXVECTOR2(0.0f, 0.0f),D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f)},
 
 	// 下の警告
 	//{1, OCUITYPE_NULL, 3, false, D3DXVECTOR3(0.0f,0.0f,0.0f), 10.0f, 10.0f, D3DXVECTOR2(0.0f, 0.0f),D3DXVECTOR2(0.0f, 0.0f),D3DXVECTOR2(0.0f, 0.0f),D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f)},
@@ -102,6 +105,7 @@ OCUI_info g_aOCUiInfo[] =
 	// 右の警告
 	//{2, OCUITYPE_NULL, 3, false, D3DXVECTOR3(0.0f,0.0f,0.0f), 10.0f, 10.0f, D3DXVECTOR2(0.0f, 0.0f),D3DXVECTOR2(0.0f, 0.0f),D3DXVECTOR2(0.0f, 0.0f),D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f)},
 };
+#endif
 
 int g_nMaxLayout = 2;
 
@@ -118,6 +122,9 @@ void InitOceanCurrents(void)
 	int nCntOC;
 
 	// ====================================================
+
+	
+	
 
 #if 0
 	// テクスチャの読み込み
@@ -397,7 +404,7 @@ void UpdateOceanCurrents(void)
 				fLength = 35.0f * 2;	// 距離
 			}
 
-			if (g_OceanCurrentsState == OCEANCURRENTSSTATE_WAIT)
+			if (g_OceanCurrentsState == OCEANCURRENTSSTATE_WAIT || g_OceanCurrentsState == OCEANCURRENTSSTATE_WIRLPOOL)
 			{// 表示する状態の時
 
 				fGoal = 1.57f * fNum;
@@ -638,7 +645,7 @@ int SetOceanCurrentsLayOut(OCUITYPE type, D3DXVECTOR3 pos, OCUI_info* pOCUiInfo,
 {
 #if 1
 	int aSetIdx[MAX_IDX_OCPOLYGON];	// 同じレイアウトのインデックス
-	int nNumSetIdx = 0;				// インデックスの総数
+	//int nNumSetIdx = 0;				// インデックスの総数
 
 	memset(&aSetIdx[0], -1, sizeof(int) * MAX_IDX_OCPOLYGON);
 
@@ -766,6 +773,32 @@ void UpdateOceanCurrentsState(void)
 {
 	float fSpeedOceanCurrect = 0.0f;	// 海流の速度
 
+	bool bGamePlayer = true;	// 全てのプレイヤーがゲームモードに入ったか
+	
+	if (GetMode() == MODE_TUTORIAL)
+	{// 今のモードがチュートリアルの場合
+
+		Player* pPlayer = GetPlayer();	// プレイヤーの情報
+		int nNumGamePlayer = 0;			// ゲームモードに入ったプレイヤーの数
+
+		for (int nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++)
+		{// プレイヤーの数だけ繰り返す
+
+			if (pPlayer[nCntPlayer].mode == PLAYERMODE_TUTORIAL)
+			{// チュートリアルモードの場合
+				continue;
+			}
+
+			nNumGamePlayer++;	// ゲームモードに入ったプレイヤー数をインクリメント
+		}
+
+		if (GetNumCamera() > nNumGamePlayer)
+		{// カメラの数より少ない
+
+			bGamePlayer = false;	// まだゲームモードに入ってないプレイヤーがいる状態に設定
+		}
+	}
+
 	//g_nCounterOceanCurrents++;	// カウンタを加算
 
 	// 海流の回転速度の処理
@@ -776,24 +809,23 @@ void UpdateOceanCurrentsState(void)
 		// 回転量を通常時の移動量に修正
 		g_fSpeedOceanCurrent += (OCEANCURRECT_SPEED_NOMAL - g_fSpeedOceanCurrent) * 0.03f;	// 慣性
 
-		if (g_fSpeedOceanCurrent <= OCEANCURRECT_SPEED_NOMAL + 0.1f
-		 && g_fSpeedOceanCurrent >= OCEANCURRECT_SPEED_NOMAL - 0.1f)
-		{// 速さが海流の状態の速さになった
+		if (GetGameState() != GAMESTATE_LITTLETIME && bGamePlayer == true)
+		{// 残り時間が少なくない場合
+			
+			if (g_fSpeedOceanCurrent <= OCEANCURRECT_SPEED_NOMAL + 0.1f
+			 && g_fSpeedOceanCurrent >= OCEANCURRECT_SPEED_NOMAL - 0.1f)
+			{// 速さが海流の状態の速さになった
 
-			g_nCounterOceanCurrents++;
-		}
+				g_nCounterOceanCurrents++;
+			}
 
-		if (g_nCounterOceanCurrents >= OCEANCURRECT_TIME_NOMAL)
-		{// 通常時の継続時間を過ぎた
-
-			if (GetGameState() != GAMESTATE_LITTLETIME)
-			{// 残り時間が少なくない場合
+			if (g_nCounterOceanCurrents >= OCEANCURRECT_TIME_NOMAL)
+			{// 通常時の継続時間を過ぎた
 
 				g_OceanCurrentsState = OCEANCURRENTSSTATE_WAIT;			// 渦潮待機状態に設定
 
 				g_nMaxTimeOceanCurrents = OCEANCURRECT_TIME_WAIT;
 				g_nCounterOceanCurrents = 0;							// カウンタを初期化
-				
 			}
 		}
 
