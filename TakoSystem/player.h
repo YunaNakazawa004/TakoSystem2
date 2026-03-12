@@ -111,7 +111,7 @@ typedef struct
 	int nBlindCounter;							// 視界が悪いのを制御するカウンター
 
 	int nFood;									// 持っているエサの数
-	int nFoodNumIdx[2];							// エサ上限のインデックス
+	int nFoodNumIdx;							// エサ上限のインデックス
 	EsaQueue esaQueue;							// 持っているエサのキュー配列
 	POTSTATE Potstate;							// 状態
 	int nPotIdx;								// 近づいていたタコつぼのインデックス
