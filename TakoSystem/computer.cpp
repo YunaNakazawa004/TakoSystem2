@@ -842,8 +842,17 @@ void DrawComputer(void)
 
 				for (int nCntMat = 0; nCntMat < (int)g_ComputerModel[nCntModel].dwNumMat; nCntMat++)
 				{
+					// 色保存用
+					D3DXCOLOR MatCol = pMat->MatD3D.Diffuse;
+
+					// コンピュータの色を変更
+					pMat->MatD3D.Diffuse = D3DXCOLOR(0.5f, 0.2f, 0.2f, 1.0f);
+
 					// マテリアルの設定
 					pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
+
+					// 色を戻す
+					pMat->MatD3D.Diffuse = MatCol;
 
 					// テクスチャの設定
 					pDevice->SetTexture(0, g_ComputerModel[nCntModel].apTexture[nCntMat]);
