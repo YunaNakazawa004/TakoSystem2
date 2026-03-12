@@ -688,10 +688,9 @@ void UpdatePlayer(void)
 				// 重力
 				pPlayer->move.y += GRAVITY;
 			}
-			else if (pPlayer->pos.y > 320.0f && pPlayer->mode == PLAYERMODE_TUTORIAL)
+			else if (pPlayer->pos.y > 340.0f && pPlayer->mode == PLAYERMODE_TUTORIAL)
 			{// チュートリアルモード中の上方向制限
-				// 重力
-				pPlayer->move.y += GRAVITY;
+				pPlayer->pos.y = 340.0f;
 			}
 
 			if (pPlayer->pos.y > *GetWaterSurf_Height() - (PLAYER_HEIGHT * 0.5f) && 

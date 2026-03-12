@@ -74,6 +74,7 @@ void InitTitle(void)
 
 	g_PressEnterDeley = 0;
 
+	g_PlayerSelect = 1;
 
 	for (int nCntTexture = 0; nCntTexture < sizeof c_apFilenameTitle / sizeof(c_apFilenameTitle[0]); nCntTexture++)
 	{
@@ -242,6 +243,7 @@ void InitTitle(void)
 
 	// 水面の初期化処理
 	InitWaterSurf();
+	SetWaterSurf({ 0.0f,CYLINDER_HEIGHT,0.0f }, { 0.0f,0.0f,0.0f }, { 64,64 }, { (8000.0f) / 64, (8000.0f) / 64 }, D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.4f));
 
 	// 配置物の初期化処理
 	InitObject("data\\objpos001.txt");	// 必ず最後(メッシュ後)に初期化する
@@ -619,7 +621,7 @@ void DrawTitle(void)
 		SetFog(D3DXCOLOR(0.0f, 0.1f, 0.2f, 1.0f), 1000.0f, 0.0f, false);
 	}
 
-#if 0
+#if 1
 	// 配置物の描画処理
 	DrawObject();
 

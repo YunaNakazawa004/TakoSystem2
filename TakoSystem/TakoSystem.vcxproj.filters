@@ -145,6 +145,9 @@
     <ClCompile Include="ui_tutorial.cpp">
       <Filter>cppファイル</Filter>
     </ClCompile>
+    <ClCompile Include="foodnum.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h">
@@ -289,6 +292,9 @@
       <Filter>hファイル</Filter>
     </ClInclude>
     <ClInclude Include="ui_tutorial.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="foodnum.h">
       <Filter>hファイル</Filter>
     </ClInclude>
   </ItemGroup>
