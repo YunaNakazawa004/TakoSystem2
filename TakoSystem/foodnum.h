@@ -36,8 +36,7 @@ void InitFoodNum(void);
 void UninitFoodNum(void);
 void UpdateFoodNum(void);
 void DrawFoodNum(void);
-void SetFoodNum(FOODNUMTYPE type, FOODNUMSTATE state, D3DXVECTOR3 pos);
-void SetFoodNumState(FOODNUMTYPE type, FOODNUMSTATE state);
-int GetFoodNumFromType(FOODNUMTYPE type);
+int SetFoodNum(FOODNUMTYPE type, FOODNUMSTATE state, D3DXVECTOR3 pos);
+void SetFoodNumState(int nIdx, FOODNUMSTATE state);
 
 #endif

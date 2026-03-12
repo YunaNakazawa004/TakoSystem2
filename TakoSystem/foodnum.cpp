@@ -10,6 +10,7 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
+#define MAX_FOODNUM				(10)									// 最大
 #define MOVEMENT				(D3DXVECTOR3(1.0f, 1.0f, 1.0f))			// 移動量
 #define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// 向き移動量
 
@@ -19,7 +20,6 @@
 typedef struct
 {
 	D3DXVECTOR3 pos;			// 位置
-	D3DXMATRIX mtxWorld;		// ワールドマトリックス
 	FOODNUMTYPE type;			// 種類
 	FOODNUMSTATE state;			// 状態
 	int nCounterState;			// 状態カウンター
@@ -31,15 +31,15 @@ typedef struct
 //*****************************************************************************
 LPDIRECT3DTEXTURE9 g_apTextureFoodNum[FOODNUMTYPE_MAX] = {};	// テクスチャへのポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffFoodNum = NULL;			// 頂点バッファへのポインタ
-FoodNum g_aFoodNum[FOODNUMTYPE_MAX];				// エサ上限の情報
+FoodNum g_aFoodNum[MAX_FOODNUM];				// エサ上限の情報
 
 //*****************************************************************************
 // テクスチャファイル名
 //*****************************************************************************
 const char* c_apFilernamaFoodNum[FOODNUMTYPE_MAX] =
 {
-	"data\\TEXTURE\\FoodNum000.png",
-	"data\\TEXTURE\\FoodNum001.png",
+	"data\\TEXTURE\\foodNum000.png",
+	"data\\TEXTURE\\foodNum001.png",
 };
 
 //=============================================================================
@@ -49,7 +49,7 @@ void InitFoodNum(void)
 {
 	// ローカル変数宣言
 	LPDIRECT3DDEVICE9 pDevice;			// デバイスへのポインタ
-	VERTEX_3D* pVtx;					// 頂点情報へのポインタ
+	VERTEX_2D* pVtx;					// 頂点情報へのポインタ
 
 	// デバイスの取得
 	pDevice = GetDevice();
@@ -61,19 +61,19 @@ void InitFoodNum(void)
 	}
 
 	// エサ上限情報の初期化
-	for (int nCntTxt = 0; nCntTxt < FOODNUMTYPE_MAX; nCntTxt++)
+	for (int nCntNum = 0; nCntNum < MAX_FOODNUM; nCntNum++)
 	{
-		g_aFoodNum[nCntTxt].pos = FIRST_POS;
-		g_aFoodNum[nCntTxt].type = FOODNUMTYPE_UP;
-		g_aFoodNum[nCntTxt].state = FOODNUMSTATE_NONE;
-		g_aFoodNum[nCntTxt].nCounterState = 0;
-		g_aFoodNum[nCntTxt].bUse = false;
+		g_aFoodNum[nCntNum].pos = FIRST_POS;
+		g_aFoodNum[nCntNum].type = FOODNUMTYPE_UP;
+		g_aFoodNum[nCntNum].state = FOODNUMSTATE_NONE;
+		g_aFoodNum[nCntNum].nCounterState = 0;
+		g_aFoodNum[nCntNum].bUse = false;
 	}
 
 	// 頂点バッファの生成
-	pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * MAX_VERTEX * FOODNUMTYPE_MAX,
+	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * MAX_VERTEX * MAX_FOODNUM,
 		D3DUSAGE_WRITEONLY,
-		FVF_VERTEX_3D,
+		FVF_VERTEX_2D,
 		D3DPOOL_MANAGED,
 		&g_pVtxBuffFoodNum,
 		NULL);
@@ -81,19 +81,19 @@ void InitFoodNum(void)
 	// 頂点バッファをロックし、頂点情報へのポインタを取得
 	g_pVtxBuffFoodNum->Lock(0, 0, (void**)&pVtx, 0);
 
-	for (int nCntTxt = 0; nCntTxt < FOODNUMTYPE_MAX; nCntTxt++)
+	for (int nCntNum = 0; nCntNum < MAX_FOODNUM; nCntNum++)
 	{
 		// 頂点座標の設定
-		pVtx[0].pos = D3DXVECTOR3(-200.0f, 100.0f, 0.0f);
-		pVtx[1].pos = D3DXVECTOR3(200.0f, 100.0f, 0.0f);
-		pVtx[2].pos = D3DXVECTOR3(-200.0f, -100.0f, 0.0f);
-		pVtx[3].pos = D3DXVECTOR3(200.0f, -100.0f, 0.0f);
+		pVtx[0].pos = D3DXVECTOR3(g_aFoodNum[nCntNum].pos.x - 200.0f, g_aFoodNum[nCntNum].pos.y + 100.0f, 0.0f);
+		pVtx[1].pos = D3DXVECTOR3(g_aFoodNum[nCntNum].pos.x + 200.0f, g_aFoodNum[nCntNum].pos.y + 100.0f, 0.0f);
+		pVtx[2].pos = D3DXVECTOR3(g_aFoodNum[nCntNum].pos.x - 200.0f, g_aFoodNum[nCntNum].pos.y - 100.0f, 0.0f);
+		pVtx[3].pos = D3DXVECTOR3(g_aFoodNum[nCntNum].pos.x + 200.0f, g_aFoodNum[nCntNum].pos.y - 100.0f, 0.0f);
 
 		// rhwの設定					 
-		pVtx[0].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
-		pVtx[1].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
-		pVtx[2].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
-		pVtx[3].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+		pVtx[0].rhw = DEFAULT_RHW;
+		pVtx[1].rhw = DEFAULT_RHW;
+		pVtx[2].rhw = DEFAULT_RHW;
+		pVtx[3].rhw = DEFAULT_RHW;
 
 		// 頂点カラーの設定
 		pVtx[0].col = WHITE_VTX;
@@ -142,18 +142,19 @@ void UninitFoodNum(void)
 //=============================================================================
 void UpdateFoodNum(void)
 {
-	VERTEX_3D* pVtx;					// 頂点情報へのポインタ
+	VERTEX_2D* pVtx;					// 頂点情報へのポインタ
 
 	// 頂点バッファをロックし、頂点情報へのポインタを取得
 	g_pVtxBuffFoodNum->Lock(0, 0, (void**)&pVtx, 0);
 
-	for (int nCntTxt = 0; nCntTxt < FOODNUMTYPE_MAX; nCntTxt++)
+	for (int nCntNum = 0; nCntNum < MAX_FOODNUM; nCntNum++)
 	{
-		if (g_aFoodNum[nCntTxt].bUse == true)
+		if (g_aFoodNum[nCntNum].bUse == true)
 		{// 使用している
-			switch (g_aFoodNum[nCntTxt].state)
+			switch (g_aFoodNum[nCntNum].state)
 			{
 			case FOODNUMSTATE_NONE:
+				g_aFoodNum[nCntNum].bUse = false;
 
 				break;
 
@@ -177,34 +178,13 @@ void DrawFoodNum(void)
 {
 	// ローカル変数宣言
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();			// デバイスへのポインタ
-	D3DXMATRIX mtxTrans;				// 計算用マトリックス
-	D3DXMATRIX mtxView;				// ビューマトリックス取得用
 
-	for (int nCntTxt = 0; nCntTxt < FOODNUMTYPE_MAX; nCntTxt++)
+	for (int nCntNum = 0; nCntNum < MAX_FOODNUM; nCntNum++)
 	{
-		if (g_aFoodNum[nCntTxt].bUse == false)
+		if (g_aFoodNum[nCntNum].bUse == false)
 		{// 使用してないなら無視
 			continue;
 		}
-
-		// ワールドマトリックスの初期化
-		D3DXMatrixIdentity(&g_aFoodNum[nCntTxt].mtxWorld);
-
-		// ビューマトリックスを取得
-		pDevice->GetTransform(D3DTS_VIEW, &mtxView);
-
-		// ポリゴンをカメラに対して正面に向ける
-		D3DXMatrixInverse(&g_aFoodNum[nCntTxt].mtxWorld, NULL, &mtxView);	// 逆行列を求める
-		g_aFoodNum[nCntTxt].mtxWorld._41 = 0.0f;
-		g_aFoodNum[nCntTxt].mtxWorld._42 = 0.0f;
-		g_aFoodNum[nCntTxt].mtxWorld._43 = 0.0f;
-
-		// 位置を反映
-		D3DXMatrixTranslation(&mtxTrans, g_aFoodNum[nCntTxt].pos.x, g_aFoodNum[nCntTxt].pos.y, g_aFoodNum[nCntTxt].pos.z);
-		D3DXMatrixMultiply(&g_aFoodNum[nCntTxt].mtxWorld, &g_aFoodNum[nCntTxt].mtxWorld, &mtxTrans);
-
-		// ワールドマトリックスの設定
-		pDevice->SetTransform(D3DTS_WORLD, &g_aFoodNum[nCntTxt].mtxWorld);
 
 		// 頂点バッファをデータストリームに設定
 		pDevice->SetStreamSource(0, g_pVtxBuffFoodNum, 0, sizeof(VERTEX_3D));
@@ -213,11 +193,11 @@ void DrawFoodNum(void)
 		pDevice->SetFVF(FVF_VERTEX_3D);
 
 		// テクスチャの設定
-		pDevice->SetTexture(0, g_apTextureFoodNum[g_aFoodNum[nCntTxt].type]);
+		pDevice->SetTexture(0, g_apTextureFoodNum[g_aFoodNum[nCntNum].type]);
 
 		// ポリゴンの描画
 		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,
-			nCntTxt * MAX_VERTEX,		// 描画する最初の頂点インデックス
+			nCntNum * MAX_VERTEX,		// 描画する最初の頂点インデックス
 			MAX_POLYGON);		// 描画するプリミティブ数
 	}
 }
@@ -225,33 +205,57 @@ void DrawFoodNum(void)
 //=============================================================================
 // エサ上限の設定
 //=============================================================================
-void SetFoodNum(FOODNUMTYPE type, FOODNUMSTATE state, D3DXVECTOR3 pos)
+int SetFoodNum(FOODNUMTYPE type, FOODNUMSTATE state, D3DXVECTOR3 pos)
 {
-	for (int nCntTxt = 0; nCntTxt < FOODNUMTYPE_MAX; nCntTxt++)
-	{
-		if (g_aFoodNum[nCntTxt].bUse == false)
-		{// 使用してない
-			g_aFoodNum[nCntTxt].pos = pos;
-			g_aFoodNum[nCntTxt].type = type;
-			g_aFoodNum[nCntTxt].state = state;
+	int nCntNum = -1;
+	VERTEX_2D* pVtx;					// 頂点情報へのポインタ
 
-			g_aFoodNum[nCntTxt].nCounterState = 0;
-			g_aFoodNum[nCntTxt].bUse = true;
+	// 頂点バッファをロックし、頂点情報へのポインタを取得
+	g_pVtxBuffFoodNum->Lock(0, 0, (void**)&pVtx, 0);
+
+	for (nCntNum = 0; nCntNum < MAX_FOODNUM; nCntNum++)
+	{
+		if (g_aFoodNum[nCntNum].bUse == false)
+		{// 使用してない
+			g_aFoodNum[nCntNum].pos = pos;
+			g_aFoodNum[nCntNum].type = type;
+			g_aFoodNum[nCntNum].state = state;
+
+			g_aFoodNum[nCntNum].nCounterState = 0;
+			g_aFoodNum[nCntNum].bUse = true;
+
+			// 頂点座標の設定
+			pVtx[0].pos = D3DXVECTOR3(g_aFoodNum[nCntNum].pos.x - 200.0f, g_aFoodNum[nCntNum].pos.y + 100.0f, 0.0f);
+			pVtx[1].pos = D3DXVECTOR3(g_aFoodNum[nCntNum].pos.x + 200.0f, g_aFoodNum[nCntNum].pos.y + 100.0f, 0.0f);
+			pVtx[2].pos = D3DXVECTOR3(g_aFoodNum[nCntNum].pos.x - 200.0f, g_aFoodNum[nCntNum].pos.y - 100.0f, 0.0f);
+			pVtx[3].pos = D3DXVECTOR3(g_aFoodNum[nCntNum].pos.x + 200.0f, g_aFoodNum[nCntNum].pos.y - 100.0f, 0.0f);
 
 			break;
 		}
+
+		pVtx += MAX_VERTEX;
 	}
+
+	// 頂点バッファをアンロックする
+	g_pVtxBuffFoodNum->Unlock();
+
+	return nCntNum;
 }
 
 //=============================================================================
 // エサ上限の状態設定
 //=============================================================================
-void SetFoodNumState(FOODNUMTYPE type, FOODNUMSTATE state)
+void SetFoodNumState(int nIdx, FOODNUMSTATE state)
 {
-	if (g_aFoodNum[type].state == state)
+	if (nIdx < 0 || nIdx > MAX_FOODNUM)
+	{// 範囲外
+		return;
+	}
+
+	if (g_aFoodNum[nIdx].state == state)
 	{// 同じ状態は入れない
 		return;
 	}
 
-	g_aFoodNum[type].state = state;
+	g_aFoodNum[nIdx].state = state;
 }
