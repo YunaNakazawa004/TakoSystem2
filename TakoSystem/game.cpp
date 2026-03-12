@@ -30,6 +30,7 @@
 #include "time.h"
 #include "ui_gaugeicon.h"
 #include "ui_esa.h"
+#include "foodnum.h"
 #include "oceancurrents.h"
 #include "readygo.h"
 
@@ -159,6 +160,9 @@ void InitGame(void)
 	// エサUIの初期化処理
 	InitUiEsa(); 
 
+	// エサ上限の初期化処理
+	InitFoodNum();
+
 	// 時間の初期化処理
 	InitTime(); 
 
@@ -261,6 +265,9 @@ void UninitGame(void)
 	
 	// エサUIの終了処理
 	UninitUiEsa();
+
+	// エサ上限の終了処理
+	UninitFoodNum();
 
 	// 時間の終了処理
 	UninitTime(); 
@@ -413,6 +420,9 @@ void UpdateGame(void)
 			// エサUIの更新処理
 			UpdateUiEsa(); 
 
+			// エサ上限の更新処理
+			UpdateFoodNum();
+
 			// 時間の更新処理
 			UpdateTime(); 
 
@@ -553,6 +563,9 @@ void DrawGame(void)
 
 	// エサUIの描画処理
 	DrawUiEsa();
+
+	// エサ上限の描画処理
+	DrawFoodNum();
 
 	// 時間の描画処理
 	DrawTime();

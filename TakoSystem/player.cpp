@@ -27,6 +27,7 @@
 #include "spray.h"
 #include "bubble.h"
 #include "tutorialtxt.h"
+#include "foodnum.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -108,6 +109,7 @@ void InitPlayer(void)
 		pPlayer->nBlindCounter = 0;
 		memset(&pPlayer->nOrbitIdx, -1, sizeof(int[8]));
 		pPlayer->nFood = 0;
+		pPlayer->nFoodNumIdx = -1;
 		pPlayer->esaQueue.nTail = -1;
 		memset(&pPlayer->esaQueue.nData, -1, sizeof(int[MAX_QUEUE]));
 		pPlayer->Potstate = POTSTATE_NONE;
@@ -521,7 +523,7 @@ void UpdatePlayer(void)
 				pPlayer->fAutoY += 0.05f;
 				pPlayer->move.y += cosf(pPlayer->fAutoY) * 0.03f;
 			}
-			else if(pPlayer->bMove == true && pPlayer->mode == PLAYERMODE_TUTORIAL)
+			else if (pPlayer->bMove == true && pPlayer->mode == PLAYERMODE_TUTORIAL)
 			{// 動いているとき
 				SetTutorialTxtState(TUTTXTTYPE_MOVE, TUTTXTSTATE_CLEAR);
 			}
@@ -637,7 +639,7 @@ void UpdatePlayer(void)
 				if (pPlayer->mode == PLAYERMODE_TUTORIAL)
 				{// チュートリアルモード
 					SetTutorialTxtState(TUTTXTTYPE_RULE, TUTTXTSTATE_FADE);
-		
+
 					SetTutorialTxt(TUTTXTTYPE_POT, TUTTXTSTATE_DISP, D3DXVECTOR3(0.0f, 700.0f, 900.0f));
 					SetTutorialTxt(TUTTXTTYPE_ESA, TUTTXTSTATE_DISP, D3DXVECTOR3(700.0f, 400.0f, 700.0f));
 
@@ -693,7 +695,7 @@ void UpdatePlayer(void)
 				pPlayer->pos.y = 340.0f;
 			}
 
-			if (pPlayer->pos.y > *GetWaterSurf_Height() - (PLAYER_HEIGHT * 0.5f) && 
+			if (pPlayer->pos.y > *GetWaterSurf_Height() - (PLAYER_HEIGHT * 0.5f) &&
 				pPlayer->pos.y < *GetWaterSurf_Height() + (PLAYER_HEIGHT * 0.5f))
 			{// 水面付近				
 				if (pPlayer->bJump == false)
@@ -789,9 +791,56 @@ void UpdatePlayer(void)
 				CorrectAngle(&pPlayer->rot.x, pPlayer->rot.x);
 			}
 
-			if (pPlayer->nCounter % (ONE_SECOND * 50) == 0 && GetTime() != ONE_GAME)
+			if (pPlayer->nCounter % (ONE_SECOND * 50) == 0 && GetTime() != ONE_GAME && pPlayer->nCounter != 0)
 			{// 持てるエサの最大値が増える
 				pPlayer->nMaxFood++;
+				PlaySound(SOUND_SE_FOODNUMUP);
+
+				if (GetNumCamera() == 1 && nCntPlayer == 0)
+				{// 1人プレイの1P
+					SetFoodNum(FOODNUMTYPE_UP, FOODNUMSTATE_MOVE,
+						D3DXVECTOR3(640.0f, 800.0f, 0.0f), 100.0f, 50.0f);
+				}
+				else if (GetNumCamera() == 2 && nCntPlayer == 0)
+				{// 2人プレイの1P
+					SetFoodNum(FOODNUMTYPE_UP, FOODNUMSTATE_MOVE,
+						D3DXVECTOR3(320.0f, 800.0f, 0.0f), 100.0f, 50.0f);
+				}
+				else if (GetNumCamera() == 2 && nCntPlayer == 1)
+				{// 2人プレイの2P
+					SetFoodNum(FOODNUMTYPE_UP, FOODNUMSTATE_MOVE,
+						D3DXVECTOR3(960.0f, 800.0f, 0.0f), 100.0f, 50.0f);
+				}
+			}
+
+			if (pPlayer->nFood >= pPlayer->nMaxFood * PLAYER_TENTACLE)
+			{// 持てる数が満杯だったら
+				if (pPlayer->nFoodNumIdx == -1)
+				{// 設定してないとき
+					if (GetNumCamera() == 1 && nCntPlayer == 0)
+					{// 1人プレイの1P
+						pPlayer->nFoodNumIdx = SetFoodNum(FOODNUMTYPE_FULL, FOODNUMSTATE_DISP,
+							D3DXVECTOR3(640.0f, 620.0f, 0.0f), 100.0f, 50.0f);
+					}
+					else if (GetNumCamera() == 2 && nCntPlayer == 0)
+					{// 2人プレイの1P
+						pPlayer->nFoodNumIdx = SetFoodNum(FOODNUMTYPE_FULL, FOODNUMSTATE_DISP,
+							D3DXVECTOR3(320.0f, 620.0f, 0.0f), 100.0f, 50.0f);
+					}
+					else if (GetNumCamera() == 2 && nCntPlayer == 1)
+					{// 2人プレイの2P
+						pPlayer->nFoodNumIdx = SetFoodNum(FOODNUMTYPE_FULL, FOODNUMSTATE_DISP,
+							D3DXVECTOR3(960.0f, 620.0f, 0.0f), 100.0f, 50.0f);
+					}
+				}
+			}
+			else
+			{// まだ持てる場合
+				if (pPlayer->nFoodNumIdx != -1)
+				{// インデックスが存在する
+					SetFoodNumState(pPlayer->nFoodNumIdx, FOODNUMSTATE_NONE);
+					pPlayer->nFoodNumIdx = -1;
+				}
 			}
 
 			D3DXVECTOR3 dist;
@@ -1068,6 +1117,7 @@ void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType
 	pPlayer[nIdx].bUse = true;
 	pPlayer[nIdx].bBlind = false;
 	pPlayer[nIdx].nBlindCounter = 0;
+	pPlayer->nFoodNumIdx = -1;
 	pPlayer[nIdx].nFood = 0;
 	memset(&pPlayer[nIdx].esaQueue.nData, -1, sizeof(int[MAX_QUEUE]));
 	pPlayer[nIdx].Potstate = POTSTATE_NONE;

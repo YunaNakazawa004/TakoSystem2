@@ -10,6 +10,8 @@
 #include "light.h"
 #include "fade.h"
 #include "camera.h"
+#include "effect_3d.h"
+#include "particle_3d.h"
 
 #include "object.h"
 #include "meshcylinder.h"
@@ -226,6 +228,7 @@ void InitTitle(void)
 
 	// CPUの初期化処理
 	InitComputer();
+	SetRandomComputer(ALL_OCTO);
 
 	// メッシュシリンダーの初期化処理
 	InitMeshCylinder();	DebugADD();
@@ -247,6 +250,12 @@ void InitTitle(void)
 
 	// 配置物の初期化処理
 	InitObject("data\\objpos001.txt");	// 必ず最後(メッシュ後)に初期化する
+
+	// 3Dエフェクトの初期化処理
+	InitEffect3D();
+
+	// 3Dパーティクルの初期化処理
+	InitParticle3D();
 
 	// サウンドの再生
 	PlaySound(SOUND_BGM_TITLE);	
@@ -294,6 +303,12 @@ void UninitTitle(void)
 
 	// 配置物の終了処理
 	UninitObject();
+
+	// 3Dエフェクトの終了処理
+	UninitEffect3D();
+
+	// 3Dパーティクルの終了処理
+	UninitParticle3D();
 
 	// 水面の終了処理
 	UninitWaterSurf();
@@ -354,6 +369,12 @@ void UpdateTitle(void)
 
 	// 配置物の更新処理
 	UpdateObject();
+
+	// 3Dエフェクトの更新処理
+	UpdateEffect3D();
+
+	// 3Dパーティクルの更新処理
+	UpdateParticle3D();
 
 	// 水面の更新処理
 	UpdateWaterSurf();
@@ -637,6 +658,12 @@ void DrawTitle(void)
 
 	// 飛沫の描画処理
 	DrawSpray();
+
+	// 3Dエフェクトの描画処理
+	DrawEffect3D();
+
+	// 3Dパーティクルの描画処理
+	DrawParticle3D();
 
 	// メッシュオービットの描画処理
 	DrawMeshOrbit();
