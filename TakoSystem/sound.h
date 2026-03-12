@@ -43,6 +43,7 @@ typedef enum
 	SOUND_SE_STOLEN,					//盗まれた
 	SOUND_SE_INKED,						//視界悪化
 	SOUND_SE_CLEAR,						//クリア(チュートリアル)
+	SOUND_SE_FOODNUMUP,					//エサの上限が増える
 	SOUND_MAX,
 } SOUND_LABEL;
 

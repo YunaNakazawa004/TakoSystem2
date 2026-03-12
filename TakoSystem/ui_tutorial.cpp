@@ -17,7 +17,7 @@
 
 #define UITUTORIAL_GAUGE_SPEED		(6.0f)
 
-#define UITUTORIAL_GAUGE_POSY		(690.0f)
+#define UITUTORIAL_GAUGE_POSY		(670.0f)
 #define UITUTORIAL_GAUGE_SIZEX		(233.0f)
 #define UITUTORIAL_GAUGE_SIZEY		(26.0f)
 
@@ -92,7 +92,7 @@ UiTutorialPolygon_info g_aUiTutorialPolygonInfo[] =
 };
 
 //========================================================================
-// UIゲージアイコンの初期化処理
+// チュートリアルUIの初期化処理
 //========================================================================
 void InitUiTutorial(void)
 {
@@ -192,7 +192,7 @@ void InitUiTutorial(void)
 }
 
 //========================================================================
-// UIゲージアイコンの終了処理
+// チュートリアルUIの終了処理
 //========================================================================
 void UninitUiTutorial(void)
 {
@@ -215,7 +215,7 @@ void UninitUiTutorial(void)
 }
 
 //========================================================================
-// UIゲージアイコンの更新処理
+// チュートリアルUIの更新処理
 //========================================================================
 void UpdateUiTutorial(void)
 {
@@ -359,7 +359,7 @@ void UpdateUiTutorial(void)
 }
 
 //========================================================================
-// UIゲージアイコンの描画処理
+// チュートリアルUIの描画処理
 //========================================================================
 void DrawUiTutorial(void)
 {
@@ -421,7 +421,7 @@ void DrawUiTutorial(void)
 }
 
 //========================================================================
-// UIゲージアイコンの設定処理
+// チュートリアルUIの設定処理
 //========================================================================
 void SetUiTutorialPolygon(UI_TUTORIALTYPE type, UI_TUTORIALPOS posPosion, int nIdxTexture, bool bAlphaBrend,
 						  D3DXVECTOR3 pos, float fSizeWidth, float fSizeHeight, D3DXVECTOR2 texPos, D3DXVECTOR2 texSize, D3DXCOLOR col)

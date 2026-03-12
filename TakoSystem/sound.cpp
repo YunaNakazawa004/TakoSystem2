@@ -61,6 +61,7 @@ SOUNDINFO g_aSoundInfo[SOUND_MAX] =
 	{"data/SE/stolen.wav",0},				//盗まれた
 	{"data/SE/ink.wav",0},					//視界悪化
 	{"data/SE/clear.wav",0},				//クリア(チュートリアル)
+	{"data/SE/foodnumup.wav",0},			//エサの上限が増える
 };
 
 //=============================================================================

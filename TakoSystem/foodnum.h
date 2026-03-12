@@ -26,6 +26,8 @@ typedef enum
 {
 	FOODNUMSTATE_NONE = 0,		// 表示しない状態
 	FOODNUMSTATE_DISP,			// 表示してる状態
+	FOODNUMSTATE_MOVE,			// 動いている状態
+	FOODNUMSTATE_FADE,			// フェード状態
 	FOODNUMSTATE_MAX
 }FOODNUMSTATE;
 
@@ -36,8 +38,7 @@ void InitFoodNum(void);
 void UninitFoodNum(void);
 void UpdateFoodNum(void);
 void DrawFoodNum(void);
-void SetFoodNum(FOODNUMTYPE type, FOODNUMSTATE state, D3DXVECTOR3 pos);
-void SetFoodNumState(FOODNUMTYPE type, FOODNUMSTATE state);
-int GetFoodNumFromType(FOODNUMTYPE type);
+int SetFoodNum(FOODNUMTYPE type, FOODNUMSTATE state, D3DXVECTOR3 pos, float fWidth, float fHeight);
+void SetFoodNumState(int nIdx, FOODNUMSTATE state);
 
 #endif

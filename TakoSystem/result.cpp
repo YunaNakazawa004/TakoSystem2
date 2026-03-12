@@ -20,6 +20,7 @@
 #include "sound.h"
 
 #include "ui_result_getscore.h"
+#include "title.h"
 
 // マクロ関数 ==================================================
 
@@ -442,7 +443,7 @@ void UpdateResult(void)
 	
 
 #if _DEBUG	// デバッグ
-#if 0
+
 
 	// 演出スキップ
 	PrintDebugProc("\n●SKIP[Oキー]-------\n");
@@ -454,6 +455,7 @@ void UpdateResult(void)
 		SetFade(MODE_RANKING);
 	}
 
+#if 0
 	// 選択する対象の設定
 	if (GetKeyboardTrigger(DIK_1))
 	{
@@ -870,6 +872,19 @@ void SetResult(RESULTLAYTYPE type, int nNum)
 			setShiftPos.x = 0.0f;				// ずらす幅の位置を初期化
 			setShiftPos.y += fShiftHeight;		// ずらす高さを加算
 
+			if (GetPlayerSelect() == 2 && nCntPlayer == 1)
+			{
+				setCol = D3DXCOLOR(0.0f, 0.0f, 1.0f, 1.0f);
+			}
+			else if (nCntPlayer == 0)
+			{
+				setCol = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
+			}
+			else
+			{
+				setCol = g_aResultPolygonInfo[nIdx].col;
+			}
+
 			for (int nCntInfo = 0; nCntInfo < MAX_SET_RESULTINFO; nCntInfo++)
 			{// プレイヤーと数字の設定
 
@@ -911,7 +926,7 @@ void SetResult(RESULTLAYTYPE type, int nNum)
 																	   g_aResultPolygonInfo[nIdx].fSizeHeight, 
 																	   setTexPos,
 																	   g_aResultPolygonInfo[nIdx].texSize,
-																	   g_aResultPolygonInfo[nIdx].col);
+																	   setCol);
 
 				// ずらす量を設定
 				setShiftPos.x += g_aResultPolygonInfo[nIdx].fSizeWidth * 2.0f + g_resultPlayerInfo.fSpaceWidth;
