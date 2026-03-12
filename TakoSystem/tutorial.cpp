@@ -41,6 +41,7 @@
 #include "spotlight.h"
 #include "screen.h"
 #include "ui_tutorial.h"
+#include "foodnum.h"
 
 // マクロ定義
 #define	MAX_TUTORIAL	(2)	// タイトルで表示するテクスチャの最大数
@@ -155,6 +156,9 @@ void InitTutorial(void)
 
 	// エサUIの初期化処理
 	InitUiEsa();
+
+	// エサ上限の初期化処理
+	InitFoodNum();
 
 	// マップの初期化処理
 	InitMap();
@@ -338,6 +342,9 @@ void UninitTutorial(void)
 	// エサUIの終了処理
 	UninitUiEsa();
 
+	// エサ上限の終了処理
+	UninitFoodNum();
+
 	// マップの終了処理
 	UninitMap();
 
@@ -441,6 +448,9 @@ void UpdateTutorial(void)
 	// エサUIの更新処理
 	UpdateUiEsa();
 
+	// エサ上限の更新処理
+	UpdateFoodNum();
+
 	// マップの更新処理
 	UpdateMap();
 
@@ -539,6 +549,9 @@ void DrawTutorial(void)
 
 	// エサUIの描画処理
 	DrawUiEsa();
+
+	// エサ上限の描画処理
+	DrawFoodNum();
 
 	// マップの描画処理
 	DrawMap();
