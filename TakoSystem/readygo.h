@@ -14,10 +14,10 @@ void InitReady(void);
 void UninitReady(void);
 void UpdateReady(void);
 void DrawReady(void);
-void SetReady(int aIdx, int Idx);
+void SetReady(int nArrayIdx, int Idx,int nDelay);
 void ResetReady(void);
-void SetReadyMove(int aIdx, D3DXVECTOR3 startPos, D3DXVECTOR3 EndPos, int Speed, bool bOnInertia);
-bool MoveReady(int aIdxObj, int aIdxMove, bool bUse);
+void SetReadyMove(int nArrayIdx, D3DXVECTOR3 startPos, D3DXVECTOR3 EndPos, int Speed, bool bOnInertia);
+bool MoveReady(int nArrayIdxObj, int nArrayIdxMove, bool bUse);
 bool GetGameStart(void);
 
 #endif

@@ -16,5 +16,6 @@ void InitLight(void);
 void UninitLight(void);
 void UpdateLight(void);
 void SetLightColor(int nIdx, D3DXCOLOR col);
+D3DLIGHT9* GetLight(void);
 
 #endif
