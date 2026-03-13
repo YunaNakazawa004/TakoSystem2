@@ -47,6 +47,7 @@ SET_LAYOUT_RESULT	# 配置開始
 	SET_LAY_INIT
 		
 		SET_POLYGON2D	# 2Dポリゴン
+			TYPE	  = -1				# 種類
 			TEXIDX    = 0				# [0]背景
 			DRAWLEVEL = 0				# 描画順位
 			BLEND_A   = 0				# Aブレンド(0 しない, 1 する)
@@ -60,6 +61,7 @@ SET_LAYOUT_RESULT	# 配置開始
 		END_POLYGON2D
 		
 		SET_POLYGON2D	# 2Dポリゴン
+			TYPE	  = -1				# 種類
 			TEXIDX    = 6				# [1]RESULTテキストの背景
 			DRAWLEVEL = 0				# 描画順位
 			BLEND_A   = 1				# Aブレンド(0 しない, 1 する)
@@ -73,6 +75,7 @@ SET_LAYOUT_RESULT	# 配置開始
 		END_POLYGON2D
 		
 		SET_POLYGON2D	# 2Dポリゴン
+			TYPE	  = -1				# 種類
 			TEXIDX    = 2				# [2]RESULTテキスト
 			DRAWLEVEL = 0				# 描画順位
 			BLEND_A   = 0				# Aブレンド(0 しない, 1 する)
@@ -93,19 +96,21 @@ SET_LAYOUT_RESULT	# 配置開始
 	SET_LAY_STARTTALLTING
 		
 		SET_POLYGON2D	# 2Dポリゴン
+			TYPE	  = 0				# 種類
 			TEXIDX    = 6				# [6]集計開始の背景
 			DRAWLEVEL = 4				# 描画順位
 			BLEND_A   = 1				# Aブレンド(0 しない, 1 する)
 			POS     = 640.0 360.0 0.0	# 位置
 			ROT     = 0.0 0.0 0.0		# 角度
 			ADDROT  = 0.0 0.0 0.0		# 加算角度
-			SIZE    = 640.0 101.0		# 大きさ
+			SIZE    = 0.0 101.0		# 大きさ
 			COL     = 1.0 1.0 1.0 1.0	# 色
 			TEXPOS  = 0.0 0.0			# テクスチャ座標
 			TEXSIZE = 1.0 1.0			# テクスチャサイズ
 		END_POLYGON2D
 		
 		SET_POLYGON2D	# 2Dポリゴン
+			TYPE	  = 1				# 種類
 			TEXIDX    = 7				# [7]集計開始テキスト
 			DRAWLEVEL = 4				# 描画順位
 			BLEND_A   = 0				# Aブレンド(0 しない, 1 する)
@@ -126,6 +131,7 @@ SET_LAYOUT_RESULT	# 配置開始
 	SET_LAY_ESA
 		
 		SET_POLYGON2D	# 2Dポリゴン
+			TYPE	  = -1				# 種類
 			TEXIDX    = 3				# [3]放射線
 			DRAWLEVEL = 0				# 描画順位
 			BLEND_A   = 0				# Aブレンド(0 しない, 1 する)
@@ -139,6 +145,7 @@ SET_LAYOUT_RESULT	# 配置開始
 		END_POLYGON2D
 		
 		SET_POLYGON2D	# 2Dポリゴン
+			TYPE	  = -1				# 種類
 			TEXIDX    = 6				# [6]描画開始背景
 			DRAWLEVEL = 0				# 描画順位
 			BLEND_A   = 1				# Aブレンド(0 しない, 1 する)
@@ -152,6 +159,7 @@ SET_LAYOUT_RESULT	# 配置開始
 		END_POLYGON2D
 		
 		SET_POLYGON2D	# 2Dポリゴン
+			TYPE	  = -1				# 種類
 			TEXIDX    = 8				# [8]エサ名テキスト
 			DRAWLEVEL = 0				# 描画順位
 			BLEND_A   = 0				# Aブレンド(0 しない, 1 する)
@@ -173,7 +181,7 @@ SET_LAYOUT_RESULT	# 配置開始
 		SET_ESASET		# エサの配置情報
 			DRAWLEVEL = 2				# 描画順位
 			POS = 136.0 11.0 0.0		# 位置
-			ROTSPEED = 0.05				# 回転速度(y軸)
+			ROTSPEED = 0.03				# 回転速度(y軸)
 		END_ESASET
 		
 		SET_ESAANGLE	# エサの初期角度
@@ -198,6 +206,7 @@ SET_LAYOUT_RESULT	# 配置開始
 		SPACE_HEIGHT = 10.0		# 開ける間隔(高さ)
 		
 		SET_POLYGON2D	# 2Dポリゴン
+			TYPE      = -1				# 種類
 			TEXIDX    = 4				# [4]プレイヤーテキスト
 			DRAWLEVEL = 1				# 描画順位
 			BLEND_A   = 0				# Aブレンド(0 しない, 1 する)
@@ -211,6 +220,7 @@ SET_LAYOUT_RESULT	# 配置開始
 		END_POLYGON2D
 		
 		SET_POLYGON2D	# 2Dポリゴン
+			TYPE      = -1				# 種類
 			TEXIDX    = 5				# [5]数字
 			DRAWLEVEL = 1				# 描画順位
 			BLEND_A   = 0				# Aブレンド(0 しない, 1 する)

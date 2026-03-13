@@ -35,15 +35,17 @@
 #define SETPOS_PLAYER			(D3DXVECTOR3(-167.0f, 85.0f, 0.0f))
 #define SETARIA_PLAYER			(33.0f)
 
-#define WAIT_SETING				(60 * 3.5f)
+#define WAIT_SETING				(60 * 4.0f)
 
-#define WAIT_BIGIN				(60 * 2)
+#define WAIT_BIGIN				(60 * 1)
 
 // 構造体の定義 ================================================
 
 // リザルトポリゴンの情報
 typedef struct
 {
+	RESULTTYPE type;					 // 種類
+
 	int nIdxTexture;			// テクスチャインデックス
 
 	D3DXVECTOR3 pos;			// 位置
@@ -70,7 +72,8 @@ typedef struct
 // リザルトポリゴンの情報
 typedef struct
 {
-	RESULTLAYTYPE type;			// 種類
+	int Laytype;
+	int type;					 // 種類
 
 	int nIdxTexture;			// テクスチャインデックス
 	bool bAlphaBlend;			// aブレンドをするか
@@ -130,6 +133,7 @@ int g_aIdxResultPolygon[RESULTLAYTYPE_MAX][MAX_SET_RESULTINFO];		// リザルトポリ
 // リザルトの情報
 RESULTSTATE g_resultState = RESULTSTATE_BEGIN;						// リザルトの状態
 int g_nCounterResultState;											// リザルトの状態カウンター
+bool g_bCompleteResultState;										// リザルトの状態で完了しているか
 int g_nNowEsaType;													// 今表示しているエサの種類
 
 int g_aIdxUiResultGS[MAX_PLAYER + MAX_COMPUTER] = {};				// リザルトの獲得スコアUIのインデックス(プレイヤー分)
@@ -186,6 +190,7 @@ void InitResult(void)
 	// リザルトのポリゴン情報を初期化
 	for (nCntResult = 0; nCntResult < MAX_NUM_RESULT; nCntResult++)
 	{
+		g_aResultPolygon[nCntResult].type = RESULTTYPE_NULL;
 		g_aResultPolygon[nCntResult].nIdxTexture = -1;								// テクスチャインデックスを初期化
 		g_aResultPolygon[nCntResult].nDrowLevel = 0;								// 描画順位を初期化
 		g_aResultPolygon[nCntResult].bAlphaBlend = false;							// aブレンドをしない状態に設定
@@ -205,6 +210,7 @@ void InitResult(void)
 	// リザルトのポリゴンの設定情報を初期化
 	for (nCntResult = 0; nCntResult < MAX_NUM_RESULT; nCntResult++)
 	{
+		g_aResultPolygonInfo[nCntResult].Laytype = -1;								// レイアウトの種類を初期化
 		g_aResultPolygonInfo[nCntResult].type = RESULTLAYTYPE_NULL;					// レイアウトの種類を初期化
 		g_aResultPolygonInfo[nCntResult].nIdxTexture = -1;							// テクスチャインデックスを初期化
 		g_aResultPolygonInfo[nCntResult].nDrowLevel = 0;							// 描画順位を初期化
@@ -223,6 +229,7 @@ void InitResult(void)
 	// 状態
 	g_resultState = RESULTSTATE_BEGIN;	// リザルトの状態を開始状態に設定
 	g_nCounterResultState = WAIT_BIGIN;	// リザルトの状態カウンターを初期化
+	g_bCompleteResultState = false;		// 完了していない状態に設定
 	g_nSetingTime = 0;					// 表示時間を初期化
 
 	// テクスチャインデックス
@@ -435,6 +442,8 @@ void UpdateResult(void)
 	float fWidth, fHeight;
 	float fLength, fAngle;
 
+	int nTmpIdx = 0;
+
 	// ===============================================
 #if 0
 	SetFade(MODE_RANKING);
@@ -505,7 +514,11 @@ void UpdateResult(void)
 	{
 	case RESULTSTATE_BEGIN:
 
-		g_nCounterResultState--;	// リザルトの状態カウンタをデクリメント
+		if (g_bCompleteResultState == true)
+		{// 完了した状態の場合
+
+			g_nCounterResultState--;	// リザルトの状態カウンタをデクリメント
+		}
 
 		if (g_nCounterResultState <= 0)
 		{// 状態カウンタが0になった
@@ -514,6 +527,8 @@ void UpdateResult(void)
 			DelResult(RESULTLAYTYPE_STARTTALLTING);	// 集計開始レイアウト
 			
 			g_resultState = RESULTSTATE_SETING;		// 設定状態に設定
+
+			g_bCompleteResultState = false;		// 完了していない状態に設定
 		}
 	
 		break;
@@ -556,7 +571,8 @@ void UpdateResult(void)
 
 				g_resultState = RESULTSTATE_COMPLETE;	// 状態を完了した状態に設定
 			}
-	
+
+			g_bCompleteResultState = false;		// 完了していない状態に設定
 		}
 		
 
@@ -581,6 +597,8 @@ void UpdateResult(void)
 		
 		g_resultState = RESULTSTATE_WAIT;		// 状態を待機状態に設定
 		g_nCounterResultState = g_nSetingTime;	// 待機時間を設定
+
+		g_bCompleteResultState = false;		// 完了していない状態に設定
 		
 		break;
 	}
@@ -612,6 +630,56 @@ void UpdateResult(void)
 	{
 		if (g_aResultPolygon[nCntResult].bUse == true)
 		{// 使用している場合
+
+			switch (g_aResultPolygon[nCntResult].type)
+			{
+			case RESULTTYPE_ST_BACK:
+
+				g_aResultPolygon[nCntResult].fSizeWidth += 10.0f;	// 幅を加算
+
+				if (g_aResultPolygon[nCntResult].fSizeWidth <= SCREEN_WIDTH * 0.5f)
+				{// 幅が画面の幅より小さい場合
+
+					
+				}
+				else
+				{// 幅が画面の幅より大きい場合
+
+					g_aResultPolygon[nCntResult].col.a -= 0.03f;	// 透明度を減らす
+
+					if (g_aResultPolygon[nCntResult].col.a <= 0.0f)
+					{// 透明になった
+
+						g_aResultPolygon[nCntResult].col.a = 0.0f;	// 透明度を修正
+
+						g_bCompleteResultState = true;				// 完了した状態に設定
+					}					
+				}
+
+				nTmpIdx = nCntResult;
+
+				break;
+
+			case RESULTTYPE_ST_TEXT:
+
+				if (nTmpIdx != -1)
+				{// インデックスがある場合
+
+					if (g_aResultPolygon[nTmpIdx].fSizeWidth > SCREEN_WIDTH * 0.5f)
+					{// インデックスの幅が画面の幅より大きい場合
+
+						g_aResultPolygon[nCntResult].col.a -= 0.02f;	// 透明度を減らす
+
+						if (g_aResultPolygon[nCntResult].col.a <= 0.0f)
+						{// 透明になった
+
+							g_aResultPolygon[nCntResult].col.a = 0.0f;	// 透明度を修正
+						}
+					}
+				}
+
+				break;
+			}
 
 			// 加算角度を加算
 			g_aResultPolygon[nCntResult].rot += g_aResultPolygon[nCntResult].addRot;
@@ -812,7 +880,7 @@ void DrawResultPolygon(int nIdxPolygon)
 //========================================================================
 // リザルトの設定処理
 //========================================================================
-void SetResult(RESULTLAYTYPE type, int nNum)
+void SetResult(RESULTLAYTYPE Laytype, int nNum)
 {
 	// 変数宣言 ===========================================
 
@@ -830,24 +898,25 @@ void SetResult(RESULTLAYTYPE type, int nNum)
 
 	// ====================================================
 
-	switch (type)
+	switch (Laytype)
 	{
 	case RESULTLAYTYPE_INIT:
 	case RESULTLAYTYPE_STARTTALLTING:
 
 		for (int nCntInfo = 0; nCntInfo < MAX_SET_RESULTINFO; nCntInfo++)
 		{
-			if (g_aIdxResultInfo[type][nCntInfo] == -1)
+			if (g_aIdxResultInfo[Laytype][nCntInfo] == -1)
 			{// インデックスがない場合
 				
 				continue;
 			}
 
 			// インデックスを設定
-			nIdx = g_aIdxResultInfo[type][nCntInfo];
+			nIdx = g_aIdxResultInfo[Laytype][nCntInfo];
 
 			// リザルトポリゴンの設定
-			g_aIdxResultPolygon[type][nCntInfo] = SetResultPolygon(g_aResultPolygonInfo[nIdx].nIdxTexture,
+			g_aIdxResultPolygon[Laytype][nCntInfo] = SetResultPolygon((RESULTTYPE)g_aResultPolygonInfo[nIdx].type,
+																   g_aResultPolygonInfo[nIdx].nIdxTexture,
 																   g_aResultPolygonInfo[nIdx].bAlphaBlend,
 																   g_aResultPolygonInfo[nIdx].nDrowLevel,
 																   g_aResultPolygonInfo[nIdx].pos,
@@ -888,14 +957,14 @@ void SetResult(RESULTLAYTYPE type, int nNum)
 			for (int nCntInfo = 0; nCntInfo < MAX_SET_RESULTINFO; nCntInfo++)
 			{// プレイヤーと数字の設定
 
-				if (g_aIdxResultInfo[type][nCntInfo] == -1)
+				if (g_aIdxResultInfo[Laytype][nCntInfo] == -1)
 				{// インデックスがない場合
 
 					continue;
 				}
 
 				// インデックスを設定
-				nIdx = g_aIdxResultInfo[type][nCntInfo];
+				nIdx = g_aIdxResultInfo[Laytype][nCntInfo];
 
 				// 位置を設定
 				setPos.x = g_resultPlayerInfo.pos.x + setShiftPos.x + g_aResultPolygonInfo[nIdx].pos.x + g_aResultPolygonInfo[nIdx].fSizeWidth;
@@ -916,7 +985,8 @@ void SetResult(RESULTLAYTYPE type, int nNum)
 				}
 
 				// リザルトポリゴンの設定
-				g_aIdxResultPolygon[type][nCntInfo] = SetResultPolygon(g_aResultPolygonInfo[nIdx].nIdxTexture,
+				g_aIdxResultPolygon[Laytype][nCntInfo] = SetResultPolygon((RESULTTYPE)g_aResultPolygonInfo[nIdx].type,
+																	   g_aResultPolygonInfo[nIdx].nIdxTexture,
 																	   g_aResultPolygonInfo[nIdx].bAlphaBlend,
 																	   g_aResultPolygonInfo[nIdx].nDrowLevel,
 																	   setPos,
@@ -952,14 +1022,14 @@ void SetResult(RESULTLAYTYPE type, int nNum)
 		// インデックスのInfo分繰り返す
 		for (int nCntInfo = 0; nCntInfo < MAX_SET_RESULTINFO; nCntInfo++)
 		{
-			if (g_aIdxResultInfo[type][nCntInfo] == -1)
+			if (g_aIdxResultInfo[Laytype][nCntInfo] == -1)
 			{// インデックスがない場合
 
 				continue;
 			}
 
 			// インデックスを設定
-			nIdx = g_aIdxResultInfo[type][nCntInfo];
+			nIdx = g_aIdxResultInfo[Laytype][nCntInfo];
 
 			// テクスチャの座標を設定
 			if (g_aResultPolygonInfo[nIdx].texSize.y != 1.0f)
@@ -975,7 +1045,8 @@ void SetResult(RESULTLAYTYPE type, int nNum)
 			}
 
 			// リザルトポリゴンの設定
-			g_aIdxResultPolygon[type][nCntInfo] = SetResultPolygon(g_aResultPolygonInfo[nIdx].nIdxTexture,
+			g_aIdxResultPolygon[Laytype][nCntInfo] = SetResultPolygon((RESULTTYPE)g_aResultPolygonInfo[nIdx].type,
+																   g_aResultPolygonInfo[nIdx].nIdxTexture,
 																   g_aResultPolygonInfo[nIdx].bAlphaBlend,
 																   g_aResultPolygonInfo[nIdx].nDrowLevel,
 																   g_aResultPolygonInfo[nIdx].pos,
@@ -1003,7 +1074,7 @@ void SetResult(RESULTLAYTYPE type, int nNum)
 //========================================================================
 // リザルトの消去処理
 //========================================================================
-void DelResult(RESULTLAYTYPE type)
+void DelResult(RESULTLAYTYPE layType)
 {
 	// 変数宣言 ===========================================
 
@@ -1015,11 +1086,11 @@ void DelResult(RESULTLAYTYPE type)
 
 	for (int nCntInfo = 0; nCntInfo < MAX_SET_RESULTINFO; nCntInfo++)
 	{
-		if (g_aIdxResultPolygon[type][nCntInfo] != -1)
+		if (g_aIdxResultPolygon[layType][nCntInfo] != -1)
 		{// インデックスがある場合
 
 			// インデックスを設定
-			nIdx = g_aIdxResultPolygon[type][nCntInfo];
+			nIdx = g_aIdxResultPolygon[layType][nCntInfo];
 
 			// インデックスのポリゴンを削除
 			if (g_aResultPolygon[nIdx].bUse == true)
@@ -1037,7 +1108,7 @@ void DelResult(RESULTLAYTYPE type)
 		}
 	}
 
-	switch (type)
+	switch (layType)
 	{
 	case RESULTLAYTYPE_INIT:
 	case RESULTLAYTYPE_STARTTALLTING:
@@ -1063,7 +1134,7 @@ void DelResult(RESULTLAYTYPE type)
 //========================================================================
 // リザルトのポリゴンの設定処理
 //========================================================================
-int SetResultPolygon(int nIdxTexture, bool bAlphaBlend, int nDrowLevel, 
+int SetResultPolygon(RESULTTYPE type, int nIdxTexture, bool bAlphaBlend, int nDrowLevel,
 					 D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 addRot, float fSizeWidth, float fSizeHeight,
 					 D3DXVECTOR2 texPos, D3DXVECTOR2 texSize, D3DXCOLOR col)
 {
@@ -1073,6 +1144,7 @@ int SetResultPolygon(int nIdxTexture, bool bAlphaBlend, int nDrowLevel,
 		{// 使用していない場合
 
 			// ポリゴンの情報を設定
+			g_aResultPolygon[nCntResult].type = type;					// テクスチャインデックスを設定
 			g_aResultPolygon[nCntResult].nIdxTexture = nIdxTexture;		// テクスチャインデックスを設定
 			g_aResultPolygon[nCntResult].pos = pos;						// 位置を設定
 			g_aResultPolygon[nCntResult].rot = rot;						// 角度を設定
@@ -1324,7 +1396,7 @@ void SetLoadResult(const char* pFilename)
 							if		(strcmp(&aReadText[0], "END_POLYGON2D") == 0)
 							{// END_POLYGON2D
 
-								g_aResultPolygonInfo[nCntPolygonInfo].type = setLayType;
+								g_aResultPolygonInfo[nCntPolygonInfo].Laytype = setLayType;
 
 								g_aIdxResultInfo[setLayType][nCntIdxInfo] = nCntPolygonInfo;
 
@@ -1333,6 +1405,12 @@ void SetLoadResult(const char* pFilename)
 								nCntPolygonInfo++;		// リザルトポリゴンの総数をインクリメント
 
 								break;	// while文を抜ける
+							}
+							else if (strcmp(&aReadText[0], "TYPE") == 0)
+							{// TEXIDX
+
+								fscanf(pFile, "%[ =\t\n]", &aBlank[0]);												// 余分な情報を読み取る
+								fscanf(pFile, "%d", &g_aResultPolygonInfo[nCntPolygonInfo].type);		// テクスチャのインデックスを読み取る
 							}
 							else if (strcmp(&aReadText[0], "TEXIDX") == 0)
 							{// TEXIDX
