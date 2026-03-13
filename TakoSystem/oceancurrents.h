@@ -36,7 +36,8 @@ typedef enum
 	OCUITYPE_LAY_RIGHTWANING,	// [0]警告
 	
 	OCUITYPE_TIMER,			// [1]タイマー
-	
+	OCUITYPE_WANING,		//
+
 	OCUITYPE_MAX			// 最大値
 
 }OCUITYPE;

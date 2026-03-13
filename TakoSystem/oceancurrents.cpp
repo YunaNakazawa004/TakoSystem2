@@ -168,8 +168,16 @@ void InitOceanCurrents(void)
 		g_aOCPolygon[nCntOC].bUse = false;								// 使用していない状態に設定
 	}
 
+	if (GetMode() == MODE_TUTORIAL)
+	{// ゲームのモードがチュートリアルの場合
 
-	g_nCounterOceanCurrents = OCEANCURRECT_TIME_NOMAL - 60*15;							// カウンタの値を初期化
+		g_nCounterOceanCurrents = OCEANCURRECT_TIME_NOMAL - (60 * 15);		// カウンタの値をのこり15秒に設定
+	}
+	else
+	{
+		g_nCounterOceanCurrents = 0;										// カウンタの値を初期化
+	}
+
 	g_nMaxTimeOceanCurrents = OCEANCURRECT_TIME_NOMAL;
 	g_OceanCurrentsState = OCEANCURRENTSSTATE_NOMAL;		// 海流の状態を通常時に設定
 	g_fSpeedOceanCurrent = OCEANCURRECT_SPEED_NOMAL;		// 海流の速度を通常時の値で設定
@@ -276,6 +284,8 @@ void UpdateOceanCurrents(void)
 
 	float fNum = 0.0f;
 	float fPos = 0.0f;
+
+	D3DXVECTOR2 mulTexPos;
 
 	// =========================================================
 
@@ -442,6 +452,8 @@ void UpdateOceanCurrents(void)
 		{
 			nIdx = g_aOCLayout[nCntOC].aIdxOCPolygon[nCntOCPolygon];	// 設定するインデックスを代入
 
+			mulTexPos = D3DXVECTOR2(1.0f, 1.0f);
+
 			if (nIdx == -1)
 			{// 設定されてない場合
 
@@ -452,7 +464,8 @@ void UpdateOceanCurrents(void)
 			{
 			case OCUITYPE_TIMER:
 				
-				if (g_OceanCurrentsState == OCEANCURRENTSSTATE_WAIT)
+				if (g_OceanCurrentsState == OCEANCURRENTSSTATE_WAIT 
+				 || g_OceanCurrentsState == OCEANCURRENTSSTATE_WIRLPOOL)
 				{
 					nNum = g_nMaxTimeOceanCurrents - g_nCounterOceanCurrents;	// 残りの時間を求める
 
@@ -467,10 +480,20 @@ void UpdateOceanCurrents(void)
 				}
 
 				break;
+
+			case OCUITYPE_WANING:
+
+				if (g_OceanCurrentsState == OCEANCURRENTSSTATE_WIRLPOOL)
+				{
+					mulTexPos.x = 6.0f;	// 移動速度を1.5倍
+				}
+
+				break;
 			}
 
 			// テクスチャ座標を更新
-			g_aOCPolygon[nIdx].texPos += g_aOCPolygon[nIdx].addTexPos;
+			g_aOCPolygon[nIdx].texPos += D3DXVECTOR2(g_aOCPolygon[nIdx].addTexPos.x * mulTexPos.x, 
+													 g_aOCPolygon[nIdx].addTexPos.y * mulTexPos.y);
 
 			// テクスチャ座標の補正
 			if (g_aOCPolygon[nIdx].texPos.x >  1.0f) g_aOCPolygon[nIdx].texPos.x -= 1.0f;
