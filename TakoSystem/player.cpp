@@ -600,7 +600,7 @@ void UpdatePlayer(void)
 						{// êGéËÇ™í èÌèÛë‘ÇÃÇ∆Ç´ÇæÇØ
 							SetMotionPlayer(nCntPlayer, MOTIONTYPE_OCEANCULLENT, true, 20);
 
-							SetVibration(nCntPlayer, 10000, 10000, 1);
+							SetVibration(nCntPlayer, 10000, 10000, 1);	// âQí™Ç…ä™Ç´çûÇ‹ÇÍÇƒÇ¢ÇÈéûÇÃêUìÆ
 						}
 
 						if (pPlayer->nFood > 0 && pPlayer->nCounter % 15 == 0)
@@ -667,7 +667,7 @@ void UpdatePlayer(void)
 					SetSprayCircle(D3DXVECTOR3(pPlayer->pos.x, pPlayer->pos.y + 30.0f, pPlayer->pos.z),
 						D3DXCOLOR(0.9f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_CIRCLE);
 
-					SetVibration(nCntPlayer, 10000, 10000, 3);
+					SetVibration(nCntPlayer, 10000, 10000, 3);	// ínñ Ç…íÖínÇµÇΩéûÇÃêUìÆ
 				}
 
 				pPlayer->bLand = true;
@@ -682,7 +682,7 @@ void UpdatePlayer(void)
 				SetSprayFlow(D3DXVECTOR3(pPlayer->pos.x, pPlayer->pos.y + 20.0f, pPlayer->pos.z), pPlayer->rot,
 					D3DXCOLOR(0.9f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_FLOW);
 
-				SetVibration(nCntPlayer, 256, 0, 1);
+				SetVibration(nCntPlayer, 256, 0, 1);	// ínñ Çà⁄ìÆÇµÇƒÇ¢ÇÈéûÇÃêUìÆ
 				PlaySound(SOUND_SE_LANDING);
 			}
 
@@ -720,7 +720,7 @@ void UpdatePlayer(void)
 					SetSprayFlow(D3DXVECTOR3(pPlayer->pos.x, *GetWaterSurf_Height(), pPlayer->pos.z), pPlayer->rot,
 						WHITE_VTX, SPRAYTYPE_FLOW);
 
-					SetVibration(nCntPlayer, 1000, 3500, 2);
+					SetVibration(nCntPlayer, 1000, 3500, 2);	// êÖñ 
 				}
 			}
 			else
