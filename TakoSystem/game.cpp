@@ -85,7 +85,7 @@ void InitGame(void)
 	g_gameState = GAMESTATE_BEGIN;	// ゲームの状態を開始状態に設定
 
 	// メッシュオービットの初期化処理
-	InitMeshOrbit(); 
+	InitMeshOrbit();
 
 	// 泡の初期化
 	InitBubble();
@@ -94,29 +94,29 @@ void InitGame(void)
 	InitPlayer();
 	if (GetNumCamera() == 1)
 	{// 1人
-		SetPlayer(0, GetPlayerTutorial(0).pos, D3DXVECTOR3(0.0f, GetPlayerTutorial(0).rot.y, 0.0f), MOTIONTYPE_NEUTRAL, PLAYERMODE_GAME);
+		SetPlayer(0, GetPlayerTutorial(0).pos, D3DXVECTOR3(0.0f, GetPlayerTutorial(0).rot.y, 0.0f), MOTIONTYPE_NEUTRAL, PLAYERMODE_GAME, PLAYERSTATE_APPEAR);
 	}
 	else
 	{// 2人
-		SetPlayer(0, GetPlayerTutorial(0).pos, D3DXVECTOR3(0.0f, GetPlayerTutorial(0).rot.y, 0.0f), MOTIONTYPE_NEUTRAL, PLAYERMODE_GAME);
-		SetPlayer(1, GetPlayerTutorial(1).pos, D3DXVECTOR3(0.0f, GetPlayerTutorial(1).rot.y, 0.0f), MOTIONTYPE_NEUTRAL, PLAYERMODE_GAME);
+		SetPlayer(0, GetPlayerTutorial(0).pos, D3DXVECTOR3(0.0f, GetPlayerTutorial(0).rot.y, 0.0f), MOTIONTYPE_NEUTRAL, PLAYERMODE_GAME, PLAYERSTATE_APPEAR);
+		SetPlayer(1, GetPlayerTutorial(1).pos, D3DXVECTOR3(0.0f, GetPlayerTutorial(1).rot.y, 0.0f), MOTIONTYPE_NEUTRAL, PLAYERMODE_GAME, PLAYERSTATE_APPEAR);
 	}
 
 	// CPUの初期化処理
-	InitComputer(); 
+	InitComputer();
 	SetRandomComputer(ALL_OCTO - GetNumCamera());
 
 	// ステージの初期化処理
 	//InitStage();
 
 	// メッシュシリンダーの初期化処理
-	InitMeshCylinder(); 
+	InitMeshCylinder();
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(16.0f, 2.0f), D3DXVECTOR2(INCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, true, MESHCYLINDERTYPE_ROCK, MESHCYLINDERSTATE_NONE);
 	//SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(OUTCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), true, MESHCYLINDERTYPE_SEA);
 
 	// メッシュドームの初期化処理
 	InitMeshDome();
-	SetMeshDome(FIRST_POS, FIRST_POS, D3DXVECTOR2(16.0f,5.0f), OUTCYLINDER_RADIUS * 2.5f, true, MESHDOMETYPE_SKY);
+	SetMeshDome(FIRST_POS, FIRST_POS, D3DXVECTOR2(16.0f, 5.0f), OUTCYLINDER_RADIUS * 2.5f, true, MESHDOMETYPE_SKY);
 	SetMeshDome(D3DXVECTOR3(0.0f, CYLINDER_HEIGHT, 0.0f), FIRST_POS,
 		D3DXVECTOR2(16.0f, 5.0f), INCYLINDER_RADIUS, false, MESHDOMETYPE_ROCK);
 
@@ -124,7 +124,7 @@ void InitGame(void)
 	InitMeshField();
 
 	// メッシュリングの初期化処理
-	InitMeshRing(); 
+	InitMeshRing();
 
 	// 塵の初期化処理
 	InitSeaDust();
@@ -133,14 +133,14 @@ void InitGame(void)
 	InitSpray();
 
 	// 3Dエフェクトの初期化処理
-	InitEffect3D(); 
+	InitEffect3D();
 
 	// 3Dパーティクルの初期化処理
-	InitParticle3D(); 
+	InitParticle3D();
 
 	// 生き物の初期化処理
 	//InitFishes();
-	
+
 	// タコつぼの初期化処理
 	InitPot();
 
@@ -158,9 +158,8 @@ void InitGame(void)
 	InitSeaweed();
 
 	// レディの初期化処理
-	InitReady(); 
-	SetReadyMove(0, { 500.0f, 360.0f, 0.0f }, { 640.0f, 360.0f, 0.0f }, 18, false);
-	SetReady(0, 4);
+	InitReady();
+	SetReady(1, 0);
 
 	// クロスヘアの初期化処理
 	InitCrossHair();
@@ -169,16 +168,16 @@ void InitGame(void)
 	InitUiGaugeIcon();
 
 	// エサUIの初期化処理
-	InitUiEsa(); 
+	InitUiEsa();
 
 	// エサ上限の初期化処理
 	InitFoodNum();
 
 	// 時間の初期化処理
-	InitTime(); 
+	InitTime();
 
 	// 時間の初期設定
-	SetTime(DEFAULT_TIME); 
+	SetTime(DEFAULT_TIME);
 
 	// マップの初期化処理
 	InitMap();
@@ -273,7 +272,7 @@ void UninitGame(void)
 
 	// UIゲージアイコンの終了処理
 	UninitUiGaugeIcon();
-	
+
 	// エサUIの終了処理
 	UninitUiEsa();
 
@@ -281,7 +280,7 @@ void UninitGame(void)
 	UninitFoodNum();
 
 	// 時間の終了処理
-	UninitTime(); 
+	UninitTime();
 
 	// マップの終了処理
 	UninitMap();
@@ -313,11 +312,7 @@ void UpdateGame(void)
 	{
 	case GAMESTATE_BEGIN:		// 開始状態
 
-		if (FADE_NONE == GetFade())
-		{// フェードの状態が何もない状態の場合
-
-			g_gameState = GAMESTATE_NONE;
-		}
+		g_gameState = GAMESTATE_NONE;
 
 		break;
 
@@ -360,8 +355,11 @@ void UpdateGame(void)
 		return;	// 処理しない
 	}
 
-	// レディの更新処理
-	UpdateReady();
+	if (FADE_NONE == GetFade())
+	{// フェードの状態が何もない状態の場合
+		// レディの更新処理
+		UpdateReady();
+	}
 
 #ifdef _DEBUG
 #if 0
@@ -379,17 +377,17 @@ void UpdateGame(void)
 		// ポーズ状態の切り替え
 		if (GetKeyboardTrigger(DIK_P) || GetJoypadTrigger(0, JOYKEY_START) == true)
 		{// ポーズの確認
-			
+
 			if (g_bPause == true)
 			{// 現在のポーズの状態がポーズしている状態の場合
-				
+
 				PlaySound(SOUND_SE_DECISION);	// 決定音を鳴らす
 
 				PlaySound(SOUND_BGM_GAME);		// ゲームのBGMを鳴らす
 			}
 			else
 			{// 現在のポーズの状態がポーズしてない状態の場合
-				
+
 				PlaySound(SOUND_SE_MUD);		// 水の音を鳴らす
 
 				StopSound(SOUND_BGM_GAME);		// ゲームのBGMを止める
@@ -397,7 +395,7 @@ void UpdateGame(void)
 
 			// 現在のポーズの状態を切り替える
 			g_bPause = g_bPause ? false : true;
-			
+
 			// ポーズのリセット
 			ResetPause();
 		}
@@ -416,11 +414,8 @@ void UpdateGame(void)
 #if 1
 		if (bGameStart == true)
 		{
-			// CPUの更新処理
-			UpdateComputer(); 
-
 			// 水面の更新処理
-			UpdateWaterSurf(); 
+			UpdateWaterSurf();
 
 			// クロスヘアの更新処理
 			UpdateCrossHair();
@@ -429,20 +424,20 @@ void UpdateGame(void)
 			UpdateUiGaugeIcon();
 
 			// エサUIの更新処理
-			UpdateUiEsa(); 
+			UpdateUiEsa();
 
 			// エサ上限の更新処理
 			UpdateFoodNum();
 
 			// 時間の更新処理
-			UpdateTime(); 
-
-			// 海流の更新処理
-			UpdateOceanCurrents();
+			UpdateTime();
 		}
 
+		// CPUの更新処理
+		UpdateComputer();
+
 		// プレイヤーの更新処理
-		UpdatePlayer(); 
+		UpdatePlayer();
 
 		// ステージの更新処理
 		//UpdateStage();
@@ -457,13 +452,13 @@ void UpdateGame(void)
 		UpdateMeshCylinder();
 
 		// メッシュドームの更新処理
-		UpdateMeshDome(); 
+		UpdateMeshDome();
 
 		// メッシュフィールドの更新処理
 		UpdateMeshField();
 
 		// メッシュリングの更新処理
-		UpdateMeshRing(); 
+		UpdateMeshRing();
 
 		// 塵の更新処理
 		UpdateSeaDust();
@@ -472,7 +467,7 @@ void UpdateGame(void)
 		UpdateSpray();
 
 		// 3Dエフェクトの更新処理
-		UpdateEffect3D(); 
+		UpdateEffect3D();
 
 		// 3Dパーティクルの更新処理
 		UpdateParticle3D();
@@ -483,8 +478,11 @@ void UpdateGame(void)
 		// エサの更新処理
 		UpdateEsa();
 
+		// 海流の更新処理
+		UpdateOceanCurrents();
+
 		// マップの更新処理
-		UpdateMap(); 
+		UpdateMap();
 
 		// メッシュオービットの更新処理
 		UpdateMeshOrbit();
@@ -496,7 +494,7 @@ void UpdateGame(void)
 
 	// 画面の更新処理
 	UpdateScreen(); FileLogPass("screen");
-	
+
 	FileLogPass("e_game====");
 #endif
 }
@@ -507,7 +505,7 @@ void UpdateGame(void)
 void DrawGame(void)
 {
 	bool bGameStart = GetGameStart();
-	
+
 	// プレイヤーの描画処理
 	DrawPlayer();
 
@@ -526,7 +524,7 @@ void DrawGame(void)
 	// メッシュフィールドの描画処理
 	DrawMeshField();
 
-	
+
 
 	// メッシュシリンダーの描画処理
 	DrawMeshCylinder();
@@ -644,9 +642,9 @@ void GiveResultForGame(void)
 	Computer* pComputer = GetComputer();						// コンピューターの情報
 	int aHaveQueue[MAX_PLAYER + MAX_COMPUTER][MAX_QUEUE] = {};	// 全員のキュー情報
 	int nCntPlayer, nCntComputer;								// カウンター(人数)
-	
+
 	RESULT_TYPEPLAYER aTypePlayer[MAX_PLAYER + MAX_COMPUTER];	// プレイヤーの種類
-	
+
 	// ====================================================
 
 	memset(&aTypePlayer[0], RESULT_PLAYER_NONE, sizeof aTypePlayer);	// プレイヤーの種類を初期化

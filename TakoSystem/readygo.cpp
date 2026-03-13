@@ -269,6 +269,7 @@ void UpdateReady(void)
 
 				g_aReady[nCntReady].bDisp = false;
 
+				SetFade(MODE_GAME);
 			}
 			if (g_aReady[nCntReady].Idx == 2 && bfrag[99] == false)
 			{

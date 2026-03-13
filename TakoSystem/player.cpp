@@ -17,6 +17,7 @@
 #include "crosshair.h"
 #include "watersurf.h"
 #include "pot.h"
+#include "game.h"
 #include "camera.h"
 #include "input.h"
 #include "time.h"
@@ -155,11 +156,6 @@ void UninitPlayer(void)
 //=============================================================================
 void UpdatePlayer(void)
 {
-	if (GetGameStart() == false && GetMode() == MODE_GAME)
-	{// まだ始まらない
-		return;
-	}
-
 	Camera* pCamera = GetCamera();
 	Player* pPlayer = GetPlayer();
 
@@ -174,6 +170,11 @@ void UpdatePlayer(void)
 
 			pPlayer->posOld = pPlayer->pos;
 			pPlayer->posX = pPlayer->pos + (pCamera->posR - pCamera->posV);
+
+			if (GetGameStart() == true && GetMode() == MODE_GAME && pPlayer->state == PLAYERSTATE_APPEAR)
+			{// GOで操作可能にする
+				pPlayer->state = PLAYERSTATE_NORMAL;
+			}
 
 			switch (pPlayer->state)
 			{
@@ -614,7 +615,7 @@ void UpdatePlayer(void)
 				}
 			}
 
-			if (pPlayer->state != PLAYERSTATE_APPEAR && pPlayer->state != PLAYERSTATE_DASH)
+			if (pPlayer->state != PLAYERSTATE_DASH)
 			{// 出現状態以外
 				// 慣性
 				pPlayer->pos += pPlayer->move;
@@ -791,7 +792,8 @@ void UpdatePlayer(void)
 				CorrectAngle(&pPlayer->rot.x, pPlayer->rot.x);
 			}
 
-			if (pPlayer->mode != PLAYERMODE_TUTORIAL)
+			if ((pPlayer->mode != PLAYERMODE_TUTORIAL || pPlayer->state != PLAYERSTATE_APPEAR) &&
+				GetGameState() != GAMESTATE_LITTLETIME)
 			{// チュートリアルモードじゃないとき
 				if (pPlayer->nCounter % (ONE_SECOND * 50) == 0 && GetTime() != ONE_GAME && pPlayer->nCounter != 0)
 				{// 持てるエサの最大値が増える
@@ -867,6 +869,7 @@ void UpdatePlayer(void)
 			if (((nCntPlayer == 0 ? GetKeyboardPress(DIK_E) == true : (GetKeyboardPress(DIK_END) == true || GetKeyboardPress(DIK_NUMPAD1) == true)) ||
 				GetJoypadShoulder(nCntPlayer, JOYKEY_RIGHTTRIGGER, &nValue) == true)
 				&& pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG && pPlayer->state != PLAYERSTATE_DASH &&
+				pPlayer->state != PLAYERSTATE_APPEAR &&
 				pPlayer->nTentacleCooldown == 0 && pPlayer->pos.y < *GetWaterSurf_Height())
 			{// 触手伸ばしアクション
 				pPlayer->TentacleState = PLTENTACLESTATE_TENTACLELONG;
@@ -904,8 +907,9 @@ void UpdatePlayer(void)
 
 			if (((nCntPlayer == 0 ? GetKeyboardPress(DIK_Q) == true : GetKeyboardPress(DIK_RSHIFT) == true) ||
 				/*GetJoypadShoulder(nCntPlayer, JOYKEY_LEFTTRIGGER, &nValue) == true*/
-				GetJoypadPress(nCntPlayer, JOYKEY_RIGHT_SHOULDER) == true)
-				&& pPlayer->state != PLAYERSTATE_INK && pPlayer->nInkCooldown == 0 &&
+				GetJoypadPress(nCntPlayer, JOYKEY_RIGHT_SHOULDER) == true) &&
+				pPlayer->state != PLAYERSTATE_INK && pPlayer->state != PLAYERSTATE_APPEAR && 
+				pPlayer->nInkCooldown == 0 &&
 				pPlayer->pos.y < *GetWaterSurf_Height())
 			{// 墨吐きアクション
 				pPlayer->state = PLAYERSTATE_INK;
@@ -944,7 +948,8 @@ void UpdatePlayer(void)
 			if (CollisionEsa(&nIdx, false, &pPlayer->pos, pPlayer->fRadius) == true &&
 				pPlayer->nFood < pPlayer->nMaxFood * PLAYER_TENTACLE &&
 				(pPlayer->motionType != MOTIONTYPE_OCEANCULLENT || pPlayer->motionType != MOTIONTYPE_OCEANCULLENT) &&
-				GetOceanCurrents() != OCEANCURRENTSSTATE_WIRLPOOL)
+				GetOceanCurrents() != OCEANCURRENTSSTATE_WIRLPOOL && 
+				pPlayer->state != PLAYERSTATE_APPEAR)
 			{// エサと接触した
 				Esa* pEsa = GetEsa();
 
@@ -1097,7 +1102,7 @@ void DrawPlayer(void)
 //=============================================================================
 // プレイヤーの設定処理
 //=============================================================================
-void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType, PLAYERMODE mode)
+void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType, PLAYERMODE mode, PLAYERSTATE state)
 {
 	Player* pPlayer = GetPlayer();
 
@@ -1128,7 +1133,7 @@ void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType
 		pPlayer[nIdx].fAngleY = rot.y;
 	}
 
-	pPlayer[nIdx].state = PLAYERSTATE_NORMAL;
+	pPlayer[nIdx].state = state;
 	pPlayer[nIdx].mode = mode;
 	pPlayer[nIdx].TentacleState = PLTENTACLESTATE_NORMAL;
 	pPlayer[nIdx].nCounterState = 0;
@@ -1187,7 +1192,7 @@ void SetRandomPlayer(int nAmount)
 		pos.y = (float)(rand() % (int)(CYLINDER_HEIGHT * 0.6f)) + (CYLINDER_HEIGHT * 0.2f);
 		pos.z = cosf(fAngle) * ((INCYLINDER_RADIUS * 1.5f) + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - (INCYLINDER_RADIUS * 1.5f)) + 1))));
 
-		SetPlayer(nCntPlayer, pos, D3DXVECTOR3(0.0f, fAngle, 0.0f), MOTIONTYPE_NEUTRAL, PLAYERMODE_GAME);
+		SetPlayer(nCntPlayer, pos, D3DXVECTOR3(0.0f, fAngle, 0.0f), MOTIONTYPE_NEUTRAL, PLAYERMODE_GAME, PLAYERSTATE_APPEAR);
 	}
 }
 
