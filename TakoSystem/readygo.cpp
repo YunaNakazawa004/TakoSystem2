@@ -262,8 +262,8 @@ void UpdateReady(void)
 			{ // ”ñ•\Ž¦‚É‚µ‚ÄGO‚ð•\Ž¦
 
 				g_aReady[nCntReady].bDisp = false;
-				SetReady(1, 0);
 
+				SetFade(MODE_GAME);
 			}
 			if (g_aReady[nCntReady].Idx == 2 && bfrag[99] == false)
 			{

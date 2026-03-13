@@ -45,11 +45,15 @@
 
 // マクロ定義
 #define	MAX_TUTORIAL	(2)	// タイトルで表示するテクスチャの最大数
+#define	READY_COUNTER	(60 * 3)	// タイトルで表示するテクスチャの最大数
 
 // グローバル変数
 LPDIRECT3DTEXTURE9 g_pTextureTutorial[MAX_TUTORIAL] = {};	// テクスチャへのポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffTutorial = NULL;	// 頂点バッファへのポインタ
 Player_Tutorial g_aPlayerTutorial[MAX_PLAYER];
+bool g_bReady = false;
+bool g_bOceanCurrent = false;
+int g_nReadyCounter = 0;
 
 //===================================================================
 // チュートリアルの初期化処理
@@ -79,15 +83,19 @@ void InitTutorial(void)
 	InitPlayer();
 	if (GetPlayerSelect() == 1)
 	{// 1人
-		SetPlayer(0, D3DXVECTOR3(0.0f, 200.0f, -7500.0f), D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), MOTIONTYPE_NEUTRAL, PLAYERMODE_TUTORIAL);
+		SetPlayer(0, D3DXVECTOR3(0.0f, 200.0f, -7500.0f), D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), MOTIONTYPE_NEUTRAL, PLAYERMODE_TUTORIAL, PLAYERSTATE_NORMAL);
 	}
 	else
 	{// 2人
-		SetPlayer(0, D3DXVECTOR3(200.0f, 200.0f, -7500.0f), D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), MOTIONTYPE_NEUTRAL, PLAYERMODE_TUTORIAL);
-		SetPlayer(1, D3DXVECTOR3(-200.0f, 200.0f, -7500.0f), D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), MOTIONTYPE_NEUTRAL, PLAYERMODE_TUTORIAL);
+		SetPlayer(0, D3DXVECTOR3(200.0f, 200.0f, -7500.0f), D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), MOTIONTYPE_NEUTRAL, PLAYERMODE_TUTORIAL, PLAYERSTATE_NORMAL);
+		SetPlayer(1, D3DXVECTOR3(-200.0f, 200.0f, -7500.0f), D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), MOTIONTYPE_NEUTRAL, PLAYERMODE_TUTORIAL, PLAYERSTATE_NORMAL);
 	}
+
 	g_aPlayerTutorial[0].pos = FIRST_POS;
 	g_aPlayerTutorial[1].pos = FIRST_POS;
+	g_bReady = false;
+	g_bOceanCurrent = false;
+	g_nReadyCounter = 0;
 
 	// CPUの初期化処理
 	InitComputer();
@@ -468,15 +476,25 @@ void UpdateTutorial(void)
 
 	// 海流の更新処理
 	UpdateOceanCurrents();
+	if (GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL && g_bOceanCurrent == false)
+	{// 渦潮がきた
+		g_bOceanCurrent = true;
+	}
 
 	UpdateUiTutorial();
 
 	UpdateScreen();
 
+	if (g_bOceanCurrent == true && GetOceanCurrents() == OCEANCURRENTSSTATE_NOMAL)
+	{// カウンター加算
+		g_nReadyCounter++;
+	}
+
 	// フェード情報の取得
 	FADE pFade = GetFade();
 
-	if (GetSkipTutorial() == true && pFade == FADE_NONE)
+	if ((GetSkipTutorial() == true && pFade == FADE_NONE) ||
+		g_nReadyCounter > READY_COUNTER)
 	{// 次の画面に転移する条件(SKIP長押し)を満たした
 
 		Player* pPlayer = GetPlayer();
@@ -489,8 +507,19 @@ void UpdateTutorial(void)
 			}
 		}
 
+		if (g_bReady == false)
+		{// 一回だけ
+			SetReadyMove(0, { 500.0f, 360.0f, 0.0f }, { 640.0f, 360.0f, 0.0f }, 18, false);
+			SetReady(0, 2);
+
+			g_bReady = true;
+		}
+
+		g_nReadyCounter = 0;
+		g_bOceanCurrent = false;
+
 		// モード設定
-		SetFade(MODE_GAME);
+		//SetFade(MODE_GAME);
 	}
 }
 

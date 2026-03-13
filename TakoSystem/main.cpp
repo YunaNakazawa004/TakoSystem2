@@ -48,7 +48,7 @@ void Draw(void);
 //*****************************************************************************
 LPDIRECT3D9 g_pD3D = NULL;							// Direct3Dオブジェクトへのポインタ
 LPDIRECT3DDEVICE9 g_pD3DDevice = NULL;				// Direct3Dデバイスへのポインタ
-MODE g_mode = MODE_TUTORIAL;						// 現在のモード
+MODE g_mode = MODE_TITLE;						// 現在のモード
 int g_nCountFPS = 0;								// FPSカウンタ
 bool g_bWindowSize = TRUE;							// ウィンドウサイズ(TRUE : ウィンドウ FALSE : フルスクリーン)
 
@@ -636,6 +636,8 @@ void SetMode(MODE mode)
 		break;
 	}
 
+	g_mode = mode;			// モードを保存する
+
 	// 新しい画面(モード)の初期化処理
 	switch (mode)
 	{
@@ -669,8 +671,6 @@ void SetMode(MODE mode)
 
 		break;
 	}
-
-	g_mode = mode;			// モードを保存する
 #endif
 }
 
