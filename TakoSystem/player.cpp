@@ -585,7 +585,7 @@ void UpdatePlayer(void)
 
 			//PrintDebugProc("プレイヤーのmove ( %f %f %f )\n", pPlayer->move.x, pPlayer->move.y, pPlayer->move.z);
 
-			if (CollisionObjectArea(pPlayer->pos) == false)
+			if (CollisionObjectArea(pPlayer->pos) == false && pPlayer->pos.y <= *GetWaterSurf_Height() - (PLAYER_HEIGHT * 0.5f))
 			{// 安地外のときに渦潮
 
 				if (pPlayer->mode != PLAYERMODE_TUTORIAL)
@@ -1103,16 +1103,37 @@ void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType
 
 	pPlayer[nIdx].nIdx = nIdx;
 	pPlayer[nIdx].nCounter = 0;
-	pPlayer[nIdx].pos = pos;
-	pPlayer[nIdx].posOld = pos;
-	pPlayer[nIdx].rot = rot;
+
+	if (pos == FIRST_POS)
+	{// 初期座標の場合はランダムで決める
+		D3DXVECTOR3 posRand;
+		float fAngle = (D3DX_PI * 2.0f) * ((float)((nIdx) * (360.0f / GetNumCamera())) / 360.0f);
+
+		posRand.x = sinf(fAngle) * ((INCYLINDER_RADIUS * 1.5f) + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - (INCYLINDER_RADIUS * 1.5f)) + 1))));
+		posRand.y = (float)(rand() % (int)(CYLINDER_HEIGHT * 0.6f)) + (CYLINDER_HEIGHT * 0.2f);
+		posRand.z = cosf(fAngle) * ((INCYLINDER_RADIUS * 1.5f) + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - (INCYLINDER_RADIUS * 1.5f)) + 1))));
+
+		pPlayer[nIdx].pos = posRand;
+		pPlayer[nIdx].posOld = posRand;
+		pPlayer[nIdx].rot = D3DXVECTOR3(0.0f, fAngle, 0.0f);
+		pPlayer[nIdx].fAngleY = fAngle;
+
+		SetCameraPos(nIdx, FIRST_POS, FIRST_POS, D3DXVECTOR3(0.0f, fAngle + D3DX_PI, 0.0f), CAMERATYPE_PLAYER);
+	}
+	else
+	{// マップ内
+		pPlayer[nIdx].pos = pos;
+		pPlayer[nIdx].posOld = pos;
+		pPlayer[nIdx].rot = rot;
+		pPlayer[nIdx].fAngleY = rot.y;
+	}
+
 	pPlayer[nIdx].state = PLAYERSTATE_NORMAL;
 	pPlayer[nIdx].mode = mode;
 	pPlayer[nIdx].TentacleState = PLTENTACLESTATE_NORMAL;
 	pPlayer[nIdx].nCounterState = 0;
 	pPlayer[nIdx].fFogStart = (pPlayer[nIdx].pos.y * 0.4f) + FOGS_MIN;
 	pPlayer[nIdx].fFogEnd = (pPlayer[nIdx].pos.y * 1.1f) + FOGE_MIN;
-	pPlayer[nIdx].fAngleY = rot.y;
 	pPlayer[nIdx].bJump = true;
 	pPlayer[nIdx].bLand = false;
 	pPlayer[nIdx].bAct = false;

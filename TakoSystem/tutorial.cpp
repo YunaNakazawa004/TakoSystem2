@@ -17,7 +17,6 @@
 #include "meshfield.h"
 #include "meshring.h"
 #include "meshorbit.h"
-#include "player.h"
 #include "computer.h"
 #include "pot.h"
 #include "object.h"
@@ -35,6 +34,7 @@
 #include "particle_3d.h"
 #include "title.h"
 #include "tutorialtxt.h"
+#include "readygo.h"
 #include "spray.h"
 #include "seaweed.h"
 #include "bubble.h"
@@ -49,7 +49,7 @@
 // グローバル変数
 LPDIRECT3DTEXTURE9 g_pTextureTutorial[MAX_TUTORIAL] = {};	// テクスチャへのポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffTutorial = NULL;	// 頂点バッファへのポインタ
-D3DXVECTOR3 g_aPlayerPos[MAX_PLAYER];
+Player_Tutorial g_aPlayerTutorial[MAX_PLAYER];
 
 //===================================================================
 // チュートリアルの初期化処理
@@ -86,8 +86,8 @@ void InitTutorial(void)
 		SetPlayer(0, D3DXVECTOR3(200.0f, 200.0f, -7500.0f), D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), MOTIONTYPE_NEUTRAL, PLAYERMODE_TUTORIAL);
 		SetPlayer(1, D3DXVECTOR3(-200.0f, 200.0f, -7500.0f), D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), MOTIONTYPE_NEUTRAL, PLAYERMODE_TUTORIAL);
 	}
-	g_aPlayerPos[0] = FIRST_POS;
-	g_aPlayerPos[1] = FIRST_POS;
+	g_aPlayerTutorial[0].pos = FIRST_POS;
+	g_aPlayerTutorial[1].pos = FIRST_POS;
 
 	// CPUの初期化処理
 	InitComputer();
@@ -165,6 +165,9 @@ void InitTutorial(void)
 
 	// マップの初期化処理
 	InitMap();
+
+	// レディの初期化処理
+	InitReady();
 
 	// 海流の初期化処理
 	InitOceanCurrents();
@@ -351,6 +354,9 @@ void UninitTutorial(void)
 	// マップの終了処理
 	UninitMap();
 
+	// レディの終了処理
+	UninitReady();
+
 	// 海流の終了処理
 	UninitOceanCurrents();
 
@@ -457,6 +463,9 @@ void UpdateTutorial(void)
 	// マップの更新処理
 	UpdateMap();
 
+	// レディの更新処理
+	UpdateReady();
+
 	// 海流の更新処理
 	UpdateOceanCurrents();
 
@@ -475,7 +484,8 @@ void UpdateTutorial(void)
 		{
 			if (pPlayer->mode == PLAYERMODE_GAME)
 			{// マップ内に入っていたら
-				g_aPlayerPos[nCntPlayer] = pPlayer->pos;
+				g_aPlayerTutorial[nCntPlayer].pos = pPlayer->pos;
+				g_aPlayerTutorial[nCntPlayer].rot = pPlayer->rot;
 			}
 		}
 
@@ -575,6 +585,9 @@ void DrawTutorial(void)
 
 	DrawUiTutorial();
 
+	// レディの描画処理
+	DrawReady();
+
 	LPDIRECT3DDEVICE9 pDevice;	// デバイスへのポインタ
 
 	// デバイスの取得
@@ -599,7 +612,7 @@ void DrawTutorial(void)
 //===================================================================
 // チュートリアル終了時のプレイヤーの位置を取得
 //===================================================================
-D3DXVECTOR3 GetPlayerPos(int nIdx)
+Player_Tutorial GetPlayerTutorial(int nIdx)
 {
-	return g_aPlayerPos[nIdx];
+	return g_aPlayerTutorial[nIdx];
 }

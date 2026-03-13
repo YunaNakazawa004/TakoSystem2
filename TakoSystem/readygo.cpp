@@ -185,8 +185,6 @@ void InitReady(void)
 	g_pVtxBuffReady->Unlock();
 	
 	ResetReady();
-	SetReadyMove(0, { 500.0f, 360.0f, 0.0f }, { 640.0f, 360.0f, 0.0f }, 18, false);
-	SetReady(0, 4); 
 }
 
 //===========================================================================
