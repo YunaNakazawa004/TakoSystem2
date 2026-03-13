@@ -34,6 +34,7 @@ typedef struct
 	int Idx;				// 番号
 	int nCnt;				// カウント用
 	int nCnt2;				// カウント用
+	int nDelay;				// 表示までの時間
 	bool bMove;				// 動くか
 
 }Ready;
@@ -79,11 +80,12 @@ ReadyTexInfo g_aReadyTex[] =
 };
 
 Ready g_aReady[] =
-{ // POS,SIZE,Disp,TexIdx,Idx,Cnt2つ,
+{ // POS,SIZE,Disp,TexIdx,Idx,Cnt2つ,nDelay,bMove
 
 	{{ 640.0f, 360.0f, 0.0f },
 	{ 80.0f, 100.0f, 0.0f },
 	false,
+	0,
 	0,
 	0,
 	0,
@@ -97,12 +99,14 @@ Ready g_aReady[] =
 	0,
 	0,
 	0,
+	0,
 	false},
 
 	{{ 640.0f, 360.0f, 0.0f },
 	{ 100.0f, 100.0f, 0.0f },
 	false,
 	2,
+	0,
 	0,
 	0,
 	0,
@@ -238,7 +242,9 @@ void UpdateReady(void)
 
 	for (int nCntReady = 0; nCntReady < MAX_READY; nCntReady++)
 	{
-		if (g_aReady[nCntReady].Idx > -1)
+		g_aReady[nCntReady].nDelay--;
+
+		if (g_aReady[nCntReady].Idx > -1 && g_aReady[nCntReady].nDelay < 0)
 		{ // 状態カウンター
 
 			g_aReady[nCntReady].nCnt++;
@@ -287,9 +293,9 @@ void UpdateReady(void)
 		if (g_aReady[nCntReady].TexIdx == 2)
 		{ // TimeUpテクスチャなら
 
-			if (nTime < 0 && g_aReady[nCntReady].bDisp == false)
+			if (nTime < 0 && g_aReady[nCntReady].bDisp == false && GetMode() == MODE_GAME)
 			{
-				SetReady(2, 1);
+				SetReady(2, 1, 0);
 				PlaySound(SOUND_SE_TIMEUP);			// タイムアップ
 
 				bGameStart = false;
@@ -358,7 +364,7 @@ void DrawReady(void)
 		// テクスチャの設定
 		pDevice->SetTexture(0, g_apTextureReady[g_aReady[nCntReady].TexIdx]);
 
-		if (g_aReady[nCntReady].bDisp == true)
+		if (g_aReady[nCntReady].bDisp == true && g_aReady[nCntReady].nDelay < 0)
 		{
 			// ポリゴンの描画
 			pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,
@@ -371,12 +377,13 @@ void DrawReady(void)
 //=============================================================================
 // レディの設定
 //=============================================================================
-void SetReady(int aIdx,int Idx)
+void SetReady(int nArrayIdx,int Idx,int nDelay)
 {
-	if (aIdx < MAX_READY)
+	if (nArrayIdx < MAX_READY)
 	{
-		g_aReady[aIdx].Idx = Idx;
-		g_aReady[aIdx].bDisp = true;
+		g_aReady[nArrayIdx].Idx = Idx;
+		g_aReady[nArrayIdx].bDisp = true;
+		g_aReady[nArrayIdx].nDelay = 60 * nDelay;
 	}
 }
 
@@ -387,7 +394,7 @@ void ResetReady(void)
 {
 
 	g_aReady[0] =
-	{  // POS,SIZE,Disp,TexIdx,Idx,
+	{ // POS,SIZE,Disp,TexIdx,Idx,Cnt2つ,nDelay,bMove
 
 		{ 640.0f, 360.0f, 0.0f },
 		{ 80.0f, 100.0f, 0.0f },
@@ -396,11 +403,12 @@ void ResetReady(void)
 		0,
 		0,
 		0,
+		0,
 		true
 	};
 
 	g_aReady[1] =
-	{  // POS,SIZE,Disp,TexIdx,Idx,
+	{ // POS,SIZE,Disp,TexIdx,Idx,Cnt2つ,nDelay,bMove
 
 		{ 640.0f, 360.0f, 0.0f },
 		{ 500.0f, 100.0f, 0.0f },
@@ -409,16 +417,18 @@ void ResetReady(void)
 		0,
 		0,
 		0,
+		0,
 		false
 	};
 
 	g_aReady[2] =
-	{  // POS,SIZE,Disp,TexIdx,Idx,
+	{ // POS,SIZE,Disp,TexIdx,Idx,Cnt2つ,nDelay,bMovex,
 
 		{ 640.0f, 360.0f, 0.0f },
 		{ 100.0f, 100.0f, 0.0f },
 		false,
 		2,
+		0,
 		0,
 		0,
 		0,
@@ -429,18 +439,18 @@ void ResetReady(void)
 //=============================================================================
 // 移動パターンの設定
 //=============================================================================
-void SetReadyMove(int aIdx, D3DXVECTOR3 startPos, D3DXVECTOR3 EndPos, int Speed, bool bOnInertia)
+void SetReadyMove(int nArrayIdx, D3DXVECTOR3 startPos, D3DXVECTOR3 EndPos, int Speed, bool bOnInertia)
 {
-	g_aRM[aIdx].StartPos = startPos;
-	g_aRM[aIdx].EndPos = EndPos;
-	g_aRM[aIdx].Speed = Speed;
-	g_aRM[aIdx].bOnInertia = bOnInertia;
+	g_aRM[nArrayIdx].StartPos = startPos;
+	g_aRM[nArrayIdx].EndPos = EndPos;
+	g_aRM[nArrayIdx].Speed = Speed;
+	g_aRM[nArrayIdx].bOnInertia = bOnInertia;
 }
 
 //=============================================================================
 // 移動処理
 //=============================================================================
-bool MoveReady(int aIdxObj, int aIdxMove, bool bUse)
+bool MoveReady(int nArrayIdxObj, int nArrayIdxMove, bool bUse)
 {
 	// ローカル変数宣言 -----------------
 
@@ -452,28 +462,28 @@ bool MoveReady(int aIdxObj, int aIdxMove, bool bUse)
 	// 頂点バッファをロックし,頂点情報へのポインタを取得
 	g_pVtxBuffReady->Lock(0, 0, (void**)&pVtx, 0);
 
-	pVtx += aIdxObj * 4;
+	pVtx += nArrayIdxObj * 4;
 
 	if (bUse == true)
 	{
-		if (bMove[aIdxObj] == false)
+		if (bMove[nArrayIdxObj] == false)
 		{
-			g_aReady[aIdxObj].pos = { g_aRM[aIdxMove].StartPos.x,g_aRM[aIdxMove].StartPos.y,0.0f };
+			g_aReady[nArrayIdxObj].pos = { g_aRM[nArrayIdxMove].StartPos.x,g_aRM[nArrayIdxMove].StartPos.y,0.0f };
 
-			bMove[aIdxObj] = true;
-			g_aReady[aIdxObj].nCnt2 = 100;
+			bMove[nArrayIdxObj] = true;
+			g_aReady[nArrayIdxObj].nCnt2 = 100;
 		}
-		move = g_aRM[aIdxMove].EndPos - g_aRM[aIdxMove].StartPos;
+		move = g_aRM[nArrayIdxMove].EndPos - g_aRM[nArrayIdxMove].StartPos;
 
-		g_aReady[aIdxObj].pos += { move.x * (g_aRM[aIdxMove].Speed / 100.0f), move.y * (g_aRM[aIdxMove].Speed / 100.0f), 0.0f };
+		g_aReady[nArrayIdxObj].pos += { move.x * (g_aRM[nArrayIdxMove].Speed / 100.0f), move.y * (g_aRM[nArrayIdxMove].Speed / 100.0f), 0.0f };
 
-		g_aReady[aIdxObj].nCnt2 -= (int)g_aRM[aIdxMove].Speed;
+		g_aReady[nArrayIdxObj].nCnt2 -= (int)g_aRM[nArrayIdxMove].Speed;
 	}
-	if (g_aReady[aIdxObj].nCnt2 < 0)
+	if (g_aReady[nArrayIdxObj].nCnt2 < 0)
 	{
-		g_aReady[aIdxObj].pos = g_aRM[aIdxMove].EndPos;
-		bMove[aIdxObj] = false;
-		g_aReady[aIdxObj].nCnt2 = 0;
+		g_aReady[nArrayIdxObj].pos = g_aRM[nArrayIdxMove].EndPos;
+		bMove[nArrayIdxObj] = false;
+		g_aReady[nArrayIdxObj].nCnt2 = 0;
 
 		return true;
 	}
