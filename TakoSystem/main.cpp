@@ -53,6 +53,7 @@ int g_nCountFPS = 0;								// FPSカウンタ
 bool g_bWindowSize = TRUE;							// ウィンドウサイズ(TRUE : ウィンドウ FALSE : フルスクリーン)
 
 int g_nDebugCounter = 0;
+int g_nFPSUnder = 0;
 
 //=============================================================================
 // メイン関数
@@ -117,6 +118,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, LPSTR lpCmdLine
 	}
 
 	g_nDebugCounter = 0;	// デバッグカウンタを初期化
+	g_nFPSUnder = 0;		// FPS60未満になった回数を初期化
 
 	// 分解能を設定
 	timeBeginPeriod(1);
@@ -157,6 +159,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, LPSTR lpCmdLine
 				g_nCountFPS = (dwFrameCount * 1000) / (dwCurrentTime - dwFPSLastTime);
 				dwFPSLastTime = dwCurrentTime;			// FPSを測定した時刻を保存
 				dwFrameCount = 0;						// フレームカウントをクリア
+
+				if (g_nCountFPS < ONE_SECOND)
+				{// FPSが60未満
+					g_nFPSUnder++;
+				}
 			}
 
 			if ((dwCurrentTime - dwExecLastTime) >= (1000 / 60))
@@ -433,6 +440,7 @@ void Update(void)
 	UpdateDebugProc();
 	PrintDebugProc("FPS : %d\n", g_nCountFPS);
 	PrintDebugProc("DebugCounter : %d\n", g_nDebugCounter);
+	PrintDebugProc("FPS60未満 : %d\n", g_nFPSUnder);
 	
 	// キーボードの更新処理
 	UpdateKeyboard();

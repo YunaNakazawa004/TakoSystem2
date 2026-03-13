@@ -12,7 +12,7 @@
 // マクロ定義
 //*****************************************************************************
 #define MOVEMENT				(D3DXVECTOR3(0.5f, 0.5f, 0.5f))			// 移動量
-#define SEAWEED_HEIGHT			(80.0f)									// 海藻の高さ
+#define SEAWEED_HEIGHT			(160.0f)								// 海藻の高さ
 #define MAX_SEAWEED				(128)									// 海藻の最大量
 #define SEAWEED_DIST			(60.0f)									// 海藻が傾く距離
 
@@ -76,7 +76,7 @@ void InitSeaweed(void)
 	}
 
 	// ランダムな位置に設定
-	SetRandomSeaweed(60);
+	SetRandomSeaweed(35);
 }
 
 //=============================================================================
@@ -356,7 +356,7 @@ void SetRandomSeaweed(int nAmount)
 		pos.y = -20.0f;
 		pos.z = cosf(fAngle) * (OUTCYLINDER_RADIUS + (((float)(rand() % (int)((OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) / 2) + 1))));
 
-		int nLength = rand() % 10 + 5;
+		int nLength = rand() % 5 + 3;
 
 		SetSeaweed(pos, nLength);
 	}
