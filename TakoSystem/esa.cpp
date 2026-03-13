@@ -154,8 +154,19 @@ void InitEsa(bool bSet)
 		{// 配置する数だけ繰り返す
 
 			nSetType = rand() % g_nNumEsatype;	// ランダムで種類を設定
-			nSetActType = rand() % 2 + 1;		// 行動タイプを設定
 			
+			// 行動タイプを設定
+			if ((rand() % 100) < 30)
+			{// 値が30より小さい場合
+
+				nSetActType = ESA_ACTTYPE_LAND;		// 設定する種類を地面に設定
+			}
+			else
+			{// 値が30より大きい場合
+
+				nSetActType = ESA_ACTTYPE_SWIM;		// 設定する種類を泳ぐに設定
+			}
+
 			if (nSetActType == ESA_ACTTYPE_LAND)
 			{// エサの設定する行動種類が地面の場合
 

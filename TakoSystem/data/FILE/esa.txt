@@ -22,7 +22,7 @@ SET_ESADATA
 	
 	SET_ESA		# [1]ヤドカリ
 		TEXTURE	= data/TEXTURE/esa_tmp_texture/esa_tmp_hermitcrab.png	# テクスチャ
-		MODEL	= data/MODEL/esa/Yadokari001.x								# モデル
+		MODEL	= data/MODEL/esa/Yadokari002.x								# モデル
 		
 		SPEED		= 0.005		# 移動速度
 		HIT_RADIUS  = 10.0		# 当たり判定の大きさ
@@ -67,7 +67,7 @@ SET_ESADATA
 	
 	SET_ESA		# [6]タラバガニ
 		TEXTURE = data/TEXTURE/esa_tmp_texture/esa_tmp_taraba-crub.png		# テクスチャ
-		MODEL	= data/MODEL/esa/TarabaGani001.x                            # モデル
+		MODEL	= data/MODEL/esa/TarabaGani002.x                            # モデル
 		
 		SPEED		= 0.005		# 移動速度
 		HIT_RADIUS  = 10.0		# 当たり判定の大きさ
