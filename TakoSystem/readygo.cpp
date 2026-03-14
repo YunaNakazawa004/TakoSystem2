@@ -189,6 +189,7 @@ void InitReady(void)
 	g_pVtxBuffReady->Unlock();
 	
 	ResetReady();
+	SetReadyMove(0, { 500.0f, 360.0f, 0.0f }, { 640.0f, 360.0f, 0.0f }, 18, false);
 }
 
 //===========================================================================
@@ -242,85 +243,88 @@ void UpdateReady(void)
 
 	for (int nCntReady = 0; nCntReady < MAX_READY; nCntReady++)
 	{
-		g_aReady[nCntReady].nDelay--;
+		if (g_aReady[nCntReady].bDisp == true)
+		{
+			g_aReady[nCntReady].nDelay--;
 
-		if (g_aReady[nCntReady].Idx > -1 && g_aReady[nCntReady].nDelay < 0)
-		{ // 状態カウンター
+			if (g_aReady[nCntReady].Idx > -1 && g_aReady[nCntReady].nDelay < 0)
+			{ // 状態カウンター
 
-			g_aReady[nCntReady].nCnt++;
-		}
-
-		if (g_aReady[nCntReady].nCnt == 60 && g_aReady[nCntReady].Idx > -1)
-		{ // 数字をカウントダウン
-
-			g_aReady[nCntReady].Idx--;
-			g_aReady[nCntReady].nCnt = 0;
-			bfrag[nCntReady] = false;
-		}
-
-		if (g_aReady[nCntReady].TexIdx == 0 && g_aReady[nCntReady].Idx < 3)
-		{ // 数字テクスチャなら
-
-			// テクスチャ座標の設定
-			SetTexReady(g_aReady[nCntReady].Idx);
-
-			if (g_aReady[nCntReady].Idx == -1 && g_aReady[nCntReady].bDisp == true)
-			{ // 非表示にしてGOを表示
-
-				g_aReady[nCntReady].bDisp = false;
-
-				SetFade(MODE_GAME);
-			}
-			if (g_aReady[nCntReady].Idx == 2 && bfrag[99] == false)
-			{
-				// サウンドの再生
-				PlaySound(SOUND_SE_COUNTDOWN);
-				bfrag[99] = true;
+				g_aReady[nCntReady].nCnt++;
 			}
 
-		}
-		if (g_aReady[nCntReady].TexIdx == 1)
-		{ // GOテクスチャなら
+			if (g_aReady[nCntReady].nCnt == 60 && g_aReady[nCntReady].Idx > -1)
+			{ // 数字をカウントダウン
 
-			if (g_aReady[nCntReady].Idx == -1 && g_aReady[nCntReady].bDisp == true)
-			{ // 非表示にしてゲームスタート
-
-				g_aReady[nCntReady].bDisp = false;
-
-				bGameStart = true;
-			}
-		}
-		if (g_aReady[nCntReady].TexIdx == 2)
-		{ // TimeUpテクスチャなら
-
-			if (nTime < 0 && g_aReady[nCntReady].bDisp == false && GetMode() == MODE_GAME)
-			{
-				SetReady(2, 1, 0);
-				PlaySound(SOUND_SE_TIMEUP);			// タイムアップ
-
-				bGameStart = false;
+				g_aReady[nCntReady].Idx--;
+				g_aReady[nCntReady].nCnt = 0;
+				bfrag[nCntReady] = false;
 			}
 
-			// 時間切れ
-			if (nTime < 0 && bGameStart == false && g_aReady[nCntReady].Idx == -1)
-			{
-				// ゲームの状態を設定
-				if (GetGameState() != GAMESTATE_END)
+			if (g_aReady[nCntReady].TexIdx == 0 && g_aReady[nCntReady].Idx < 3)
+			{ // 数字テクスチャなら
+
+				// テクスチャ座標の設定
+				SetTexReady(g_aReady[nCntReady].Idx);
+
+				if (g_aReady[nCntReady].Idx == -1 && g_aReady[nCntReady].bDisp == true)
+				{ // 非表示にしてGOを表示
+
+					g_aReady[nCntReady].bDisp = false;
+
+					SetFade(MODE_GAME);
+				}
+				if (g_aReady[nCntReady].Idx == 2 && bfrag[99] == false)
 				{
-					SetGameState(GAMESTATE_TIMEOVER);	// 時間切れ状態に設定
+					// サウンドの再生
+					PlaySound(SOUND_SE_COUNTDOWN);
+					bfrag[99] = true;
+				}
+
+			}
+			if (g_aReady[nCntReady].TexIdx == 1)
+			{ // GOテクスチャなら
+
+				if (g_aReady[nCntReady].Idx == -1 && g_aReady[nCntReady].bDisp == true)
+				{ // 非表示にしてゲームスタート
+
+					g_aReady[nCntReady].bDisp = false;
+
+					bGameStart = true;
+				}
+			}
+			if (g_aReady[nCntReady].TexIdx == 2)
+			{ // TimeUpテクスチャなら
+
+				if (nTime < 0 && g_aReady[nCntReady].bDisp == false && GetMode() == MODE_GAME)
+				{
+					SetReady(2, 1, 0);
+					PlaySound(SOUND_SE_TIMEUP);			// タイムアップ
+
+					bGameStart = false;
+				}
+
+				// 時間切れ
+				if (nTime < 0 && bGameStart == false && g_aReady[nCntReady].Idx == -1)
+				{
+					// ゲームの状態を設定
+					if (GetGameState() != GAMESTATE_END)
+					{
+						SetGameState(GAMESTATE_TIMEOVER);	// 時間切れ状態に設定
+					}
+
 				}
 
 			}
 
-		}
+			if (bfrag[nCntReady] == false && g_aReady[nCntReady].bMove == true)
+			{  // 動くOBJなら
 
-		if (bfrag[nCntReady] == false && g_aReady[nCntReady].bMove == true)
-		{  // 動くOBJなら
+				if (MoveReady(0, 0, true) == true)
+				{ // 最終地点についたら
 
-			if (MoveReady(0, 0, true) == true)
-			{ // 最終地点についたら
-
-				bfrag[nCntReady] = true;
+					bfrag[nCntReady] = true;
+				}
 			}
 		}
 	}
@@ -377,13 +381,15 @@ void DrawReady(void)
 //=============================================================================
 // レディの設定
 //=============================================================================
-void SetReady(int nArrayIdx,int Idx,int nDelay)
+void SetReady(int nArrayIdx,		// 呼び出すオブジェクト
+			  int Idx,				// 表示する時間(カウントダウンを除く)
+			  int nDelay)			// 表示するまでの時間
 {
 	if (nArrayIdx < MAX_READY)
 	{
 		g_aReady[nArrayIdx].Idx = Idx;
 		g_aReady[nArrayIdx].bDisp = true;
-		g_aReady[nArrayIdx].nDelay = 60 * nDelay;
+		g_aReady[nArrayIdx].nDelay = nDelay;
 	}
 }
 

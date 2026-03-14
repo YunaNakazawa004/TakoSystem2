@@ -509,7 +509,6 @@ void UpdateTutorial(void)
 
 		if (g_bReady == false)
 		{// ˆê‰ñ‚¾‚¯
-			SetReadyMove(0, { 500.0f, 360.0f, 0.0f }, { 640.0f, 360.0f, 0.0f }, 18, false);
 			SetReady(0, 2, 0);
 
 			g_bReady = true;
