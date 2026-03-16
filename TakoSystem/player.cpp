@@ -491,7 +491,7 @@ void UpdatePlayer(void)
 				pPlayer->vecX.y += (0.0f - pPlayer->vecX.y) * DASH_MOVE;
 				pPlayer->vecX.z += (0.0f - pPlayer->vecX.z) * DASH_MOVE;
 
-				SetVibration(nCntPlayer, 1000, 1300, 1);
+				SetVibration(nCntPlayer, 1000, 1300, 10);
 
 				if (pPlayer->vecX.x < MOVE_ERROR && pPlayer->vecX.x > -MOVE_ERROR &&
 					pPlayer->vecX.y < MOVE_ERROR && pPlayer->vecX.y > -MOVE_ERROR &&
@@ -667,7 +667,7 @@ void UpdatePlayer(void)
 					SetSprayCircle(D3DXVECTOR3(pPlayer->pos.x, pPlayer->pos.y + 30.0f, pPlayer->pos.z),
 						D3DXCOLOR(0.9f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_CIRCLE);
 
-					SetVibration(nCntPlayer, 10000, 10000, 3);	// ’n–Ê‚É’…’n‚µ‚½Žž‚ÌU“®
+					SetVibration(nCntPlayer, 10000, 10000, 30);	// ’n–Ê‚É’…’n‚µ‚½Žž‚ÌU“®
 				}
 
 				pPlayer->bLand = true;
