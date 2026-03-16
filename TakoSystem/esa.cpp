@@ -362,11 +362,11 @@ void DrawEsa(void)
 				if (g_aEsa[nCntEsa].nOrbitIdx == -1)
 				{// èââÒ
 					g_aEsa[nCntEsa].nOrbitIdx = SetMeshOrbit(FIRST_POS, D3DXVECTOR3(FIRST_POS.x, FIRST_POS.y + 10.0f, FIRST_POS.z),
-						WHITE_VTX, CYAN_VTX, &g_aEsa[nCntEsa].mtxWorld);
+						D3DXCOLOR(0.0f, 0.0f, 1.0f, 0.5f), D3DXCOLOR(0.0f, 1.0f, 1.0f, 0.5f), &g_aEsa[nCntEsa].mtxWorld);
 				}
 
 				SetMeshOrbitPos(g_aEsa[nCntEsa].nOrbitIdx, FIRST_POS, D3DXVECTOR3(FIRST_POS.x, FIRST_POS.y + 10.0f, FIRST_POS.z),
-					WHITE_VTX, CYAN_VTX, &g_aEsa[nCntEsa].mtxWorld);
+					D3DXCOLOR(0.0f, 0.0f, 1.0f, 0.5f), D3DXCOLOR(0.0f, 1.0f, 1.0f, 0.5f), &g_aEsa[nCntEsa].mtxWorld);
 			}
 		}
 	}

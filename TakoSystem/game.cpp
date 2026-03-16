@@ -162,7 +162,7 @@ void InitGame(void)
 
 	// レディの初期化処理
 	InitReady();
-	SetReady(1, 0, 3);
+	SetReady(1, 0,90);
 
 	// クロスヘアの初期化処理
 	InitCrossHair();
