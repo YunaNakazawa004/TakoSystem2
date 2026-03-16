@@ -243,7 +243,7 @@ void UpdateReady(void)
 
 	for (int nCntReady = 0; nCntReady < MAX_READY; nCntReady++)
 	{
-		if (g_aReady[nCntReady].bDisp == true)
+		//if (g_aReady[nCntReady].bDisp == true)
 		{
 			g_aReady[nCntReady].nDelay--;
 
