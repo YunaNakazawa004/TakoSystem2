@@ -491,7 +491,7 @@ void UpdatePlayer(void)
 				pPlayer->vecX.y += (0.0f - pPlayer->vecX.y) * DASH_MOVE;
 				pPlayer->vecX.z += (0.0f - pPlayer->vecX.z) * DASH_MOVE;
 
-				SetVibration(nCntPlayer, 1000, 1300, 1);	// 触手で高速移動している時の振動
+				SetVibration(nCntPlayer, 1000, 1300, 10);
 
 				if (pPlayer->vecX.x < MOVE_ERROR && pPlayer->vecX.x > -MOVE_ERROR &&
 					pPlayer->vecX.y < MOVE_ERROR && pPlayer->vecX.y > -MOVE_ERROR &&
@@ -667,7 +667,7 @@ void UpdatePlayer(void)
 					SetSprayCircle(D3DXVECTOR3(pPlayer->pos.x, pPlayer->pos.y + 30.0f, pPlayer->pos.z),
 						D3DXCOLOR(0.9f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_CIRCLE);
 
-					SetVibration(nCntPlayer, 10000, 10000, 3);	// 地面に着地した時の振動
+					SetVibration(nCntPlayer, 10000, 10000, 30);	// 地面に着地した時の振動
 				}
 
 				pPlayer->bLand = true;
@@ -908,7 +908,7 @@ void UpdatePlayer(void)
 			if (((nCntPlayer == 0 ? GetKeyboardPress(DIK_Q) == true : GetKeyboardPress(DIK_RSHIFT) == true) ||
 				/*GetJoypadShoulder(nCntPlayer, JOYKEY_LEFTTRIGGER, &nValue) == true*/
 				GetJoypadPress(nCntPlayer, JOYKEY_RIGHT_SHOULDER) == true) &&
-				pPlayer->state != PLAYERSTATE_INK && pPlayer->state != PLAYERSTATE_APPEAR &&
+				pPlayer->state != PLAYERSTATE_INK && pPlayer->state != PLAYERSTATE_APPEAR && 
 				pPlayer->nInkCooldown == 0 &&
 				pPlayer->pos.y < *GetWaterSurf_Height())
 			{// 墨吐きアクション
@@ -948,7 +948,7 @@ void UpdatePlayer(void)
 			if (CollisionEsa(&nIdx, false, &pPlayer->pos, pPlayer->fRadius) == true &&
 				pPlayer->nFood < pPlayer->nMaxFood * PLAYER_TENTACLE &&
 				(pPlayer->motionType != MOTIONTYPE_OCEANCULLENT || pPlayer->motionType != MOTIONTYPE_OCEANCULLENT) &&
-				GetOceanCurrents() != OCEANCURRENTSSTATE_WIRLPOOL &&
+				GetOceanCurrents() != OCEANCURRENTSSTATE_WIRLPOOL && 
 				pPlayer->state != PLAYERSTATE_APPEAR)
 			{// エサと接触した
 				Esa* pEsa = GetEsa();

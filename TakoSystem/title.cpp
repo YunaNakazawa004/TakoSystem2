@@ -51,7 +51,7 @@ const char* c_apFilenameTitle[] =
 	"data/TEXTURE/START004.png",
 	"data/TEXTURE/number000.png",
 	"data/TEXTURE/WPO.png",
-	"data/TEXTURE/CURSOR.png",
+	"data/TEXTURE/CURSOR000.png",
 	"data/TEXTURE/SELECT_CURSOR.png",
 	"data/TEXTURE/SELECT_CURSOR.png",
 };
