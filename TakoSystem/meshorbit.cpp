@@ -11,7 +11,7 @@
 // マクロ定義
 //*****************************************************************************
 #define MAX_MESHORBIT			(128)									// メッシュオービットの数
-#define ALPHA_MINUS				(0.03f)									// アルファ値の減衰
+#define ALPHA_MINUS				(0.015f)								// アルファ値の減衰
 
 //*****************************************************************************
 // グローバル変数
@@ -284,7 +284,7 @@ void DrawMeshOrbit(void)
 			pDevice->SetFVF(FVF_VERTEX_3D);
 
 			// テクスチャの設定
-			pDevice->SetTexture(0, g_apTextureMeshOrbit[0]);
+			pDevice->SetTexture(0, NULL);
 
 			// ポリゴンの描画
 			pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, MAX_ORBIT_VTX, 0, MAX_ORBIT_VTX - 2);

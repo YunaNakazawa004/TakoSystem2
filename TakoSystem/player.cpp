@@ -908,7 +908,7 @@ void UpdatePlayer(void)
 			if (((nCntPlayer == 0 ? GetKeyboardPress(DIK_Q) == true : GetKeyboardPress(DIK_RSHIFT) == true) ||
 				/*GetJoypadShoulder(nCntPlayer, JOYKEY_LEFTTRIGGER, &nValue) == true*/
 				GetJoypadPress(nCntPlayer, JOYKEY_RIGHT_SHOULDER) == true) &&
-				pPlayer->state != PLAYERSTATE_INK && pPlayer->state != PLAYERSTATE_APPEAR && 
+				pPlayer->state != PLAYERSTATE_INK && pPlayer->state != PLAYERSTATE_APPEAR &&
 				pPlayer->nInkCooldown == 0 &&
 				pPlayer->pos.y < *GetWaterSurf_Height())
 			{// –n“f‚«ƒAƒNƒVƒ‡ƒ“
@@ -948,7 +948,7 @@ void UpdatePlayer(void)
 			if (CollisionEsa(&nIdx, false, &pPlayer->pos, pPlayer->fRadius) == true &&
 				pPlayer->nFood < pPlayer->nMaxFood * PLAYER_TENTACLE &&
 				(pPlayer->motionType != MOTIONTYPE_OCEANCULLENT || pPlayer->motionType != MOTIONTYPE_OCEANCULLENT) &&
-				GetOceanCurrents() != OCEANCURRENTSSTATE_WIRLPOOL && 
+				GetOceanCurrents() != OCEANCURRENTSSTATE_WIRLPOOL &&
 				pPlayer->state != PLAYERSTATE_APPEAR)
 			{// ƒGƒT‚ÆÚG‚µ‚½
 				Esa* pEsa = GetEsa();
@@ -1088,12 +1088,12 @@ void DrawPlayer(void)
 				{// ‰‰ñ
 					pPlayer->nOrbitIdx[nCntTent] = SetMeshOrbit(D3DXVECTOR3(pPlayer->aModel[(nCntTent + 1) * 4].posOff.x, pPlayer->aModel[(nCntTent + 1) * 4].posOff.y, pPlayer->aModel[(nCntTent + 1) * 4].posOff.z),
 						D3DXVECTOR3(pPlayer->aModel[(nCntTent + 1) * 4].posOff.x, pPlayer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pPlayer->aModel[(nCntTent + 1) * 4].posOff.z),
-						WHITE_VTX, CYAN_VTX, &pPlayer->aModel[(nCntTent + 1) * 4].mtxWorld);
+						D3DXCOLOR(0.0f, 0.0f, 1.0f, 0.5f), D3DXCOLOR(0.0f, 1.0f, 1.0f, 0.5f), &pPlayer->aModel[(nCntTent + 1) * 4].mtxWorld);
 				}
 
 				SetMeshOrbitPos(pPlayer->nOrbitIdx[nCntTent], D3DXVECTOR3(pPlayer->aModel[(nCntTent + 1) * 4].posOff.x, pPlayer->aModel[(nCntTent + 1) * 4].posOff.y, pPlayer->aModel[(nCntTent + 1) * 4].posOff.z),
 					D3DXVECTOR3(pPlayer->aModel[(nCntTent + 1) * 4].posOff.x, pPlayer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pPlayer->aModel[(nCntTent + 1) * 4].posOff.z),
-					WHITE_VTX, CYAN_VTX, &pPlayer->aModel[(nCntTent + 1) * 4].mtxWorld);
+					D3DXCOLOR(0.0f, 0.0f, 1.0f, 0.5f), D3DXCOLOR(0.0f, 1.0f, 1.0f, 0.5f), &pPlayer->aModel[(nCntTent + 1) * 4].mtxWorld);
 			}
 		}
 	}
