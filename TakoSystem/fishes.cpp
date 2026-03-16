@@ -280,6 +280,7 @@ void DrawFishes(void)
 	{
 		if (pFishes->bUse == true)
 		{// 使用しているとき
+
 			// ワールドマトリックスの初期化
 			D3DXMatrixIdentity(&pFishes->mtxWorld);
 
@@ -296,7 +297,6 @@ void DrawFishes(void)
 
 			// 現在のマテリアルを取得
 			pDevice->GetMaterial(&matDef);
-
 
 			// 全モデル(パーツ)の描画
 			for (int nCntModel = 0; nCntModel < pFishes->nNumModel; nCntModel++)
@@ -338,14 +338,37 @@ void DrawFishes(void)
 
 				for (int nCntMat = 0; nCntMat < (int)pFishesModel[pFishes->nModelIdx].aModel_Info[nCntModel].dwNumMat; nCntMat++)
 				{
-					// マテリアルの設定
-					pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
+					if (pFishes->nType == FISHESTYPE_COMPUTER)
+					{
+						// 色保存用
+						D3DXCOLOR MatCol = pMat->MatD3D.Diffuse;
 
-					// テクスチャの設定
-					pDevice->SetTexture(0, pFishesModel[pFishes->nModelIdx].aModel_Info[nCntModel].apTexture[nCntMat]);
+						// コンピュータの色を変更
+						pMat->MatD3D.Diffuse = D3DXCOLOR(0.5f, 0.2f, 0.2f, 1.0f);
 
-					// モデルパーツの描画
-					pFishesModel[pFishes->nModelIdx].aModel_Info[nCntModel].pMesh->DrawSubset(nCntMat);
+						// マテリアルの設定
+						pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
+
+						// 色を戻す
+						pMat->MatD3D.Diffuse = MatCol;
+
+						// テクスチャの設定
+						pDevice->SetTexture(0, pFishesModel[pFishes->nModelIdx].aModel_Info[nCntModel].apTexture[nCntMat]);
+
+						// モデルパーツの描画
+						pFishesModel[pFishes->nModelIdx].aModel_Info[nCntModel].pMesh->DrawSubset(nCntMat);
+					}
+					else
+					{
+						// マテリアルの設定
+						pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
+
+						// テクスチャの設定
+						pDevice->SetTexture(0, pFishesModel[pFishes->nModelIdx].aModel_Info[nCntModel].apTexture[nCntMat]);
+
+						// モデルパーツの描画
+						pFishesModel[pFishes->nModelIdx].aModel_Info[nCntModel].pMesh->DrawSubset(nCntMat);
+					}
 				}
 			}
 
@@ -414,7 +437,7 @@ Fishes_Model* GetFishesModel(void)
 //=============================================================================
 // 生き物の設定処理
 //=============================================================================
-void SetFishes(int ModelIdx, int nNumSet, bool bMove, D3DXVECTOR3 pos, D3DXVECTOR3 rot)
+void SetFishes(int ModelIdx, int nNumSet, bool bMove, D3DXVECTOR3 pos, D3DXVECTOR3 rot,int nType)
 {
 	// ローカル変数宣言
 	Fishes* pFishes = GetFishes();
@@ -434,9 +457,10 @@ void SetFishes(int ModelIdx, int nNumSet, bool bMove, D3DXVECTOR3 pos, D3DXVECTO
 			pFishes->bUse = true;
 			pFishes->nModelIdx = ModelIdx;
 			pFishes->bMoving = bMove;
-
 			pFishes->pos = pos;
 			pFishes->rot = rot;
+			pFishes->nType = nType;
+
 			pFishes->bLoopMotion = pFishesModel[ModelIdx].aMotionInfo->bLoop;		// ループするかどうか
 			pFishes->fRadius = pFishesModel[ModelIdx].fRadius;						// 半径
 			pFishes->fHeight = pFishesModel[ModelIdx].fHeight;						// 高さ

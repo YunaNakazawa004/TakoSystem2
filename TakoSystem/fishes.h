@@ -33,6 +33,15 @@ typedef enum
 	FISHESSTATE_MAX
 }FISHESSTATE;
 
+// 生き物の種類 -------------------------
+
+typedef enum
+{
+	FISHESTYPE_PLAYER = 0,						// プレイヤー
+	FISHESTYPE_COMPUTER,						// コンピューター
+	FISHESTYPE_MAX
+}FISHESTYPE;
+
 //=======================================
 // 構造体の定義
 //=======================================
@@ -47,6 +56,7 @@ typedef struct
 	D3DXVECTOR3 move;							// 移動量
 	D3DXVECTOR3 rot;							// 向き
 	float fAngle;								// 向きの最終地点
+	int nType;									// 種類
 	int MoveTime;								// 移動時間
 	int StopTime;								// 停止時間
 	int nMoveCnt;								// 移動カウント
@@ -123,7 +133,7 @@ void DrawFishes(void);
 void CollisionFishes(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, float fWidth, float fDepth);
 Fishes* GetFishes(void);
 Fishes_Model* GetFishesModel(void);
-void SetFishes(int ModelIdx, int nNumSet, bool bMove, D3DXVECTOR3 pos, D3DXVECTOR3 rot);
+void SetFishes(int ModelIdx, int nNumSet, bool bMove, D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nType);
 void LoadFishes(void);
 void UpdateMotionFishes(void);
 void SetMotionFishes(int nIdx, MOTIONTYPE motionType, bool bBlendMotion, int nFrameBlend);

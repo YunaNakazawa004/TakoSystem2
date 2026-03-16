@@ -52,6 +52,8 @@
 
 #include "game.h"
 
+#include"debugproc.h"
+
 // グローバル変数
 LPDIRECT3DTEXTURE9 g_pTextureGame = NULL;	// テクスチャへのポインタ
 LPDIRECT3DVERTEXBUFFER9 g_pVtxBuffGame = NULL;	// 頂点バッファへのポインタ
@@ -159,7 +161,7 @@ void InitGame(void)
 
 	// レディの初期化処理
 	InitReady();
-	SetReady(1, 0);
+	SetReady(1, 0,90);
 
 	// クロスヘアの初期化処理
 	InitCrossHair();
@@ -495,7 +497,10 @@ void UpdateGame(void)
 	// 画面の更新処理
 	UpdateScreen(); FileLogPass("screen");
 
-	FileLogPass("e_game====");
+	//FileLogPass("e_game====");
+
+
+	PrintDebugProc("\nGAMESTART %s", (bGameStart == true) ? "TRUE" : "FALSE");
 #endif
 }
 
