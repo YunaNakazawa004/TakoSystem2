@@ -148,6 +148,9 @@
     <ClCompile Include="foodnum.cpp">
       <Filter>cppファイル</Filter>
     </ClCompile>
+    <ClCompile Include="ui_esawindow.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h">
@@ -295,6 +298,9 @@
       <Filter>hファイル</Filter>
     </ClInclude>
     <ClInclude Include="foodnum.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_esawindow.h">
       <Filter>hファイル</Filter>
     </ClInclude>
   </ItemGroup>

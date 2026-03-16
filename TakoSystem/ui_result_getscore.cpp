@@ -106,6 +106,9 @@ UiResultGS g_aResultGS[MAX_PLAYER + MAX_COMPUTER];							// リザルトの獲得スコア
 int g_nNumResultGS;	// 設定数
 int g_nEndResultGS;	// 集計完了数
 
+UIRESULTGS_STATE g_uiResultGSState;
+bool g_bSet;
+
 // テクスチャファイル情報
 const char* c_apFilenameResultGS[] =
 {
@@ -189,6 +192,9 @@ void InitUiResultGetScore(void)
 
 	g_nNumResultGS = 0;		// 
 	g_nEndResultGS = 0;		// 
+
+	g_uiResultGSState = UIRESULTGS_STATE_BIGIN;
+	g_bSet = false;
 
 	// 頂点バッファの生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4 * MAX_NUM_RESULTGS,
@@ -349,33 +355,36 @@ void UpdateUiResultGetScore(void)
 			continue;
 		}
 
-		// スコアの値の更新
-		if (g_aResultGS[nCntUiResultGS].nUseTimer > 0)
-		{
-			g_aResultGS[nCntUiResultGS].nUseTimer--;
+		if (g_uiResultGSState == UIRESULTGS_STATE_END)
+		{// 獲得スコアの状態が終了数集計の状態の場合
 
-			if (g_aResultGS[nCntUiResultGS].nUseTimer == 0)
+			// スコアの値の更新
+			if (g_aResultGS[nCntUiResultGS].nUseTimer > 0)
 			{
-				if (g_aResultGS[nCntUiResultGS].nNowHave < g_aResultGS[nCntUiResultGS].nMaxHave)
-				{// 今のスコアが低い場合
+				g_aResultGS[nCntUiResultGS].nUseTimer--;
 
-					g_aResultGS[nCntUiResultGS].nNowHave++;		// 今のスコアをインクリメント
+				if (g_aResultGS[nCntUiResultGS].nUseTimer == 0)
+				{
+					if (g_aResultGS[nCntUiResultGS].nNowHave < g_aResultGS[nCntUiResultGS].nMaxHave)
+					{// 今のスコアが低い場合
 
-					// エサの種類別のSEを鳴らす
-					EsaPlaySE(GetNowEsaTypeResult());
+						g_aResultGS[nCntUiResultGS].nNowHave++;		// 今のスコアをインクリメント
+
+						// エサの種類別のSEを鳴らす
+						EsaPlaySE(GetNowEsaTypeResult());
 
 
-					if (g_aResultGS[nCntUiResultGS].nNowHave == g_aResultGS[nCntUiResultGS].nMaxHave)
-					{// 目標のスコアと同じになった
+						if (g_aResultGS[nCntUiResultGS].nNowHave == g_aResultGS[nCntUiResultGS].nMaxHave)
+						{// 目標のスコアと同じになった
 
-						g_nEndResultGS++;	// 集計完了数をインクリメント
+							g_nEndResultGS++;	// 集計完了数をインクリメント
+						}
 					}
-				}
 
-				g_aResultGS[nCntUiResultGS].nUseTimer = WAIT_UIRESULTSG;
+					g_aResultGS[nCntUiResultGS].nUseTimer = WAIT_UIRESULTSG;
+				}
 			}
 		}
-		
 			
 		// 桁数を求める
 		nDigit = CalcNumDigit(g_aResultGS[nCntUiResultGS].nNowHave);
@@ -393,6 +402,27 @@ void UpdateUiResultGetScore(void)
 			{// インデックスがない場合
 
 				continue;	// 処理の始めに戻る
+			}
+
+			switch (g_aResultGSPolygon[nIdx].type)
+			{
+			case UI_RESULTGSPOLYGONTYPE_BG:
+
+				if (g_uiResultGSState == UIRESULTGS_STATE_BIGIN)
+				{
+					if (g_aResultGSPolygon[nIdx].fSizeWLeft <= g_aResultGSPolygon[nIdx].fSizeWidth)
+					{
+						g_aResultGSPolygon[nIdx].fSizeWLeft += 20.0f;
+
+						if (g_aResultGSPolygon[nIdx].fSizeWLeft >= g_aResultGSPolygon[nIdx].fSizeWidth)
+						{// 超えた場合
+
+							g_nEndResultGS++;
+						}
+					}
+				}
+
+				break;
 			}
 
 			// 頂点の更新
@@ -431,6 +461,12 @@ void UpdateUiResultGetScore(void)
 			UpdateVtxUiResultGetScore(nCntUiResultGS, nIdx);
 		}
 	}
+
+	if (GetResultState() == RESULTSTATE_WAIT && GetCompletGetScore(UIRESULTGS_STATE_BIGIN))
+	{
+		g_uiResultGSState = UIRESULTGS_STATE_END;
+		g_nEndResultGS = 0;
+	}
 }
 
 //========================================================================
@@ -462,11 +498,20 @@ void UpdateVtxUiResultGetScore(int nIdxP,int nIdxC)
 	pVtx += (nIdxC * 4);	// 頂点バッファをインデックス分進める
 
 	// 頂点座標の設定
-	pVtx[0].pos = D3DXVECTOR3(setPos.x		   , setPos.y - fHeight, 0.0f);
-	pVtx[1].pos = D3DXVECTOR3(setPos.x + fWidth, setPos.y - fHeight, 0.0f);
-	pVtx[2].pos = D3DXVECTOR3(setPos.x		   , setPos.y + fHeight, 0.0f);
-	pVtx[3].pos = D3DXVECTOR3(setPos.x + fWidth, setPos.y + fHeight, 0.0f);
-
+	if (g_aResultGSPolygon[nIdxC].type == UI_RESULTGSPOLYGONTYPE_BG)
+	{
+		pVtx[0].pos = D3DXVECTOR3(setPos.x + fWidth - g_aResultGSPolygon[nIdxC].fSizeWLeft, setPos.y - fHeight, 0.0f);
+		pVtx[1].pos = D3DXVECTOR3(setPos.x + fWidth - g_aResultGSPolygon[nIdxC].fSizeWRight, setPos.y - fHeight, 0.0f);
+		pVtx[2].pos = D3DXVECTOR3(setPos.x + fWidth - g_aResultGSPolygon[nIdxC].fSizeWLeft, setPos.y + fHeight, 0.0f);
+		pVtx[3].pos = D3DXVECTOR3(setPos.x + fWidth - g_aResultGSPolygon[nIdxC].fSizeWRight, setPos.y + fHeight, 0.0f);
+	}
+	else
+	{ 
+		pVtx[0].pos = D3DXVECTOR3(setPos.x		   , setPos.y - fHeight, 0.0f);
+		pVtx[1].pos = D3DXVECTOR3(setPos.x + fWidth, setPos.y - fHeight, 0.0f);
+		pVtx[2].pos = D3DXVECTOR3(setPos.x		   , setPos.y + fHeight, 0.0f);
+		pVtx[3].pos = D3DXVECTOR3(setPos.x + fWidth, setPos.y + fHeight, 0.0f);
+	}
 	// 頂点カラーの設定
 	pVtx[0].col = g_aResultGS[nIdxP].col;
 	pVtx[1].col = g_aResultGS[nIdxP].col;
@@ -805,6 +850,8 @@ void DelUiResultGetScore(int nIdx)
 		g_aResultGS[nIdx].bUse = false;	// 使用していない状態に設定
 	}
 
+	g_uiResultGSState = UIRESULTGS_STATE_BIGIN;
+
 	g_nNumResultGS = 0;
 	g_nEndResultGS = 0;
 }
@@ -870,9 +917,9 @@ void CalcDigit(int nNum, int nDigit, int *pTexU, int nSizeTexU)
 //========================================================================
 // 完了したかを返す処理
 //========================================================================
-bool GetCompletGetScore(void)
+bool GetCompletGetScore(UIRESULTGS_STATE state)
 {
-	if (g_nNumResultGS == g_nEndResultGS)
+	if (g_uiResultGSState == state && g_nNumResultGS == g_nEndResultGS)
 	{// 全てが目標の値に到達した場合
 
 		return true;

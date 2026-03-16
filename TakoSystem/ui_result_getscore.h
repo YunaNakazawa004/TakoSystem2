@@ -12,6 +12,15 @@
 
 typedef enum
 {
+	UIRESULTGS_STATE_BIGIN = 0,	// [0]開始数集計状態(全てのスコアUIの背景が一定の長さになったか)
+	UIRESULTGS_STATE_END,		// [2]終了数集計状態(全てのスコアUIのスコアの集計が終わったか)
+
+	UIRESULTGS_STATE_MAX		// 最大値
+
+}UIRESULTGS_STATE;
+
+typedef enum
+{
 	UI_RESULTGSPOLYGONTYPE_NONE = 0,	// [0]特に無し
 	UI_RESULTGSPOLYGONTYPE_BG,			// [1]背景
 	UI_RESULTGSPOLYGONTYPE_NUM_SCORE,	// [2]数字(獲得スコア)
@@ -53,7 +62,8 @@ int CalcNumDigit						// 桁数を求める処理
 void CalcDigit							// 桁の値を求める処理
 (int nNum, int nDigit, int* pTexU, int nSizeTexU);
 
-bool GetCompletGetScore(void);			// 完了したかを返す処理
+bool GetCompletGetScore					// 完了したかを返す処理
+(UIRESULTGS_STATE state);			
 
 #endif
 

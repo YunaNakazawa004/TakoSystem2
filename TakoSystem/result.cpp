@@ -328,7 +328,7 @@ void InitResult(void)
 	g_pVtxBuffResult->Unlock();
 
 #ifdef _DEBUG
-#if 0	// 渡す値の確認用 *************************************************************
+#if 1	// 渡す値の確認用 *************************************************************
 
 	// 変数宣言 =================================
 
@@ -535,7 +535,7 @@ void UpdateResult(void)
 
 	case RESULTSTATE_WAIT:
 	
-		if (GetCompletGetScore() == true)
+		if (GetCompletGetScore(UIRESULTGS_STATE_END) == true)
 		{// UIの設定が完了した
 
 			g_nCounterResultState--;	// リザルトの状態カウンタをデクリメント
@@ -1583,4 +1583,9 @@ void SetLoadResult(const char* pFilename)
 int GetNowEsaTypeResult(void)
 {
 	return g_nNowEsaType;
+}
+
+RESULTSTATE GetResultState(void)
+{
+	return g_resultState;
 }

@@ -34,6 +34,7 @@
 #include "foodnum.h"
 #include "oceancurrents.h"
 #include "readygo.h"
+#include "ui_esawindow.h"
 
 #include "map.h"
 
@@ -170,7 +171,9 @@ void InitGame(void)
 	InitUiGaugeIcon();
 
 	// エサUIの初期化処理
-	InitUiEsa();
+	//InitUiEsa();
+
+	InitUiEsaWindow();
 
 	// エサ上限の初期化処理
 	InitFoodNum();
@@ -277,6 +280,8 @@ void UninitGame(void)
 
 	// エサUIの終了処理
 	UninitUiEsa();
+
+	UninitUiEsaWindow();
 
 	// エサ上限の終了処理
 	UninitFoodNum();
@@ -428,6 +433,8 @@ void UpdateGame(void)
 			// エサUIの更新処理
 			UpdateUiEsa();
 
+			UpdateUiEsaWindow();
+
 			// エサ上限の更新処理
 			UpdateFoodNum();
 
@@ -569,6 +576,8 @@ void DrawGame(void)
 	// レディの描画処理
 	DrawReady();
 
+	DrawUiEsaWindow();
+
 	// 海流の描画処理
 	DrawOceanCurrents();
 
@@ -576,7 +585,7 @@ void DrawGame(void)
 	DrawUiGaugeIcon();
 
 	// エサUIの描画処理
-	DrawUiEsa();
+	//DrawUiEsa();
 
 	// エサ上限の描画処理
 	DrawFoodNum();

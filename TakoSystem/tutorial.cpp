@@ -42,6 +42,7 @@
 #include "screen.h"
 #include "ui_tutorial.h"
 #include "foodnum.h"
+#include "ui_esawindow.h"
 
 // マクロ定義
 #define	MAX_TUTORIAL	(2)	// タイトルで表示するテクスチャの最大数
@@ -166,7 +167,9 @@ void InitTutorial(void)
 	InitUiGaugeIcon();
 
 	// エサUIの初期化処理
-	InitUiEsa();
+	//InitUiEsa();
+
+	InitUiEsaWindow();
 
 	// エサ上限の初期化処理
 	InitFoodNum();
@@ -354,7 +357,9 @@ void UninitTutorial(void)
 	UninitUiGaugeIcon();
 
 	// エサUIの終了処理
-	UninitUiEsa();
+	//UninitUiEsa();
+
+	UninitUiEsaWindow();
 
 	// エサ上限の終了処理
 	UninitFoodNum();
@@ -463,7 +468,9 @@ void UpdateTutorial(void)
 	UpdateUiGaugeIcon();
 
 	// エサUIの更新処理
-	UpdateUiEsa();
+	//UpdateUiEsa();
+
+	UpdateUiEsaWindow();
 
 	// エサ上限の更新処理
 	UpdateFoodNum();
@@ -595,6 +602,8 @@ void DrawTutorial(void)
 	// クロスヘアの描画処理
 	DrawCrossHair();
 
+	DrawUiEsaWindow();
+
 	// 海流の描画処理
 	DrawOceanCurrents();
 
@@ -602,7 +611,9 @@ void DrawTutorial(void)
 	DrawUiGaugeIcon();
 
 	// エサUIの描画処理
-	DrawUiEsa();
+	//DrawUiEsa();
+
+	
 
 	// エサ上限の描画処理
 	DrawFoodNum();

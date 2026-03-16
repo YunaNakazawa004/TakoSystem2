@@ -491,7 +491,7 @@ void UpdatePlayer(void)
 				pPlayer->vecX.y += (0.0f - pPlayer->vecX.y) * DASH_MOVE;
 				pPlayer->vecX.z += (0.0f - pPlayer->vecX.z) * DASH_MOVE;
 
-				SetVibration(nCntPlayer, 1000, 1300, 1);
+				SetVibration(nCntPlayer, 1000, 1300, 1);	// Gè‚Å‚‘¬ˆÚ“®‚µ‚Ä‚¢‚é‚ÌU“®
 
 				if (pPlayer->vecX.x < MOVE_ERROR && pPlayer->vecX.x > -MOVE_ERROR &&
 					pPlayer->vecX.y < MOVE_ERROR && pPlayer->vecX.y > -MOVE_ERROR &&
@@ -720,7 +720,7 @@ void UpdatePlayer(void)
 					SetSprayFlow(D3DXVECTOR3(pPlayer->pos.x, *GetWaterSurf_Height(), pPlayer->pos.z), pPlayer->rot,
 						WHITE_VTX, SPRAYTYPE_FLOW);
 
-					SetVibration(nCntPlayer, 1000, 3500, 2);	// …–Ê
+					SetVibration(nCntPlayer, 1000, 3500, 2);	// …–Ê‚©‚ço‚½‚ÌU“®
 				}
 			}
 			else
