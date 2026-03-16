@@ -122,7 +122,7 @@ int g_nNumUiEsaWindowPolygon = 0;										// ポリゴンの総数
 const char* c_apFilenameUiEsaWindow[] =
 {
 	"data/TEXTURE/texs_oct_esawindow.png",	// [0]ウィンドウテクスチャ
-	"data/TEXTURE/text_have_esa.png",		// [0]ウィンドウテクスチャ
+	"data/TEXTURE/text_have_esa.png",		// [0]ウィンドウテキスト
 };
 
 UiEsaWindowInfo g_aUiEsaWindowInfo[] =
@@ -326,7 +326,7 @@ void UpdateUiEsaWindow(void)
 	int nLabelGroup;
 
 #if _DEBUG
-#if 1
+#if 0
 	static int s_nSelectIdxParent = 0;	// 親のインデックスの値
 	static int s_nSelectIdxChild  = 0;	// 子のインデックスの値
 	
