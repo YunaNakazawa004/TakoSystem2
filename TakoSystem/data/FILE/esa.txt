@@ -39,7 +39,7 @@ SET_ESADATA
 	END_ESA  
 	
 	SET_ESA		# [3]カニ
-		TEXTURE	= data/TEXTURE/esa_tmp_texture/esa_tmp_crab.png	# テクスチャ
+		TEXTURE	= data/TEXTURE/esa_tmp_texture/esa_tmp_crub.png	# テクスチャ
 		MODEL	= data/MODEL/esa/kani002.x							# モデル
 		
 		SPEED		= 0.0003	# 移動速度

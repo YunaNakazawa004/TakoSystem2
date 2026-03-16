@@ -105,4 +105,6 @@ void SetLoadResult			// リザルトの読み取り処理
 int GetNowEsaTypeResult		// リザルトの集計中のエサの種類を返す処理
 (void);	
 
+RESULTSTATE GetResultState(void);
+
 #endif

@@ -192,6 +192,7 @@
     <ClCompile Include="tutorial.cpp" />
     <ClCompile Include="tutorialtxt.cpp" />
     <ClCompile Include="ui_esa.cpp" />
+    <ClCompile Include="ui_esawindow.cpp" />
     <ClCompile Include="ui_gaugeicon.cpp" />
     <ClCompile Include="ui_result_getscore.cpp" />
     <ClCompile Include="ui_tutorial.cpp" />
@@ -243,6 +244,7 @@
     <ClInclude Include="tutorial.h" />
     <ClInclude Include="tutorialtxt.h" />
     <ClInclude Include="ui_esa.h" />
+    <ClInclude Include="ui_esawindow.h" />
     <ClInclude Include="ui_gaugeicon.h" />
     <ClInclude Include="ui_result_getscore.h" />
     <ClInclude Include="ui_tutorial.h" />

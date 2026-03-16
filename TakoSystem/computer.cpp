@@ -873,7 +873,7 @@ void DrawComputer(void)
 				{// ‰‰ñ
 					nIdx = SetMeshOrbit(D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
 						D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
-						WHITE_VTX, CYAN_VTX, &pComputer->aModel[(nCntTent + 1) * 4].mtxWorld);
+						D3DXCOLOR(0.0f, 0.0f, 1.0f, 0.5f), D3DXCOLOR(0.0f, 1.0f, 1.0f, 0.5f), &pComputer->aModel[(nCntTent + 1) * 4].mtxWorld);
 
 					if (nIdx < 0)
 					{// ”ÍˆÍŠO
@@ -886,7 +886,7 @@ void DrawComputer(void)
 
 				SetMeshOrbitPos(pComputer->nOrbitIdx[nCntTent], D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
 					D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
-					WHITE_VTX, CYAN_VTX, &pComputer->aModel[(nCntTent + 1) * 4].mtxWorld);
+					D3DXCOLOR(0.0f, 0.0f, 1.0f, 0.5f), D3DXCOLOR(0.0f, 1.0f, 1.0f, 0.5f), &pComputer->aModel[(nCntTent + 1) * 4].mtxWorld);
 			}
 		}
 	}

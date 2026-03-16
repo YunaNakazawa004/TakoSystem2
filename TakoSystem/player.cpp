@@ -586,7 +586,7 @@ void UpdatePlayer(void)
 
 			//PrintDebugProc("プレイヤーのmove ( %f %f %f )\n", pPlayer->move.x, pPlayer->move.y, pPlayer->move.z);
 
-			if (CollisionObjectArea(pPlayer->pos) == false && pPlayer->pos.y <= *GetWaterSurf_Height() - (PLAYER_HEIGHT * 0.5f))
+			if (CollisionObjectArea(pPlayer->pos) == false && pPlayer->pos.y <= *GetWaterSurf_Height() + (PLAYER_HEIGHT * 0.5f))
 			{// 安地外のときに渦潮
 
 				if (pPlayer->mode != PLAYERMODE_TUTORIAL)
@@ -720,7 +720,7 @@ void UpdatePlayer(void)
 					SetSprayFlow(D3DXVECTOR3(pPlayer->pos.x, *GetWaterSurf_Height(), pPlayer->pos.z), pPlayer->rot,
 						WHITE_VTX, SPRAYTYPE_FLOW);
 
-					SetVibration(nCntPlayer, 1000, 3500, 2);	// 水面
+					SetVibration(nCntPlayer, 1000, 3500, 2);	// 水面から出た時の振動
 				}
 			}
 			else
@@ -1088,12 +1088,12 @@ void DrawPlayer(void)
 				{// 初回
 					pPlayer->nOrbitIdx[nCntTent] = SetMeshOrbit(D3DXVECTOR3(pPlayer->aModel[(nCntTent + 1) * 4].posOff.x, pPlayer->aModel[(nCntTent + 1) * 4].posOff.y, pPlayer->aModel[(nCntTent + 1) * 4].posOff.z),
 						D3DXVECTOR3(pPlayer->aModel[(nCntTent + 1) * 4].posOff.x, pPlayer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pPlayer->aModel[(nCntTent + 1) * 4].posOff.z),
-						WHITE_VTX, CYAN_VTX, &pPlayer->aModel[(nCntTent + 1) * 4].mtxWorld);
+						D3DXCOLOR(0.0f, 0.0f, 1.0f, 0.5f), D3DXCOLOR(0.0f, 1.0f, 1.0f, 0.5f), &pPlayer->aModel[(nCntTent + 1) * 4].mtxWorld);
 				}
 
 				SetMeshOrbitPos(pPlayer->nOrbitIdx[nCntTent], D3DXVECTOR3(pPlayer->aModel[(nCntTent + 1) * 4].posOff.x, pPlayer->aModel[(nCntTent + 1) * 4].posOff.y, pPlayer->aModel[(nCntTent + 1) * 4].posOff.z),
 					D3DXVECTOR3(pPlayer->aModel[(nCntTent + 1) * 4].posOff.x, pPlayer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pPlayer->aModel[(nCntTent + 1) * 4].posOff.z),
-					WHITE_VTX, CYAN_VTX, &pPlayer->aModel[(nCntTent + 1) * 4].mtxWorld);
+					D3DXCOLOR(0.0f, 0.0f, 1.0f, 0.5f), D3DXCOLOR(0.0f, 1.0f, 1.0f, 0.5f), &pPlayer->aModel[(nCntTent + 1) * 4].mtxWorld);
 			}
 		}
 	}
