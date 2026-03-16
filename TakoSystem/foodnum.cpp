@@ -13,7 +13,7 @@
 #define MAX_FOODNUM				(10)									// ç≈ëÂ
 #define MAX_HEIGHT				(620.0f)								// çÇÇ≥
 #define FADE_MINUS				(0.03f)									// è¡Ç¶ï˚
-#define MOVEMENT				(D3DXVECTOR3(1.0f, 1.0f, 1.0f))			// à⁄ìÆó 
+#define MOVEMENT				(D3DXVECTOR3(2.0f, 2.0f, 2.0f))			// à⁄ìÆó 
 #define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// å¸Ç´à⁄ìÆó 
 
 //*****************************************************************************
@@ -270,7 +270,7 @@ int SetFoodNum(FOODNUMTYPE type, FOODNUMSTATE state, D3DXVECTOR3 pos, float fWid
 			g_aFoodNum[nCntNum].type = type;
 			g_aFoodNum[nCntNum].state = state;
 
-			g_aFoodNum[nCntNum].nCounterState = (state == FOODNUMSTATE_MOVE) ? 60 : 0;
+			g_aFoodNum[nCntNum].nCounterState = (state == FOODNUMSTATE_MOVE) ? 90 : 0;
 			g_aFoodNum[nCntNum].fWidth = fWidth;
 			g_aFoodNum[nCntNum].fHeight = fHeight;
 			g_aFoodNum[nCntNum].bUse = true;
