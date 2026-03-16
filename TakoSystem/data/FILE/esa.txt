@@ -40,7 +40,7 @@ SET_ESADATA
 	
 	SET_ESA		# [3]カニ
 		TEXTURE	= data/TEXTURE/esa_tmp_texture/esa_tmp_crub.png	# テクスチャ
-		MODEL	= data/MODEL/esa/kani002.x							# モデル
+		MODEL	= data/MODEL/esa/Kani003.x							# モデル
 		
 		SPEED		= 0.0003	# 移動速度
 		HIT_RADIUS  = 10.0		# 当たり判定の大きさ
@@ -49,7 +49,7 @@ SET_ESADATA
 		
 	SET_ESA		# [4]アジ
 		TEXTURE = data/TEXTURE/esa_tmp_texture/esa_tmp_horse-mackerel.png	# テクスチャ
-		MODEL	= data/MODEL/esa/Azi.x                                  	# モデル
+		MODEL	= data/MODEL/esa/Azi000.x                                  	# モデル
 		
 		SPEED		= 0.005		# 移動速度
 		HIT_RADIUS  = 10.0		# 当たり判定の大きさ
