@@ -501,7 +501,7 @@ void UpdateTutorial(void)
 	FADE pFade = GetFade();
 
 	if ((GetSkipTutorial() == true && pFade == FADE_NONE) ||
-		g_nReadyCounter > READY_COUNTER)
+		g_nReadyCounter > 150)
 	{// Ÿ‚Ì‰æ–Ê‚É“]ˆÚ‚·‚éğŒ(SKIP’·‰Ÿ‚µ)‚ğ–‚½‚µ‚½
 
 		Player* pPlayer = GetPlayer();
