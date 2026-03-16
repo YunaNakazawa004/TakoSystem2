@@ -14,7 +14,7 @@
 #define MOVEMENT				(D3DXVECTOR3(0.5f, 0.5f, 0.5f))			// ˆÚ“®—Ê
 #define SEAWEED_HEIGHT			(160.0f)								// ŠC‘”‚Ì‚‚³
 #define MAX_SEAWEED				(128)									// ŠC‘”‚ÌÅ‘å—Ê
-#define SEAWEED_DIST			(60.0f)									// ŠC‘”‚ªŒX‚­‹——£
+#define SEAWEED_DIST			(100.0f)								// ŠC‘”‚ªŒX‚­‹——£
 
 //*****************************************************************************
 // ƒOƒ[ƒoƒ‹•Ï”

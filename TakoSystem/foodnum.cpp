@@ -13,7 +13,7 @@
 #define MAX_FOODNUM				(10)									// Å‘å
 #define MAX_HEIGHT				(620.0f)								// ‚‚³
 #define FADE_MINUS				(0.03f)									// Á‚¦•û
-#define MOVEMENT				(D3DXVECTOR3(2.0f, 2.0f, 2.0f))			// ˆÚ“®—Ê
+#define MOVEMENT				(D3DXVECTOR3(3.0f, 3.0f, 3.0f))			// ˆÚ“®—Ê
 #define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// Œü‚«ˆÚ“®—Ê
 
 //*****************************************************************************

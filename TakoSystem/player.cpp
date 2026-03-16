@@ -586,7 +586,7 @@ void UpdatePlayer(void)
 
 			//PrintDebugProc("プレイヤーのmove ( %f %f %f )\n", pPlayer->move.x, pPlayer->move.y, pPlayer->move.z);
 
-			if (CollisionObjectArea(pPlayer->pos) == false && pPlayer->pos.y <= *GetWaterSurf_Height() + (PLAYER_HEIGHT * 0.5f))
+			if (CollisionObjectArea(pPlayer->pos) == false && pPlayer->pos.y < *GetWaterSurf_Height() + (PLAYER_HEIGHT * 0.5f))
 			{// 安地外のときに渦潮
 
 				if (pPlayer->mode != PLAYERMODE_TUTORIAL)
