@@ -193,6 +193,8 @@ void InitUiResultGetScore(void)
 	g_nNumResultGS = 0;		// 
 	g_nEndResultGS = 0;		// 
 
+	g_nTimerResultSG = 0;
+
 	g_uiResultGSState = UIRESULTGS_STATE_BIGIN;
 	g_bSet = false;
 
@@ -282,7 +284,7 @@ void UpdateUiResultGetScore(void)
 	// ====================================================
 
 #if _DEBUG
-#if 0
+#if 1
 	// 選択する対象の設定
 	if (GetKeyboardTrigger(DIK_1))
 	{
@@ -313,10 +315,10 @@ void UpdateUiResultGetScore(void)
 		}
 		else
 		{
-			if (GetKeyboardPress(DIK_UP))    g_aResultGSPolygon[g_nIdxSelectResultSG].pos.y -= 1.0f;
-			if (GetKeyboardPress(DIK_DOWN))  g_aResultGSPolygon[g_nIdxSelectResultSG].pos.y += 1.0f;
-			if (GetKeyboardPress(DIK_LEFT))  g_aResultGSPolygon[g_nIdxSelectResultSG].pos.x -= 1.0f;
-			if (GetKeyboardPress(DIK_RIGHT)) g_aResultGSPolygon[g_nIdxSelectResultSG].pos.x += 1.0f;
+			if (GetKeyboardPress(DIK_UP))    g_aResultGS[g_nIdxSelectResultSG].pos.y -= 1.0f;
+			if (GetKeyboardPress(DIK_DOWN))  g_aResultGS[g_nIdxSelectResultSG].pos.y += 1.0f;
+			if (GetKeyboardPress(DIK_LEFT))  g_aResultGS[g_nIdxSelectResultSG].pos.x -= 1.0f;
+			if (GetKeyboardPress(DIK_RIGHT)) g_aResultGS[g_nIdxSelectResultSG].pos.x += 1.0f;
 		}
 	}
 
@@ -355,7 +357,7 @@ void UpdateUiResultGetScore(void)
 			continue;
 		}
 
-		if (g_uiResultGSState == UIRESULTGS_STATE_END)
+		if (g_uiResultGSState == UIRESULTGS_STATE_TALLY)
 		{// 獲得スコアの状態が終了数集計の状態の場合
 
 			// スコアの値の更新
@@ -421,6 +423,19 @@ void UpdateUiResultGetScore(void)
 						}
 					}
 				}
+				else if (g_uiResultGSState == UIRESULTGS_STATE_END)
+				{
+					if (g_aResultGSPolygon[nIdx].fSizeWRight <= g_aResultGSPolygon[nIdx].fSizeWidth)
+					{
+						g_aResultGSPolygon[nIdx].fSizeWRight += 20.0f;
+
+						if (g_aResultGSPolygon[nIdx].fSizeWRight >= g_aResultGSPolygon[nIdx].fSizeWidth)
+						{// 超えた場合
+
+							g_nEndResultGS++;
+						}
+					}
+				}
 
 				break;
 			}
@@ -462,11 +477,33 @@ void UpdateUiResultGetScore(void)
 		}
 	}
 
-	if (GetResultState() == RESULTSTATE_WAIT && GetCompletGetScore(UIRESULTGS_STATE_BIGIN))
-	{
-		g_uiResultGSState = UIRESULTGS_STATE_END;
+	if		(GetResultState() == RESULTSTATE_WAIT && GetCompletGetScore(UIRESULTGS_STATE_BIGIN))
+	{// リザルトの状態が集計中でスコアUIの開始状態が全て完了している場合
+
+		g_uiResultGSState = UIRESULTGS_STATE_TALLY;
 		g_nEndResultGS = 0;
 	}
+	else if (GetResultState() == RESULTSTATE_WAIT && GetCompletGetScore(UIRESULTGS_STATE_TALLY))
+	{// 全ての集計が終わった
+
+		g_uiResultGSState = UIRESULTGS_STATE_TALLY_END;
+	}
+
+	// 集計終了字のカウンタ
+	if (GetCompletGetScore(UIRESULTGS_STATE_TALLY_END))
+	{
+		g_nTimerResultSG++;
+
+		if (g_nTimerResultSG > 60 * 1)
+		{
+			g_uiResultGSState = UIRESULTGS_STATE_END;
+
+			g_nTimerResultSG = 0;
+
+			g_nEndResultGS = 0;
+		}
+	}
+
 }
 
 //========================================================================

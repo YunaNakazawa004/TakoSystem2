@@ -440,7 +440,6 @@ void UpdateUiEsaWindow(void)
 
 			// í∏ì_èÓïÒÇÃê›íË
 			SetVtxUiEsaWindowPolygon(nIdxPolygon, g_aUiEsaWindowGloup[nCntUiEsaWindow].pos, g_aUiEsaWindowGloup[nCntUiEsaWindow].fSizeScalar);
-			
 		}
 	}
 }

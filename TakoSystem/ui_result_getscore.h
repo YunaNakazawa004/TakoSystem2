@@ -13,7 +13,9 @@
 typedef enum
 {
 	UIRESULTGS_STATE_BIGIN = 0,	// [0]開始数集計状態(全てのスコアUIの背景が一定の長さになったか)
-	UIRESULTGS_STATE_END,		// [2]終了数集計状態(全てのスコアUIのスコアの集計が終わったか)
+	UIRESULTGS_STATE_TALLY,		// [1]集計数集計状態(全てのスコアUIのスコアの集計が終わったか)
+	UIRESULTGS_STATE_TALLY_END,	// [2]集計終了数集計状態(全てのスコアUIのスコアの集計が終わって一定時間たったか)
+	UIRESULTGS_STATE_END,		// [3]終了数集計状態(全てのスコアUIの背景が一定の長さになったか)
 
 	UIRESULTGS_STATE_MAX		// 最大値
 
