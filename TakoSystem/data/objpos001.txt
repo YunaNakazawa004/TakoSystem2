@@ -41,12 +41,12 @@ MODEL_FILENAME = data/MODEL/rock/iwa004.x						# [9]岩5
 MODEL_FILENAME = data/MODEL/Others_Object/wakame002.x			# [10]わかめ
 MODEL_FILENAME = data/MODEL/stage/stage000.x					# [11]ステージの柱
 MODEL_FILENAME = data/MODEL/rock/rock000.x						# [12]小さい石
-MODEL_FILENAME = data/MODEL/rock/parts/rock000.x				# [13]デカ岩の一部
-MODEL_FILENAME = data/MODEL/rock/parts/rock001.x				# [14]デカ岩の一部2
-MODEL_FILENAME = data/MODEL/rock/parts/rock002.x				# [15]デカ岩の一部3
-MODEL_FILENAME = data/MODEL/rock/parts/rock003.x				# [16]デカ岩の一部4
-MODEL_FILENAME = data/MODEL/rock/parts/rock004.x				# [17]デカ岩の一部5
-MODEL_FILENAME = data/MODEL/rock/parts/rock005.x				# [18]デカ岩の一部6
+MODEL_FILENAME = data/MODEL/rock/parts/parts007.x				# [13]デカ岩の一部
+MODEL_FILENAME = data/MODEL/rock/parts/parts008.x				# [14]デカ岩の一部2
+MODEL_FILENAME = data/MODEL/rock/parts/parts009.x				# [15]デカ岩の一部3
+MODEL_FILENAME = data/MODEL/rock/parts/parts010.x				# [16]デカ岩の一部4
+MODEL_FILENAME = data/MODEL/rock/parts/parts011.x				# [17]デカ岩の一部5
+MODEL_FILENAME = data/MODEL/rock/parts/parts012.x				# [18]デカ岩の一部6
 
 
 #------------------------------------------------------------------------------
@@ -135,7 +135,6 @@ END_MODELSET
 MODELSET
 	TYPE = 8
 	POS = 800 0 700
-
 	ROT = 0 0 0
 	SHADOW = 0
 END_MODELSET
@@ -258,14 +257,6 @@ MODELSET
 END_MODELSET
 
 MODELSET
-	SHADOW = 0
-END_MODELSET
-
-MODELSET
-	SHADOW = 0
-END_MODELSET
-
-MODELSET
 	TYPE = 6
 	POS = -650 50 -750
 	ROT = 90 200 0
@@ -273,7 +264,6 @@ MODELSET
 END_MODELSET
 
 MODELSET
-
 	TYPE = 6
 	POS = -513 50 -860
 	ROT = -45 110 0
@@ -282,7 +272,7 @@ END_MODELSET
 
 MODELSET
 	TYPE = 13
-	POS = -860 0 -320
+	POS = -900 0 -280
 	ROT = 0 0 0
 	SHADOW = 0
 END_MODELSET
@@ -310,62 +300,69 @@ END_MODELSET
 
 MODELSET
 	TYPE = 17
-	POS = -900 40 -300
+	POS = -850 60 -320
 	ROT = 0 0 0
 	SHADOW = 0
 END_MODELSET
 
 MODELSET
 	TYPE = 18
-	POS = -1050 30 -90
-	ROT = -13 75 8
+	POS = -1050 60 -90
+	ROT = 0 75 0
 	SHADOW = 0
 END_MODELSET
 
 MODELSET
 	TYPE = 17
-	POS = -900 44 0
+	POS = -900 60 0
 	ROT = 0 0 0
 	SHADOW = 0
 END_MODELSET
 
 MODELSET
 	TYPE = 18
-	POS = -1040 50 -270
+	POS = -1040 60 -270
 	ROT = -2.5 10 -5
 	SHADOW = 0
 END_MODELSET
 
 MODELSET
 	TYPE = 15
-	POS = -980 79 -275
+	POS = -980 60 -275
 	ROT = 0 90 0
 	SHADOW = 0
 END_MODELSET
 
 MODELSET
 	TYPE = 17
-	POS = -1070 62 -120
+	POS = -1070 120 -120
 	ROT = 0 0 0
 	SHADOW = 0
 END_MODELSET
 
 MODELSET
 	TYPE = 16
-	POS = -950 100 -120
-	ROT = 0 0 0
+	POS = -1050 120 -240
+	ROT = 0 90 0
 	SHADOW = 0
 END_MODELSET
 
 MODELSET
 	TYPE = 13
-	POS = -950 72 -60
+	POS = -950 120 -60
 	ROT = -5 0 0
 	SHADOW = 0
 END_MODELSET
 
 MODELSET
-	TYPE = 19
+	TYPE = 17
+	POS = -900 120 -240
+	ROT = 0 0 0
+	SHADOW = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 8
 	POS = -860 0 -160
 	ROT = 0 -90 0
 	SHADOW = 0
