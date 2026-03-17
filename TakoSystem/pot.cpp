@@ -174,7 +174,7 @@ void UninitPot(void)
 		}
 
 		// テクスチャの破棄
-		for (int nCntPot = 0; nCntPot < (int)g_aPotModel[nCntPotModel].dwNumMat; nCntPot++)
+		for (int nCntPot = 0; nCntPot < MAX_TEXTURE; nCntPot++)
 		{
 			if (g_aPotModel[nCntPotModel].apTexture[nCntPot] != NULL)
 			{
