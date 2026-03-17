@@ -109,7 +109,7 @@
 #define FLOW_COUNT				(10)									// ”g‚ªo‚éŠÔŠu
 #define CPU_THINK				(15)									// ŽvlŠÔŠu
 #define CPU_WIDTH				(25.0f)									// •
-#define CPU_HEIGHT				(100.0f)								// ‚‚³
+#define CPU_HEIGHT				(50.0f)									// ‚‚³
 #define TENTACLE_RADIUS			(100.0f)								// GŽè‚Ì“–‚½‚è”»’è
 #define CPU_FILE				"data\\motion_octo_1.txt"				// CPU‚Ìƒf[ƒ^ƒtƒ@ƒCƒ‹
 
@@ -298,7 +298,7 @@ void UpdateComputer(void)
 				pComputer->nThinkCooldown--;
 			}
 			else
-			{// 5ƒtƒŒ[ƒ€‚É1‰ñ”»’f
+			{// ‰½ƒtƒŒ[ƒ€‚²‚Æ‚É1‰ñ”»’f
 				pComputer->nThinkCooldown = CPU_THINK;
 
 				// ƒXƒRƒAŒvŽZ
@@ -974,7 +974,12 @@ void Escape(Computer* pComputer)
 		UseTentacle(pComputer);
 	}
 
-	pComputer->state = CPUSTATE_EXPLORE;
+	D3DXVECTOR3 dist = pComputer->phys.pos - enemyPos; // “G‚Æ‹t•ûŒü
+
+	if (D3DXVec3Length(&dist) > ESA_ENEMY_DISTANCE * 2.0f)
+	{// “G‚Æ‚Ì‹——£‚ª—£‚ê‚½
+		pComputer->state = CPUSTATE_EXPLORE;
+	}
 }
 
 //=============================================================================

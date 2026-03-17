@@ -289,7 +289,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\tmp_tex_taru003.jpg";
+    "data\\TEXTURE\\tmp_tex_taru002.jpg";
    }
   }
  }

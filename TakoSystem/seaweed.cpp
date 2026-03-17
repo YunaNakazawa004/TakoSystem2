@@ -76,7 +76,7 @@ void InitSeaweed(void)
 	}
 
 	// ÉâÉìÉ_ÉÄÇ»à íuÇ…ê›íË
-	SetRandomSeaweed(30);
+	SetRandomSeaweed(25);
 }
 
 //=============================================================================
@@ -356,7 +356,7 @@ void SetRandomSeaweed(int nAmount)
 		pos.y = -20.0f;
 		pos.z = cosf(fAngle) * (OUTCYLINDER_RADIUS + (((float)(rand() % (int)((OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) / 2) + 1))));
 
-		int nLength = rand() % 5 + 3;
+		int nLength = rand() % 3 + 2;
 
 		SetSeaweed(pos, nLength);
 	}
