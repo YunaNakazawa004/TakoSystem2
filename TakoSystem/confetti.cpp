@@ -9,10 +9,11 @@
 #include "confetti.h"	// 紙吹雪ヘッダー
 
 #include "input.h"
+#include "debugproc.h"
 
 // マクロ定義 ==================================================
 
-#define MAX_SET_CONFETTI		(10000)							// エフェクトの最大数
+#define MAX_SET_CONFETTI		(500)							// エフェクトの最大数
 
 #define CONFETTI_FILENAME		"data\\TEXTURE\\shadow000.png"	// 使用するエフェクトのファイル名
 
@@ -55,6 +56,8 @@ Confetti g_aConfetti[MAX_SET_CONFETTI];					// エフェクトの情報
 
 bool g_bDispConfetti = true;							// 紙吹雪の表示状態
 
+int g_nNumConfetti = 0;
+
 //======================================================================== 
 // 紙吹雪の初期化処理
 //========================================================================
@@ -93,6 +96,8 @@ void InitConfetti(void)
 	}
 
 	g_bDispConfetti = true;	// 表示状態に設定
+
+	g_nNumConfetti = 0;
 
 	// 頂点バッファの生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * 4 * MAX_SET_CONFETTI,
@@ -174,6 +179,8 @@ void UpdateConfetti(void)
 
 	// =========================================================
 
+	PrintDebugProc("紙吹雪の数 : %d\n", g_nNumConfetti);
+
 	for (nCntConfetti = 0; nCntConfetti < MAX_SET_CONFETTI; nCntConfetti++)
 	{
 		if (g_aConfetti[nCntConfetti].bUse == true)
@@ -220,6 +227,7 @@ void UpdateConfetti(void)
 			{// 寿命が尽きた場合
 
 				g_aConfetti[nCntConfetti].bUse = false;	// 使用してない状態に設定
+				g_nNumConfetti--;
 			}
 		}
 	}
@@ -389,6 +397,8 @@ void SetConfetti(int nLife,				// 寿命
 
 			// ▲頂点バッファをアンロックする
 			g_pVtxBuffConfetti->Unlock();
+
+			g_nNumConfetti++;
 
 			break;	// for文を抜ける
 		}

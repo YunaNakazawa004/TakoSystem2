@@ -10,10 +10,11 @@
 #include "effect_3d.h"	// エフェクトヘッダー
 
 #include "input.h"
+//#include "debugproc.h"
 
 // マクロ定義 ==================================================
 
-#define MAX_SET_EFFECT3D		(20000)							// エフェクトの最大数
+#define MAX_SET_EFFECT3D		(7000)							// エフェクトの最大数
 
 #define EFFECT3D_FILENAME		"data\\TEXTURE\\shadow000.png"	// 使用するエフェクトのファイル名
 
@@ -55,6 +56,8 @@ Effect3D g_aEffect3D[MAX_SET_EFFECT3D];					// エフェクトの情報
 
 bool g_bDispEffect3D = true;							// 3Dエフェクトの表示状態
 
+//int g_nNumEffect3D = 0;
+
 //======================================================================== 
 // 3Dエフェクトの初期化処理
 //========================================================================
@@ -93,6 +96,8 @@ void InitEffect3D(void)
 	}
 
 	g_bDispEffect3D = true;	// 表示状態に設定
+
+	//g_nNumEffect3D = 0;
 
 	// 頂点バッファの生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * 4 * MAX_SET_EFFECT3D,
@@ -182,6 +187,8 @@ void UpdateEffect3D(void)
 	}
 #endif
 
+	//PrintDebugProc("エフェクトの数 : %d\n", g_nNumEffect3D);
+
 	for (nCntEffect = 0; nCntEffect < MAX_SET_EFFECT3D; nCntEffect++)
 	{
 		if (g_aEffect3D[nCntEffect].bUse == true)
@@ -226,6 +233,7 @@ void UpdateEffect3D(void)
 			{// 寿命が尽きた場合
 
 				g_aEffect3D[nCntEffect].bUse = false;	// 使用してない状態に設定
+				//g_nNumEffect3D--;
 			}
 		}
 	}
@@ -414,6 +422,8 @@ void SetEffect3D(int nLife,							// 寿命
 
 			// ▲頂点バッファをアンロックする
 			g_pVtxBuffEffect3D->Unlock();
+
+			//g_nNumEffect3D++;
 
 			break;	// for文を抜ける
 		}

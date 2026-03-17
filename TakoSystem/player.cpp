@@ -765,7 +765,7 @@ void UpdatePlayer(void)
 					pPlayer->aModel[0].mtxWorld._42 + 10.0f,
 					pPlayer->aModel[0].mtxWorld._43);
 
-				SetEffect3D(5, headPos, FIRST_POS, 0.0f, 15.0f, 0.0f, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), EFFECTTYPE_OCTOINK);
+				SetEffect3D(1, headPos, FIRST_POS, 0.0f, 15.0f, 0.0f, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), EFFECTTYPE_OCTOINK);
 			}
 
 			fmoveAngle = pPlayer->fAngleY - pPlayer->rot.y;

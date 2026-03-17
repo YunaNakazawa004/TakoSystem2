@@ -262,6 +262,13 @@ void UninitOceanCurrents(void)
 		g_pVtxBuffOceanCurrents->Release();
 		g_pVtxBuffOceanCurrents = NULL;		// ’†g‚ğ‹ó‚É‚·‚é
 	}
+
+	g_nMaxTimeOceanCurrents = OCEANCURRECT_TIME_NOMAL;
+	g_OceanCurrentsState = OCEANCURRENTSSTATE_NOMAL;		// ŠC—¬‚Ìó‘Ô‚ğ’Êí‚Éİ’è
+	g_fSpeedOceanCurrent = OCEANCURRECT_SPEED_NOMAL;		// ŠC—¬‚Ì‘¬“x‚ğ’Êí‚Ì’l‚Åİ’è
+
+	g_nIdxOCWaning = -1;
+	g_nIdxOCTimer = -1;
 }
 
 //========================================================================
