@@ -20,7 +20,7 @@ TEXTURE_FILENAME = data/TEXTURE/suna.png				# [1]砂テクスチャ
 #------------------------------------------------------------------------------
 # モデル数
 #------------------------------------------------------------------------------
-NUM_MODEL = 13
+NUM_MODEL = 19
 
 #------------------------------------------------------------------------------
 # モデルファイル名
@@ -29,21 +29,32 @@ MODEL_FILENAME = data/MODEL/rock/iwa000.x						# [0]岩
 MODEL_FILENAME = data/MODEL/rock/iwa001.x						# [1]岩2
 MODEL_FILENAME = data/MODEL/rock/iwa002.x						# [2]岩3
 MODEL_FILENAME = data/MODEL/Others_Object/ami000.x				# [3]網
+
 MODEL_FILENAME = data/MODEL/Others_Object/fishborn001.x			# [4]魚の骨
 MODEL_FILENAME = data/MODEL/Others_Object/SangoSho.x			# [5]サンゴ礁
+
 MODEL_FILENAME = data/MODEL/Others_Object/taru002half.x			# [6]樽
 MODEL_FILENAME = data/MODEL/rock/iwa003.x						# [7]岩4
-MODEL_FILENAME = data/MODEL/Others_Object/Takotsubo.x			# [8]たこつぼ(立ってる)
+MODEL_FILENAME = data/MODEL/Others_Object/Takotsubo.x	# [8]たこつぼ(立ってる)
 MODEL_FILENAME = data/MODEL/rock/iwa004.x						# [9]岩5
+
 MODEL_FILENAME = data/MODEL/Others_Object/wakame002.x			# [10]わかめ
 MODEL_FILENAME = data/MODEL/stage/stage000.x					# [11]ステージの柱
 MODEL_FILENAME = data/MODEL/rock/rock000.x						# [12]小さい石
+MODEL_FILENAME = data/MODEL/rock/parts/parts007.x				# [13]デカ岩の一部
+MODEL_FILENAME = data/MODEL/rock/parts/parts008.x				# [14]デカ岩の一部2
+MODEL_FILENAME = data/MODEL/rock/parts/parts009.x				# [15]デカ岩の一部3
+MODEL_FILENAME = data/MODEL/rock/parts/parts010.x				# [16]デカ岩の一部4
+MODEL_FILENAME = data/MODEL/rock/parts/parts011.x				# [17]デカ岩の一部5
+MODEL_FILENAME = data/MODEL/rock/parts/parts012.x				# [18]デカ岩の一部6
+
 
 #------------------------------------------------------------------------------
 # カメラ情報
 #------------------------------------------------------------------------------
 CAMERASET
-	POS = 0.0 180.0 0.0			# 視点
+
+	POS = 0.0 100.0 0.0			# 視点
 	REF = 700.0 0.0 0.0				# 注視点
 END_CAMERASET
 
@@ -88,7 +99,7 @@ FIELDSET
 	POS = 0 0 0
 	ROT = 0 0 0
 	BLOCK = 64 64
-	SIZE = 8000 8000
+	SIZE = 8000	8000
 END_FIELDSET
 
 #FIELDSET
@@ -124,7 +135,7 @@ END_MODELSET
 MODELSET
 	TYPE = 8
 	POS = 800 0 700
-	ROT = 0 315 0
+	ROT = 0 0 0
 	SHADOW = 0
 END_MODELSET
 
@@ -193,12 +204,12 @@ MODELSET
 	SHADOW = 0
 END_MODELSET
 
-MODELSET
-	TYPE = 7
-	POS = -950 0 -100
-	ROT = 0 180 0
-	SHADOW = 0
-END_MODELSET
+#MODELSET
+#	TYPE = 7
+#	POS = -950 0 -100
+#	ROT = 0 180 0
+#	SHADOW = 0
+#END_MODELSET
 
 MODELSET
 	TYPE = 5
@@ -246,20 +257,6 @@ MODELSET
 END_MODELSET
 
 MODELSET
-	TYPE = 8
-	POS = -230 20 -735
-	ROT = 90 0 0
-	SHADOW = 0
-END_MODELSET
-
-MODELSET
-	TYPE = 8
-	POS = -640 20 1000
-	ROT = 90 0 0
-	SHADOW = 0
-END_MODELSET
-
-MODELSET
 	TYPE = 6
 	POS = -650 50 -750
 	ROT = 90 200 0
@@ -270,6 +267,104 @@ MODELSET
 	TYPE = 6
 	POS = -513 50 -860
 	ROT = -45 110 0
+	SHADOW = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 13
+	POS = -900 0 -280
+	ROT = 0 0 0
+	SHADOW = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 14
+	POS = -900 0 0
+	ROT = 0 0 0
+	SHADOW = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 15
+	POS = -1050 0 -290
+	ROT = 0 0 0
+	SHADOW = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 16
+	POS = -1040 0 -100
+	ROT = 0 45 0
+	SHADOW = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 17
+	POS = -850 60 -320
+	ROT = 0 0 0
+	SHADOW = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 18
+	POS = -1050 60 -90
+	ROT = 0 75 0
+	SHADOW = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 17
+	POS = -900 60 0
+	ROT = 0 0 0
+	SHADOW = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 18
+	POS = -1040 60 -270
+	ROT = -2.5 10 -5
+	SHADOW = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 15
+	POS = -980 60 -275
+	ROT = 0 90 0
+	SHADOW = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 17
+	POS = -1070 120 -120
+	ROT = 0 0 0
+	SHADOW = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 16
+	POS = -1050 120 -240
+	ROT = 0 90 0
+	SHADOW = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 13
+	POS = -950 120 -60
+	ROT = -5 0 0
+	SHADOW = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 17
+	POS = -900 120 -240
+	ROT = 0 0 0
+	SHADOW = 0
+END_MODELSET
+
+MODELSET
+	TYPE = 8
+	POS = -860 0 -160
+	ROT = 0 -90 0
 	SHADOW = 0
 END_MODELSET
 
