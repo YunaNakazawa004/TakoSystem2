@@ -10,7 +10,7 @@
 #include "light.h"
 #include "fade.h"
 #include "camera.h"
-#include "effect_3d.h"
+//#include "effect_3d.h"
 #include "particle_3d.h"
 
 #include "object.h"

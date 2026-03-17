@@ -830,6 +830,8 @@ bool SetLoadEsaData(EsaData* pEsaData, const char* pFilename)
 	if (pFile == NULL)
 	{// ファイルが開けなかった
 
+		MessageBox(NULL, "エサ情報のファイルを開くのに失敗しました", "errer", MB_OK);
+
 		return false;		// 読み取りに失敗した事を返す
 	}
 
