@@ -33,6 +33,16 @@ typedef enum
 }PLAYERSTATE;
 
 //*****************************************************************************
+// プレイヤーモード
+//*****************************************************************************
+typedef enum
+{
+	PLAYERMODE_GAME = 0,			// ゲームモード
+	PLAYERMODE_TUTORIAL,			// チュートリアルモード
+	PLAYERMODE_MAX
+}PLAYERMODE;
+
+//*****************************************************************************
 // 触手の状態
 //*****************************************************************************
 typedef enum
@@ -69,6 +79,7 @@ typedef enum
 typedef struct
 {
 	int nIdx;									// プレイヤーのインデックス
+	int nCounter;								// 万能カウンター
 	D3DXVECTOR3 pos;							// 現在の位置
 	D3DXVECTOR3 posOld;							// 前回の位置
 	D3DXVECTOR3 move;							// 移動量
@@ -77,11 +88,13 @@ typedef struct
 	float fAngleY;								// Y向きの最終地点
 	float fRadius;								// 半径
 	float fHeight;								// 高さ
+	float fAutoY;								// 自動上下移動
 	D3DXVECTOR3 posX;							// リーチの位置(クロスヘアの位置)
 	D3DXVECTOR3 vecX;							// posVからposRへのベクトル(リーチへのベクトル)
 	D3DXMATRIX mtxWorld;						// ワールドマトリックス
 
 	PLAYERSTATE state;							// 状態
+	PLAYERMODE mode;							// モード
 	PLTENTACLESTATE TentacleState;				// 触手の状態
 	int nCounterState;							// 状態カウンター
 
@@ -98,6 +111,7 @@ typedef struct
 	int nBlindCounter;							// 視界が悪いのを制御するカウンター
 
 	int nFood;									// 持っているエサの数
+	int nFoodNumIdx;							// エサ上限のインデックス
 	EsaQueue esaQueue;							// 持っているエサのキュー配列
 	POTSTATE Potstate;							// 状態
 	int nPotIdx;								// 近づいていたタコつぼのインデックス
@@ -132,13 +146,22 @@ typedef struct
 }Player;
 
 //*****************************************************************************
+// チュートリアルからもらうプレイヤーの情報
+//*****************************************************************************
+typedef struct
+{
+	D3DXVECTOR3 pos;							// 現在の位置
+	D3DXVECTOR3 rot;							// 向き
+}Player_Tutorial;
+
+//*****************************************************************************
 // プロトタイプ宣言
 //*****************************************************************************
 void InitPlayer(void);
 void UninitPlayer(void);
 void UpdatePlayer(void);
 void DrawPlayer(void);
-void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType);
+void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType, PLAYERMODE mode, PLAYERSTATE state);
 void SetRandomPlayer(int nAmount);
 Player* GetPlayer(void);
 void UpdateMotionPlayer(void);

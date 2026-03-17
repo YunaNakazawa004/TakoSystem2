@@ -16,18 +16,16 @@
 
 // 列挙型の定義 ================================================
 
-// エサの種類（ファイル追加まで）
+// エサのレアリティ
 typedef enum
 {
-	ESATYPE_SHRIMP,		// [2]エビ
-	ESATYPE_CRAB = 0,	// [0]カニ
-	ESATYPE_SHELL,		// [1]貝
-	ESATYPE_YA,			// [2]エビ
-	ESATYPE_ISE,		// [2]エビ
+	ESARARITY_NOMAL = 0,// [0]普通
+	ESARARITY_RARE,		// [1]レア
+	ESARARITY_SRARE,	// [2]激レア
 
-	ESATYPE_MAX			// 最大値
+	ESARARITY_MAX,		// 最大値
 
-}ESATYPE;
+}ESARARITY;
 
 // エサの挙動の種類
 typedef enum
@@ -101,6 +99,7 @@ typedef struct
 typedef struct
 {
 	int nIdxModel;			// モデルのインデックス
+	int nIdxBubble;			// 泡パーティクルのインデックス
 
 	int nOrbitIdx;			// 軌跡のインデックス
 
@@ -147,6 +146,10 @@ int SetEsa					// エサの設定処理
 void ChangeEsaState			// エサの状態切り替え処理
 (int nIdxEsa,							// エサのインテックス
  ESA_ACTTYPE changeState, int nValue);	// 切り替える挙動, 挙動の値
+
+int DelEsa					// エサの削除処理
+(int nIdxEsa,							// エサのインデックス
+ bool bPlayer, int nIdxPlayer);			// プレイヤーか, プレイヤーのインデックス
 
 // 更新処理 ================================
 

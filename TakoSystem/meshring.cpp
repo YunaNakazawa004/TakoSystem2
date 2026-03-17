@@ -10,6 +10,7 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
+#define MAX_TEX_MESHRING		(16)									// メッシュリングのテクスチャ数
 #define MAX_MESHRING			(128)									// メッシュリングの数
 #define MOVEMENT				(D3DXVECTOR3(1.0f, 1.0f, 1.0f))			// 移動量
 #define ROT						(D3DXVECTOR3(0.05f, 0.05f, 0.05f))		// 向き移動量
@@ -23,6 +24,9 @@ typedef struct
 {
 	LPDIRECT3DVERTEXBUFFER9 pVtxBuff;		// 頂点バッファへのポインタ
 	LPDIRECT3DINDEXBUFFER9 pIdxBuff;		// インデックスバッファへのポインタ
+
+	MESHRINGTYPE type;						// 種類
+
 	D3DXVECTOR3 pos;						// メッシュリングの位置情報
 	D3DXVECTOR3 rot;						// メッシュリングの向き情報
 	D3DXVECTOR2 block;						// 分割数
@@ -32,11 +36,34 @@ typedef struct
 	bool bUse;
 }MeshRing;
 
+// メッシュリングの種類別の情報の構造体
+typedef struct
+{
+	int nIdxTexture;		// テクスチャインデックス
+	bool bAlphaBrend;		// アルファブレンドをするか
+	bool bCulling;			// 両面カリングをするか
+
+}MeshRingTypeInfo;
+
 //*****************************************************************************
 // グローバル変数
 //*****************************************************************************
-LPDIRECT3DTEXTURE9 g_pTextureMeshRing = NULL;				// テクスチャへのポインタ
+LPDIRECT3DTEXTURE9 g_apTextureMeshRing[MAX_TEX_MESHRING] = {};				// テクスチャへのポインタ
 MeshRing g_aMeshRing[MAX_MESHRING];			// メッシュリングの情報
+
+// テクスチャファイル名
+const char* c_apFilenameMeshRing[] =
+{
+	"data\\TEXTURE\\tex_alpha_hit001.jpg",		// [0]衝撃波
+};
+
+// 種類別の情報
+MeshRingTypeInfo g_aMeshRingTypeInfo[MESHRINGTYPE_MAX] =
+{// テクスチャ, アルファブレンドをするか, 両面カリングをするか
+
+	{-1, false, false},		// [0]波紋
+	{0, true, true},		// [1]衝撃波
+};
 
 //=============================================================================
 // メッシュリングの初期化処理
@@ -45,15 +72,19 @@ void InitMeshRing(void)
 {
 	// ローカル変数宣言
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();			// デバイスへのポインタ
-
+	HRESULT hr;
 	// テクスチャの読み込み
-	D3DXCreateTextureFromFile(pDevice, MESHRING_TEX, &g_pTextureMeshRing);
+	for (int nCntTexture = 0; nCntTexture < sizeof c_apFilenameMeshRing / sizeof(c_apFilenameMeshRing[0]); nCntTexture++)
+	{
+		 hr = D3DXCreateTextureFromFile(pDevice, c_apFilenameMeshRing[nCntTexture], &g_apTextureMeshRing[nCntTexture]);
+	}
 
 	// メッシュリング情報の初期化
 	for (int nCntMeshRing = 0; nCntMeshRing < MAX_MESHRING; nCntMeshRing++)
 	{
 		g_aMeshRing[nCntMeshRing].pVtxBuff = NULL;
 		g_aMeshRing[nCntMeshRing].pIdxBuff = NULL;
+		g_aMeshRing[nCntMeshRing].type = MESHRINGTYPE_NONE;
 		g_aMeshRing[nCntMeshRing].pos = FIRST_POS;
 		g_aMeshRing[nCntMeshRing].rot = FIRST_POS;
 		g_aMeshRing[nCntMeshRing].block = FIRST_SIZE;
@@ -61,6 +92,10 @@ void InitMeshRing(void)
 		g_aMeshRing[nCntMeshRing].col = WHITE_VTX;
 		g_aMeshRing[nCntMeshRing].bUse = false;
 	}
+
+	//SetMeshRing(MESHRINGTYPE_NONE, FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(100.0f, 50.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+
+	//SetMeshRing(MESHRINGTYPE_SHOCKWAVE, D3DXVECTOR3(0.0f, 500.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 3.14f), D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(10.0f, 5.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
 //=============================================================================
@@ -69,10 +104,13 @@ void InitMeshRing(void)
 void UninitMeshRing(void)
 {
 	// テクスチャの破棄
-	if (g_pTextureMeshRing != NULL)
+	for (int nCntTexture = 0; nCntTexture < MAX_TEX_MESHRING; nCntTexture++)
 	{
-		g_pTextureMeshRing->Release();
-		g_pTextureMeshRing = NULL;
+		if (g_apTextureMeshRing[nCntTexture] != NULL)
+		{
+			g_apTextureMeshRing[nCntTexture]->Release();
+			g_apTextureMeshRing[nCntTexture] = NULL;
+		}
 	}
 
 	for (int nCntMeshRing = 0; nCntMeshRing < MAX_MESHRING; nCntMeshRing++)
@@ -104,19 +142,59 @@ void UpdateMeshRing(void)
 	{
 		if (g_aMeshRing[nCntMeshRing].bUse == true)
 		{// 使用しているとき
-			// 段々輪を大きく、細く
-			g_aMeshRing[nCntMeshRing].size.x += 0.8f;
-			g_aMeshRing[nCntMeshRing].size.y -= 0.4f;
+			
+			// 種類別の更新
+			switch (g_aMeshRing[nCntMeshRing].type)
+			{
+			case MESHRINGTYPE_RIPPLES:
+
+				// 段々輪を大きく、細く
+				g_aMeshRing[nCntMeshRing].size.x += 0.8f;
+				g_aMeshRing[nCntMeshRing].size.y -= 0.4f;
+
+				if (g_aMeshRing[nCntMeshRing].size.y <= 0.0f)
+				{// 輪が見えなくなる
+					g_aMeshRing[nCntMeshRing].bUse = false;
+				}
+
+				break;
+
+			case MESHRINGTYPE_SHOCKWAVE:
+
+				g_aMeshRing[nCntMeshRing].size.x += 1.0f;
+				g_aMeshRing[nCntMeshRing].size.y += 0.3f;
+
+				if (g_aMeshRing[nCntMeshRing].size.x >= 70.0f
+				 && g_aMeshRing[nCntMeshRing].size.y >= 2.0f)
+				{
+					g_aMeshRing[nCntMeshRing].col.a -= 0.1f;
+				}
+
+				if (g_aMeshRing[nCntMeshRing].col.a <= 0.0f)
+				{
+					g_aMeshRing[nCntMeshRing].bUse = false;
+				}
+
+				break;
+			}
+
+			// 更新後の判定
+			if (g_aMeshRing[nCntMeshRing].bUse == false)
+			{// 使用してない状態になった
+
+				continue;	// 処理を抜ける
+			}
 
 			// 頂点バッファをロックし、頂点情報へのポインタを取得
 			g_aMeshRing[nCntMeshRing].pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
+#if 1
 			// 頂点情報の設定
 			for (int nCntMeshRing1 = 0; nCntMeshRing1 < (int)g_aMeshRing[nCntMeshRing].block.y + 1; nCntMeshRing1++)
 			{
 				for (int nCntMeshRing2 = 0; nCntMeshRing2 < (int)g_aMeshRing[nCntMeshRing].block.x + 1; nCntMeshRing2++)
 				{
-					float fAngle = ((D3DX_PI * 2.0f) / g_aMeshRing[nCntMeshRing].block.x);
+					float fAngle = (-(D3DX_PI * 2.0f) / g_aMeshRing[nCntMeshRing].block.x);
 					float fSize = (g_aMeshRing[nCntMeshRing].size.x + (g_aMeshRing[nCntMeshRing].size.y * -((nCntMeshRing2 + nCntMeshRing1) % 2)));
 
 					// 頂点座標の設定
@@ -135,19 +213,16 @@ void UpdateMeshRing(void)
 					pVtx[0].col = g_aMeshRing[nCntMeshRing].col;
 
 					// テクスチャ座標の設定
-					pVtx[0].tex = D3DXVECTOR2((float)nCntMeshRing2, (float)nCntMeshRing1);
+					//pVtx[0].tex.x = (float)((nCntMeshRing2 != 0) ? nCntMeshRing2 / 2 : 0.0f);
+					//pVtx[0].tex.y = (float)(-nCntMeshRing2 % 2 + nCntMeshRing1);
+
 
 					pVtx++;
 				}
 			}
-
+#endif
 			// 頂点バッファをアンロックする
 			g_aMeshRing[nCntMeshRing].pVtxBuff->Unlock();
-
-			if (g_aMeshRing[nCntMeshRing].size.y <= 0.0f)
-			{// 輪が見えなくなる
-				g_aMeshRing[nCntMeshRing].bUse = false;
-			}
 		}
 	}
 }
@@ -158,13 +233,19 @@ void UpdateMeshRing(void)
 void DrawMeshRing(void)
 {
 	// ローカル変数宣言
-	LPDIRECT3DDEVICE9 pDevice = GetDevice();			// デバイスへのポインタ
-	D3DXMATRIX mtxRot, mtxTrans;		// 計算用マトリックス
+	LPDIRECT3DDEVICE9 pDevice = GetDevice();	// デバイスへのポインタ
+	D3DXMATRIX mtxRot, mtxTrans;				// 計算用マトリックス
 
 	for (int nCntMeshRing = 0; nCntMeshRing < MAX_MESHRING; nCntMeshRing++)
 	{
 		if (g_aMeshRing[nCntMeshRing].bUse == true)
 		{// 使用しているとき
+
+			if (g_aMeshRing[nCntMeshRing].type == -1)
+			{
+				continue;
+			}
+
 			// ワールドマトリックスの初期化
 			D3DXMatrixIdentity(&g_aMeshRing[nCntMeshRing].mtxWorld);
 
@@ -189,11 +270,49 @@ void DrawMeshRing(void)
 			pDevice->SetFVF(FVF_VERTEX_3D);
 
 			// テクスチャの設定
-			pDevice->SetTexture(0, NULL);
+			if (g_aMeshRingTypeInfo[g_aMeshRing[nCntMeshRing].type].nIdxTexture != -1)
+			{
+				pDevice->SetTexture(0, g_apTextureMeshRing[g_aMeshRingTypeInfo[g_aMeshRing[nCntMeshRing].type].nIdxTexture]);
+			}
+			else
+			{
+				pDevice->SetTexture(0, NULL);
+			}
+
+			if (g_aMeshRingTypeInfo[g_aMeshRing[nCntMeshRing].type].bCulling == true)
+			{// 両面カリングをする場合
+
+				// カリングをOFFに設定
+				pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+			}
+
+			if (g_aMeshRingTypeInfo[g_aMeshRing[nCntMeshRing].type].bAlphaBrend == true)
+			{// アルファブレンドをする場合
+
+				// 減算合成の設定
+				pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);			// アルファブレンドの設定1
+				pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);		// アルファブレンドの設定2
+				pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);			// アルファブレンドの設定3
+			}
 
 			// ポリゴンの描画
 			pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, ((int)g_aMeshRing[nCntMeshRing].block.x + 1) * ((int)g_aMeshRing[nCntMeshRing].block.y + 1), 0,
 				(((int)g_aMeshRing[nCntMeshRing].block.x) * ((int)g_aMeshRing[nCntMeshRing].block.y) * 2) + (((int)g_aMeshRing[nCntMeshRing].block.y - 1) * 4));
+
+			if (g_aMeshRingTypeInfo[g_aMeshRing[nCntMeshRing].type].bCulling == true)
+			{// 両面カリングをする場合
+
+				// カリングを戻す
+				pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+			}
+
+			if (g_aMeshRingTypeInfo[g_aMeshRing[nCntMeshRing].type].bAlphaBrend == true)
+			{
+				// ブレンディング(減算合成)を元に戻す 
+				pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);			// アルファブレンドの設定1
+				pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);		// アルファブレンドの設定2
+				pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);	// アルファブレンドの設定3
+			}
 		}
 	}
 }
@@ -201,12 +320,14 @@ void DrawMeshRing(void)
 //=============================================================================
 // メッシュリングの設定処理
 //=============================================================================
-void SetMeshRing(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVECTOR2 size, D3DXCOLOR col)
+void SetMeshRing(MESHRINGTYPE type, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVECTOR2 size, D3DXCOLOR col)
 {
 	for (int nCntMeshRing = 0; nCntMeshRing < MAX_MESHRING; nCntMeshRing++)
 	{
 		if (g_aMeshRing[nCntMeshRing].bUse == false)
 		{// 使用していない
+
+			g_aMeshRing[nCntMeshRing].type = type;
 			g_aMeshRing[nCntMeshRing].pos.x = pos.x;
 			g_aMeshRing[nCntMeshRing].pos.y = pos.y;
 			g_aMeshRing[nCntMeshRing].pos.z = pos.z;
@@ -255,7 +376,10 @@ void SetMeshRing(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVECTOR
 					pVtx[0].col = g_aMeshRing[nCntMeshRing].col;
 
 					// テクスチャ座標の設定
-					pVtx[0].tex = D3DXVECTOR2((float)nCntMeshRing2, (float)nCntMeshRing1);
+					int nTmp = nCntMeshRing2 + ((nCntMeshRing1 != 0) ? nCntMeshRing1 * g_aMeshRing[nCntMeshRing].block.x + 1: 0);
+
+					pVtx[0].tex.x = (float)(nTmp != 0) ? nTmp / 2 : 0.0f;
+					pVtx[0].tex.y = (float)((nCntMeshRing2 + nCntMeshRing1) % 2);
 
 					pVtx++;
 				}
@@ -293,4 +417,32 @@ void SetMeshRing(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVECTOR
 			break;
 		}
 	}
+}
+
+//=============================================================================
+// メッシュリングの設定処理
+//=============================================================================
+D3DXVECTOR3 CalcShockWaveRot(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2)
+{
+	// 変数宣言 ======================================
+
+	float fWidth  = (pos1.x - pos2.x),	// X方向の離れ具合を求める
+		  fDipth  = (pos1.z - pos2.z),	// Z方向の離れ具合を求める
+		  fHeight = (pos2.z - pos1.z);	// Y方向の離れ具合を求める
+
+	float fDiaLengthXZ;					// (X,Z)の対角線の長さ
+
+	float fAngleX, fAngleY;				// 設定するの角度
+
+	// ===============================================
+
+	// 対角線の長さを求める
+	fDiaLengthXZ = sqrtf(fWidth * fWidth + fDipth * fDipth);
+
+	// 設定する角度を求める
+	fAngleY = atan2f(fWidth, fDipth);			// Yの向きを求める
+	fAngleX = atan2f(fDiaLengthXZ, fHeight );	// Xの向きを求める
+
+	// 設定する角度を返す
+	return D3DXVECTOR3(fAngleX, fAngleY, 0.0f);
 }

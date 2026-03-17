@@ -7,9 +7,12 @@
 #include "pot.h"
 #include "debugproc.h"
 #include "meshring.h"
+#include "meshorbit.h"
 #include "input.h"
 #include "esa.h"
 #include "ui_esa.h"
+#include "sound.h"
+#include "tutorialtxt.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -39,7 +42,7 @@ Pot g_aPot[MAX_POT];									// タコつぼの情報
 //*****************************************************************************
 const char* c_apFilenamePot[POTTYPE_MAX] =
 {
-	"data\\MODEL\\Others_Object\\Takotsubo_light001.x",
+	"data\\MODEL\\Others_Object\\Takotsubo.x",
 };
 
 //=============================================================================
@@ -171,7 +174,7 @@ void UninitPot(void)
 		}
 
 		// テクスチャの破棄
-		for (int nCntPot = 0; nCntPot < (int)g_aPotModel[nCntPotModel].dwNumMat; nCntPot++)
+		for (int nCntPot = 0; nCntPot < MAX_TEXTURE; nCntPot++)
 		{
 			if (g_aPotModel[nCntPotModel].apTexture[nCntPot] != NULL)
 			{
@@ -204,15 +207,15 @@ void UpdatePot(void)
 
 				if (pEsa[nIdx].esaType == ESA_ACTTYPE_GOTO_POT)
 				{// タコつぼに入れてる最中
-					pEsa[nIdx].bUse = false;
-					pEsa[nIdx].bOrbit = false;
-					pEsa[nIdx].nOrbitIdx = -1;
+					
+					// エサの削除処理
+					DelEsa(nIdx, false, -1);	// 削除したエサの種類を獲得
 				}
 			}
 
 			if (nCounter % ((rand() % 300 + 1)) == 0)
 			{// 一定時間ごとに波紋
-				SetMeshRing(D3DXVECTOR3(pPot->pos.x, 0.0f, pPot->pos.z), FIRST_POS,
+				SetMeshRing(MESHRINGTYPE_RIPPLES, D3DXVECTOR3(pPot->pos.x, 0.0f, pPot->pos.z), FIRST_POS,
 					D3DXVECTOR2(24.0f, 1.0f), D3DXVECTOR2(13.0f, 8.0f), D3DXCOLOR(WHITE_VTX.r, WHITE_VTX.g, WHITE_VTX.b, 0.8f));
 			}
 
@@ -426,18 +429,35 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 			{// プレイヤーの判定
 				if ((pPot->nFood == 0 && pPlayer->Potstate == POTSTATE_NONE) || pPlayer->Potstate == POTSTATE_HIDE)
 				{// 中身が空
-					if (bTentacle == false && pPlayer->nFood > 0)
-					{// 触手じゃない
+					if (bTentacle == true && pPlayer->nFood > 0)
+					{// 触手
 						pPlayer->Potstate = POTSTATE_HIDE;
-
-						int nIdx = Dequeue(&pPlayer->esaQueue);
-						pPlayer->nFood--;
 						pPlayer->nPotIdx = nCntPot;
-						SetSubUiEsa(pPlayer->nIdx);
-						SetEsa(nIdx, true, ESA_ACTTYPE_GOTO_POT, 0, pPlayer->pos, FIRST_POS);
+						int nFood = pPlayer->nFood;
 
-						Enqueue(&pPot->esaQueue, nIdx);
-						pPot->nFood++;
+						for (int nCnt = 0; nCnt < nFood; nCnt++)
+						{
+							if (pPlayer->nFood > 0)
+							{// 入れれる数だけ入れる
+								int nIdx = Dequeue(&pPlayer->esaQueue);
+								pPlayer->nFood--;
+								SetSubUiEsa(pPlayer->nIdx);
+								SetEsa(nIdx, true, ESA_ACTTYPE_GOTO_POT, pPlayer->nPotIdx, pPlayer->pos, FIRST_POS);
+
+								Enqueue(&pPot->esaQueue, nIdx);
+								pPot->nFood++;
+							}
+						}
+
+						if (pPlayer->mode == PLAYERMODE_TUTORIAL)
+						{// チュートリアルモード
+							SetTutorialTxtState(TUTTXTTYPE_POT, TUTTXTSTATE_CLEAR);
+						}
+						
+						// 衝撃波エフェクトの生成
+						SetMeshRing(MESHRINGTYPE_SHOCKWAVE, pPot->pos, CalcShockWaveRot(pPot->pos, pPlayer->pos),D3DXVECTOR2(16.0f,1.0f),D3DXVECTOR2(10.0f,7.0f),D3DXCOLOR(1.0f,1.0f,1.0f,1.0f));
+						
+						PlaySound(SOUND_SE_INBAIT);
 					}
 				}
 				else if (pPot->nFood > 0 && pPlayer->Potstate != POTSTATE_HIDE)
@@ -454,13 +474,23 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 							{// 持てる数だけ持つ
 								int nIdx = Dequeue(&pPot->esaQueue);
 								pPot->nFood--;
-								SetEsa(nIdx, true,ESA_ACTTYPE_GOTO_PLAYER, 0, pPot->pos, FIRST_POS);
+								SetEsa(nIdx, true,ESA_ACTTYPE_GOTO_PLAYER, pPlayer->nIdx, pPot->pos, FIRST_POS);
 
 								//SetAddUiEsa(pPlayer->nIdx, nIdx);
 								//Enqueue(&pPlayer->esaQueue, nIdx);
 								//pPlayer->nFood++;
 							}
 						}
+
+						if (pPlayer->mode == PLAYERMODE_TUTORIAL)
+						{// チュートリアルモード
+							SetTutorialTxtState(TUTTXTTYPE_POT, TUTTXTSTATE_CLEAR);
+						}
+
+						// 衝撃波エフェクトの生成
+						SetMeshRing(MESHRINGTYPE_SHOCKWAVE, pPot->pos, CalcShockWaveRot(pPot->pos, pPlayer->pos), D3DXVECTOR2(16.0f, 1.0f), D3DXVECTOR2(10.0f, 7.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+
+						PlaySound(SOUND_SE_OUTBAIT);
 					}
 					else if (bTentacle == false)
 					{// もし触手を伸ばしてない
@@ -472,15 +502,22 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 			{// CPUの判定
 				if ((pPot->nFood == 0 && pComputer->Potstate == POTSTATE_NONE) || pComputer->Potstate == POTSTATE_HIDE)
 				{// 中身が空
-					if (bTentacle == false && pComputer->nFoodCount > 0)
-					{// 触手じゃない
+					if (bTentacle == true && pComputer->nFoodCount > 0)
+					{// 触手
 						pComputer->Potstate = POTSTATE_HIDE;
+						int nFood = pComputer->nFoodCount;
 
-						int nIdx = Dequeue(&pComputer->esaQueue);
-						pComputer->nFoodCount--;
+						for (int nCnt = 0; nCnt < nFood; nCnt++)
+						{
+							if (pComputer->nFoodCount > 0)
+							{// 入れれる数だけ入れる
+								int nIdx = Dequeue(&pComputer->esaQueue);
+								pComputer->nFoodCount--;
 
-						Enqueue(&pPot->esaQueue, nIdx);
-						pPot->nFood++;
+								Enqueue(&pPot->esaQueue, nIdx);
+								pPot->nFood++;
+							}
+						}
 					}
 				}
 				else if (pPot->nFood > 0 && pComputer->Potstate != POTSTATE_HIDE)

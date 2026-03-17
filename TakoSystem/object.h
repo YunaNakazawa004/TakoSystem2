@@ -13,7 +13,7 @@
 // マクロ定義
 //*****************************************************************************
 #define MAX_OBJECTMODEL			(30)									// 配置物モデルの最大数
-#define MAX_OBJECT				(150)									// 配置物の最大数
+#define MAX_OBJECT				(100)									// 配置物の最大数
 
 //*****************************************************************************
 // 配置物の状態
@@ -50,9 +50,10 @@ typedef struct
 	OBJECTSTATE state;						// 状態
 	int nCounterState;						// 状態カウンター
 	int nType;								// 種類
-	int nIdxShadow;							// 影
+	int nIdxSafe;							// 安地
 	bool bUse;								// 使用しているかどうか
 	bool bCollision;						// 当たり判定するかどうか
+	bool bTutorial;							// チュートリアルかどうか
 	char sFileName[128];					// モデル名
 }Object;
 
@@ -63,7 +64,7 @@ void InitObject(const char* pStr);
 void UninitObject(void);
 void UpdateObject(void);
 void DrawObject(void);
-void SetObject(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nIdx, bool bCollision);
+void SetObject(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nIdx, bool bCollision, bool bTutorial);
 void SetObjectRandom(int nType, D3DXVECTOR3 posMin, D3DXVECTOR3 posMax, int nAmount);
 Object* GetObjectAll(void);
 ObjectModel* GetObjectModel(void);

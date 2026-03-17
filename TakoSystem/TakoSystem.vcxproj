@@ -148,6 +148,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="bubble.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="computer.cpp" />
     <ClCompile Include="confetti.cpp" />
@@ -158,6 +159,7 @@
     <ClCompile Include="fade.cpp" />
     <ClCompile Include="file.cpp" />
     <ClCompile Include="fishes.cpp" />
+    <ClCompile Include="foodnum.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="light.cpp" />
@@ -180,19 +182,25 @@
     <ClCompile Include="result.cpp" />
     <ClCompile Include="screen.cpp" />
     <ClCompile Include="seadust.cpp" />
+    <ClCompile Include="seaweed.cpp" />
     <ClCompile Include="sound.cpp" />
+    <ClCompile Include="spotlight.cpp" />
+    <ClCompile Include="spray.cpp" />
     <ClCompile Include="stage.cpp" />
     <ClCompile Include="time.cpp" />
     <ClCompile Include="title.cpp" />
     <ClCompile Include="tutorial.cpp" />
     <ClCompile Include="tutorialtxt.cpp" />
     <ClCompile Include="ui_esa.cpp" />
+    <ClCompile Include="ui_esawindow.cpp" />
     <ClCompile Include="ui_gaugeicon.cpp" />
     <ClCompile Include="ui_result_getscore.cpp" />
+    <ClCompile Include="ui_tutorial.cpp" />
     <ClCompile Include="watetrsurf.cpp" />
     <ClCompile Include="oceancurrents.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="bubble.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="computer.h" />
     <ClInclude Include="confetti.h" />
@@ -203,6 +211,7 @@
     <ClInclude Include="fade.h" />
     <ClInclude Include="file.h" />
     <ClInclude Include="fishes.h" />
+    <ClInclude Include="foodnum.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="light.h" />
@@ -225,15 +234,20 @@
     <ClInclude Include="result.h" />
     <ClInclude Include="screen.h" />
     <ClInclude Include="seadust.h" />
+    <ClInclude Include="seaweed.h" />
     <ClInclude Include="sound.h" />
+    <ClInclude Include="spotlight.h" />
+    <ClInclude Include="spray.h" />
     <ClInclude Include="stage.h" />
     <ClInclude Include="time.h" />
     <ClInclude Include="title.h" />
     <ClInclude Include="tutorial.h" />
     <ClInclude Include="tutorialtxt.h" />
     <ClInclude Include="ui_esa.h" />
+    <ClInclude Include="ui_esawindow.h" />
     <ClInclude Include="ui_gaugeicon.h" />
     <ClInclude Include="ui_result_getscore.h" />
+    <ClInclude Include="ui_tutorial.h" />
     <ClInclude Include="watersurf.h" />
     <ClInclude Include="oceancurrents.h" />
   </ItemGroup>

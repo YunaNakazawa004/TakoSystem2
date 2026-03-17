@@ -12,7 +12,7 @@
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define MAX_ORBIT_VTX		(100)			// オービットの頂点数
+#define MAX_ORBIT_VTX		(50)			// オービットの頂点数
 
 //*****************************************************************************
 // メッシュオービットの構造体
@@ -40,5 +40,6 @@ void DrawMeshOrbit(void);
 void SetMeshOrbitPos(int nIdx, D3DXVECTOR3 Offset0, D3DXVECTOR3 Offset1, D3DXCOLOR col0, D3DXCOLOR col1, D3DMATRIX* pMtxParent);
 int SetMeshOrbit(D3DXVECTOR3 Offset0, D3DXVECTOR3 Offset1, D3DXCOLOR col0, D3DXCOLOR col1, D3DMATRIX* pMtxParent);
 MeshOrbit* GetMeshOrbit(void);
+void DeleteMeshOrbit(int nIdx);
 
 #endif

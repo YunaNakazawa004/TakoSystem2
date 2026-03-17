@@ -50,9 +50,12 @@ LPDIRECT3D9 g_pD3D = NULL;							// Direct3Dオブジェクトへのポインタ
 LPDIRECT3DDEVICE9 g_pD3DDevice = NULL;				// Direct3Dデバイスへのポインタ
 MODE g_mode = MODE_LOGO;							// 現在のモード
 int g_nCountFPS = 0;								// FPSカウンタ
-bool g_bWindowSize = FALSE;							// ウィンドウサイズ(TRUE : ウィンドウ FALSE : フルスクリーン)
+bool g_bWindowSize = TRUE;							// ウィンドウサイズ(TRUE : ウィンドウ FALSE : フルスクリーン)
 
 int g_nDebugCounter = 0;
+int g_nFPSUnder = 0;
+
+int g_nCounterOneLoop = 0;	// モードのループ回数
 
 //=============================================================================
 // メイン関数
@@ -117,6 +120,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, LPSTR lpCmdLine
 	}
 
 	g_nDebugCounter = 0;	// デバッグカウンタを初期化
+	g_nFPSUnder = 0;		// FPS60未満になった回数を初期化
 
 	// 分解能を設定
 	timeBeginPeriod(1);
@@ -157,6 +161,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, LPSTR lpCmdLine
 				g_nCountFPS = (dwFrameCount * 1000) / (dwCurrentTime - dwFPSLastTime);
 				dwFPSLastTime = dwCurrentTime;			// FPSを測定した時刻を保存
 				dwFrameCount = 0;						// フレームカウントをクリア
+
+				if (g_nCountFPS < ONE_SECOND)
+				{// FPSが60未満
+					g_nFPSUnder++;
+				}
 			}
 
 			if ((dwCurrentTime - dwExecLastTime) >= (1000 / 60))
@@ -433,7 +442,16 @@ void Update(void)
 	UpdateDebugProc();
 	PrintDebugProc("FPS : %d\n", g_nCountFPS);
 	PrintDebugProc("DebugCounter : %d\n", g_nDebugCounter);
+	PrintDebugProc("FPS60未満 : %d\n", g_nFPSUnder);
 	
+	PrintDebugProc("MODE %s\n", (g_mode == MODE_LOGO)     ? "LOGO" 
+							  : (g_mode == MODE_TITLE)    ? "TITLE"
+							  : (g_mode == MODE_TUTORIAL) ? "TUTORIAL"
+							  : (g_mode == MODE_GAME)	  ? "GAME"
+							  : (g_mode == MODE_RESULT)	  ? "RESULT"
+							  : (g_mode == MODE_RANKING)  ? "RANKING"
+							  : "NONE");
+
 	// キーボードの更新処理
 	UpdateKeyboard();
 
@@ -619,7 +637,10 @@ void SetMode(MODE mode)
 
 	case MODE_RANKING:			// ランキング画面
 		UninitRanking();
-
+		
+#ifdef ENABLE_ONELAP
+		FileLogPass("OneLap");
+#endif
 		break;
 
 	case MODE_LOGO:				// ロゴ画面
@@ -627,6 +648,8 @@ void SetMode(MODE mode)
 
 		break;
 	}
+
+	g_mode = mode;			// モードを保存する
 
 	// 新しい画面(モード)の初期化処理
 	switch (mode)
@@ -661,8 +684,6 @@ void SetMode(MODE mode)
 
 		break;
 	}
-
-	g_mode = mode;			// モードを保存する
 #endif
 }
 
@@ -716,7 +737,7 @@ void SetFog(D3DXCOLOR col, float fFogStart, float fFogEnd, bool bUse)
 	g_pD3DDevice->SetRenderState(D3DRS_FOGCOLOR, col);
 
 	// バーテックスフォグ(線形公式)を使用
-	g_pD3DDevice->SetRenderState(D3DRS_FOGTABLEMODE, D3DFOG_LINEAR);		// D3DRS_FOGTABLEMODE (ピクセルフォグ) / D3DRS_FOGVERTEXMODE (バーテックスフォグ)
+	g_pD3DDevice->SetRenderState(D3DRS_FOGVERTEXMODE, D3DFOG_LINEAR);		// D3DRS_FOGTABLEMODE (ピクセルフォグ) / D3DRS_FOGVERTEXMODE (バーテックスフォグ)
 
 	// フォグ範囲設定
 	g_pD3DDevice->SetRenderState(D3DRS_FOGSTART, *((LPDWORD)(&fFogStart)));

@@ -130,6 +130,27 @@
     <ClCompile Include="confetti.cpp">
       <Filter>cppファイル</Filter>
     </ClCompile>
+    <ClCompile Include="spray.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="seaweed.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="bubble.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="spotlight.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_tutorial.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="foodnum.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_esawindow.cpp">
+      <Filter>cppファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h">
@@ -259,6 +280,27 @@
       <Filter>hファイル</Filter>
     </ClInclude>
     <ClInclude Include="confetti.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="spray.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="seaweed.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="bubble.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="spotlight.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_tutorial.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="foodnum.h">
+      <Filter>hファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_esawindow.h">
       <Filter>hファイル</Filter>
     </ClInclude>
   </ItemGroup>

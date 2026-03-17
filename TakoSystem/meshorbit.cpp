@@ -11,7 +11,7 @@
 // マクロ定義
 //*****************************************************************************
 #define MAX_MESHORBIT			(128)									// メッシュオービットの数
-#define ALPHA_MINUS				(0.03f)									// アルファ値の減衰
+#define ALPHA_MINUS				(0.03f)								// アルファ値の減衰
 
 //*****************************************************************************
 // グローバル変数
@@ -284,22 +284,10 @@ void DrawMeshOrbit(void)
 			pDevice->SetFVF(FVF_VERTEX_3D);
 
 			// テクスチャの設定
-			pDevice->SetTexture(0, g_apTextureMeshOrbit[0]);
+			pDevice->SetTexture(0, NULL);
 
 			// ポリゴンの描画
-			//int primitiveCount = (MAX_ORBIT_VTX / 2 - 1) * 2;
-			/*HRESULT hr = */pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, MAX_ORBIT_VTX, 0, MAX_ORBIT_VTX - 2);
-			//pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, MAX_ORBIT_VTX - 2);
-			//OutputDebugStringA("Before DrawMeshOrbit\n");
-			//HRESULT hr = pDevice->DrawPrimitive(D3DPT_LINELIST, 0, MAX_ORBIT_VTX / 2);
-			//OutputDebugStringA("After DrawMeshOrbit\n");
-
-			//if (FAILED(hr))
-			//{
-			//	char buf[128];
-			//	sprintf_s(buf, "DrawMeshOrbit FAILED hr=0x%08X\n", hr);y
-			//	OutputDebugStringA(buf);
-			//}
+			pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, MAX_ORBIT_VTX, 0, MAX_ORBIT_VTX - 2);
 		}
 
 		// レンダーステートを元に戻す
@@ -402,4 +390,18 @@ int SetMeshOrbit(D3DXVECTOR3 Offset0, D3DXVECTOR3 Offset1, D3DXCOLOR col0, D3DXC
 MeshOrbit* GetMeshOrbit(void)
 {
 	return &g_aMeshOrbit[0];
+}
+
+//=============================================================================
+// メッシュオービットの破棄
+//=============================================================================
+void DeleteMeshOrbit(int nIdx)
+{
+	if (nIdx < 0 || nIdx >= MAX_MESHORBIT)
+	{// インデックスがない場合は無視
+		OutputDebugStringA("DeleteMeshOrbitPos: invalid idx\n");
+		return;
+	}
+
+	g_aMeshOrbit[nIdx].bUse = false;
 }

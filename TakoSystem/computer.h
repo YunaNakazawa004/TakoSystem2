@@ -71,11 +71,13 @@ typedef struct
 typedef struct 
 {
 	int nIdx;					// タコのID
+	int nCounter;				// 万能カウンター
 	CPUSTATE state;				// 現在の状態
 	int nCounterState;			// 状態カウンター
 	CPUTENTACLESTATE TentState;	// 触手の状態
 	Physics phys;				// 物理情報
 	bool bUse;					// 使用しているかどうか
+	bool bLand;					// 地面についているかどうか
 
 	// ターゲット情報
 	int nTargetFoodIdx;			// 狙っているエサ
@@ -177,6 +179,7 @@ D3DXVECTOR3 GetNearestEnemy(Computer* pComputer);
 D3DXVECTOR3 GetHidePosition(Computer* pComputer);
 
 // スコア計算
+void CalcScore(Computer* pComputer);
 void CalcFoodScore(Computer* pComputer);
 void CalcAttackScore(Computer* pComputer);
 void CalcEscapeScore(Computer* pComputer);
@@ -206,7 +209,7 @@ void SetComputer(D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType);
 void SetRandomComputer(int nAmount);
 Computer* GetComputer(void);
 Model_Info* GetTakoModel(void);
-void CollisionInk(int nIdx, bool bCPU, D3DXVECTOR3 pos);
+void CollisionInk(D3DXVECTOR3 pos, bool* bBlind, int* pCounter, int nIdx);
 bool CollisionOcto(int nIdx, bool bCPU, D3DXVECTOR3 pos);
 
 // モーション

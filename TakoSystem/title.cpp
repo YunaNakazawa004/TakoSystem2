@@ -10,6 +10,8 @@
 #include "light.h"
 #include "fade.h"
 #include "camera.h"
+#include "effect_3d.h"
+#include "particle_3d.h"
 
 #include "object.h"
 #include "meshcylinder.h"
@@ -17,11 +19,13 @@
 #include "meshorbit.h"	// 消えない
 #include "waterSurf.h"
 #include "computer.h"
+#include "spray.h"
 
 // マクロ定義
 #define	MAX_TITLE	(8)	// タイトルで表示するテクスチャの最大数
 #define	RANKING_DELEY	(1500)	// ランキング移行に掛かる時間（25秒）
 #define	CLEAR_DELEY	(60)	// 登場→消滅にかかる時間
+#define	CURSOR_DELEY	(20)	// CURSOR移動にかかる時間
 #define	ENTRY_DELEY	(90)	// 登場→消滅→再登場までにかかる時間
 #define	TITLE_DELEY_MAX	(500.0f)	// タイトルの最大数
 
@@ -35,8 +39,10 @@ int g_PlayerSelect = 1;	// プレイヤーの人数
 
 //TITLECURSOR g_Cursor;
 int g_CursorPos;	// カーソルの位置情報
+int g_CursorDeley;	// カーソルの表示時間
 
 bool g_bTestTitle = true;
+bool g_CursorSwitch;	// カーソルの切り替え処理
 
 const char* c_apFilenameTitle[] =
 {
@@ -45,7 +51,7 @@ const char* c_apFilenameTitle[] =
 	"data/TEXTURE/START004.png",
 	"data/TEXTURE/number000.png",
 	"data/TEXTURE/WPO.png",
-	"data/TEXTURE/CURSOR.png",
+	"data/TEXTURE/CURSOR000.png",
 	"data/TEXTURE/SELECT_CURSOR.png",
 	"data/TEXTURE/SELECT_CURSOR.png",
 };
@@ -62,12 +68,15 @@ void InitTitle(void)
 	g_TitleDeley = 0.0f;		// ディレイの値を初期化	g_PressEnterDeley = 0;
 
 	g_CursorPos = 0;			// カーソルの位置を初期化
+	g_CursorDeley = 0;
+	g_CursorSwitch = false;
 
 	int nCamera = rand() % 6;	// カメラの位置設定
 	int nVecR = rand() % 5;		// カメラの角度設定
 
+	g_PressEnterDeley = 0;
 
-
+	g_PlayerSelect = 1;
 
 	for (int nCntTexture = 0; nCntTexture < sizeof c_apFilenameTitle / sizeof(c_apFilenameTitle[0]); nCntTexture++)
 	{
@@ -200,10 +209,8 @@ void InitTitle(void)
 	// 頂点バッファをアンロックする
 	g_pVtxBuffTitle->Unlock();
 
-	DebugADD();
-
 	// カメラの数の設定
-	SetNumCamera(1);
+	SetNumCamera(1); 
 
 	// カメラの位置設定
 	SetCameraPos(0,
@@ -219,26 +226,36 @@ void InitTitle(void)
 
 	// CPUの初期化処理
 	InitComputer();
+	SetRandomComputer(ALL_OCTO);
 
 	// メッシュシリンダーの初期化処理
-	InitMeshCylinder();	DebugADD();
-	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 2.0f), D3DXVECTOR2(INCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, MESHCYLINDERTYPE_ROCK);
-	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(OUTCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), true, MESHCYLINDERTYPE_SEA);
+	InitMeshCylinder();	
+	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 2.0f), D3DXVECTOR2(INCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, true, MESHCYLINDERTYPE_ROCK, MESHCYLINDERSTATE_NONE);
+	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(OUTCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), true, true, MESHCYLINDERTYPE_SEA, MESHCYLINDERSTATE_NONE);
 
 	// メッシュフィールドの初期化処理
 	InitMeshField();
+
+	// 飛沫の初期化処理
+	InitSpray();
 
 	// メッシュオービットの初期化処理
 	InitMeshOrbit();
 
 	// 水面の初期化処理
 	InitWaterSurf();
+	SetWaterSurf({ 0.0f,CYLINDER_HEIGHT,0.0f }, { 0.0f,0.0f,0.0f }, { 64,64 }, { (8000.0f) / 64, (8000.0f) / 64 }, D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.4f));
 
 	// 配置物の初期化処理
 	InitObject("data\\objpos001.txt");	// 必ず最後(メッシュ後)に初期化する
 
-	// サウンドの再生
+	// 3Dエフェクトの初期化処理
+	InitEffect3D();
 
+	// 3Dパーティクルの初期化処理
+	InitParticle3D();
+
+	// サウンドの再生
 	PlaySound(SOUND_BGM_TITLE);	
 }
 
@@ -276,11 +293,20 @@ void UninitTitle(void)
 	// メッシュフィールドの終了処理
 	UninitMeshField();
 
+	// 飛沫の終了処理
+	UninitSpray();
+
 	// メッシュオービットの終了処理
 	UninitMeshOrbit();
 
 	// 配置物の終了処理
 	UninitObject();
+
+	// 3Dエフェクトの終了処理
+	UninitEffect3D();
+
+	// 3Dパーティクルの終了処理
+	UninitParticle3D();
 
 	// 水面の終了処理
 	UninitWaterSurf();
@@ -291,6 +317,7 @@ void UninitTitle(void)
 //===================================================================
 void UpdateTitle(void)
 {
+
 #ifdef _DEBUG
 #if 0 // タイトルの遷移(F11で解除)
 
@@ -303,6 +330,27 @@ void UpdateTitle(void)
 #endif 
 #endif
 
+	if (((GetJoypadStick(0, JOYKEY_LEFTSTICK_UP, NULL, NULL) == true) || 
+		(GetJoypadStick(0, JOYKEY_LEFTSTICK_DOWN, NULL, NULL) == true) || 
+		(GetJoypadStick(0, JOYKEY_LEFTSTICK_LEFT, NULL, NULL) == true) || 
+		(GetJoypadStick(0, JOYKEY_LEFTSTICK_RIGHT, NULL, NULL) == true)) && g_CursorSwitch == false)
+	{
+		g_CursorDeley = CURSOR_DELEY;
+		g_CursorSwitch = true;
+	}
+	else
+	{
+		g_CursorDeley++;
+		if ((GetJoypadStick(0, JOYKEY_LEFTSTICK_UP, NULL, NULL) == false) &&
+			(GetJoypadStick(0, JOYKEY_LEFTSTICK_DOWN, NULL, NULL) == false) &&
+			(GetJoypadStick(0, JOYKEY_LEFTSTICK_LEFT, NULL, NULL) == false) &&
+			(GetJoypadStick(0, JOYKEY_LEFTSTICK_RIGHT, NULL, NULL) == false))
+		{
+			g_CursorSwitch = false;
+		}
+
+	}
+
 	// CPUの更新処理
 	UpdateComputer();
 
@@ -312,16 +360,23 @@ void UpdateTitle(void)
 	// メッシュフィールドの更新処理
 	UpdateMeshField();
 
+	// 飛沫の更新処理
+	UpdateSpray();
+
 	// メッシュオービットの更新処理
 	UpdateMeshOrbit();
 
 	// 配置物の更新処理
 	UpdateObject();
 
+	// 3Dエフェクトの更新処理
+	UpdateEffect3D();
+
+	// 3Dパーティクルの更新処理
+	UpdateParticle3D();
+
 	// 水面の更新処理
 	UpdateWaterSurf();
-	// フェード情報の取得
-	FADE pFade = GetFade();
 
 	if (g_TitleDeley < TITLE_DELEY_MAX)
 	{// 特定の位置まで繰り返す
@@ -370,7 +425,7 @@ void UpdateTitle(void)
 		}
 		else if (nCntTitle == 2)
 		{// タイトル：PRESS ENTER
-			if (pFade == FADE_OUT && g_PressEnterDeley <= RANKING_DELEY)
+			if (GetFade() == FADE_OUT && g_PressEnterDeley <= RANKING_DELEY)
 			{// PRESSENTERをクリック
 				pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f * (g_PressEnterDeley % 3));	// 0~255の値を設定
 				pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f * (g_PressEnterDeley % 3));
@@ -500,48 +555,50 @@ void UpdateTitle(void)
 	// 頂点バッファをアンロックする
 	g_pVtxBuffTitle->Unlock();
 
-	if ((GetKeyboardTrigger(DIK_W) || GetJoypadTrigger(0, JOYKEY_UP) ||
-		GetJoypadStick(0, JOYKEY_LEFTSTICK_UP, NULL, NULL) == true))
+	if ((GetKeyboardRepeat(DIK_W) || GetJoypadRepeat(0, JOYKEY_UP) ||
+		(GetJoypadStick(0, JOYKEY_LEFTSTICK_UP, NULL, NULL) == true && 
+			(GetFade() == FADE_NONE && g_CursorDeley % CURSOR_DELEY == 0))))
 	{// カーソル下移動
 
 		g_CursorPos--;
 
-		if (g_CursorPos < 0) g_CursorPos = TITLECURSOR_PLAYER_SELECT;
+		if (g_CursorPos < 0) g_CursorPos = TITLECURSOR_PLAY_START;
 		PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
-		if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
+		if (GetFade() != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 	}
-	else if ((GetKeyboardTrigger(DIK_S) || GetJoypadTrigger(0, JOYKEY_DOWN) ||
-		GetJoypadStick(0, JOYKEY_LEFTSTICK_DOWN, NULL, NULL) == true))
+	else if ((GetKeyboardRepeat(DIK_S) || GetJoypadRepeat(0, JOYKEY_DOWN) ||
+		(GetJoypadStick(0, JOYKEY_LEFTSTICK_DOWN, NULL, NULL) == true && 
+		(GetFade() == FADE_NONE && g_CursorDeley % CURSOR_DELEY == 0))))
 	{// カーソル上移動
 
 		g_CursorPos++;
 
-		if (g_CursorPos >= TITLECURSOR_MAX) g_CursorPos = TITLECURSOR_PLAY_START;
+		if (g_CursorPos >= TITLECURSOR_MAX) g_CursorPos = TITLECURSOR_PLAYER_SELECT;
 		PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
-		if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
+		if (GetFade() != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 	}
 
 	if (g_CursorPos == TITLECURSOR_PLAYER_SELECT)
 	{
-		if ((GetKeyboardTrigger(DIK_A) || GetJoypadTrigger(0, JOYKEY_LEFT) ||
-			GetJoypadStick(0, JOYKEY_LEFTSTICK_LEFT, NULL, NULL) == true)
-			&& g_PlayerSelect > 1)
+		if ((GetKeyboardPress(DIK_A) || GetJoypadPress(0, JOYKEY_LEFT) ||
+			(GetJoypadStick(0, JOYKEY_LEFTSTICK_LEFT, NULL, NULL) == true) && 
+			(g_CursorDeley % CURSOR_DELEY == 0)) && g_PlayerSelect > 1)
 		{
 
 			g_PlayerSelect--;
 
 			PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
-			if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
+			if (GetFade() != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 		}
-		else if ((GetKeyboardTrigger(DIK_D) || GetJoypadTrigger(0, JOYKEY_RIGHT) ||
-			GetJoypadStick(0, JOYKEY_LEFTSTICK_RIGHT, NULL, NULL) == true)
-			&& g_PlayerSelect < MAX_PLAYER)
+		else if ((GetKeyboardPress(DIK_D) || GetJoypadPress(0, JOYKEY_RIGHT) ||
+			(GetJoypadStick(0, JOYKEY_LEFTSTICK_RIGHT, NULL, NULL) == true) && 
+			(g_CursorDeley % CURSOR_DELEY == 0)) && g_PlayerSelect < MAX_PLAYER)
 		{
 
 			g_PlayerSelect++;
 
 			PlaySound(SOUND_SE_CURSORMOVE);	// 選択音
-			if (pFade != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
+			if (GetFade() != FADE_OUT) g_PressEnterDeley = 0;	// ディレイリセット
 		}
 	}
 	else if (g_CursorPos == TITLECURSOR_PLAY_START)
@@ -549,7 +606,7 @@ void UpdateTitle(void)
 		if ((GetKeyboardTrigger(DIK_RETURN) == true ||
 			GetJoypadTrigger(0, JOYKEY_START) == true ||
 			GetJoypadTrigger(0, JOYKEY_A) == true) &&
-			pFade == FADE_NONE && g_TitleDeley == TITLE_DELEY_MAX)
+			GetFade() == FADE_NONE && g_TitleDeley == TITLE_DELEY_MAX)
 		{// 決定キー（ENTERキー）が押された
 			// モード設定
 			PlaySound(SOUND_SE_DECISION);
@@ -565,11 +622,19 @@ void UpdateTitle(void)
 		g_TitleDeley = TITLE_DELEY_MAX;
 	}
 
-	if (pFade == FADE_NONE && g_PressEnterDeley > RANKING_DELEY)
+	if (GetFade() == FADE_NONE && g_PressEnterDeley > RANKING_DELEY)
 	{// 時間経過でランキングへ移行
 
 		SetFade(MODE_LOGO);
 	}
+
+#ifdef ENABLE_ONELAP
+	if (GetFade() == FADE_NONE)
+	{// フェード終了字にゲーム
+
+		SetFade(MODE_TUTORIAL);
+	}
+#endif
 }
 
 //===================================================================
@@ -584,23 +649,32 @@ void DrawTitle(void)
 		SetFog(D3DXCOLOR(0.0f, 0.1f, 0.2f, 1.0f), 1000.0f, 0.0f, false);
 	}
 
+#if 1
 	// 配置物の描画処理
 	DrawObject();
 
-#if 1
 	// CPUの描画処理
 	DrawComputer();
-#endif
+
 	// メッシュシリンダーの描画処理
 	DrawMeshCylinder();
+#endif
 
-#if 1
 	// メッシュフィールドの描画処理
 	DrawMeshField();
 
+	// 飛沫の描画処理
+	DrawSpray();
+
+	// 3Dエフェクトの描画処理
+	DrawEffect3D();
+
+	// 3Dパーティクルの描画処理
+	DrawParticle3D();
+
 	// メッシュオービットの描画処理
 	DrawMeshOrbit();
-#endif
+
 	// 水面の描画処理
 	DrawWaterSurf();
 

@@ -24,6 +24,17 @@ typedef enum
 
 }RESULTSTATE;
 
+typedef enum
+{
+	RESULTTYPE_NULL = -1,		// [-1]無し
+	RESULTTYPE_ST_BACK,			// [ 0]集計開始背景
+	RESULTTYPE_ST_TEXT,			// [ 1]集計開始テキスト
+	
+	RESULTTYPE_MAX				// 最大値
+
+}RESULTTYPE;
+
+
 // リザルトの配置種類
 typedef enum
 {
@@ -75,7 +86,7 @@ void DelResult				// リザルトの消去処理
 (RESULTLAYTYPE type);
 
 int SetResultPolygon		// リザルトのポリゴンの設定処理
-(int nIdxTexture, bool bAlphaBlend, int nDrowLevel,			// テクスチャインデックス, aブレンドをするか
+(RESULTTYPE type, int nIdxTexture, bool bAlphaBlend, int nDrowLevel,			// テクスチャインデックス, aブレンドをするか
  D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 addRot,		// 位置, 角度, 加算角度
  float fSizeWidth, float fSizeHeight,						// 大きさ(幅, 高さ)
  D3DXVECTOR2 texPos, D3DXVECTOR2 texSize,					// テクスチャ座標, テクスチャサイズ
@@ -91,5 +102,9 @@ int GetRankingForResult		// リザルトからランキングに情報を渡す処理
 void SetLoadResult			// リザルトの読み取り処理
 (const char* pFilename);
 
+int GetNowEsaTypeResult		// リザルトの集計中のエサの種類を返す処理
+(void);	
+
+RESULTSTATE GetResultState(void);
 
 #endif

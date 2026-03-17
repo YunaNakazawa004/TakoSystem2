@@ -45,8 +45,8 @@ MeshField g_aMeshField[MAX_MESHFIELD];						// メッシュフィールドの情報
 //*****************************************************************************
 const char* c_apFilenameMeshField[MESHFIELDTYPE_MAX] =
 {
-	"data\\TEXTURE\\In_the_sea000.jpg",
 	"data\\TEXTURE\\tex_suna001.jpg",
+	"data\\TEXTURE\\watersurface.jpg",
 };
 
 //=============================================================================
@@ -74,7 +74,7 @@ void InitMeshField(void)
 		g_aMeshField[nCntMeshField].rot = FIRST_POS;
 		g_aMeshField[nCntMeshField].block = FIRST_SIZE;
 		g_aMeshField[nCntMeshField].size = FIRST_SIZE;
-		g_aMeshField[nCntMeshField].type = MESHFIELDTYPE_ROAD;
+		g_aMeshField[nCntMeshField].type = MESHFIELDTYPE_SAND;
 		g_aMeshField[nCntMeshField].bUse = false;
 	}
 }
@@ -121,7 +121,13 @@ void UpdateMeshField(void)
 	{
 		if (g_aMeshField[nCntMeshField].bUse == true)
 		{// 使用しているとき
-			VERTEX_3D* pVtx;					// 頂点情報へのポインタ
+			static float speedX = 0.0002f;			// 速度
+			static float speedY = 0.0002f;			// 速度
+			static D3DXVECTOR2 move = { 0.0f,0.0f };	// 移動量
+
+			move = { speedX, speedY };
+
+			VERTEX_3D_MALTI* pVtx;					// 頂点情報へのポインタ
 
 #if 0	// 調整用
 			static float fPoint = 0.01f;
@@ -158,9 +164,30 @@ void UpdateMeshField(void)
 					pVtx[0].pos.z = ((g_aMeshField[nCntMeshField].block.y * g_aMeshField[nCntMeshField].size.y) * 0.5f) - (nCntMeshField1 * g_aMeshField[nCntMeshField].size.y)
 						+ (cosf(g_aMeshField[nCntMeshField].posPoint.z) * 2.0f);
 
+					if (rand() % 100 == 0)
+					{// ランダムなタイミングで上下
+						g_aMeshField[nCntMeshField].fHeight[nCntMeshField2 + (nCntMeshField1 * ((int)g_aMeshField[nCntMeshField].block.x + 1))] 
+							+= (float)(rand() % 10) - 5.0f;
+
+						if (g_aMeshField[nCntMeshField].fHeight[nCntMeshField2 + (nCntMeshField1 * ((int)g_aMeshField[nCntMeshField].block.x + 1))]
+							< -10.0f)
+						{// 低すぎ
+							g_aMeshField[nCntMeshField].fHeight[nCntMeshField2 + (nCntMeshField1 * ((int)g_aMeshField[nCntMeshField].block.x + 1))] = -10.0f;
+						}
+						else if (g_aMeshField[nCntMeshField].fHeight[nCntMeshField2 + (nCntMeshField1 * ((int)g_aMeshField[nCntMeshField].block.x + 1))]
+							> 40.0f)
+						{// 高すぎ
+							g_aMeshField[nCntMeshField].fHeight[nCntMeshField2 + (nCntMeshField1 * ((int)g_aMeshField[nCntMeshField].block.x + 1))] = 40.0f;
+						}
+					}
+
 					g_aMeshField[nCntMeshField].posPoint.y = pVtx[0].pos.y;
 					pVtx[0].pos.y += (g_aMeshField[nCntMeshField].fHeight[nCntMeshField2 + (nCntMeshField1 * ((int)g_aMeshField[nCntMeshField].block.x + 1))]
 						- g_aMeshField[nCntMeshField].posPoint.y) * 0.05f;
+
+					// 頂点情報の設定
+					pVtx[0].texM.x += move.x;
+					pVtx[0].texM.y += move.y;
 
 					pVtx++;
 				}
@@ -185,6 +212,10 @@ void DrawMeshField(void)
 	{
 		if (g_aMeshField[nCntMeshField].bUse == true)
 		{// 使用しているとき
+			// テクスチャステージステートの設定
+			pDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+			pDevice->SetTextureStageState(1, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+			pDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_ADDSMOOTH);
 
 			// ワールドマトリックスの初期化
 			D3DXMatrixIdentity(&g_aMeshField[nCntMeshField].mtxWorld);
@@ -201,24 +232,24 @@ void DrawMeshField(void)
 			pDevice->SetTransform(D3DTS_WORLD, &g_aMeshField[nCntMeshField].mtxWorld);
 
 			// 頂点バッファをデータストリームに設定
-			pDevice->SetStreamSource(0, g_aMeshField[nCntMeshField].pVtxBuff, 0, sizeof(VERTEX_3D));
+			pDevice->SetStreamSource(0, g_aMeshField[nCntMeshField].pVtxBuff, 0, sizeof(VERTEX_3D_MALTI));
 
 			// インデックスバッファをデータストリームに設定
 			pDevice->SetIndices(g_aMeshField[nCntMeshField].pIdxBuff);
 
 			// 頂点フォーマットの設定
-			pDevice->SetFVF(FVF_VERTEX_3D);
+			pDevice->SetFVF(FVF_VERTEX_3D_MALTI);
 
 			// テクスチャの設定
 			if (g_aMeshField[nCntMeshField].type != -1 && g_aMeshField[nCntMeshField].type < MESHFIELDTYPE_MAX)
 			{// テクスチャがある場合
-
-				pDevice->SetTexture(0, g_apTextureMeshField[g_aMeshField[nCntMeshField].type]);
+				pDevice->SetTexture(0, g_apTextureMeshField[MESHFIELDTYPE_SAND]);
+				pDevice->SetTexture(1, /*NULL*/g_apTextureMeshField[MESHFIELDTYPE_WATER]);
 			}
 			else
 			{
-
 				pDevice->SetTexture(0, NULL);
+				pDevice->SetTexture(1, NULL);
 			}
 
 			// ポリゴンの描画
@@ -228,6 +259,9 @@ void DrawMeshField(void)
 				((int)g_aMeshField[nCntMeshField].block.x + 1) * ((int)g_aMeshField[nCntMeshField].block.y + 1),
 				0,
 				(((int)g_aMeshField[nCntMeshField].block.x) * ((int)g_aMeshField[nCntMeshField].block.y) * 2) + (((int)g_aMeshField[nCntMeshField].block.y - 1) * 4));
+		
+			// テクスチャステージステートの設定
+			pDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
 		}
 	}
 }
@@ -251,13 +285,13 @@ void SetMeshField(MESHFIELDTYPE type, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECT
 			g_aMeshField[nCntMeshField].bUse = true;
 
 			LPDIRECT3DDEVICE9 pDevice = GetDevice();			// デバイスへのポインタ
-			VERTEX_3D* pVtx;					// 頂点情報へのポインタ
+			VERTEX_3D_MALTI* pVtx;					// 頂点情報へのポインタ
 			WORD* pIdx;							// インデックス情報へのポインタ
 
 			// 頂点バッファの生成
-			pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * ((int)g_aMeshField[nCntMeshField].block.x + 1) * ((int)g_aMeshField[nCntMeshField].block.y + 1),
+			pDevice->CreateVertexBuffer(sizeof(VERTEX_3D_MALTI) * ((int)g_aMeshField[nCntMeshField].block.x + 1) * ((int)g_aMeshField[nCntMeshField].block.y + 1),
 				D3DUSAGE_WRITEONLY,
-				FVF_VERTEX_3D,
+				FVF_VERTEX_3D_MALTI,
 				D3DPOOL_MANAGED,
 				&g_aMeshField[nCntMeshField].pVtxBuff,
 				NULL);
@@ -283,6 +317,7 @@ void SetMeshField(MESHFIELDTYPE type, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECT
 
 					// テクスチャ座標の設定
 					pVtx[0].tex = D3DXVECTOR2((float)nCntMeshField2, (float)nCntMeshField1);
+					pVtx[0].texM = D3DXVECTOR2((float)nCntMeshField2 / 2.0f, (float)nCntMeshField1 / 2.0f);
 
 					pVtx++;
 				}
@@ -376,7 +411,7 @@ void CollisionMeshField(D3DXVECTOR3 pos, D3DXVECTOR3 rot, float fRadius, float f
 			continue;
 		}
 
-		VERTEX_3D* pVtx;					// 頂点情報へのポインタ
+		VERTEX_3D_MALTI* pVtx;					// 頂点情報へのポインタ
 
 		// 頂点バッファをロックし、頂点情報へのポインタを取得
 		g_aMeshField[nCntMeshField].pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
@@ -390,7 +425,7 @@ void CollisionMeshField(D3DXVECTOR3 pos, D3DXVECTOR3 rot, float fRadius, float f
 
 			if (D3DXVec2Length(&dist) < fRadius * 2.0f)
 			{// 近い頂点
-				g_aMeshField[nCntMeshField].fHeight[nCntPoint] = -15.0f;
+				g_aMeshField[nCntMeshField].fHeight[nCntPoint] = -5.0f;
 			}
 			else if (D3DXVec2Length(&dist) < fRadius * 6.0f)
 			{// 周辺

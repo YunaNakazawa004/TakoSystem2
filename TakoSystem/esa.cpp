@@ -7,17 +7,21 @@
 #include "main.h"
 
 #include "esa.h"
+#include "object.h"
 
 #include "input.h"
 #include "debugproc.h"
 
 #include "effect_3d.h"
+#include "bubble.h"
 
 #include "meshcylinder.h"
 #include "meshorbit.h"
 #include "watersurf.h"
 #include "player.h"
 #include "pot.h"
+
+#include "ui_esa.h"
 
 #include "oceancurrents.h"
 
@@ -61,6 +65,8 @@ int g_nNumEsatype;						// エサの種類の総数
 
 Esa g_aEsa[MAX_SET_ESA];				// エサの情報
 
+int g_nNumEsa;
+
 // エサの配置情報
 Esa_info g_aEsaInfo[] =
 {// {モデル種類, エサの挙動, 挙動の値, 位置, 角度}
@@ -69,6 +75,7 @@ Esa_info g_aEsaInfo[] =
 	{1, ESA_ACTTYPE_GOTO_PLAYER, 0, D3DXVECTOR3(0.0f, 1200.0f, 1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f)},
 };
 
+
 //========================================================================
 // エサの初期化処理
 //========================================================================
@@ -76,7 +83,18 @@ void InitEsa(bool bSet)
 {
 	// 変数宣言 ===========================================
 
-	int nCntEsa;
+	int nCntEsa;	// カウンタ
+
+	// 設定項目
+	int nSetType;		// 設定する種類
+	int nSetActType;	// 設定する行動種類
+	float fRandRadius;	// 設定する中心からの距離
+	float fRandAngle;	// 設定する角度
+	float fRandHeight;	// 設定する高さ
+	int nIdx;			// 設定したインデックス
+	D3DXVECTOR3 setPos;
+	D3DXVECTOR3 tmpVec3 = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
 
 	// ====================================================
 
@@ -93,6 +111,7 @@ void InitEsa(bool bSet)
 	for (nCntEsa = 0; nCntEsa < MAX_SET_ESA; nCntEsa++)
 	{
 		g_aEsa[nCntEsa].nIdxModel = -1;							// モデルのインデックスを初期化
+		g_aEsa[nCntEsa].nIdxBubble = -1;						// 泡のインデックスを初期化
 		g_aEsa[nCntEsa].nOrbitIdx = -1;							// 軌跡のインデックスを初期化
 		g_aEsa[nCntEsa].pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 位置を初期化
 		g_aEsa[nCntEsa].rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 角度を初期化
@@ -108,6 +127,8 @@ void InitEsa(bool bSet)
 
 	g_nNumEsatype = 0;									// エサの種類の総数を初期化
 	
+	g_nNumEsa = 0;
+
 	// エサの種類別情報の読み取り
 	SetLoadEsaData(&g_aEsaData[0], "data/FILE/esa.txt");
 
@@ -132,19 +153,46 @@ void InitEsa(bool bSet)
 		for (nCntEsa = 0; nCntEsa < 30; nCntEsa++)
 		{// 配置する数だけ繰り返す
 
-			int nSetType = rand() % g_nNumEsatype;																// ランダムで種類を設定
-			float fRandRadius =(float)(rand() % (int)(OUTCYLINDER_RADIUS - 100.0f) + (int)INCYLINDER_RADIUS);			// 中心からの距離を設定
-			float fRandAngle = ((float)(rand() % ((int)(D3DX_PI * 2000)) - (int)(D3DX_PI * 1000))) / 1000.0f;	// 角度(xy位置)を設定
-			float fRandHeight = (float)(rand() % (int)CYLINDER_HEIGHT);													// 高さを設定
+			nSetType = rand() % g_nNumEsatype;	// ランダムで種類を設定
+			
+			// 行動タイプを設定
+			if ((rand() % 100) < 30)
+			{// 値が30より小さい場合
 
-			// 位置を設定
-			D3DXVECTOR3 setPos = D3DXVECTOR3(sinf(fRandAngle) * fRandRadius,
-											 fRandHeight,
-											 cosf(fRandAngle) * fRandRadius);
+				nSetActType = ESA_ACTTYPE_LAND;		// 設定する種類を地面に設定
+			}
+			else
+			{// 値が30より大きい場合
+
+				nSetActType = ESA_ACTTYPE_SWIM;		// 設定する種類を泳ぐに設定
+			}
+
+			if (nSetActType == ESA_ACTTYPE_LAND)
+			{// エサの設定する行動種類が地面の場合
+
+				fRandHeight = 0.0f;
+			}
+			else
+			{
+				fRandHeight = (float)(rand() % (int)CYLINDER_HEIGHT);										// 高さを設定
+			}
+
+			do
+			{// 行動タイプが地面ではない。又はオブジェクトに接触していない状態まで設定し直す
+
+				// 設定位置(XZ)を求める 
+				fRandRadius = (float)(rand() % (int)(OUTCYLINDER_RADIUS - 100.0f) + (int)INCYLINDER_RADIUS);	// 中心からの距離を設定
+				fRandAngle = ((float)(rand() % ((int)(D3DX_PI * 2000)) - (int)(D3DX_PI * 1000))) / 1000.0f;		// 角度(xy位置)を設定
+
+				// 位置を設定
+				setPos = D3DXVECTOR3(sinf(fRandAngle) * fRandRadius,
+									 fRandHeight,
+									 cosf(fRandAngle) * fRandRadius);
+
+			} while (CollisionObject(&setPos, &setPos, &tmpVec3, 0.0f, 0.0f, true) && nSetActType == ESA_ACTTYPE_LAND);
 
 			// エサの設定処理
-
-			SetEsa(nSetType, true, ESA_ACTTYPE_SWIM, 0, setPos, D3DXVECTOR3(0.0f,0.0f,0.0f));
+			SetEsa(nSetType, true, (ESA_ACTTYPE)nSetActType, 0, setPos, D3DXVECTOR3(0.0f,0.0f,0.0f));
 		}
 
 #endif
@@ -207,6 +255,8 @@ void UpdateEsa(void)
 
 	// ====================================================
 	
+	PrintDebugProc("\nESA_NUM %d\n", g_nNumEsa);
+
 	for (int nCntEsa = 0; nCntEsa < MAX_SET_ESA; nCntEsa++)
 	{
 		if (g_aEsa[nCntEsa].bUse == true)
@@ -215,12 +265,12 @@ void UpdateEsa(void)
 			// エサの挙動処理
 			BehaviorEsa(&g_aEsa[nCntEsa]);
 
-
 			// エサの移動処理
 			MoveEsa(&g_aEsa[nCntEsa]);
 
 			if (g_aEsa[nCntEsa].esaType != ESA_ACTTYPE_GOTO_PLAYER
-			 && g_aEsa[nCntEsa].esaType != ESA_ACTTYPE_GOTO_POT)
+			 && g_aEsa[nCntEsa].esaType != ESA_ACTTYPE_GOTO_POT
+			 && g_aEsa[nCntEsa].esaType != ESA_ACTTYPE_LAND)
 			{// プレイヤーとポットにむかっている状態でない場合
 
 				// 海流の処理
@@ -234,7 +284,7 @@ void UpdateEsa(void)
 				g_aEsa[nCntEsa].pos.y = *pWaterSurfHeight - g_aEsaData[g_aEsa[nCntEsa].nIdxModel].fHitRadius;
 			}
 
-			SetEffect3D(70, g_aEsa[nCntEsa].pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0.0f, 30.0f, -0.1f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f),EFFECTTYPE_NORMAL);
+			//SetEffect3D(70, g_aEsa[nCntEsa].pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0.0f, 30.0f, -0.1f, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f),EFFECTTYPE_NORMAL);
 
 #if 0
 			
@@ -312,11 +362,11 @@ void DrawEsa(void)
 				if (g_aEsa[nCntEsa].nOrbitIdx == -1)
 				{// 初回
 					g_aEsa[nCntEsa].nOrbitIdx = SetMeshOrbit(FIRST_POS, D3DXVECTOR3(FIRST_POS.x, FIRST_POS.y + 10.0f, FIRST_POS.z),
-						WHITE_VTX, CYAN_VTX, &g_aEsa[nCntEsa].mtxWorld);
+						D3DXCOLOR(0.0f, 0.0f, 1.0f, 0.5f), D3DXCOLOR(0.0f, 1.0f, 1.0f, 0.5f), &g_aEsa[nCntEsa].mtxWorld);
 				}
 
 				SetMeshOrbitPos(g_aEsa[nCntEsa].nOrbitIdx, FIRST_POS, D3DXVECTOR3(FIRST_POS.x, FIRST_POS.y + 10.0f, FIRST_POS.z),
-					WHITE_VTX, CYAN_VTX, &g_aEsa[nCntEsa].mtxWorld);
+					D3DXCOLOR(0.0f, 0.0f, 1.0f, 0.5f), D3DXCOLOR(0.0f, 1.0f, 1.0f, 0.5f), &g_aEsa[nCntEsa].mtxWorld);
 			}
 		}
 	}
@@ -480,6 +530,10 @@ int SetEsa(int nEsaType, bool bSetOrbit, ESA_ACTTYPE esaType, int nBehavior, D3D
 			g_aEsa[nCntEsa].bDisp = true;							// 表示している状態に設定
 			g_aEsa[nCntEsa].bUse = true;							// 使用している状態に設定
 
+			// 泡の設定
+			g_aEsa[nCntEsa].nIdxBubble = SetBubbleParticle(&g_aEsa[nCntEsa].pos, true, -1, 10, 1, 30, 5.0f, 3.0f);
+
+			g_nNumEsa++;	// エサの総数をインクリメント
 
 			return nCntEsa;	// 設定した場所を返す
 		}
@@ -498,6 +552,48 @@ void ChangeEsaState(int nIdxEsa, ESA_ACTTYPE changeState, int nValue)
 
 		g_aEsa[nIdxEsa].esaType = changeState;	// 挙動の状態を設定
 		g_aEsa[nIdxEsa].nNumBehavior = nValue;	// 挙動の値を設定
+	}
+}
+
+//========================================================================
+// エサの削除処理
+//========================================================================
+int DelEsa(int nIdxEsa, bool bPlayer, int nIdxPlayer)
+{
+	if (g_aEsa[nIdxEsa].bUse == true)
+	{// 使用されている場合
+
+		g_aEsa[nIdxEsa].bUse = false;	// 使用していない状態に設定
+
+		// オービットの削除
+		if (g_aEsa[nIdxEsa].bOrbit == true)
+		{// オービットを使ってる場合
+			DeleteMeshOrbit(g_aEsa[nIdxEsa].nOrbitIdx);
+			g_aEsa[nIdxEsa].nOrbitIdx = -1;	// 軌道のインデックスを初期化
+			g_aEsa[nIdxEsa].bOrbit = false;	// 軌道状態をOFFに設定
+		}
+
+		if (g_aEsa[nIdxEsa].nIdxBubble != -1)
+		{// インデックスがある場合
+
+			// 泡パーティクルの削除
+			DelBubbleParticle(g_aEsa[nIdxEsa].nIdxBubble);
+		}
+
+		if (bPlayer == true)
+		{// プレイヤーの場合
+			
+			// エサUIの追加
+			SetAddUiEsa(nIdxPlayer, g_aEsa[nIdxEsa].nIdxModel);
+		}
+
+		g_nNumEsa--;
+
+		return g_aEsa[nIdxEsa].nIdxModel;
+	}
+	else
+	{
+		return -1;
 	}
 }
 
@@ -570,6 +666,7 @@ void MoveEsa(Esa* pEsa)
 	float fToTagetAngle = 0.0f;		// 対象との角度
 
 	Player* pPlayer = GetPlayer();				// プレイヤーの情報
+	Pot* pPot = GetPot();
 
 	D3DXVECTOR3 tmpPos = pEsa->pos;				// エサの更新前の位置
 
@@ -600,7 +697,7 @@ void MoveEsa(Esa* pEsa)
 		break;
 
 	case ESA_ACTTYPE_GOTO_PLAYER:	// プレイヤーに向かう
-
+#if 0
 		// 距離を求める
 		fWidth  = pPlayer[pEsa->nNumBehavior].pos.x - pEsa->pos.x;	// 幅の値を求める
 		fHeight = pPlayer[pEsa->nNumBehavior].pos.y - pEsa->pos.y;	// 高さの値を求める
@@ -616,7 +713,12 @@ void MoveEsa(Esa* pEsa)
 		pEsa->pos.x += fWidth * ESA_HOMING_SPEED;
 		pEsa->pos.y += fHeight * ESA_HOMING_SPEED;
 		pEsa->pos.z += fDipth * ESA_HOMING_SPEED;
+#endif
 
+		// ポットの位置にホーミング
+		pEsa->pos.x += (pPlayer[pEsa->nNumBehavior].pos.x - pEsa->pos.x) * ESA_HOMING_SPEED;
+		pEsa->pos.y += (pPlayer[pEsa->nNumBehavior].pos.y - pEsa->pos.y) * ESA_HOMING_SPEED;
+		pEsa->pos.z += (pPlayer[pEsa->nNumBehavior].pos.z - pEsa->pos.z) * ESA_HOMING_SPEED;
 		//PrintDebugProc("\nESA_ROT %f", fToTagetAngle);
 
 		break;
@@ -624,9 +726,9 @@ void MoveEsa(Esa* pEsa)
 	case ESA_ACTTYPE_GOTO_POT:		// ポットに向かう
 
 		// ポットの位置にホーミング
-		pEsa->pos.x += pPlayer[pEsa->nNumBehavior].pos.x - pEsa->pos.x * ESA_HOMING_SPEED;
-		pEsa->pos.y += pPlayer[pEsa->nNumBehavior].pos.y - pEsa->pos.y * ESA_HOMING_SPEED;
-		pEsa->pos.z += pPlayer[pEsa->nNumBehavior].pos.z - pEsa->pos.z * ESA_HOMING_SPEED;
+		pEsa->pos.x += (pPot[pEsa->nNumBehavior].pos.x - pEsa->pos.x) * ESA_HOMING_SPEED;
+		pEsa->pos.y += (pPot[pEsa->nNumBehavior].pos.y - pEsa->pos.y) * ESA_HOMING_SPEED;
+		pEsa->pos.z += (pPot[pEsa->nNumBehavior].pos.z - pEsa->pos.z) * ESA_HOMING_SPEED;
 
 		break;
 	}

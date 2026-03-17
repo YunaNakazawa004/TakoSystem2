@@ -158,6 +158,9 @@ void UpdateTime(void)
 			g_nTimeDelay = 0;
 			g_nTime100Delay = 0;
 			AddTime(-1);
+ #ifdef ENABLE_ONELAP
+			AddTime(-1);
+#endif
 			if (g_nTime < (PINCH_TIME / 2) && g_nTime >= 0)
 				PlaySound(SOUND_SE_COUNT);	// カウントダウン
 		}
@@ -177,8 +180,10 @@ void UpdateTime(void)
 #ifdef _DEBUG	// デバッグの時のみ使用可能
 
 	// デバッグ時間短縮
-	if (GetKeyboardTrigger(DIK_0) || GetJoypadTrigger(0, JOYKEY_BACK)) AddTime(-130);
-
+	if (GetKeyboardTrigger(DIK_M) || GetJoypadTrigger(0, JOYKEY_BACK))
+	{
+		AddTime(-130);
+	}
 #endif
 
 }

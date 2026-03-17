@@ -21,6 +21,9 @@
 #include "camera.h"
 #include "input.h"
 #include "debugproc.h"
+#include "spray.h"
+#include "bubble.h"
+#include "sound.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -31,7 +34,7 @@
 #define INERTIA_MOVE			(0.2f)									// 移動の慣性
 #define DASH_MOVE				(0.01f)									// 高速移動の速さ
 #define DASH_REACH				(10.0f)									// 高速移動のリーチ
-#define SEA_GRAVITY				(-0.02f)								// 重力
+#define GRAVITY					(-0.45f)								// 重力
 #define MAX_MOVE				(10.0f)									// 移動の制限
 #define INERTIA_ANGLE			(0.1f)									// 角度の慣性
 #define POS_ERROR				(10.0f)									// 位置の誤差
@@ -40,11 +43,12 @@
 #define TENTACLE_RANDOM			(20.0f)									// 触手移動の高さ乱数
 #define CPU_TENTACLE			(8)										// 足の数
 
-#define FAR_DISTANCE			(500.0f)								// 遠すぎる
+#define FAR_DISTANCE			(300.0f)								// 遠すぎる
 #define DISTANCE_SCORE			(0.01f)									// 距離スコアの減衰
 #define NEAR_WALL_DISTANCE		(200.0f)								// 壁際の距離
 #define NEAR_PILLAR_DISTANCE	(200.0f)								// 柱に近いかの距離
 
+#define ESA_DISTANCE			(300.0f)								// 遠すぎる
 #define ESA_DOT_SCORE			(3.0f)									// エサの進行方向スコア
 #define ESA_ENEMY_DISTANCE		(200.0f)								// 近い敵との距離
 #define ESA_ENEMY_DIST_SCORE	(4.0f)									// 近い敵のスコア
@@ -52,15 +56,15 @@
 #define ESA_WATER_SCORE			(1.0f)									// 浮いているエサのスコア
 #define ESA_NEAR_WALL_SCORE		(2.0f)									// 壁際のエサのスコア
 
-#define ENEMY_DOT_SCORE			(4.0f)									// 敵が進行方向にいるスコア
-#define ENEMY_FAR_WALL_SCORE	(3.0f)									// 敵が壁から離れているスコア
+#define ENEMY_DOT_SCORE			(2.0f)									// 敵が進行方向にいるスコア
+#define ENEMY_FAR_WALL_SCORE	(2.0f)									// 敵が壁から離れているスコア
 #define ENEMY_PILLAR_SCORE		(2.0f)									// 敵が柱の裏にいないスコア
 #define ENEMY_BLIND_SCORE		(3.0f)									// 敵の視界が悪いスコア
 #define	ENEMY_TENTACLE_SCORE	(2.0f)									// 敵の触手がクールダウン中のスコア
 #define ENEMY_COUNT_SCORE		(5.0f)									// 敵が複数いるときのスコア
 #define ENEMY_COUNT_DIST		(200.0f)								// 敵が複数いるときの距離
 
-#define ESCAPE_ENEMY_DIST		(500.0f)								// 遠すぎる敵とは判定しない
+#define ESCAPE_ENEMY_DIST		(400.0f)								// 遠すぎる敵とは判定しない
 #define ESCAPE_DOT				(-0.3f)									// 逃げるかの角度
 #define	ESCAPE_DOT_SCORE		(6.0f)									// 追われているときのスコア
 #define ESCAPE_ENEMY_MOVE		(5.0f)									// 敵の速度が速いときのスコア
@@ -76,7 +80,7 @@
 #define INK_ENEMY_COUNT_SCORE	(5.0f)									// 敵が複数いるときのスコア
 #define INK_ESA_COUNT			(0.2f)									// 自分のエサが多い
 #define INK_PILLAR_SCORE		(3.0f)									// 柱が近いスコア
-#define INK_BLIND_DIST			(500.0f)								// 墨にかかる距離
+#define INK_BLIND_DIST			(350.0f)								// 墨にかかる距離
 
 #define POT_DISTANCE			(400.0f)								// タコつぼが遠すぎる
 #define POT_ESA_SCORE			(0.4f)									// 自分のエサが多い
@@ -102,9 +106,10 @@
 #define INK_CT					(ONE_SECOND * 5 + ONE_SECOND)			// 墨吐きのクールダウン
 #define CAMERA_HEIGHT			(100.0f)								// 仮想カメラの高さ
 #define RIPPLE_COUNT			(20)									// 水面に波紋が出る間隔
+#define FLOW_COUNT				(10)									// 波が出る間隔
 #define CPU_THINK				(15)									// 思考間隔
 #define CPU_WIDTH				(25.0f)									// 幅
-#define CPU_HEIGHT				(100.0f)								// 高さ
+#define CPU_HEIGHT				(50.0f)									// 高さ
 #define TENTACLE_RADIUS			(100.0f)								// 触手の当たり判定
 #define CPU_FILE				"data\\motion_octo_1.txt"				// CPUのデータファイル
 
@@ -136,6 +141,7 @@ void InitComputer(void)
 	for (int nCntComputer = 0; nCntComputer < MAX_COMPUTER; nCntComputer++, pComputer++)
 	{
 		pComputer->nIdx = nCntComputer;
+		pComputer->nCounter = 0;
 		pComputer->state = CPUSTATE_APPEAR;
 		pComputer->nCounterState = 0;
 		pComputer->phys.pos = FIRST_POS;
@@ -147,6 +153,7 @@ void InitComputer(void)
 		pComputer->phys.fAngleX = 0.0f;
 		pComputer->phys.fRadius = CPU_WIDTH;
 		pComputer->phys.fHeight = CPU_HEIGHT;
+		pComputer->bLand = false;
 		pComputer->bUse = false;
 
 		pComputer->nTargetFoodIdx = -1;
@@ -238,11 +245,6 @@ void InitComputer(void)
 		}
 
 	}
-
-#if 1
-	// ランダムな位置に設定
-	SetRandomComputer(ALL_OCTO - GetNumCamera());
-#endif
 }
 
 //=============================================================================
@@ -296,75 +298,11 @@ void UpdateComputer(void)
 				pComputer->nThinkCooldown--;
 			}
 			else
-			{// 5フレームに1回判断
+			{// 何フレームごとに1回判断
 				pComputer->nThinkCooldown = CPU_THINK;
 
-				if (pComputer->state != CPUSTATE_BACKAREA)
-				{// エリア戻り状態じゃないときだけ
-					// スコア計算
-					CalcFoodScore(pComputer);
-					CalcAttackScore(pComputer);
-					CalcEscapeScore(pComputer);
-					CalcInkScore(pComputer);
-					CalcPotScore(pComputer);
-
-					// 最優先行動を決定
-					float best = pComputer->fFoodScore;
-					pComputer->state = CPUSTATE_MOVE_TO_FOOD;
-
-					if (pComputer->fAttackScore > best)
-					{// 攻撃
-						best = pComputer->fAttackScore;
-						pComputer->state = CPUSTATE_ATTACK;
-					}
-
-					if (pComputer->fEscapeScore > best)
-					{// 回避
-						best = pComputer->fEscapeScore;
-						pComputer->state = CPUSTATE_ESCAPE;
-					}
-
-					if (pComputer->fInkScore > best)
-					{// 墨吐き
-						best = pComputer->fInkScore;
-						pComputer->state = CPUSTATE_INK_ATTACK;
-					}
-
-					if (pComputer->fPotScore > best)
-					{// タコつぼ
-						best = pComputer->fPotScore;
-						pComputer->state = CPUSTATE_GO_TO_POT;
-					}
-
-					float exploreThreshold = EXPLORE_THRESHOLD;
-
-
-					if (pComputer->nFoodCount < EXPLORE_ESA)
-					{// エサが少ないほど探索しやすくする
-						exploreThreshold = EXPLORE_THRESHOLD * 2.0f;
-					}
-					else if (pComputer->nFoodCount < EXPLORE_LITTLE_ESA)
-					{// 少し探索しやすい
-						exploreThreshold = EXPLORE_LIT_THRESHOLD;
-					}
-					else
-					{// 通常
-						exploreThreshold = EXPLORE_THRESHOLD;
-					}
-
-					if (best < exploreThreshold)
-					{// 閾値以下なら探索
-						pComputer->state = CPUSTATE_EXPLORE;
-					}
-
-					if (GetOceanCurrents() == OCEANCURRENTSSTATE_WAIT)
-					{// 渦潮が来そうなとき
-						if (pComputer->nFoodCount > 0)
-						{// エサを持っている
-							pComputer->state = CPUSTATE_HIDE;
-						}
-					}
-				}
+				// スコア計算
+				CalcScore(pComputer);
 
 				// ノードの設置
 				CreateOuterNodes3D();
@@ -372,8 +310,6 @@ void UpdateComputer(void)
 			}
 
 			PrintDebugProc("ENEMY : [ %d ]\n", pComputer->nIdx);
-
-			static int nCounter = 0;
 
 			pComputer->phys.posOld = pComputer->phys.pos;
 
@@ -528,13 +464,15 @@ void UpdateComputer(void)
 							pComputer->nFoodCount < pComputer->nMaxFood * CPU_TENTACLE &&
 							pComputer->motionType != MOTIONTYPE_OCEANCULLENT)
 						{// エサと接触した
-							Esa* pEsa = GetEsa();
-							pEsa[nIdx].bUse = false;
-							pEsa[nIdx].bOrbit = false;
-							pEsa[nIdx].nOrbitIdx = -1;
+							
+							// エサの削除処理
+							int nIdxEsaType = DelEsa(nIdx, false, -1);	// 削除したエサの種類を獲得
 
-							pComputer->nFoodCount++;
-							Enqueue(&pComputer->esaQueue, pEsa[nIdx].nIdxModel);
+							if (nIdxEsaType != -1)
+							{
+								pComputer->nFoodCount++;
+								Enqueue(&pComputer->esaQueue, nIdxEsaType);
+							}
 
 							pComputer->state = CPUSTATE_EXPLORE;
 						}
@@ -611,9 +549,6 @@ void UpdateComputer(void)
 				pComputer->phys.move.z = -MAX_MOVE;
 			}
 
-			// 重力
-			pComputer->phys.move.y += SEA_GRAVITY;
-
 			if (pComputer->state != CPUSTATE_APPEAR)
 			{// 出現状態以外
 				// 慣性
@@ -636,7 +571,7 @@ void UpdateComputer(void)
 						SetMotionComputer(nCntComputer, MOTIONTYPE_OCEANCULLENT, true, 20);
 					}
 
-					if (pComputer->nFoodCount > 0 && nCounter % 15 == 0)
+					if (pComputer->nFoodCount > 0 && pComputer->nCounter % 15 == 0)
 					{// エサを持っている
 						pComputer->nFoodCount--;
 						int nIdx = Dequeue(&pComputer->esaQueue);
@@ -680,7 +615,7 @@ void UpdateComputer(void)
 			D3DXVECTOR2 XZdist = D3DXVECTOR2(pComputer->phys.pos.x, pComputer->phys.pos.z);
 			float fDist = D3DXVec2Length(&XZdist);
 
-			if (fDist > OUTCYLINDER_RADIUS + 30.0f)
+			if (fDist > OUTCYLINDER_RADIUS + ((OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) / 2))
 			{// 移動制限
 				pComputer->phys.fAngleY = atan2f(pComputer->phys.pos.x, pComputer->phys.pos.z);
 				pComputer->state = CPUSTATE_BACKAREA;
@@ -690,18 +625,49 @@ void UpdateComputer(void)
 			if (pComputer->phys.pos.y < 0.0f)
 			{// 底
 				pComputer->phys.pos.y = 0.0f;
+
+				if (pComputer->bLand == false)
+				{// ついてなかった場合
+					SetSprayCircle(D3DXVECTOR3(pComputer->phys.pos.x, pComputer->phys.pos.y + 30.0f, pComputer->phys.pos.z),
+						D3DXCOLOR(0.9f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_CIRCLE);
+				}
+
+				pComputer->bLand = true;
+			}
+			else
+			{// ついていないとき
+				pComputer->bLand = false;
+			}
+
+			if (pComputer->phys.pos.y < 10.0f && pComputer->nCounter % FLOW_COUNT == 0)
+			{// 地面に近かったら
+				SetSprayFlow(D3DXVECTOR3(pComputer->phys.pos.x, pComputer->phys.pos.y + 20.0f, pComputer->phys.pos.z), pComputer->phys.rot,
+					D3DXCOLOR(0.9f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_FLOW);
 			}
 
 			if (pComputer->phys.pos.y > *GetWaterSurf_Height() - CPU_HEIGHT)
 			{// 上											  
-				pComputer->phys.pos.y = *GetWaterSurf_Height() - CPU_HEIGHT;
+				// 重力
+				pComputer->phys.move.y += GRAVITY;
 
-				if (nCounter % RIPPLE_COUNT == 0)
+				if (pComputer->nCounter % RIPPLE_COUNT == 0)
 				{// 定期的に波紋
-					SetMeshRing(D3DXVECTOR3(pComputer->phys.pos.x + (rand() % 6 - 3), *GetWaterSurf_Height(), pComputer->phys.pos.z + (rand() % 6 - 3)), FIRST_POS,
+					SetMeshRing(MESHRINGTYPE_RIPPLES,D3DXVECTOR3(pComputer->phys.pos.x + (rand() % 6 - 3), *GetWaterSurf_Height(), pComputer->phys.pos.z + (rand() % 6 - 3)), FIRST_POS,
 						D3DXVECTOR2(24.0f, 1.0f), D3DXVECTOR2(10.0f, 7.0f), D3DXCOLOR(WHITE_VTX.r, WHITE_VTX.g, WHITE_VTX.b, 0.5f));
+
+					SetSprayCircle(D3DXVECTOR3(pComputer->phys.pos.x, *GetWaterSurf_Height(), pComputer->phys.pos.z),
+						WHITE_VTX, SPRAYTYPE_CIRCLE);
+				}
+
+				if (pComputer->nCounter % FLOW_COUNT == 0)
+				{// 波
+					SetSprayFlow(D3DXVECTOR3(pComputer->phys.pos.x, *GetWaterSurf_Height(), pComputer->phys.pos.z), pComputer->phys.rot,
+						WHITE_VTX, SPRAYTYPE_FLOW);
 				}
 			}
+
+			// 墨の当たり判定
+			CollisionInk(pComputer->phys.pos, &pComputer->bBlinded, &pComputer->nBlindCounter, pComputer->nIdx);
 
 			if (pComputer->bBlinded == true)
 			{// 視界が悪そうなエフェクト
@@ -740,7 +706,7 @@ void UpdateComputer(void)
 				CorrectAngle(&pComputer->phys.rot.x, pComputer->phys.rot.x);
 			}
 
-			if (nCounter % (ONE_SECOND * 30) == 0 && GetTime() != ONE_GAME)
+			if (pComputer->nCounter % (ONE_SECOND * 60) == 0 && GetTime() != ONE_GAME)
 			{// 持てるエサの最大値が増える
 				pComputer->nMaxFood++;
 			}
@@ -749,7 +715,7 @@ void UpdateComputer(void)
 			//	pComputer->phys.pos.x, pComputer->phys.pos.y, pComputer->phys.pos.z);
 			//PrintDebugProc("ENEMY : move ( %f %f %f )\n",
 			//	pComputer->phys.move.x, pComputer->phys.move.y, pComputer->phys.move.z);
-			//PrintDebugProc("ENEMY : nFood ( %d )\n", pComputer->nFoodCount);
+			PrintDebugProc("ENEMY : nFood ( %d )\n", pComputer->nFoodCount);
 			//PrintDebugProc("ENEMY : TargetPot ( %d )\n", pComputer->nTargetPotIdx);
 			//PrintDebugProc("ENEMY : TargetEnemy ( %d )\n", pComputer->nTargetEnemyIdx);
 			//PrintDebugProc("ENEMY : ノード ( %f %f %f )\n",
@@ -765,18 +731,22 @@ void UpdateComputer(void)
 
 			if (CollisionEsa(&nIdx, false, &pComputer->phys.pos, pComputer->phys.fRadius) == true &&
 				pComputer->nFoodCount < pComputer->nMaxFood * CPU_TENTACLE &&
-				pComputer->motionType != MOTIONTYPE_OCEANCULLENT)
+				(pComputer->motionType != MOTIONTYPE_OCEANCULLENT || pComputer->motionType != MOTIONTYPE_OCEANCULLENT) &&
+				GetOceanCurrents() != OCEANCURRENTSSTATE_WIRLPOOL)
 			{// エサと接触した
 				Esa* pEsa = GetEsa();
 
 				if (pEsa[nIdx].esaType != ESA_ACTTYPE_GOTO_POT)
 				{// タコつぼに入れてる最中じゃない
-					pEsa[nIdx].bUse = false;
-					pEsa[nIdx].bOrbit = false;
-					pEsa[nIdx].nOrbitIdx = -1;
 
-					pComputer->nFoodCount++;
-					Enqueue(&pComputer->esaQueue, pEsa[nIdx].nIdxModel);
+					// エサの削除処理
+					int nIdxEsaType = DelEsa(nIdx, false, -1);	// 削除したエサの種類を獲得
+
+					if (nIdxEsaType != -1)
+					{
+						pComputer->nFoodCount++;
+						Enqueue(&pComputer->esaQueue, nIdxEsaType);
+					}
 				}
 			}
 
@@ -787,7 +757,7 @@ void UpdateComputer(void)
 
 			CollisionPotArea(pComputer->phys.pos, pComputer->phys.fRadius, NULL, pComputer, false);
 
-			nCounter++;
+			pComputer->nCounter++;
 
 			// モーションの更新処理
 			UpdateMotionComputer(nCntComputer);
@@ -872,8 +842,17 @@ void DrawComputer(void)
 
 				for (int nCntMat = 0; nCntMat < (int)g_ComputerModel[nCntModel].dwNumMat; nCntMat++)
 				{
+					// 色保存用
+					D3DXCOLOR MatCol = pMat->MatD3D.Diffuse;
+
+					// コンピュータの色を変更
+					pMat->MatD3D.Diffuse = D3DXCOLOR(0.5f, 0.2f, 0.2f, 1.0f);
+
 					// マテリアルの設定
 					pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
+
+					// 色を戻す
+					pMat->MatD3D.Diffuse = MatCol;
 
 					// テクスチャの設定
 					pDevice->SetTexture(0, g_ComputerModel[nCntModel].apTexture[nCntMat]);
@@ -894,7 +873,7 @@ void DrawComputer(void)
 				{// 初回
 					nIdx = SetMeshOrbit(D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
 						D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
-						WHITE_VTX, CYAN_VTX, &pComputer->aModel[(nCntTent + 1) * 4].mtxWorld);
+						D3DXCOLOR(0.0f, 0.0f, 1.0f, 0.5f), D3DXCOLOR(0.0f, 1.0f, 1.0f, 0.5f), &pComputer->aModel[(nCntTent + 1) * 4].mtxWorld);
 
 					if (nIdx < 0)
 					{// 範囲外
@@ -907,7 +886,7 @@ void DrawComputer(void)
 
 				SetMeshOrbitPos(pComputer->nOrbitIdx[nCntTent], D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
 					D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
-					WHITE_VTX, CYAN_VTX, &pComputer->aModel[(nCntTent + 1) * 4].mtxWorld);
+					D3DXCOLOR(0.0f, 0.0f, 1.0f, 0.5f), D3DXCOLOR(0.0f, 1.0f, 1.0f, 0.5f), &pComputer->aModel[(nCntTent + 1) * 4].mtxWorld);
 			}
 		}
 	}
@@ -920,10 +899,12 @@ void MoveToFood(Computer* pComputer)
 {
 	if (pComputer->nTargetFoodIdx < 0)
 	{// どのエサもターゲットしてない
+		pComputer->state = CPUSTATE_EXPLORE;
+
 		return;
 	}
 
-	PrintDebugProc("ENEMY : targetFood ( %d )\n", pComputer->nTargetFoodIdx);
+	//PrintDebugProc("ENEMY : targetFood ( %d )\n", pComputer->nTargetFoodIdx);
 
 	D3DXVECTOR3 target = GetFoodPosition(pComputer);
 	D3DXVECTOR3 dir = target - pComputer->phys.pos;
@@ -993,7 +974,12 @@ void Escape(Computer* pComputer)
 		UseTentacle(pComputer);
 	}
 
-	pComputer->state = CPUSTATE_EXPLORE;
+	D3DXVECTOR3 dist = pComputer->phys.pos - enemyPos; // 敵と逆方向
+
+	if (D3DXVec3Length(&dist) > ESA_ENEMY_DISTANCE * 2.0f)
+	{// 敵との距離が離れた
+		pComputer->state = CPUSTATE_EXPLORE;
+	}
 }
 
 //=============================================================================
@@ -1007,12 +993,9 @@ void InkAttack(Computer* pComputer)
 	}
 
 	// 墨を吐く処理
-	SetParticle3D(14, 30, pComputer->phys.pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pComputer->phys.rot.x, pComputer->phys.rot.y - D3DX_PI, pComputer->phys.rot.z), 4.0f, 200, 8.0f, 0.06f, EFFECTTYPE_OCTOINK);
-	SetParticle3D(14, 30, pComputer->phys.pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pComputer->phys.rot.x, pComputer->phys.rot.y - D3DX_PI, pComputer->phys.rot.z), 4.0f, 200, 8.0f, 0.06f, EFFECTTYPE_OCTOINK);
-	SetParticle3D(14, 30, pComputer->phys.pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pComputer->phys.rot.x, pComputer->phys.rot.y - D3DX_PI, pComputer->phys.rot.z), 4.0f, 200, 8.0f, 0.06f, EFFECTTYPE_OCTOINK);
-
-	// 墨の当たり判定
-	CollisionInk(pComputer->nIdx, true, pComputer->phys.pos);
+	SetParticle3D(14, 30, pComputer->phys.pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pComputer->phys.rot.x, pComputer->phys.rot.y - D3DX_PI, pComputer->phys.rot.z), 4.0f, 420, 8.0f, 0.06f, EFFECTTYPE_OCTOINK, pComputer->nIdx);
+	SetParticle3D(14, 30, pComputer->phys.pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pComputer->phys.rot.x, pComputer->phys.rot.y - D3DX_PI, pComputer->phys.rot.z), 4.0f, 420, 8.0f, 0.06f, EFFECTTYPE_OCTOINK, pComputer->nIdx);
+	SetParticle3D(14, 30, pComputer->phys.pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pComputer->phys.rot.x, pComputer->phys.rot.y - D3DX_PI, pComputer->phys.rot.z), 4.0f, 420, 8.0f, 0.06f, EFFECTTYPE_OCTOINK, pComputer->nIdx);
 
 	// 墨吐きモーション
 	SetMotionComputer(pComputer->nIdx, MOTIONTYPE_INK, true, 20);
@@ -1115,8 +1098,28 @@ void HideFood(Computer* pComputer)
 	Pot* pPot = GetPot();
 	pPot = &pPot[pComputer->nTargetPotIdx];
 
-	// 隠し終わったら探索へ戻る
-	pComputer->state = CPUSTATE_EXPLORE;
+	// 触手でエサを入れる
+	D3DXVECTOR3 posDiff = pPot->pos - pComputer->phys.pos;
+	float dist = D3DXVec3Length(&posDiff);
+
+	if (dist < TENTACLE_RADIUS * 0.5f)
+	{// 触手の範囲内
+		pComputer->targetWall = pPot->pos;
+		UseTentacle(pComputer);
+
+		pComputer->state = CPUSTATE_EXPLORE;
+
+		return;
+	}
+
+	// まだ距離が遠いなら近づく
+	D3DXVECTOR3 dir = pPot->pos - pComputer->phys.pos;
+	D3DXVec3Normalize(&dir, &dir);
+
+	// 慣性移動
+	pComputer->phys.move.x += dir.x * MOVEMENT.x;
+	pComputer->phys.move.y += dir.y * MOVEMENT.y;
+	pComputer->phys.move.z += dir.z * MOVEMENT.z;
 }
 
 //=============================================================================
@@ -1207,10 +1210,14 @@ void Hide(Computer* pComputer)
 	D3DXVECTOR3 dir = target - pComputer->phys.pos;
 	D3DXVec3Normalize(&dir, &dir);
 
-	// 慣性移動
-	pComputer->phys.move.x += dir.x * MOVEMENT.x;
-	pComputer->phys.move.y += dir.y * MOVEMENT.y;
-	pComputer->phys.move.z += dir.z * MOVEMENT.z;
+	D3DXVECTOR3 dist = target - pComputer->phys.pos;
+
+	if (D3DXVec3Length(&dist) > 20.0f)
+	{// 遠いなら慣性移動
+		pComputer->phys.move.x += dir.x * MOVEMENT.x;
+		pComputer->phys.move.y += dir.y * MOVEMENT.y;
+		pComputer->phys.move.z += dir.z * MOVEMENT.z;
+	}
 }
 
 //=============================================================================
@@ -1406,6 +1413,84 @@ D3DXVECTOR3 GetHidePosition(Computer* pComputer)
 }
 
 //=============================================================================
+// スコア計算全体
+//=============================================================================
+void CalcScore(Computer* pComputer)
+{
+	if (pComputer->state != CPUSTATE_BACKAREA)
+	{// エリア戻り状態じゃないときだけ
+		// スコア計算
+		CalcFoodScore(pComputer);
+		CalcAttackScore(pComputer);
+		CalcEscapeScore(pComputer);
+		CalcInkScore(pComputer);
+		CalcPotScore(pComputer);
+
+		// 最優先行動を決定
+		float best = pComputer->fFoodScore;
+		pComputer->state = CPUSTATE_MOVE_TO_FOOD;
+
+		if (pComputer->fAttackScore > best)
+		{// 攻撃
+			best = pComputer->fAttackScore;
+			pComputer->state = CPUSTATE_ATTACK;
+		}
+
+		if (pComputer->fEscapeScore > best)
+		{// 回避
+			best = pComputer->fEscapeScore;
+			pComputer->state = CPUSTATE_ESCAPE;
+		}
+
+		if (pComputer->fInkScore > best)
+		{// 墨吐き
+			best = pComputer->fInkScore;
+			pComputer->state = CPUSTATE_INK_ATTACK;
+		}
+
+		if (pComputer->fPotScore > best)
+		{// タコつぼ
+			best = pComputer->fPotScore;
+			pComputer->state = CPUSTATE_GO_TO_POT;
+		}
+
+		float exploreThreshold = EXPLORE_THRESHOLD;
+
+
+		if (pComputer->nFoodCount < EXPLORE_ESA)
+		{// エサが少ないほど探索しやすくする
+			exploreThreshold = EXPLORE_THRESHOLD * 2.0f;
+		}
+		else if (pComputer->nFoodCount < EXPLORE_LITTLE_ESA)
+		{// 少し探索しやすい
+			exploreThreshold = EXPLORE_LIT_THRESHOLD;
+		}
+		else
+		{// 通常
+			exploreThreshold = EXPLORE_THRESHOLD;
+		}
+
+		if (best < exploreThreshold && pComputer->state != CPUSTATE_MOVE_TO_FOOD)
+		{// 閾値以下なら探索 エサを見つけていたらそのまま
+			pComputer->state = CPUSTATE_EXPLORE;
+		}
+		else if (best == -9999.0f)
+		{// 初期値のまま
+			pComputer->state = CPUSTATE_EXPLORE;
+		}
+
+		if (GetOceanCurrents() == OCEANCURRENTSSTATE_WAIT || 
+			GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL)
+		{// 渦潮が来そうなとき
+			if (pComputer->nFoodCount > 0)
+			{// エサを持っている
+				pComputer->state = CPUSTATE_HIDE;
+			}
+		}
+	}
+}
+
+//=============================================================================
 // エサのスコア計算
 //=============================================================================
 void CalcFoodScore(Computer* pComputer)
@@ -1436,7 +1521,7 @@ void CalcFoodScore(Computer* pComputer)
 
 			float dist = D3DXVec3Length(&toFood);
 
-			if (dist > ((pComputer->bBlinded) ? FAR_DISTANCE * 0.5f : FAR_DISTANCE))
+			if (dist > ((pComputer->bBlinded) ? ESA_DISTANCE * 0.5f : ESA_DISTANCE))
 			{// 遠すぎるエサは無視
 				continue;
 			}
@@ -1444,7 +1529,7 @@ void CalcFoodScore(Computer* pComputer)
 			float score = 0.0f;
 
 			// 距離が近いほど高スコア
-			score += (((pComputer->bBlinded) ? FAR_DISTANCE * 0.5f : FAR_DISTANCE) - dist) * DISTANCE_SCORE;
+			score += (((pComputer->bBlinded) ? ESA_DISTANCE * 0.5f : ESA_DISTANCE) - dist) * DISTANCE_SCORE;
 
 			// 進行方向にあるか（dir と toFood の内積）
 			D3DXVECTOR3 dirNorm, toFoodNorm;
@@ -1529,7 +1614,7 @@ void CalcAttackScore(Computer* pComputer)
 		score += (((pComputer->bBlinded) ? FAR_DISTANCE * 0.5f : FAR_DISTANCE) - dist) * DISTANCE_SCORE;
 
 		// 敵がエサを多く持っている
-		score += pEnemy->nFoodCount * 0.5f;
+		score += pEnemy->nFoodCount * 0.4f;
 
 		if (pEnemy->nFoodCount == 0)
 		{// 敵がエサを持っていない
@@ -1893,11 +1978,6 @@ void CalcInkScore(Computer* pComputer)
 		// 自分のエサが多い
 		score += pComputer->nFoodCount * INK_ESA_COUNT;
 
-		if (IsNearPillar(pComputer->phys.pos) == true)
-		{// 柱が近い
-			score += INK_PILLAR_SCORE;
-		}
-
 		if (score > bestScore)
 		{// 最も墨が有効な敵を採用
 			bestScore = score;
@@ -1953,11 +2033,6 @@ void CalcInkScore(Computer* pComputer)
 
 		// 自分のエサが多い
 		score += pComputer->nFoodCount * INK_ESA_COUNT;
-
-		if (IsNearPillar(pComputer->phys.pos) == true)
-		{// 柱が近い
-			score += INK_PILLAR_SCORE;
-		}
 
 		if (score > bestScore)
 		{// 最も墨が有効な敵を採用
@@ -2233,7 +2308,7 @@ void FindTentacleTarget(Computer* pComputer)
 
 		float score = D3DXVec3Dot(&dirNorm, &dir);
 
-		if (dist < 200.0f)
+		if (dist < 100.0f)
 		{// 距離が近すぎると触手が短くなるので少し減点
 			score -= 1.0f;
 		}
@@ -2337,11 +2412,6 @@ bool ShouldUseTentacle(Computer* pComputer)
 	if (pComputer->aModel[2].scale.y > 1.0f)
 	{// 触手の長さが戻っていない
 		return false;
-	}
-
-	if (D3DXVec3Length(&pComputer->phys.move) < 5.0f)
-	{// 速度が遅いときは使う（加速目的）
-		return true;
 	}
 
 	if (pComputer->state == CPUSTATE_ESCAPE)
@@ -2488,6 +2558,7 @@ void SetComputer(D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType)
 		if (pComputer->bUse == false)
 		{// 使用していない
 			pComputer->nIdx = nCntComputer;
+			pComputer->nCounter = 0;
 			pComputer->state = CPUSTATE_APPEAR;
 			pComputer->nCounterState = 0;
 			pComputer->phys.pos = pos;
@@ -2495,10 +2566,11 @@ void SetComputer(D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType)
 			pComputer->phys.move = FIRST_POS;
 			pComputer->phys.rot = rot;
 			pComputer->phys.dir = FIRST_POS;
-			pComputer->phys.fAngleY = 0.0f;
+			pComputer->phys.fAngleY = rot.y;
 			pComputer->phys.fAngleX = 0.0f;
 			pComputer->phys.fRadius = CPU_WIDTH;
 			pComputer->phys.fHeight = CPU_HEIGHT;
+			pComputer->bLand = false;
 			pComputer->bUse = true;
 
 			pComputer->nTargetFoodIdx = -1;
@@ -2567,7 +2639,7 @@ void SetRandomComputer(int nAmount)
 		pos.y = (float)(rand() % (int)(CYLINDER_HEIGHT * 0.6f)) + (CYLINDER_HEIGHT * 0.2f);
 		pos.z = cosf(fAngle) * (INCYLINDER_RADIUS + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) + 1))));
 
-		SetComputer(pos, FIRST_POS, MOTIONTYPE_NEUTRAL);
+		SetComputer(pos, D3DXVECTOR3(0.0f, fAngle, 0.0f), MOTIONTYPE_NEUTRAL);
 	}
 }
 
@@ -2590,46 +2662,26 @@ Model_Info* GetTakoModel(void)
 //=============================================================================
 // 墨吐きの当たり判定
 //=============================================================================
-void CollisionInk(int nIdx, bool bCPU, D3DXVECTOR3 pos)
+void CollisionInk(D3DXVECTOR3 pos, bool* bBlind, int* pCounter, int nIdx)
 {
-	for (int nCntEnemy = 0; nCntEnemy < MAX_COMPUTER; nCntEnemy++)
+	Paticle3D* pParticle3D = GetParticlePos();
+
+	for (int nCntParitcle = 0; nCntParitcle < MAX_SET_PARTCL3D; nCntParitcle++, pParticle3D++)
 	{
-		Computer* pEnemy = &g_aComputer[nCntEnemy];
-
-		if (pEnemy->bUse == false)
-		{// 使用していない
+		if (pParticle3D->bUse == false || pParticle3D->effecttype != EFFECTTYPE_OCTOINK ||
+			pParticle3D->nParentIdx == nIdx)
+		{// 使ってないまたはタコ墨じゃないまたは親のもの
 			continue;
 		}
 
-		if (pEnemy->nIdx == nIdx && bCPU == true)
-		{// 自分自身は無視
-			continue;
-		}
-
-		D3DXVECTOR3 dist = pEnemy->phys.pos - pos;
+		D3DXVECTOR3 dist = pParticle3D->pos - pos;
 
 		if (D3DXVec3Length(&dist) < INK_BLIND_DIST)
 		{// 墨の範囲内
-			pEnemy->bBlinded = true;
-			pEnemy->nBlindCounter = ONE_SECOND * 3;
-		}
-	}
+			*bBlind = true;
+			*pCounter = ONE_SECOND * 3;
 
-	Player* pPlayer = GetPlayer();
-
-	for (int nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++, pPlayer++)
-	{
-		if (nCntPlayer == nIdx && bCPU == false)
-		{// 自分自身は無視
-			continue;
-		}
-
-		D3DXVECTOR3 dist = pPlayer->pos - pos;
-
-		if (D3DXVec3Length(&dist) < INK_BLIND_DIST)
-		{// 墨の範囲内
-			pPlayer->bBlind = true;
-			pPlayer->nBlindCounter = ONE_SECOND * 3;
+			PlaySound(SOUND_SE_INKED);
 		}
 	}
 }
@@ -2680,6 +2732,7 @@ bool CollisionOcto(int nIdx, bool bCPU, D3DXVECTOR3 pos)
 				Enqueue(&pPlayer[nIdx].esaQueue, nEsaIdx);
 				pPlayer[nIdx].nFood++;
 				SetAddUiEsa(nIdx, nEsaIdx);
+				EsaPlaySE(nEsaIdx);
 			}
 
 			return bColl;
@@ -2707,6 +2760,7 @@ bool CollisionOcto(int nIdx, bool bCPU, D3DXVECTOR3 pos)
 			int nEsaIdx = Dequeue(&pPlayer->esaQueue);
 			pPlayer->nFood--;
 			SetSubUiEsa(pPlayer->nIdx);
+			PlaySound(SOUND_SE_STOLEN);
 
 			if (bCPU == true)
 			{// CPUが奪った
@@ -2720,6 +2774,7 @@ bool CollisionOcto(int nIdx, bool bCPU, D3DXVECTOR3 pos)
 				Enqueue(&pPlayer[nIdx].esaQueue, nEsaIdx);
 				pPlayer[nIdx].nFood++;
 				SetAddUiEsa(nIdx, nEsaIdx);
+				EsaPlaySE(nEsaIdx);
 			}
 
 			return bColl;

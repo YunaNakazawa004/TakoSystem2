@@ -26,6 +26,8 @@
 #define NUM_PIN_SIZE	(8)						// 番号サイズ
 #define MAP_CALC_SIZEARRAY(aArray)	(sizeof aArray / sizeof(aArray[0]))	// サイズ比較
 
+#define MAP_TMPNUM	(300)	// 
+
 //=======================================
 // グローバル宣言
 //=======================================
@@ -52,46 +54,47 @@ MapTextureInfo g_aMapTexInfo[] =
 
 // マップの情報 -------------------------
 
-Map g_aMap[] =
+Map g_aMap[6] = 
+#if 1
 { // [位置,サイズ,色,テクスチャ割り当て番号]
 
-	{{SCREEN_WIDTH - MAP_SIZE - 50,MAP_SIZE + 50,0.0f},
-	{MAP_SIZE,MAP_SIZE,0.0f},
+	{{0.0f, 0.0f, 0.0f},
+	{MAP_SIZE, MAP_SIZE, 0.0f},
 	{{1.0f,1.0f,1.0f,1.0f}},
 	g_aMapTexInfo[0].TexIdx,
 	true},
 
-	{{SCREEN_WIDTH - MAP_SIZE - 50,MAP_SIZE + 50,0.0f},
-	{MAP_SIZE * MAP_SIZE_INSIDE,MAP_SIZE * MAP_SIZE_INSIDE,0.0f},
+	{{0.0f, 0.0f, 0.0f},
+	{MAP_SIZE * MAP_SIZE_INSIDE, MAP_SIZE * MAP_SIZE_INSIDE, 0.0f},
 	{{1.0f,1.0f,1.0f,1.0f}},
 	g_aMapTexInfo[0].TexIdx,
 	true},
 
-	{{SCREEN_WIDTH - MAP_SIZE - 50,MAP_SIZE + 50,0.0f},
-	{MAP_PIN_SIZE,MAP_PIN_SIZE,0.0f},
+	{{0.0f, 0.0f, 0.0f},
+	{MAP_PIN_SIZE, MAP_PIN_SIZE, 0.0f},
 	{{1.0f,0.0f,0.0f,1.0f}},
 	g_aMapTexInfo[1].TexIdx,
 	false},
 
-	{{SCREEN_WIDTH - MAP_SIZE - 50,MAP_SIZE + 50,0.0f},
-	{MAP_PIN_SIZE,MAP_PIN_SIZE,0.0f},
+	{{0.0f, 0.0f, 0.0f},
+	{MAP_PIN_SIZE, MAP_PIN_SIZE, 0.0f},
 	{{0.3f,0.7f,1.0f,1.0f}},
 	g_aMapTexInfo[1].TexIdx,
 	false},
 
-	{{SCREEN_WIDTH - NUM_PIN_SIZE - 50,NUM_PIN_SIZE + 50,0.0f},
-	{NUM_PIN_SIZE,NUM_PIN_SIZE,0.0f},
+	{{0.0f, 0.0f, 0.0f},
+	{NUM_PIN_SIZE, NUM_PIN_SIZE, 0.0f},
 	{{1.0f,0.0f,0.0f,1.0f}},
 	g_aMapTexInfo[2].TexIdx,
 	false},
 
-	{{SCREEN_WIDTH - NUM_PIN_SIZE - 50,NUM_PIN_SIZE + 50,0.0f},
-	{NUM_PIN_SIZE,NUM_PIN_SIZE,0.0f},
+	{{0.0f, 0.0f, 0.0f},
+	{NUM_PIN_SIZE, NUM_PIN_SIZE, 0.0f},
 	{{0.3f,0.7f,1.0f,1.0f}},
 	g_aMapTexInfo[3].TexIdx,
 	false},
 };
-
+#endif
 
 //======================================================================== 
 // マップの初期化処理
@@ -117,7 +120,7 @@ void InitMap(void)
 		for (int nCntMap = 0; nCntMap < MAP_USE_NUM; nCntMap++)
 		{
 			pMap[nCntMap].pos =
-			{ SCREEN_WIDTH - MAP_SIZE - 50, MAP_SIZE + 50, 0.0f };
+			{ SCREEN_WIDTH - MAP_SIZE - 90, MAP_SIZE + 50, 0.0f };
 			pMap[nCntMap].bUse = false;
 		}
 		pMap[0].bUse = true;
@@ -130,7 +133,7 @@ void InitMap(void)
 		for (int nCntMap = 0; nCntMap < MAP_USE_NUM; nCntMap++)
 		{
 			pMap[nCntMap].pos =
-			{ SCREEN_WIDTH / 2,SCREEN_HEIGHT / 2,0.0f };
+			{ SCREEN_WIDTH / 2,SCREEN_HEIGHT / 2 -100.0f, 0.0f };
 
 			pMap[nCntMap].bUse = true;
 		}

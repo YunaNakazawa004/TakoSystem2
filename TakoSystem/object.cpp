@@ -7,10 +7,12 @@
 #include "object.h"
 #include "pot.h"
 #include "player.h"
+#include "oceancurrents.h"
 #include "meshfield.h"
 #include "meshcylinder.h"
 #include "debugproc.h"
 #include "input.h"
+#include "effect_3d.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -48,8 +50,9 @@ void InitObject(const char* pStr)
 		g_aObject[nCntObject].state = OBJECTSTATE_NONE;
 		g_aObject[nCntObject].nCounterState = 0;
 		g_aObject[nCntObject].nType = 0;
-		g_aObject[nCntObject].nIdxShadow = -1;
+		g_aObject[nCntObject].nIdxSafe = -1;
 		g_aObject[nCntObject].bUse = false;
+		g_aObject[nCntObject].bTutorial = false;
 		g_aObject[nCntObject].bCollision = true;
 	}
 
@@ -208,6 +211,52 @@ void UpdateObject(void)
 					g_aObject[nCntObject].rot.x -= 0.002f;
 				}
 			}
+
+			if (g_aObject[nCntObject].bTutorial == false)
+			{// チュートリアル用のオブジェクトじゃない
+				if (g_aObject[nCntObject].nIdxSafe == -1)
+				{// 初回
+					// 安地設定
+					ObjectModel* pObjectModel = &g_aObjectModel[g_aObject[nCntObject].nType];
+
+					float fXLength = pObjectModel->VtxMax.x - pObjectModel->VtxMin.x;
+					float fZLength = pObjectModel->VtxMax.z - pObjectModel->VtxMin.z;
+					float fLength = sqrtf((fXLength * fXLength) + (fZLength * fZLength)) * 0.5f;	// 対角線の長さ = 半径
+
+					float fDistRadius = sqrtf(g_aObject[nCntObject].pos.x * g_aObject[nCntObject].pos.x + g_aObject[nCntObject].pos.z * g_aObject[nCntObject].pos.z);	// 中心からの距離
+
+					float fVerDist = sqrtf((fDistRadius * fDistRadius) - ((fLength / 2.0f) * (fLength / 2.0f)));
+					float fNowAngle = atan2f(g_aObject[nCntObject].pos.x, g_aObject[nCntObject].pos.z);
+					float fAngle = cosf(fVerDist / fDistRadius) * 0.2f;
+					fAngle += fNowAngle;
+					CorrectAngle(&fAngle, fAngle);
+
+					D3DXVECTOR3 SafePos;
+					SafePos.x = sinf(fAngle) * fDistRadius;
+					SafePos.y = 0.0f;
+					SafePos.z = cosf(fAngle) * fDistRadius;
+
+					g_aObject[nCntObject].nIdxSafe = SetMeshCylinder(SafePos, FIRST_POS, D3DXVECTOR2(10.0f, 1.0f), D3DXVECTOR2(fLength, (g_aObject[nCntObject].pos.y + pObjectModel->VtxMax.y)),
+						D3DXCOLOR(0.3f, 1.0f, 0.0f, 1.0f), false, false, MESHCYLINDERTYPE_NONE, MESHCYLINDERSTATE_FADEIN);
+
+					SetMeshCylinderDisp(g_aObject[nCntObject].nIdxSafe, false);
+				}
+
+				Player* pPlayer = GetPlayer();
+
+				if (pPlayer[0].mode == PLAYERMODE_GAME || pPlayer[1].mode == PLAYERMODE_GAME)
+				{// どっちかがゲームモードになったら
+					if (GetOceanCurrents() != OCEANCURRENTSSTATE_NOMAL &&
+						(GetMode() == MODE_TUTORIAL || GetMode() == MODE_GAME))
+					{// 通常状態じゃない
+						SetMeshCylinderDisp(g_aObject[nCntObject].nIdxSafe, true);
+					}
+					else
+					{// 通常状態
+						SetMeshCylinderDisp(g_aObject[nCntObject].nIdxSafe, false);
+					}
+				}
+			}
 		}
 	}
 }
@@ -272,7 +321,7 @@ void DrawObject(void)
 //=============================================================================
 // 配置物の設定処理
 //=============================================================================
-void SetObject(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nIdx, bool bCollision)
+void SetObject(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nIdx, bool bCollision, bool bTutorial)
 {
 	for (int nCntObject = 0; nCntObject < MAX_OBJECT; nCntObject++)
 	{
@@ -286,8 +335,8 @@ void SetObject(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nIdx, bool bCollision)
 			g_aObject[nCntObject].state = OBJECTSTATE_NONE;
 			g_aObject[nCntObject].nCounterState = 0;
 			g_aObject[nCntObject].nType = nIdx;
-			g_aObject[nCntObject].nIdxShadow = -1;
 			g_aObject[nCntObject].bCollision = bCollision;
+			g_aObject[nCntObject].bTutorial = bTutorial;
 			g_aObject[nCntObject].bUse = true;		// 使用している状態にする
 			strcpy(g_aObject[nCntObject].sFileName, g_apFilenameObject[nIdx]);
 
@@ -315,7 +364,7 @@ void SetObjectRandom(int nType, D3DXVECTOR3 posMin, D3DXVECTOR3 posMax, int nAmo
 		rot.y = (float)(rand() % 360) / 360.0f;
 		rot.z = 0.0f;
 
-		SetObject(pos, rot, nType, false);
+		SetObject(pos, rot, nType, false, false);
 	}
 
 }
@@ -325,7 +374,7 @@ void SetObjectRandom(int nType, D3DXVECTOR3 posMin, D3DXVECTOR3 posMax, int nAmo
 //=============================================================================
 bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove, float fRadius, float fHeight, bool bInsec)
 {
-	bool bLand = false;		// 着地しているか
+	bool bReach = false;		// 着地しているか
 	Object* pObject = GetObjectAll();
 
 	for (int nCntObject = 0; nCntObject < MAX_OBJECT; nCntObject++, pObject++)
@@ -412,6 +461,8 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 			}
 		}
 #else
+		static int nCntLand = 0;
+
 		for (int nCnt = 0; nCnt < 4; nCnt++)
 		{
 			ObjectModel* pObjectModel = &g_aObjectModel[pObject->nType];
@@ -424,18 +475,30 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 			float fRate, fDot;
 			float fXLength = pObjectModel->VtxMax.x - pObjectModel->VtxMin.x;
 			float fZLength = pObjectModel->VtxMax.z - pObjectModel->VtxMin.z;
-			float fLength = sqrtf((fXLength * fXLength) + (fZLength * fZLength)) * 0.5f;
-			float fRotS = (nCnt * D3DX_PI * 0.5f) - (D3DX_PI * 0.25f) + pObject->rot.y;
-			float fRotE = ((nCnt + 1) * D3DX_PI * 0.5f) - (D3DX_PI * 0.25f) + pObject->rot.y;
+			float fOffXS = (nCnt == 0 || nCnt == 3) ? +(fXLength * 0.5f) : -(fXLength * 0.5f);
+			float fOffZS = (nCnt == 0 || nCnt == 1) ? +(fZLength * 0.5f) : -(fZLength * 0.5f);
+			float fOffXE = (nCnt == 1 || nCnt == 0) ? +(fXLength * 0.5f) : -(fXLength * 0.5f);
+			float fOffZE = (nCnt == 1 || nCnt == 2) ? +(fZLength * 0.5f) : -(fZLength * 0.5f);
+			//float fLength = sqrtf((fXLength * fXLength) + (fZLength * fZLength)) * 0.5f;
+			//float fRotS = (nCnt * D3DX_PI * 0.5f) - (D3DX_PI * 0.25f) + pObject->rot.y;
+			//float fRotE = ((nCnt + 1) * D3DX_PI * 0.5f) - (D3DX_PI * 0.25f) + pObject->rot.y;
+			float fSin = sinf(-pObject->rot.y);
+			float fCos = cosf(-pObject->rot.y);
 
-			CorrectAngle(&fRotS, fRotS);
-			CorrectAngle(&fRotE, fRotE);
+			//CorrectAngle(&fRotS, fRotS);
+			//CorrectAngle(&fRotE, fRotE);
+			CorrectAngle(&pObject->rot.y, pObject->rot.y);
 
-			fXS = sinf(fRotS) * (fLength + fRadius);
-			fZS = cosf(fRotS) * (fLength + fRadius);
+			fXS = fOffXS * fCos - fOffZS * fSin;
+			fZS = fOffXS * fSin + fOffZS * fCos;
 
-			fXE = sinf(fRotE) * (fLength + fRadius);
-			fZE = cosf(fRotE) * (fLength + fRadius);
+			fXE = fOffXE * fCos - fOffZE * fSin;
+			fZE = fOffXE * fSin + fOffZE * fCos;
+			//fXS = sinf(fRotS) * (fXLength * 0.5f + fRadius);
+			//fZS = cosf(fRotS) * (fZLength * 0.5f + fRadius);
+
+			//fXE = sinf(fRotE) * (fXLength * 0.5f + fRadius);
+			//fZE = cosf(fRotE) * (fZLength * 0.5f + fRadius);
 
 			// 始点
 			start.x = pObject->pos.x + fXS;
@@ -466,10 +529,14 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 			vecToPosOld.z = pPosOld->z - (start.z);
 
 			// 法線ベクトル
-			vecNor.x = (vecLine.x * cosf(-D3DX_PI * 0.5f)) + (vecLine.z * sinf(-D3DX_PI * 0.5f));
+			//vecNor.x = (vecLine.x * cosf(-D3DX_PI * 0.5f)) + (vecLine.z * sinf(-D3DX_PI * 0.5f));
+			//vecNor.y = 0.0f;
+			//vecNor.z = (vecLine.x * sinf(D3DX_PI * 0.5f)) - (vecLine.z * cosf(D3DX_PI * 0.5f));
+			//D3DXVec3Normalize(&vecNor, &vecNor);		// ベクトルを正規化する
+			vecNor.x = -vecLine.z;
 			vecNor.y = 0.0f;
-			vecNor.z = (vecLine.x * sinf(D3DX_PI * 0.5f)) - (vecLine.z * cosf(D3DX_PI * 0.5f));
-			D3DXVec3Normalize(&vecNor, &vecNor);		// ベクトルを正規化する
+			vecNor.z = vecLine.x;
+			D3DXVec3Normalize(&vecNor, &vecNor);
 
 			// 内積
 			fDot = (-vecMove.x * vecNor.x) + (-vecMove.z * vecNor.z);
@@ -496,11 +563,11 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 			vecMoveRef.y = 0.0f;
 			vecMoveRef.z = vecMove.z + ((vecNor.z * fDot) * 2);
 
+			float fPosLine = (float)((int)(((vecLine.z * vecToPos.x) - (vecLine.x * vecToPos.z)) * 1.0f) / (int)1);
+			float fPosOldLine = (float)((int)(((vecLine.z * vecToPosOld.x) - (vecLine.x * vecToPosOld.z)) * 1.0f) / (int)1);
+
 			if (fRate >= 0.0f && fRate <= 1.0f)
 			{// 交点の割合が範囲内
-				float fPosLine = (float)((int)(((vecLine.z * vecToPos.x) - (vecLine.x * vecToPos.z)) * 1.0f) / (int)1);
-				float fPosOldLine = (float)((int)(((vecLine.z * vecToPosOld.x) - (vecLine.x * vecToPosOld.z)) * 1.0f) / (int)1);
-
 				if (fPosLine > 0.0f && (fPosOldLine <= 0.0f))
 				{// 交差した
 					if (bInsec == true)
@@ -514,7 +581,7 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 					{
 						D3DXVECTOR3 move = vecMove;
 						move.y = 0.0f;
-						D3DXVec3Normalize(&move, &move);
+						//D3DXVec3Normalize(&move, &move);
 
 						float fDotN = D3DXVec3Dot(&move, &vecNor);
 
@@ -526,13 +593,24 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 						pPos->x = start.x + (vecLine.x * fRate) + vecMoveDest.x;
 						pPos->z = start.z + (vecLine.z * fRate) + vecMoveDest.z;
 
-						pMove->x = vecMoveDest.x;
-						pMove->z = vecMoveDest.z;
+						//pMove->x = vecMoveDest.x;
+						//pMove->z = vecMoveDest.z;
 					}
 				}
+			}
 
-				if (fPosLine > 0.0f)
-				{// 今の位置が内側にいる
+			if (fPosLine > 0.0f)
+			{// 今の位置が内側にいる
+				nCntLand++;
+
+				if (nCntLand == 4)
+				{// 全ての内側に入っていたら
+					if ((pObject->posOff.y + pObjectModel->VtxMin.y - fHeight <= pPos->y) &&
+						(pObject->posOff.y + pObjectModel->VtxMax.y >= pPos->y))
+					{// 範囲内
+						bReach = true;
+					}
+
 					if (bInsec == false)
 					{// 交点じゃない
 						if ((pObject->posOff.y + pObjectModel->VtxMin.y - fHeight >= pPosOld->y) &&
@@ -546,17 +624,17 @@ bool CollisionObject(D3DXVECTOR3* pPos, D3DXVECTOR3* pPosOld, D3DXVECTOR3* pMove
 						{// 上からの当たり判定
 							pPos->y = pObject->posOff.y + pObjectModel->VtxMax.y;
 							pMove->y = 0.0f;							// 移動量を0にする
-
-							bLand = true;
 						}
 					}
 				}
 			}
 		}
+
+		nCntLand = 0;
 #endif
 	}
 
-	return bLand;
+	return bReach;
 }
 
 //=============================================================================
@@ -568,7 +646,7 @@ bool CollisionObjectArea(D3DXVECTOR3 pos)
 
 	for (int nCntObject = 0; nCntObject < MAX_OBJECT; nCntObject++, pObject++)
 	{
-		if (pObject->bUse == false)
+		if (pObject->bUse == false || pObject->bTutorial == true)
 		{// 使用されてない
 			continue;
 		}
@@ -589,7 +667,7 @@ bool CollisionObjectArea(D3DXVECTOR3 pos)
 
 		D3DXVECTOR3 SafePos;
 		SafePos.x = sinf(fAngle) * fDistRadius;
-		SafePos.y = pObject->pos.y + pObjectModel->VtxMin.y;
+		SafePos.y = 0.0f;
 		SafePos.z = cosf(fAngle) * fDistRadius;
 
 		D3DXVECTOR2 dist = D3DXVECTOR2(SafePos.x - pos.x, SafePos.z - pos.z);
@@ -618,8 +696,10 @@ void LoadObject(const char* pStr)
 	// セット用の変数
 	int nIdx = 0;			// テクスチャやモデルの種類
 	int nCollision = 0;		// 当たり判定するかどうか
+	int nTutorial = 0;		// チュートリアルかどうか
 	int nShadow = 0;		// 影をつけるかどうか
 	bool bCollision = true;	// 当たり判定するかどうか
+	bool bTutorial = false;	// チュートリアルかどうか
 	bool bShadow = false;	// 影をつけるかどうか
 	D3DXVECTOR3 pos;		// 位置
 	D3DXVECTOR3 rot;		// 向き
@@ -775,18 +855,42 @@ void LoadObject(const char* pStr)
 					}
 				}
 
+				if (strcmp(&aString[0], "TUTORIAL") == 0)
+				{// チュートリアル
+					fscanf(pFile, " = %d", &nTutorial);
+
+					// チュートリアルの真偽を代入
+					if (nTutorial == 0)
+					{// false
+						bTutorial = false;
+					}
+					else if (nTutorial == 1)
+					{// true
+						bTutorial = true;
+					}
+
+					fscanf(pFile, "%s", &aString[0]);
+
+					if (aString[0] == '#')
+					{// コメント無視
+						fgets(&aTrash[0], ONE_LINE, pFile);
+
+						// 次の文字列を読み込む
+						fscanf(pFile, "%s", &aString[0]);
+					}
+				}
+
 				if (nIdx == 8)
 				{// タコつぼ
 					SetPot(pos, D3DXVECTOR3(D3DX_PI * rot.x / 180.0f, D3DX_PI * rot.y / 180.0f, D3DX_PI * rot.z / 180.0f), POTTYPE_NORMAL);
+					bCollision = true;
+					bTutorial = false;
 				}
-				//else if (nIdx == 9)
-				//{// タコつぼ
-				//	SetPot(pos, D3DXVECTOR3(D3DX_PI * rot.x / 180.0f, D3DX_PI * rot.y / 180.0f, D3DX_PI * rot.z / 180.0f), POTTYPE_LIE);
-				//}
 				else
 				{// タコつぼ以外
-					SetObject(pos, D3DXVECTOR3(D3DX_PI * rot.x / 180.0f, D3DX_PI * rot.y / 180.0f, D3DX_PI * rot.z / 180.0f), nIdx, bCollision);
+					SetObject(pos, D3DXVECTOR3(D3DX_PI * rot.x / 180.0f, D3DX_PI * rot.y / 180.0f, D3DX_PI * rot.z / 180.0f), nIdx, bCollision, bTutorial);
 					bCollision = true;
+					bTutorial = false;
 				}
 			}
 

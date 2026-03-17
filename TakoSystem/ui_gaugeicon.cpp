@@ -80,19 +80,19 @@ UiGaugeIcon g_aUiGaugeIcon[MAX_SET_UIGAUGEICON];						// UIゲージアイコンの情報
 // テクスチャファイル情報
 const char* c_apFilenameUiGameIcon[] =
 {
-	"data/TEXTURE/Octopus_inkgage00.png",				// [0]墨吐きゲージ
-	"data/TEXTURE/Octopus_tentaclegage00.png",		// [1]触手ゲージ
+	"data/TEXTURE/Octopus_inkgage01.png",				// [0]墨吐きゲージ
+	"data/TEXTURE/Octopus_tentaclegage01.png",		// [1]触手ゲージ
 };
 
 // UIゲージアイコンの配置情報
 UiGaugeIcon_info g_aUiGaugeIconInfo[] =
 {// {種類, 対象(使用者), 入力キー, 位置, 大きさ(幅), 大きさ(高さ), 色, 開始状態, 継続時間(リキャスト時間)}
 
-	{0, 0, JOYKEY_LEFTTRIGGER,   D3DXVECTOR3(68.0f, 644.0f, 0.0f), 60.11f, 60.11f, D3DXCOLOR(0.5f,0.5f,0.5f,1.0f), UIGAUGEICON_STATE_RECAST, UIGAUGEICON_TIME_INKSPIT},
+	{0, 0, JOYKEY_RIGHT_SHOULDER,   D3DXVECTOR3(68.0f, 644.0f, 0.0f), 60.11f, 60.11f, D3DXCOLOR(0.5f,0.5f,0.5f,1.0f), UIGAUGEICON_STATE_RECAST, UIGAUGEICON_TIME_INKSPIT},
 	{1, 0, JOYKEY_RIGHTTRIGGER,  D3DXVECTOR3(200.0f, 644.0f, 0.0f), 60.11f, 60.11f, D3DXCOLOR(0.5f,0.5f,0.5f,1.0f), UIGAUGEICON_STATE_RECAST, UIGAUGEICON_TIME_TENTACLE},
 
 	{ 1, 1, JOYKEY_RIGHTTRIGGER, D3DXVECTOR3(1212.0f, 644.0f, 0.0f), 60.11f, 60.11f, D3DXCOLOR(0.5f,0.5f,0.5f,1.0f), UIGAUGEICON_STATE_RECAST, UIGAUGEICON_TIME_TENTACLE},
-	{ 0, 1, JOYKEY_LEFTTRIGGER,  D3DXVECTOR3(1080.0f, 644.0f, 0.0f), 60.11f, 60.11f, D3DXCOLOR(0.5f,0.5f,0.5f,1.0f), UIGAUGEICON_STATE_RECAST, UIGAUGEICON_TIME_INKSPIT},
+	{ 0, 1, JOYKEY_RIGHT_SHOULDER,  D3DXVECTOR3(1080.0f, 644.0f, 0.0f), 60.11f, 60.11f, D3DXCOLOR(0.5f,0.5f,0.5f,1.0f), UIGAUGEICON_STATE_RECAST, UIGAUGEICON_TIME_INKSPIT},
 };
 
 //========================================================================
