@@ -209,10 +209,8 @@ void InitTitle(void)
 	// 頂点バッファをアンロックする
 	g_pVtxBuffTitle->Unlock();
 
-	DebugADD();
-
 	// カメラの数の設定
-	SetNumCamera(1);
+	SetNumCamera(1); 
 
 	// カメラの位置設定
 	SetCameraPos(0,
@@ -231,7 +229,7 @@ void InitTitle(void)
 	SetRandomComputer(ALL_OCTO);
 
 	// メッシュシリンダーの初期化処理
-	InitMeshCylinder();	DebugADD();
+	InitMeshCylinder();	
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 2.0f), D3DXVECTOR2(INCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), false, true, MESHCYLINDERTYPE_ROCK, MESHCYLINDERSTATE_NONE);
 	SetMeshCylinder(FIRST_POS, FIRST_POS, D3DXVECTOR2(8.0f, 1.0f), D3DXVECTOR2(OUTCYLINDER_RADIUS, CYLINDER_HEIGHT), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), true, true, MESHCYLINDERTYPE_SEA, MESHCYLINDERSTATE_NONE);
 
@@ -319,6 +317,7 @@ void UninitTitle(void)
 //===================================================================
 void UpdateTitle(void)
 {
+
 #ifdef _DEBUG
 #if 0 // タイトルの遷移(F11で解除)
 

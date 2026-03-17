@@ -11,7 +11,7 @@
 #include "watersurf.h"
 
 #include "input.h"
-
+#include "debugproc.h"
 // マクロ定義 ==================================================
 
 #define MAX_NUM_BUBBLE			(1280)	// 泡の総数
@@ -129,6 +129,8 @@ void InitBubble(void)
 
 	g_posBubblePaticle = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 位置を初期化
 
+	g_nNumBubblePolygon = 0;
+
 	// 頂点バッファの生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * 4 * MAX_NUM_BUBBLE,
 								D3DUSAGE_WRITEONLY,
@@ -224,8 +226,8 @@ void UpdateBubble(void)
 	// ===============================================
 
 	// デバッグテキスト
-	//PrintDebugProc(TEXT_LEFT, "\nBUBBLE_POLYGON_NUM %d", g_nNumBubblePolygon);
-	//PrintDebugProc(TEXT_LEFT, "\nBUBBLE_POLYGON_NUM %d", g_nNumBubblePolygon);
+	PrintDebugProc("\nBUBBLE_POLYGON_NUM %d", g_nNumBubblePolygon);
+	
 
 	if(GetKeyboardPress(DIK_UP))	g_posBubblePaticle.z += 1.0f;
 	if(GetKeyboardPress(DIK_DOWN))	g_posBubblePaticle.z -= 1.0f;
@@ -321,6 +323,8 @@ void UpdateBubble(void)
 		{// 水面より上に出た
 
 			g_aBubblePolygon[nCntPolygon].bUse = false;	// 使用していない状態に設定
+
+			g_nNumBubblePolygon--;						// 泡ポリゴンの総数をデクリメント
 		}
 		else
 		{// 水面より上に出てない

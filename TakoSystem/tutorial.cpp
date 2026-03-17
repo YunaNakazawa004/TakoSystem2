@@ -401,6 +401,7 @@ void UninitTutorial(void)
 //===================================================================
 void UpdateTutorial(void)
 {
+
 	// スポットライトの更新処理
 	UpdateSpotLight();
 
@@ -542,6 +543,7 @@ void UpdateTutorial(void)
 //===================================================================
 void DrawTutorial(void)
 {
+
 	// プレイヤーの描画処理
 	DrawPlayer();
 

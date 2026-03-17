@@ -444,6 +444,14 @@ void Update(void)
 	PrintDebugProc("DebugCounter : %d\n", g_nDebugCounter);
 	PrintDebugProc("FPS60未満 : %d\n", g_nFPSUnder);
 	
+	PrintDebugProc("MODE %s\n", (g_mode == MODE_LOGO)     ? "LOGO" 
+							  : (g_mode == MODE_TITLE)    ? "TITLE"
+							  : (g_mode == MODE_TUTORIAL) ? "TUTORIAL"
+							  : (g_mode == MODE_GAME)	  ? "GAME"
+							  : (g_mode == MODE_RESULT)	  ? "RESULT"
+							  : (g_mode == MODE_RANKING)  ? "RANKING"
+							  : "NONE");
+
 	// キーボードの更新処理
 	UpdateKeyboard();
 
