@@ -502,10 +502,7 @@ void UpdateGame(void)
 	}
 
 	// ‰æ–Ê‚ÌXVˆ—
-	UpdateScreen(); FileLogPass("screen");
-
-	//FileLogPass("e_game====");
-
+	UpdateScreen(); 
 
 	PrintDebugProc("\nGAMESTART %s", (bGameStart == true) ? "TRUE" : "FALSE");
 #endif

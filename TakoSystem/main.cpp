@@ -48,12 +48,14 @@ void Draw(void);
 //*****************************************************************************
 LPDIRECT3D9 g_pD3D = NULL;							// Direct3Dオブジェクトへのポインタ
 LPDIRECT3DDEVICE9 g_pD3DDevice = NULL;				// Direct3Dデバイスへのポインタ
-MODE g_mode = MODE_TITLE;						// 現在のモード
+MODE g_mode = MODE_LOGO;							// 現在のモード
 int g_nCountFPS = 0;								// FPSカウンタ
 bool g_bWindowSize = TRUE;							// ウィンドウサイズ(TRUE : ウィンドウ FALSE : フルスクリーン)
 
 int g_nDebugCounter = 0;
 int g_nFPSUnder = 0;
+
+int g_nCounterOneLoop = 0;	// モードのループ回数
 
 //=============================================================================
 // メイン関数
@@ -627,7 +629,10 @@ void SetMode(MODE mode)
 
 	case MODE_RANKING:			// ランキング画面
 		UninitRanking();
-
+		
+#ifdef ENABLE_ONELAP
+		FileLogPass("OneLap");
+#endif
 		break;
 
 	case MODE_LOGO:				// ロゴ画面

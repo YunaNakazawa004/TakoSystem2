@@ -651,6 +651,14 @@ void UpdateRanking(void)
 
 			SetFade(MODE_TITLE);
 		}
+
+#ifdef ENABLE_ONELAP
+		if (GetFade() == FADE_NONE)
+		{// フェード終了
+
+			SetFade(MODE_TITLE);
+		}
+#endif
 	}
 }
 

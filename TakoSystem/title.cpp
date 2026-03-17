@@ -628,6 +628,14 @@ void UpdateTitle(void)
 
 		SetFade(MODE_LOGO);
 	}
+
+#ifdef ENABLE_ONELAP
+	if (GetFade() == FADE_NONE)
+	{// フェード終了字にゲーム
+
+		SetFade(MODE_TUTORIAL);
+	}
+#endif
 }
 
 //===================================================================

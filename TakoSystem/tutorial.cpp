@@ -500,6 +500,14 @@ void UpdateTutorial(void)
 	// フェード情報の取得
 	FADE pFade = GetFade();
 
+#ifdef ENABLE_ONELAP
+	if (GetFade() == FADE_NONE)
+	{// フェード終了
+
+		SetFade(MODE_GAME);
+	}
+#endif
+
 	if ((GetSkipTutorial() == true && pFade == FADE_NONE) ||
 		g_nReadyCounter > 150)
 	{// 次の画面に転移する条件(SKIP長押し)を満たした
