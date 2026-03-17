@@ -284,7 +284,7 @@ void UpdateUiResultGetScore(void)
 	// ====================================================
 
 #if _DEBUG
-#if 1
+#if 0
 	// ‘I‘ğ‚·‚é‘ÎÛ‚Ìİ’è
 	if (GetKeyboardTrigger(DIK_1))
 	{
