@@ -415,7 +415,12 @@ void Uninit(void)
 	// Direct3Dデバイスの破棄
 	if (g_pD3DDevice != NULL)
 	{
-		g_pD3DDevice->Release();
+		ULONG count = g_pD3DDevice->Release();
+
+		FILE* fp = fopen("log.txt", "a");
+		fprintf(fp, "未解放リソース: %lu\n", count);
+		fclose(fp);
+
 		g_pD3DDevice = NULL;
 	}
 
