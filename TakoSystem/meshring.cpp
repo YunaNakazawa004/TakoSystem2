@@ -6,7 +6,7 @@
 //=============================================================================
 #include "meshring.h"
 #include "input.h"
-
+#include "debugproc.h"
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
@@ -136,7 +136,9 @@ void UninitMeshRing(void)
 //=============================================================================
 void UpdateMeshRing(void)
 {
-	VERTEX_3D* pVtx;					// 頂点情報へのポインタ
+	//VERTEX_3D* pVtx;					// 頂点情報へのポインタ
+
+	int nCnt = 0;
 
 	for (int nCntMeshRing = 0; nCntMeshRing < MAX_MESHRING; nCntMeshRing++)
 	{
@@ -182,49 +184,31 @@ void UpdateMeshRing(void)
 			if (g_aMeshRing[nCntMeshRing].bUse == false)
 			{// 使用してない状態になった
 
+				// 頂点バッファの破棄
+				if (g_aMeshRing[nCntMeshRing].pVtxBuff != NULL)
+				{
+					g_aMeshRing[nCntMeshRing].pVtxBuff->Release();
+					g_aMeshRing[nCntMeshRing].pVtxBuff = NULL;
+				}
+
+				// インデックスバッファの破棄
+				if (g_aMeshRing[nCntMeshRing].pIdxBuff != NULL)
+				{
+					g_aMeshRing[nCntMeshRing].pIdxBuff->Release();
+					g_aMeshRing[nCntMeshRing].pIdxBuff = NULL;
+				}
+
 				continue;	// 処理を抜ける
 			}
 
-			// 頂点バッファをロックし、頂点情報へのポインタを取得
-			g_aMeshRing[nCntMeshRing].pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+			// 頂点の設定
+			SetVtxMeshRing(nCntMeshRing);
 
-#if 1
-			// 頂点情報の設定
-			for (int nCntMeshRing1 = 0; nCntMeshRing1 < (int)g_aMeshRing[nCntMeshRing].block.y + 1; nCntMeshRing1++)
-			{
-				for (int nCntMeshRing2 = 0; nCntMeshRing2 < (int)g_aMeshRing[nCntMeshRing].block.x + 1; nCntMeshRing2++)
-				{
-					float fAngle = (-(D3DX_PI * 2.0f) / g_aMeshRing[nCntMeshRing].block.x);
-					float fSize = (g_aMeshRing[nCntMeshRing].size.x + (g_aMeshRing[nCntMeshRing].size.y * -((nCntMeshRing2 + nCntMeshRing1) % 2)));
-
-					// 頂点座標の設定
-					pVtx[0].pos.x = sinf(((nCntMeshRing2 + (nCntMeshRing1 * ((int)g_aMeshRing[nCntMeshRing].block.x + 1))) / 2)
-						* -fAngle) * fSize;
-
-					pVtx[0].pos.y = 0.0f;
-
-					pVtx[0].pos.z = cosf(((nCntMeshRing2 + (nCntMeshRing1 * ((int)g_aMeshRing[nCntMeshRing].block.x + 1))) / 2)
-						* fAngle) * fSize;
-
-					// rhwの設定
-					pVtx[0].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-
-					// 頂点カラーの設定
-					pVtx[0].col = g_aMeshRing[nCntMeshRing].col;
-
-					// テクスチャ座標の設定
-					//pVtx[0].tex.x = (float)((nCntMeshRing2 != 0) ? nCntMeshRing2 / 2 : 0.0f);
-					//pVtx[0].tex.y = (float)(-nCntMeshRing2 % 2 + nCntMeshRing1);
-
-
-					pVtx++;
-				}
-			}
-#endif
-			// 頂点バッファをアンロックする
-			g_aMeshRing[nCntMeshRing].pVtxBuff->Unlock();
+			nCnt++;
 		}
 	}
+
+	PrintDebugProc("NUM_MESHRING %d\n", nCnt);
 }
 
 //=============================================================================
@@ -232,6 +216,8 @@ void UpdateMeshRing(void)
 //=============================================================================
 void DrawMeshRing(void)
 {
+	//return;
+
 	// ローカル変数宣言
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();	// デバイスへのポインタ
 	D3DXMATRIX mtxRot, mtxTrans;				// 計算用マトリックス
@@ -322,6 +308,12 @@ void DrawMeshRing(void)
 //=============================================================================
 void SetMeshRing(MESHRINGTYPE type, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVECTOR2 size, D3DXCOLOR col)
 {
+	LPDIRECT3DDEVICE9 pDevice = GetDevice();			// デバイスへのポインタ
+	//VERTEX_3D* pVtx;					// 頂点情報へのポインタ
+	WORD* pIdx;							// インデックス情報へのポインタ
+
+	int nNumIdx;
+
 	for (int nCntMeshRing = 0; nCntMeshRing < MAX_MESHRING; nCntMeshRing++)
 	{
 		if (g_aMeshRing[nCntMeshRing].bUse == false)
@@ -337,67 +329,29 @@ void SetMeshRing(MESHRINGTYPE type, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR
 			g_aMeshRing[nCntMeshRing].col = col;
 			g_aMeshRing[nCntMeshRing].bUse = true;
 
-			LPDIRECT3DDEVICE9 pDevice = GetDevice();			// デバイスへのポインタ
-			VERTEX_3D* pVtx;					// 頂点情報へのポインタ
-			WORD* pIdx;							// インデックス情報へのポインタ
+			nNumIdx = (((int)g_aMeshRing[nCntMeshRing].block.x + 1) * ((int)g_aMeshRing[nCntMeshRing].block.y + 1));
 
 				// 頂点バッファの生成
-			pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * (((int)g_aMeshRing[nCntMeshRing].block.x + 1) * ((int)g_aMeshRing[nCntMeshRing].block.y + 1)),
-				D3DUSAGE_WRITEONLY,
-				FVF_VERTEX_3D,
-				D3DPOOL_MANAGED,
-				&g_aMeshRing[nCntMeshRing].pVtxBuff,
-				NULL);
+			pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * nNumIdx,
+										D3DUSAGE_WRITEONLY,
+										FVF_VERTEX_3D,
+										D3DPOOL_MANAGED,
+										&g_aMeshRing[nCntMeshRing].pVtxBuff,
+										NULL);
 
-			// 頂点バッファをロックし、頂点情報へのポインタを取得
-			g_aMeshRing[nCntMeshRing].pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
-
-			// 頂点情報の設定
-			for (int nCntMeshRing1 = 0; nCntMeshRing1 < (int)g_aMeshRing[nCntMeshRing].block.y + 1; nCntMeshRing1++)
-			{
-				for (int nCntMeshRing2 = 0; nCntMeshRing2 < (int)g_aMeshRing[nCntMeshRing].block.x + 1; nCntMeshRing2++)
-				{
-					float fAngle = ((D3DX_PI * 2.0f) / g_aMeshRing[nCntMeshRing].block.x);
-					float fSize = (g_aMeshRing[nCntMeshRing].size.x + (g_aMeshRing[nCntMeshRing].size.y * -((nCntMeshRing2 + nCntMeshRing1) % 2)));
-
-					// 頂点座標の設定
-					pVtx[0].pos.x = sinf(((nCntMeshRing2 + (nCntMeshRing1 * ((int)g_aMeshRing[nCntMeshRing].block.x + 1))) / 2)
-						* -fAngle) * fSize;
-
-					pVtx[0].pos.y = 0.0f;
-
-					pVtx[0].pos.z = cosf(((nCntMeshRing2 + (nCntMeshRing1 * ((int)g_aMeshRing[nCntMeshRing].block.x + 1))) / 2)
-						* fAngle) * fSize;
-
-					// rhwの設定
-					pVtx[0].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-
-					// 頂点カラーの設定
-					pVtx[0].col = g_aMeshRing[nCntMeshRing].col;
-
-					// テクスチャ座標の設定
-					int nTmp = nCntMeshRing2 + ((nCntMeshRing1 != 0) ? nCntMeshRing1 * g_aMeshRing[nCntMeshRing].block.x + 1: 0);
-
-					pVtx[0].tex.x = (float)(nTmp != 0) ? nTmp / 2 : 0.0f;
-					pVtx[0].tex.y = (float)((nCntMeshRing2 + nCntMeshRing1) % 2);
-
-					pVtx++;
-				}
-			}
-
-			// 頂点バッファをアンロックする
-			g_aMeshRing[nCntMeshRing].pVtxBuff->Unlock();
+			// 頂点の設定
+			SetVtxMeshRing(nCntMeshRing);
 
 			// インデックスバッファの数
-			int nNumIdx = (((int)g_aMeshRing[nCntMeshRing].block.x) * ((int)g_aMeshRing[nCntMeshRing].block.y) * 2) + (((int)g_aMeshRing[nCntMeshRing].block.y - 1) * 4) + 2;
+			nNumIdx = (((int)g_aMeshRing[nCntMeshRing].block.x) * ((int)g_aMeshRing[nCntMeshRing].block.y) * 2) + (((int)g_aMeshRing[nCntMeshRing].block.y - 1) * 4) + 2;
 
 			// インデックスバッファの生成
 			pDevice->CreateIndexBuffer(sizeof(WORD) * nNumIdx,
-				D3DUSAGE_WRITEONLY,
-				D3DFMT_INDEX16,
-				D3DPOOL_MANAGED,
-				&g_aMeshRing[nCntMeshRing].pIdxBuff,
-				NULL);
+									   D3DUSAGE_WRITEONLY,
+									   D3DFMT_INDEX16,
+									   D3DPOOL_MANAGED,
+									   &g_aMeshRing[nCntMeshRing].pIdxBuff,
+									   NULL);
 
 			// インデックスバッファをロックし、頂点番号データへのポインタを取得
 			g_aMeshRing[nCntMeshRing].pIdxBuff->Lock(0, 0, (void**)&pIdx, 0);
@@ -420,7 +374,52 @@ void SetMeshRing(MESHRINGTYPE type, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR
 }
 
 //=============================================================================
-// メッシュリングの設定処理
+// メッシュリングの頂点設定処理
+//=============================================================================
+void SetVtxMeshRing(int nIdx)
+{
+	VERTEX_3D* pVtx;					// 頂点情報へのポインタ
+
+	// 頂点バッファをロックし、頂点情報へのポインタを取得
+	g_aMeshRing[nIdx].pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+	// 頂点情報の設定
+	for (int nCntMeshRing1 = 0; nCntMeshRing1 < (int)g_aMeshRing[nIdx].block.y + 1; nCntMeshRing1++)
+	{
+		for (int nCntMeshRing2 = 0; nCntMeshRing2 < (int)g_aMeshRing[nIdx].block.x + 1; nCntMeshRing2++)
+		{
+			float fAngle = ((D3DX_PI * 2.0f) / g_aMeshRing[nIdx].block.x);
+			float fSize = (g_aMeshRing[nIdx].size.x + (g_aMeshRing[nIdx].size.y * -((nCntMeshRing2 + nCntMeshRing1) % 2)));
+
+			// 頂点座標の設定
+			pVtx[0].pos.x = sinf(((nCntMeshRing2 + (nCntMeshRing1 * ((int)g_aMeshRing[nIdx].block.x + 1))) / 2) * -fAngle) * fSize;
+			pVtx[0].pos.y = 0.0f;
+			pVtx[0].pos.z = cosf(((nCntMeshRing2 + (nCntMeshRing1 * ((int)g_aMeshRing[nIdx].block.x + 1))) / 2) *  fAngle) * fSize;
+
+			// 法線ベクトルの設定
+			pVtx[0].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+
+			// 頂点カラーの設定
+			pVtx[0].col = g_aMeshRing[nIdx].col;
+
+			// テクスチャ座標の設定
+			int nTmp = nCntMeshRing2 + ((nCntMeshRing1 != 0) ? nCntMeshRing1 * g_aMeshRing[nIdx].block.x + 1 : 0);
+
+			pVtx[0].tex.x = (float)(nTmp != 0) ? nTmp / 2 : 0.0f;
+			pVtx[0].tex.y = (float)((nCntMeshRing2 + nCntMeshRing1) % 2);
+
+			pVtx++;
+		}
+	}
+
+	// 頂点バッファをアンロックする
+	g_aMeshRing[nIdx].pVtxBuff->Unlock();
+}
+
+
+
+//=============================================================================
+// メッシュリングの衝撃波の角度を求める処理
 //=============================================================================
 D3DXVECTOR3 CalcShockWaveRot(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2)
 {
@@ -441,7 +440,7 @@ D3DXVECTOR3 CalcShockWaveRot(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2)
 
 	// 設定する角度を求める
 	fAngleY = atan2f(fWidth, fDipth);			// Yの向きを求める
-	fAngleX = atan2f(fDiaLengthXZ, fHeight );	// Xの向きを求める
+	fAngleX = atan2f(fDiaLengthXZ, fHeight);	// Xの向きを求める
 
 	// 設定する角度を返す
 	return D3DXVECTOR3(fAngleX, fAngleY, 0.0f);

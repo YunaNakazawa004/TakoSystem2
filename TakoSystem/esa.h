@@ -36,6 +36,7 @@ typedef enum
 	ESA_ACTTYPE_SWIM,			// [2]泳いでいる状態
 
 	ESA_ACTTYPE_GOTO_PLAYER,	// [3]プレイヤーを追跡する状態
+	ESA_ACTTYPE_GOTO_COMPUTER,	// [3]プレイヤーを追跡する状態
 	ESA_ACTTYPE_GOTO_POT,		// [4]タコつぼに向かう状態
 
 	ESA_ACTTYPE_MAX				// 最大値

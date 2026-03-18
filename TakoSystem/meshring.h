@@ -33,6 +33,9 @@ void UpdateMeshRing(void);
 void DrawMeshRing(void);
 void SetMeshRing(MESHRINGTYPE type, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVECTOR2 size, D3DXCOLOR col);
 
+
+void SetVtxMeshRing(int nIdx);
+
 D3DXVECTOR3 CalcShockWaveRot(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2);	// è’åÇîgÇÃäpìxÇãÅÇﬂÇÈ
 
 #endif

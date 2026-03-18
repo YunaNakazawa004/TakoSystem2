@@ -19,6 +19,7 @@
 #include "meshorbit.h"
 #include "watersurf.h"
 #include "player.h"
+#include "computer.h"
 #include "pot.h"
 
 #include "ui_esa.h"
@@ -584,7 +585,7 @@ int DelEsa(int nIdxEsa, bool bPlayer, int nIdxPlayer)
 		{// プレイヤーの場合
 			
 			// エサUIの追加
-			SetAddUiEsa(nIdxPlayer, g_aEsa[nIdxEsa].nIdxModel);
+			//SetAddUiEsa(nIdxPlayer, g_aEsa[nIdxEsa].nIdxModel);
 		}
 
 		g_nNumEsa--;
@@ -666,6 +667,7 @@ void MoveEsa(Esa* pEsa)
 	float fToTagetAngle = 0.0f;		// 対象との角度
 
 	Player* pPlayer = GetPlayer();				// プレイヤーの情報
+	Computer* pComputer = GetComputer();		// コンピューターの状態
 	Pot* pPot = GetPot();
 
 	D3DXVECTOR3 tmpPos = pEsa->pos;				// エサの更新前の位置
@@ -720,6 +722,15 @@ void MoveEsa(Esa* pEsa)
 		pEsa->pos.y += (pPlayer[pEsa->nNumBehavior].pos.y - pEsa->pos.y) * ESA_HOMING_SPEED;
 		pEsa->pos.z += (pPlayer[pEsa->nNumBehavior].pos.z - pEsa->pos.z) * ESA_HOMING_SPEED;
 		//PrintDebugProc("\nESA_ROT %f", fToTagetAngle);
+
+		break;
+
+	case ESA_ACTTYPE_GOTO_COMPUTER:
+
+		// ポットの位置にホーミング
+		pEsa->pos.x += (pComputer[pEsa->nNumBehavior].phys.pos.x - pEsa->pos.x) * ESA_HOMING_SPEED;
+		pEsa->pos.y += (pComputer[pEsa->nNumBehavior].phys.pos.y - pEsa->pos.y) * ESA_HOMING_SPEED;
+		pEsa->pos.z += (pComputer[pEsa->nNumBehavior].phys.pos.z - pEsa->pos.z) * ESA_HOMING_SPEED;
 
 		break;
 
