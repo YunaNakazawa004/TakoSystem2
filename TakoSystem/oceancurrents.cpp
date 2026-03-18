@@ -28,7 +28,7 @@
 
 #define WIRLPOOL_WAITTIME			(15)			// ‘Ò‹@ŽžŠÔ‚Ì’·‚³
 
-#define OCEANCURRECT_TIME_NOMAL		(60 * 60)					// ’Êíó‘Ô‚ÌŒp‘±ŽžŠÔ
+#define OCEANCURRECT_TIME_NOMAL		(60 * 40)					// ’Êíó‘Ô‚ÌŒp‘±ŽžŠÔ
 #define OCEANCURRECT_SPEED_NOMAL	(0.005f)					// ’ÊíŽž‚ÌŠC—¬‚Ì‘¬‚³	
 
 #define OCEANCURRECT_TIME_WAIT		(60 * WIRLPOOL_WAITTIME)	// ‰Q’ª‘Ò‹@ó‘Ô‚ÌŒp‘±ŽžŠÔ

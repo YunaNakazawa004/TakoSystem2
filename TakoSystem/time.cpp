@@ -159,7 +159,7 @@ void UpdateTime(void)
 			g_nTime100Delay = 0;
 			AddTime(-1);
  #ifdef ENABLE_ONELAP
-			AddTime(-1);
+			//AddTime(-1);
 #endif
 			if (g_nTime < (PINCH_TIME / 2) && g_nTime >= 0)
 				PlaySound(SOUND_SE_COUNT);	// カウントダウン
