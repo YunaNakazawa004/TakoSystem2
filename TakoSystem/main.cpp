@@ -788,9 +788,9 @@ void DebugAssert(const char* c_pLocatLabel, bool bFormula)
 	if (bFormula == false)
 	{// 式の解が間違っている
 
-		// 表示テキストの作成1
-		char aErrorText[512] = {};																		// メッセージウィンドウの文章
-		sprintf(&aErrorText[0], "以下の場所の条件を満たしませんでした。\n場所 : %s", &c_pLocatLabel);	// 警告文を作成
+		// 表示テキストの作成
+		char aErrorText[512] = {};																			// メッセージウィンドウの文章
+		sprintf(&aErrorText[0], "以下の場所の条件を満たしませんでした。\n場所 : %s", &c_pLocatLabel[0]);	// 警告文を作成
 		
 		// 警告メッセージの作成
 		MessageBox(NULL, &aErrorText[0], "Error", MB_ICONERROR);
