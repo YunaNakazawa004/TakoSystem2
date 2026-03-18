@@ -15,7 +15,6 @@
 
 #include "object.h"
 #include "meshcylinder.h"
-#include "meshring.h"
 #include "meshfield.h"
 #include "meshorbit.h"	// 消えない
 #include "waterSurf.h"
@@ -237,9 +236,6 @@ void InitTitle(void)
 	// メッシュフィールドの初期化処理
 	InitMeshField();
 
-	// メッシュリングの初期化処理
-	InitMeshRing();
-
 	// 飛沫の初期化処理
 	InitSpray();
 
@@ -296,9 +292,6 @@ void UninitTitle(void)
 
 	// メッシュフィールドの終了処理
 	UninitMeshField();
-
-	// メッシュリングの終了処理
-	UninitMeshRing();
 
 	// 飛沫の終了処理
 	UninitSpray();
@@ -372,9 +365,6 @@ void UpdateTitle(void)
 
 	// メッシュオービットの更新処理
 	UpdateMeshOrbit();
-
-	// メッシュリングの更新処理
-	UpdateMeshRing();
 
 	// 配置物の更新処理
 	UpdateObject();
@@ -632,10 +622,10 @@ void UpdateTitle(void)
 		g_TitleDeley = TITLE_DELEY_MAX;
 	}
 
-	if (GetFade() == FADE_NONE || g_PressEnterDeley > RANKING_DELEY)
+	if (GetFade() == FADE_NONE && g_PressEnterDeley > RANKING_DELEY)
 	{// 時間経過でランキングへ移行
 
-		SetFade(MODE_GAME);
+		SetFade(MODE_LOGO);
 	}
 
 #ifdef ENABLE_ONELAP
@@ -672,9 +662,6 @@ void DrawTitle(void)
 
 	// メッシュフィールドの描画処理
 	DrawMeshField();
-
-	// メッシュリングの描画処理
-	DrawMeshRing();
 
 	// 飛沫の描画処理
 	DrawSpray();
