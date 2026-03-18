@@ -15,6 +15,7 @@
 
 #include "object.h"
 #include "meshcylinder.h"
+#include "meshring.h"
 #include "meshfield.h"
 #include "meshorbit.h"	// 消えない
 #include "waterSurf.h"
@@ -236,6 +237,9 @@ void InitTitle(void)
 	// メッシュフィールドの初期化処理
 	InitMeshField();
 
+	// メッシュリングの初期化処理
+	InitMeshRing();
+
 	// 飛沫の初期化処理
 	InitSpray();
 
@@ -292,6 +296,9 @@ void UninitTitle(void)
 
 	// メッシュフィールドの終了処理
 	UninitMeshField();
+
+	// メッシュリングの終了処理
+	UninitMeshRing();
 
 	// 飛沫の終了処理
 	UninitSpray();
@@ -365,6 +372,9 @@ void UpdateTitle(void)
 
 	// メッシュオービットの更新処理
 	UpdateMeshOrbit();
+
+	// メッシュリングの更新処理
+	UpdateMeshRing();
 
 	// 配置物の更新処理
 	UpdateObject();
@@ -662,6 +672,9 @@ void DrawTitle(void)
 
 	// メッシュフィールドの描画処理
 	DrawMeshField();
+
+	// メッシュリングの描画処理
+	DrawMeshRing();
 
 	// 飛沫の描画処理
 	DrawSpray();

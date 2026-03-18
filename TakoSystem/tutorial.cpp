@@ -129,12 +129,8 @@ void InitTutorial(void)
 	// 3Dパーティクルの初期化処理
 	InitParticle3D();
 
-	// 生き物の初期化処理
-	InitFishes();
-
 	// タコつぼの初期化処理
 	InitPot();
-
 
 	// 水面の初期化処理
 	InitWaterSurf();
@@ -154,8 +150,6 @@ void InitTutorial(void)
 
 	// 海藻の初期化処理
 	InitSeaweed();
-
-
 
 	// チュートリアルテキストの初期化処理
 	InitTutorialTxt();
@@ -278,6 +272,7 @@ void InitTutorial(void)
 	// 頂点バッファをアンロックする
 	g_pVtxBuffTutorial->Unlock();
 
+
 	// サウンドの再生
 	PlaySound(SOUND_BGM_TUTORIAL);
 }
@@ -322,9 +317,6 @@ void UninitTutorial(void)
 
 	// 3Dパーティクルの終了処理
 	UninitParticle3D();
-
-	// 生き物の終了処理
-	UninitFishes();
 
 	// タコつぼの終了処理
 	UninitPot();
@@ -401,15 +393,12 @@ void UninitTutorial(void)
 //===================================================================
 void UpdateTutorial(void)
 {
-
+#if 1
 	// スポットライトの更新処理
 	UpdateSpotLight();
 
 	// プレイヤーの更新処理
 	UpdatePlayer();
-
-	// CPUの更新処理
-	UpdateComputer();
 
 	// メッシュシリンダーの更新処理
 	UpdateMeshCylinder();
@@ -434,9 +423,6 @@ void UpdateTutorial(void)
 
 	// 3Dパーティクルの更新処理
 	UpdateParticle3D();
-
-	// 生き物の更新処理
-	UpdateFishes();
 
 	// タコつぼの更新処理
 	UpdatePot();
@@ -500,7 +486,7 @@ void UpdateTutorial(void)
 
 	// フェード情報の取得
 	FADE pFade = GetFade();
-
+#endif
 #ifdef ENABLE_ONELAP
 	if (GetFade() == FADE_NONE)
 	{// フェード終了
@@ -536,6 +522,7 @@ void UpdateTutorial(void)
 		// モード設定
 		//SetFade(MODE_GAME);
 	}
+
 }
 
 //===================================================================
@@ -543,12 +530,8 @@ void UpdateTutorial(void)
 //===================================================================
 void DrawTutorial(void)
 {
-
 	// プレイヤーの描画処理
 	DrawPlayer();
-
-	// CPUの描画処理
-	DrawComputer();
 
 	// 配置物の描画処理
 	DrawObject();
@@ -561,8 +544,6 @@ void DrawTutorial(void)
 
 	// メッシュフィールドの描画処理
 	DrawMeshField();
-
-
 
 	// メッシュシリンダーの描画処理
 	DrawMeshCylinder();
@@ -578,9 +559,6 @@ void DrawTutorial(void)
 
 	// 3Dパーティクルの描画処理
 	DrawParticle3D();
-
-	// 生き物の描画処理
-	DrawFishes();
 
 	// タコつぼの描画処理
 	DrawPot();
@@ -622,15 +600,11 @@ void DrawTutorial(void)
 	// エサUIの描画処理
 	//DrawUiEsa();
 
-	
-
 	// エサ上限の描画処理
 	DrawFoodNum();
 
 	// マップの描画処理
 	DrawMap();
-
-
 
 	DrawUiTutorial();
 
@@ -656,6 +630,7 @@ void DrawTutorial(void)
 		// ポリゴンの描画
 		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, nCntTutorial * 4, 2);
 	}
+
 }
 
 //===================================================================
