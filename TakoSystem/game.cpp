@@ -171,7 +171,6 @@ void InitGame(void)
 	InitUiGaugeIcon();
 
 	// エサUIの初期化処理
-	//InitUiEsa();
 
 	InitUiEsaWindow();
 
@@ -279,7 +278,6 @@ void UninitGame(void)
 	UninitUiGaugeIcon();
 
 	// エサUIの終了処理
-	UninitUiEsa();
 
 	UninitUiEsaWindow();
 
@@ -431,7 +429,6 @@ void UpdateGame(void)
 			UpdateUiGaugeIcon();
 
 			// エサUIの更新処理
-			UpdateUiEsa();
 
 			UpdateUiEsaWindow();
 
@@ -582,7 +579,6 @@ void DrawGame(void)
 	DrawUiGaugeIcon();
 
 	// エサUIの描画処理
-	//DrawUiEsa();
 
 	// エサ上限の描画処理
 	DrawFoodNum();

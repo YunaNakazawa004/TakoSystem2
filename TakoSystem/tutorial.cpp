@@ -161,7 +161,6 @@ void InitTutorial(void)
 	InitUiGaugeIcon();
 
 	// エサUIの初期化処理
-	//InitUiEsa();
 
 	InitUiEsaWindow();
 
@@ -349,7 +348,6 @@ void UninitTutorial(void)
 	UninitUiGaugeIcon();
 
 	// エサUIの終了処理
-	//UninitUiEsa();
 
 	UninitUiEsaWindow();
 
@@ -455,7 +453,6 @@ void UpdateTutorial(void)
 	UpdateUiGaugeIcon();
 
 	// エサUIの更新処理
-	//UpdateUiEsa();
 
 	UpdateUiEsaWindow();
 
@@ -598,7 +595,6 @@ void DrawTutorial(void)
 	DrawUiGaugeIcon();
 
 	// エサUIの描画処理
-	//DrawUiEsa();
 
 	// エサ上限の描画処理
 	DrawFoodNum();
