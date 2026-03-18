@@ -509,7 +509,7 @@ void UpdateRanking(void)
 	}
 	else
 	{
-		TimeCnt+=2;
+		TimeCnt++;
 	}
 #if 0
 	if (GetKeyboardPress(DIK_A) == true)
@@ -667,7 +667,7 @@ void UpdateRanking(void)
 	if (TimeCnt > 120 && TimeCnt < 300)
 	{
 		// ƒJƒƒ‰‚ð‰¡‚É—¬‚µ‚Ä‚¢‚­
-		N += 300 / 180.0f*2;
+		N += 300 / 180.0f;
 		SetCameraPos(0, { (-50.0f * (MAX_RANK / 2)) + N,40.0f ,-130.0f }, { (-50.0f * (MAX_RANK / 2)) + N,40.0f,0.0f }, { 0.0f,0.0f,0.0f }, CAMERATYPE_STOP);
 	}
 	if (TimeCnt == 300)
@@ -743,7 +743,7 @@ void UpdateRanking(void)
 	{
 		if (N < 40)
 		{
-			N+=2;
+			N ++;
 			SetCameraPos(0, { 0.0f + (N) ,85.0f ,-200.0f }, { 0.0f + (N),55.0f,0.0f }, { 0.0f,0.0f,0.0f }, CAMERATYPE_STOP);
 		}
 	}
