@@ -403,9 +403,9 @@ void SetVtxMeshRing(int nIdx)
 			pVtx[0].col = g_aMeshRing[nIdx].col;
 
 			// テクスチャ座標の設定
-			int nTmp = nCntMeshRing2 + ((nCntMeshRing1 != 0) ? nCntMeshRing1 * g_aMeshRing[nIdx].block.x + 1 : 0);
+			int nTmp = (int)(nCntMeshRing2 + ((nCntMeshRing1 != 0) ? nCntMeshRing1 * g_aMeshRing[nIdx].block.x + 1 : 0));
 
-			pVtx[0].tex.x = (float)(nTmp != 0) ? nTmp / 2 : 0.0f;
+			pVtx[0].tex.x = (float)(nTmp != 0) ? (float)(nTmp / 2) : 0.0f;
 			pVtx[0].tex.y = (float)((nCntMeshRing2 + nCntMeshRing1) % 2);
 
 			pVtx++;

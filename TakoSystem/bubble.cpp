@@ -208,12 +208,12 @@ void UpdateBubble(void)
 	// 変数宣言 ======================================
 
 	// デバイスの所得
-	LPDIRECT3DDEVICE9 pDevice = GetDevice();					// デバイスのポインタ
+	//LPDIRECT3DDEVICE9 pDevice = GetDevice();					// デバイスのポインタ
 
 	VERTEX_3D* pVtx;											// 頂点情報へのポインタを宣言
 
 	D3DXVECTOR3 tmpPosOld = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 過去の位置
-	float fDistLength = 0.0f;									// 距離
+	//float fDistLength = 0.0f;									// 距離
 
 	D3DXVECTOR3 setOffPos  = D3DXVECTOR3(0.0f, 0.0f, 0.0f),		// 始点からの離れ具合
 				setVecMove = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 移動方向
