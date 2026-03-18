@@ -965,8 +965,8 @@ bool SetRankingObj(D3DXVECTOR3 pos,		// 位置
 
 	VERTEX_2D* pVtx2D;							// 頂点情報へのポインタ
 	VERTEX_3D* pVtx3D;							// 頂点情報へのポインタ
-	LPDIRECT3DDEVICE9 pDevice = GetDevice();	// デバイスへのポインタ
-	Fishes* pFishes = GetFishes();
+	//LPDIRECT3DDEVICE9 pDevice = GetDevice();	// デバイスへのポインタ
+	//Fishes* pFishes = GetFishes();
 
 	for (int nCntRank = 0; nCntRank < MAX_RANKINGOBJ; nCntRank++)
 	{

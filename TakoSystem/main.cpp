@@ -55,7 +55,7 @@ bool g_bWindowSize = TRUE;							// ƒEƒBƒ“ƒhƒEƒTƒCƒY(TRUE : ƒEƒBƒ“ƒhƒE FALSE : ƒ
 int g_nDebugCounter = 0;
 int g_nFPSUnder = 0;
 
-int g_nCounterOneLoop = 0;	// ƒ‚[ƒh‚Ìƒ‹[ƒv‰ñ”
+int g_nCounterMode = 0;	// ƒ‚[ƒh‚ğ“]ˆÚ‚µ‚½‰ñ”
 
 //=============================================================================
 // ƒƒCƒ“ŠÖ”
@@ -427,7 +427,12 @@ void Uninit(void)
 	// Direct3DƒIƒuƒWƒFƒNƒg‚Ì”jŠü
 	if (g_pD3D != NULL)
 	{
-		g_pD3D->Release();
+		ULONG count = g_pD3D->Release();
+
+		FILE* fp = fopen("data/logObject.txt", "a");
+		fprintf(fp, "–¢‰ğ•úƒŠƒ\[ƒX: %lu\n", count);
+		fclose(fp);
+
 		g_pD3D = NULL;
 	}
 }
@@ -456,6 +461,8 @@ void Update(void)
 							  : (g_mode == MODE_RESULT)	  ? "RESULT"
 							  : (g_mode == MODE_RANKING)  ? "RANKING"
 							  : "NONE");
+
+	PrintDebugProc("“]ˆÚ‰ñ” : %d\n", g_nCounterMode);
 
 	// ƒL[ƒ{[ƒh‚ÌXVˆ—
 	UpdateKeyboard();
@@ -689,6 +696,9 @@ void SetMode(MODE mode)
 
 		break;
 	}
+
+	g_nCounterMode++;
+
 #endif
 }
 
@@ -766,4 +776,25 @@ void DebugADD(void)
 void DebugSUB(void)
 {
 	g_nDebugCounter--;
+}
+
+//=============================================================================
+// ƒfƒoƒbƒOƒAƒT[ƒVƒ‡ƒ“
+//=============================================================================
+void DebugAssert(const char* c_pLocatLabel, bool bFormula)
+{
+#ifdef _DEBUG 	
+#ifdef ENABLE_ASSERT 
+	if (bFormula == false)
+	{// ®‚Ì‰ğ‚ªŠÔˆá‚Á‚Ä‚¢‚é
+
+		// •\¦ƒeƒLƒXƒg‚Ìì¬
+		char aErrorText[512] = {};																			// ƒƒbƒZ[ƒWƒEƒBƒ“ƒhƒE‚Ì•¶Í
+		sprintf(&aErrorText[0], "ˆÈ‰º‚ÌêŠ‚ÌğŒ‚ğ–‚½‚µ‚Ü‚¹‚ñ‚Å‚µ‚½B\nêŠ : %s", &c_pLocatLabel[0]);	// Œx•¶‚ğì¬
+		
+		// ŒxƒƒbƒZ[ƒW‚Ìì¬
+		MessageBox(NULL, &aErrorText[0], "Error", MB_ICONERROR);
+	}
+#endif
+#endif
 }

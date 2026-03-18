@@ -271,7 +271,7 @@ void UpdateLogo(void)
 	}
 #endif
 
-	if (pFade == FADE_NONE && g_fLogoDeley > TITLE_TRANS)
+	if (pFade == FADE_NONE && g_fLogoDeley > LOGO_SIZE_MAX)
 	{// フェードしてない && 規定の大きさを超えた
 
 		// フェードの設定

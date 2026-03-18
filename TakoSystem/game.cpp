@@ -171,7 +171,6 @@ void InitGame(void)
 	InitUiGaugeIcon();
 
 	// エサUIの初期化処理
-	//InitUiEsa();
 
 	InitUiEsaWindow();
 
@@ -279,8 +278,6 @@ void UninitGame(void)
 	UninitUiGaugeIcon();
 
 	// エサUIの終了処理
-	UninitUiEsa();
-
 	UninitUiEsaWindow();
 
 	// エサ上限の終了処理
@@ -431,8 +428,6 @@ void UpdateGame(void)
 			UpdateUiGaugeIcon();
 
 			// エサUIの更新処理
-			UpdateUiEsa();
-
 			UpdateUiEsaWindow();
 
 			// エサ上限の更新処理
@@ -447,9 +442,6 @@ void UpdateGame(void)
 
 		// プレイヤーの更新処理
 		UpdatePlayer();
-
-		// ステージの更新処理
-		//UpdateStage();
 
 		// 配置物の更新処理
 		UpdateObject();
@@ -533,8 +525,6 @@ void DrawGame(void)
 	// メッシュフィールドの描画処理
 	DrawMeshField();
 
-
-
 	// メッシュシリンダーの描画処理
 	DrawMeshCylinder();
 
@@ -573,6 +563,7 @@ void DrawGame(void)
 	// レディの描画処理
 	DrawReady();
 
+	// エサUIの描画処理
 	DrawUiEsaWindow();
 
 	// 海流の描画処理
@@ -580,9 +571,6 @@ void DrawGame(void)
 
 	// UIゲージアイコンの描画処理
 	DrawUiGaugeIcon();
-
-	// エサUIの描画処理
-	//DrawUiEsa();
 
 	// エサ上限の描画処理
 	DrawFoodNum();

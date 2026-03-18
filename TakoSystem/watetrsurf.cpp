@@ -44,7 +44,7 @@ WaterSurf g_aWatersurf[MAX_WATERSURF];
 void InitWaterSurf(void)
 {
 	LPDIRECT3DDEVICE9 pDevice;		// デバイスへのポインタ
-	float pRadius = 4000.0f;
+	//float pRadius = 4000.0f;
 
 	// デバイスの取得
 	pDevice = GetDevice();

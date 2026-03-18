@@ -92,7 +92,7 @@ void InitEsa(bool bSet)
 	float fRandRadius;	// 設定する中心からの距離
 	float fRandAngle;	// 設定する角度
 	float fRandHeight;	// 設定する高さ
-	int nIdx;			// 設定したインデックス
+	//int nIdx;			// 設定したインデックス
 	D3DXVECTOR3 setPos;
 	D3DXVECTOR3 tmpVec3 = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
@@ -567,7 +567,7 @@ int DelEsa(int nIdxEsa, bool bPlayer, int nIdxPlayer)
 		g_aEsa[nIdxEsa].bUse = false;	// 使用していない状態に設定
 
 		// オービットの削除
-		if (g_aEsa[nIdxEsa].bOrbit == true)
+		if (g_aEsa[nIdxEsa].bOrbit == true && g_aEsa[nIdxEsa].nOrbitIdx != -1)
 		{// オービットを使ってる場合
 			DeleteMeshOrbit(g_aEsa[nIdxEsa].nOrbitIdx);
 			g_aEsa[nIdxEsa].nOrbitIdx = -1;	// 軌道のインデックスを初期化
@@ -661,7 +661,7 @@ void MoveEsa(Esa* pEsa)
 {
 	// 変数宣言 ===========================================
 
-	float fWidth,fHeight, fDipth;	// 幅, 高さ, 奥行きがどれぐらいの幅なのか
+	float fWidth,/*fHeight, */fDipth;	// 幅, 高さ, 奥行きがどれぐらいの幅なのか
 	float fDistRadius;				// 中心からの距離(半径)
 	float fNomRadius;				// 正規化した距離(半径)
 	float fToTagetAngle = 0.0f;		// 対象との角度

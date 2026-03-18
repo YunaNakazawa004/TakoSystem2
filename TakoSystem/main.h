@@ -20,6 +20,8 @@
 
 #include "file.h"
 
+#include <assert.h>
+
 //*****************************************************************************
 // ライブラリのリンク
 //*****************************************************************************
@@ -67,9 +69,13 @@
 #define INCYLINDER_RADIUS	(400.0f)														// 内側の円柱の半径
 #define CYLINDER_HEIGHT		(2000.0f)														// 円柱の高さ
 
-#if 1
+#if 0
 #define ENABLE_ONELAP	// 一周させるか
 #endif
+
+#if 1
+#define ENABLE_ASSERT
+#endif;
 
 //*****************************************************************************
 // 画面(モード)の種類
@@ -134,5 +140,7 @@ void SetFog(D3DXCOLOR col, float fFogStart, float fFogEnd, bool bUse);
 
 void DebugADD(void);
 void DebugSUB(void);
+
+void DebugAssert(const char* c_pLocatLabel, bool bFormula);	
 
 #endif

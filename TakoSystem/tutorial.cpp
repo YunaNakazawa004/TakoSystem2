@@ -5,44 +5,47 @@
 // 
 //=============================================================================
 #include "main.h"
+#include "title.h"
 #include "tutorial.h"
-#include "camera.h"
-#include "sound.h"
-#include "input.h"
-#include "light.h"
 #include "fade.h"
-#include "model.h"
+
+#include "camera.h"
+#include "light.h"
+#include "input.h"
+#include "sound.h"
+//#include "model.h"
+
 #include "meshcylinder.h"
 #include "meshdome.h"
 #include "meshfield.h"
 #include "meshring.h"
 #include "meshorbit.h"
-#include "computer.h"
+
 #include "pot.h"
 #include "object.h"
-#include "stage.h"
 #include "esa.h"		// エサ
-#include "fishes.h"
 #include "watersurf.h"
+#include "tutorialtxt.h"
+#include "seaweed.h"
+#include "spotlight.h"
+
 #include "crosshair.h"	// クロスヘア
 #include "ui_gaugeicon.h"
-#include "ui_esa.h"
-#include "oceancurrents.h"
-#include "seadust.h"
+
 #include "map.h"
-#include "effect_3d.h"
-#include "particle_3d.h"
-#include "title.h"
-#include "tutorialtxt.h"
 #include "readygo.h"
-#include "spray.h"
-#include "seaweed.h"
-#include "bubble.h"
-#include "spotlight.h"
 #include "screen.h"
 #include "ui_tutorial.h"
-#include "foodnum.h"
 #include "ui_esawindow.h"
+#include "foodnum.h"
+
+#include "oceancurrents.h"
+
+#include "particle_3d.h"
+#include "effect_3d.h"
+#include "seadust.h"
+#include "spray.h"
+#include "bubble.h"
 
 // マクロ定義
 #define	MAX_TUTORIAL	(2)	// タイトルで表示するテクスチャの最大数
@@ -129,12 +132,8 @@ void InitTutorial(void)
 	// 3Dパーティクルの初期化処理
 	InitParticle3D();
 
-	// 生き物の初期化処理
-	InitFishes();
-
 	// タコつぼの初期化処理
 	InitPot();
-
 
 	// 水面の初期化処理
 	InitWaterSurf();
@@ -155,8 +154,6 @@ void InitTutorial(void)
 	// 海藻の初期化処理
 	InitSeaweed();
 
-
-
 	// チュートリアルテキストの初期化処理
 	InitTutorialTxt();
 
@@ -167,8 +164,6 @@ void InitTutorial(void)
 	InitUiGaugeIcon();
 
 	// エサUIの初期化処理
-	//InitUiEsa();
-
 	InitUiEsaWindow();
 
 	// エサ上限の初期化処理
@@ -278,6 +273,7 @@ void InitTutorial(void)
 	// 頂点バッファをアンロックする
 	g_pVtxBuffTutorial->Unlock();
 
+
 	// サウンドの再生
 	PlaySound(SOUND_BGM_TUTORIAL);
 }
@@ -323,9 +319,6 @@ void UninitTutorial(void)
 	// 3Dパーティクルの終了処理
 	UninitParticle3D();
 
-	// 生き物の終了処理
-	UninitFishes();
-
 	// タコつぼの終了処理
 	UninitPot();
 
@@ -357,7 +350,6 @@ void UninitTutorial(void)
 	UninitUiGaugeIcon();
 
 	// エサUIの終了処理
-	//UninitUiEsa();
 
 	UninitUiEsaWindow();
 
@@ -401,15 +393,12 @@ void UninitTutorial(void)
 //===================================================================
 void UpdateTutorial(void)
 {
-
+#if 1
 	// スポットライトの更新処理
 	UpdateSpotLight();
 
 	// プレイヤーの更新処理
 	UpdatePlayer();
-
-	// CPUの更新処理
-	UpdateComputer();
 
 	// メッシュシリンダーの更新処理
 	UpdateMeshCylinder();
@@ -434,9 +423,6 @@ void UpdateTutorial(void)
 
 	// 3Dパーティクルの更新処理
 	UpdateParticle3D();
-
-	// 生き物の更新処理
-	UpdateFishes();
 
 	// タコつぼの更新処理
 	UpdatePot();
@@ -469,7 +455,6 @@ void UpdateTutorial(void)
 	UpdateUiGaugeIcon();
 
 	// エサUIの更新処理
-	//UpdateUiEsa();
 
 	UpdateUiEsaWindow();
 
@@ -500,7 +485,7 @@ void UpdateTutorial(void)
 
 	// フェード情報の取得
 	FADE pFade = GetFade();
-
+#endif
 #ifdef ENABLE_ONELAP
 	if (GetFade() == FADE_NONE)
 	{// フェード終了
@@ -536,6 +521,7 @@ void UpdateTutorial(void)
 		// モード設定
 		//SetFade(MODE_GAME);
 	}
+
 }
 
 //===================================================================
@@ -543,12 +529,8 @@ void UpdateTutorial(void)
 //===================================================================
 void DrawTutorial(void)
 {
-
 	// プレイヤーの描画処理
 	DrawPlayer();
-
-	// CPUの描画処理
-	DrawComputer();
 
 	// 配置物の描画処理
 	DrawObject();
@@ -561,8 +543,6 @@ void DrawTutorial(void)
 
 	// メッシュフィールドの描画処理
 	DrawMeshField();
-
-
 
 	// メッシュシリンダーの描画処理
 	DrawMeshCylinder();
@@ -578,9 +558,6 @@ void DrawTutorial(void)
 
 	// 3Dパーティクルの描画処理
 	DrawParticle3D();
-
-	// 生き物の描画処理
-	DrawFishes();
 
 	// タコつぼの描画処理
 	DrawPot();
@@ -620,17 +597,12 @@ void DrawTutorial(void)
 	DrawUiGaugeIcon();
 
 	// エサUIの描画処理
-	//DrawUiEsa();
-
-	
 
 	// エサ上限の描画処理
 	DrawFoodNum();
 
 	// マップの描画処理
 	DrawMap();
-
-
 
 	DrawUiTutorial();
 
@@ -656,6 +628,7 @@ void DrawTutorial(void)
 		// ポリゴンの描画
 		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, nCntTutorial * 4, 2);
 	}
+
 }
 
 //===================================================================
