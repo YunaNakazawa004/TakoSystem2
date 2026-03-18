@@ -5,44 +5,47 @@
 // 
 //=============================================================================
 #include "main.h"
+#include "title.h"
 #include "tutorial.h"
-#include "camera.h"
-#include "sound.h"
-#include "input.h"
-#include "light.h"
 #include "fade.h"
-#include "model.h"
+
+#include "camera.h"
+#include "light.h"
+#include "input.h"
+#include "sound.h"
+//#include "model.h"
+
 #include "meshcylinder.h"
 #include "meshdome.h"
 #include "meshfield.h"
 #include "meshring.h"
 #include "meshorbit.h"
-#include "computer.h"
+
 #include "pot.h"
 #include "object.h"
-#include "stage.h"
 #include "esa.h"		// エサ
-#include "fishes.h"
 #include "watersurf.h"
+#include "tutorialtxt.h"
+#include "seaweed.h"
+#include "spotlight.h"
+
 #include "crosshair.h"	// クロスヘア
 #include "ui_gaugeicon.h"
-#include "ui_esa.h"
-#include "oceancurrents.h"
-#include "seadust.h"
+
 #include "map.h"
-#include "effect_3d.h"
-#include "particle_3d.h"
-#include "title.h"
-#include "tutorialtxt.h"
 #include "readygo.h"
-#include "spray.h"
-#include "seaweed.h"
-#include "bubble.h"
-#include "spotlight.h"
 #include "screen.h"
 #include "ui_tutorial.h"
-#include "foodnum.h"
 #include "ui_esawindow.h"
+#include "foodnum.h"
+
+#include "oceancurrents.h"
+
+#include "particle_3d.h"
+#include "effect_3d.h"
+#include "seadust.h"
+#include "spray.h"
+#include "bubble.h"
 
 // マクロ定義
 #define	MAX_TUTORIAL	(2)	// タイトルで表示するテクスチャの最大数
@@ -161,7 +164,6 @@ void InitTutorial(void)
 	InitUiGaugeIcon();
 
 	// エサUIの初期化処理
-
 	InitUiEsaWindow();
 
 	// エサ上限の初期化処理
