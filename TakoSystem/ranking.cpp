@@ -39,8 +39,8 @@ GAMESTATE g_gamerState = GAMESTATE_BEGIN;		// ゲームの状態
 #define MAX_RANK		(7)								// ランク数
 #define TEXT_NAME		"data/RANKING/RankData.bin"		// 相対パスのテキスト名
 #define MAX_RANKINGOBJ	(100)							// 取っておく枠
-#define RANKTYPE_2D		(1)
-#define RANKTYPE_3D		(2)
+#define RANKTYPE_2D		(0)
+#define RANKTYPE_3D		(1)
 #define RANK_CALC_SIZEARRAY(aArray)	(sizeof aArray / sizeof(aArray[0]))	// サイズ比較
 
 //=====================================
@@ -60,7 +60,7 @@ typedef struct
 // グローバル変数
 //=====================================
 
-int nNum2DObj =0, nNum3DObj = 0;	// 各オブジェクト数
+int g_nObjNum[2];											// オブジェクト数
 int nRankNum[MAX_RANK][2] = {};								// 各順位の人数
 D3DLIGHT9* pLight = GetLight();
 D3DLIGHT9 oldLight[3];
@@ -92,10 +92,16 @@ void InitRanking(void)
 {
 	// ローカル変数宣言 -----------------
 
+	int nCntObj2D = 0, nCntObj3D = 0;
+	VERTEX_2D* pVtx2D;							// 頂点情報へのポインタ
+	VERTEX_3D* pVtx3D;							// 頂点情報へのポインタ
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();	// デバイスへのポインタ
 	D3DXVECTOR3 vecDir;		// ライトの方向ベクトル
 	Fishes* pFishes = GetFishes();
 	int nCharNum = GetPlayerSelect();
+	g_nObjNum[0] = 0;
+	g_nObjNum[1] = 0;
+	GetRankingForResult(&g_aGRP[0], MAX_RANK);
 
 	srand((unsigned int)time(NULL));
 
@@ -133,9 +139,6 @@ void InitRanking(void)
 	// モデルの初期化処理
 	InitFishes();
 
-	// 3Dエフェクトの初期化処理
-	InitEffect3D();
-
 	// 3Dパーティクルの初期化処理
 	InitParticle3D();
 
@@ -149,54 +152,10 @@ void InitRanking(void)
 		g_aRankOBJ[nCntRank].col = { 0.0f,0.0f,0.0f,0.0f };
 		g_aRankOBJ[nCntRank].nObjType = -1;
 		g_aRankOBJ[nCntRank].nTexType = -1;
-		g_aRankOBJ[nCntRank].NumIdx = {-1,-1};
+		g_aRankOBJ[nCntRank].NumIdx = { -1,-1 };
 		g_aRankOBJ[nCntRank].pos = { 0.0f,0.0f,0.0f };
 		g_aRankOBJ[nCntRank].size = { 0.0f,0.0f };
 	}
-
-	for (int nCntRank = 0; nCntRank < RANK_CALC_SIZEARRAY(g_aRank_TexInfo); nCntRank++)
-	{
-		// テクスチャの読み込み
-		D3DXCreateTextureFromFile(pDevice,
-			g_aRank_TexInfo[nCntRank].TextureName,
-			&g_pTextureRank[nCntRank]);
-	}
-
-	// 頂点バッファの生成
-	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * MAX_VERTEX * MAX_RANKINGOBJ,
-		D3DUSAGE_WRITEONLY,
-		FVF_VERTEX_2D,
-		D3DPOOL_MANAGED,
-		&g_pVtxBuffRank2D,
-		NULL);
-
-	// 頂点バッファの生成
-	pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * MAX_VERTEX * MAX_RANKINGOBJ,
-		D3DUSAGE_WRITEONLY,
-		FVF_VERTEX_3D,
-		D3DPOOL_MANAGED,
-		&g_pVtxBuffRank3D,
-		NULL);
-
-	SetRankingObj({ SCREEN_WIDTH / 2,SCREEN_HEIGHT / 2,1.0f }, { 1.0f,1.0f,1.0f,1.0f }, { 1280.0f,720.0f }, RANKTYPE_2D, TEXTURE_BG, { -1 ,-1 }, true);
-	SetRankingObj({ SCREEN_WIDTH / 2,SCREEN_HEIGHT / 2,1.0f }, { 1.0f,1.0f,1.0f,0.8f }, { 1280.0f,720.0f }, RANKTYPE_2D, TEXTURE_BG_OCTO, { -1 ,-1 }, true);
-	SetRankingObj({ 0.0f,0.0f,0.0f }, { 1.0f,0.0f,0.0f,1.0f }, { 15.0f,15.0f }, RANKTYPE_3D, TEXTURE_PIN_P1, { -1 ,-1 }, true);
-
-	if (nCharNum == 2)
-	{
-		SetRankingObj({ 0.0f,0.0f,0.0f }, { 0.2f,1.0f,0.2f,1.0f }, { 15.0f,15.0f }, RANKTYPE_3D, TEXTURE_PIN_P2, { -1 ,-1 }, true);
-	}
-
-	for (int nCntRank = 0; nCntRank < MAX_RANK - nCharNum; nCntRank++)
-	{
-		SetRankingObj({ 0.0f,0.0f,0.0f }, { 1.0f,1.0f,1.0f,1.0f }, { 15.0f,15.0f }, RANKTYPE_3D, TEXTURE_PIN_CPU, { 0 ,0 }, true);
-		SetRankingObj({ 0.0f,0.0f,0.0f }, { 1.0f,1.0f,1.0f,1.0f }, { 15.0f,15.0f }, RANKTYPE_3D, TEXTURE_PIN_CPU, { 0 ,(float)nCntRank + 1 }, true);
-	}
-
-	SetCameraPos(0, { 0.0f ,65.0f ,0.0f }, { 0.0f,35.0f,60.0f }, { 0.0f,0.0f,0.0f }, CAMERATYPE_STOP);
-
-	GetRankingForResult(&g_aGRP[0], MAX_RANK);
-
 	for (int nCntRank = 0; nCntRank < MAX_RANK; nCntRank++)
 	{ // プレイヤー情報の初期化と代入
 
@@ -223,13 +182,12 @@ void InitRanking(void)
 		{
 			SetFishes(1, 1, false, { (-50.0f * (MAX_RANK / 2)) + nCntRank * 50.0f,0.0f,0.0f }, { 0.0f,0.0f,0.0f }, FISHESTYPE_PLAYER);
 		}
-		else if(g_aRank_Info[nCntRank].nCharaIdx == RESULT_PLAYER_COMPUTER)
+		else if (g_aRank_Info[nCntRank].nCharaIdx == RESULT_PLAYER_COMPUTER)
 		{
 			SetFishes(1, 1, false, { (-50.0f * (MAX_RANK / 2)) + nCntRank * 50.0f,0.0f,0.0f }, { 0.0f,0.0f,0.0f }, FISHESTYPE_COMPUTER);
 		}
 		SetMotionFishes(nCntRank, MOTIONTYPE_NEUTRAL, pFishes[nCntRank].bBlendMotion, pFishes[nCntRank].nFrameBlend);
 	}
-
 	for (int nCntRank = 0; nCntRank < MAX_RANK; nCntRank++)
 	{ // 各順位の人数
 
@@ -241,6 +199,240 @@ void InitRanking(void)
 			}
 		}
 	}
+
+	SetRankingObj({ 0.0f,0.0f,0.0f }, { 1.0f,0.0f,0.0f,1.0f }, { 15.0f,15.0f }, RANKTYPE_3D, TEXTURE_PIN_P1, { -1 ,-1 }, true);
+
+	if (nCharNum == 2)
+	{
+		SetRankingObj({ 0.0f,0.0f,0.0f }, { 0.2f,1.0f,0.2f,1.0f }, { 15.0f,15.0f }, RANKTYPE_3D, TEXTURE_PIN_P2, { -1 ,-1 }, true);
+	}
+	for (int nCntRank = 0; nCntRank < MAX_RANK - nCharNum; nCntRank++)
+	{
+		SetRankingObj({ 0.0f,0.0f,0.0f }, { 1.0f,1.0f,1.0f,1.0f }, { 15.0f,15.0f }, RANKTYPE_3D, TEXTURE_PIN_CPU, { 0 ,0 }, true);
+		SetRankingObj({ 0.0f,0.0f,0.0f }, { 1.0f,1.0f,1.0f,1.0f }, { 15.0f,15.0f }, RANKTYPE_3D, TEXTURE_PIN_CPU, { 0 ,(float)nCntRank + 1 }, true);
+	}
+
+	SetRankingObj({ SCREEN_WIDTH / 2,SCREEN_HEIGHT / 2,1.0f }, { 1.0f,1.0f,1.0f,1.0f }, { 1280.0f,720.0f }, RANKTYPE_2D, TEXTURE_BG, { -1 ,-1 }, true);
+	SetRankingObj({ SCREEN_WIDTH / 2,SCREEN_HEIGHT / 2,1.0f }, { 1.0f,1.0f,1.0f,0.8f }, { 1280.0f,720.0f }, RANKTYPE_2D, TEXTURE_BG_OCTO, { -1 ,-1 }, true);
+
+	for (int nCntRank = 0; nCntRank < MAX_RANK; nCntRank++)
+	{
+		SetRankingObj(/*pos*/{ 1300.0f,70.0f + nCntRank * 90.0f,0.0f }, /*color*/{ 1.0f,1.0f,1.0f,1.0f },/*size*/{ 900.0f,90.0f }, RANKTYPE_2D, TEXTURE_RANKSCORE, { -1,-1 }, false);
+		SetRankingObj(/*pos*/{ 1300.0f,70.0f + nCntRank * 90.0f,0.0f }, /*color*/{ 1.0f,1.0f,1.0f,1.0f },/*size*/{ 900.0f,90.0f }, RANKTYPE_2D, TEXTURE_RANKSCOREFLAME, { -1,-1 }, false);
+	}
+
+	for (int nCntRank = 0, nCntRank2 = 0, nPlayerCnt = 0, nCpuCnt = 0; nCntRank < MAX_RANK; nCntRank++)
+	{ // 順位のOBJ設置
+
+		if (g_aRank_Info[nCntRank].nRank == 0 && nRankNum[g_aRank_Info[nCntRank].nRank][1] == 0)
+		{
+
+			if (g_aRank_Info[nCntRank].nCharaIdx == RESULT_PLAYER_PLAYER)
+			{
+				if (nPlayerCnt == 0)
+				{
+					SetRankingObj(/*pos*/{ 930.0f,70.0f  ,0.0f }, /*color*/{ 1.0f,1.0f,0.0f,1.0f },/*size*/{ 65.0f,65.0f }, RANKTYPE_2D, TEXTURE_PIN_P1, { -1,-1 }, false);
+				}
+				else
+				{
+					SetRankingObj(/*pos*/{ 930.0f,70.0f  ,0.0f }, /*color*/{ 1.0f,1.0f,0.0f,1.0f },/*size*/{ 65.0f,65.0f }, RANKTYPE_2D, TEXTURE_PIN_P2, { -1,-1 }, false);
+				}
+			}
+			else if (g_aRank_Info[nCntRank].nCharaIdx == RESULT_PLAYER_COMPUTER)
+			{
+				SetRankingObj(/*pos*/{ 930.0f - 19,70.0f   ,0.0f }, /*color*/{ 1.0f,1.0f,0.0f,1.0f },/*size*/{ 50.0f,65.0f }, RANKTYPE_2D, TEXTURE_PIN_CPU, { 0,0 }, false);
+				SetRankingObj(/*pos*/{ 930.0f + 24,70.0f   ,0.0f }, /*color*/{ 1.0f,1.0f,0.0f,1.0f },/*size*/{ 50.0f,65.0f }, RANKTYPE_2D, TEXTURE_PIN_CPU, { 0,nCpuCnt + 1.0f }, false);
+			}
+			if (nRankNum[g_aRank_Info[nCntRank].nRank][0] != nRankNum[g_aRank_Info[nCntRank].nRank][1] + 1)
+			{
+				nRankNum[g_aRank_Info[nCntRank].nRank][1]++;
+			}
+
+			Score_Print({ 1175.0f ,70.0f ,0.0f }, RANKTYPE_2D, nCntRank, { 1.0f,1.0f,0.0f,1.0f });
+
+			SetRankingObj(/*pos*/{ 840.0f - 19,70.0f  ,0.0f }, /*color*/{ 1.0f,1.0f,1.0f,1.0f },/*size*/{ 90.0f,90.0f }, RANKTYPE_2D, TEXTURE_RANKICON, { 0,0 }, false);
+		}
+		else
+		{
+			nCntRank2 = g_aRank_Info[nCntRank].nRank + nRankNum[g_aRank_Info[nCntRank].nRank][1];
+
+			if (g_aRank_Info[nCntRank].nCharaIdx == RESULT_PLAYER_PLAYER)
+			{
+				if (nPlayerCnt == 0)
+				{
+					SetRankingObj(/*pos*/{ 930.0f,70.0f + nCntRank2 * 90.0f ,0.0f }, /*color*/{ 1.0f,0.0f,0.0f,1.0f },/*size*/{ 65.0f,65.0f }, RANKTYPE_2D, TEXTURE_PIN_P1, { -1,-1 }, false);
+				}
+				else
+				{
+					SetRankingObj(/*pos*/{ 930.0f,70.0f + nCntRank2 * 90.0f ,0.0f }, /*color*/{ 0.2f,1.0f,0.2f,1.0f },/*size*/{ 65.0f,65.0f }, RANKTYPE_2D, TEXTURE_PIN_P2, { -1,-1 }, false);
+				}
+			}
+			else if (g_aRank_Info[nCntRank].nCharaIdx == RESULT_PLAYER_COMPUTER)
+			{
+				SetRankingObj(/*pos*/{ 930.0f - 19,70.0f + nCntRank2 * 90.0f  ,0.0f }, /*color*/{ 1.0f,1.0f,1.0f,1.0f },/*size*/{ 50.0f,65.0f }, RANKTYPE_2D, TEXTURE_PIN_CPU, { 0,0 }, false);
+				SetRankingObj(/*pos*/{ 930.0f + 24,70.0f + nCntRank2 * 90.0f  ,0.0f }, /*color*/{ 1.0f,1.0f,1.0f,1.0f },/*size*/{ 50.0f,65.0f }, RANKTYPE_2D, TEXTURE_PIN_CPU, { 0,nCpuCnt + 1.0f }, false);
+			}
+			if (nRankNum[g_aRank_Info[nCntRank].nRank][0] != nRankNum[g_aRank_Info[nCntRank].nRank][1] + 1)
+			{
+				nRankNum[g_aRank_Info[nCntRank].nRank][1]++;
+			}
+
+			Score_Print({ 1175.0f ,70.0f + nCntRank2 * 90.0f ,0.0f }, RANKTYPE_2D, nCntRank, { 1.0f,1.0f,1.0f,1.0f });
+		}
+		if (g_aRank_Info[nCntRank].nCharaIdx == RESULT_PLAYER_PLAYER)
+		{
+			nPlayerCnt++;
+		}
+		else if (g_aRank_Info[nCntRank].nCharaIdx == RESULT_PLAYER_COMPUTER)
+		{
+			nCpuCnt++;
+		}
+	}
+
+	for (int nCntRank = 0; nCntRank < RANK_CALC_SIZEARRAY(g_aRank_TexInfo); nCntRank++)
+	{
+		// テクスチャの読み込み
+		D3DXCreateTextureFromFile(pDevice,
+			g_aRank_TexInfo[nCntRank].TextureName,
+			&g_pTextureRank[nCntRank]);
+	}
+
+	// 2DOBJ頂点バッファの生成
+	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * MAX_VERTEX * g_nObjNum[RANKTYPE_2D],
+		D3DUSAGE_WRITEONLY,
+		FVF_VERTEX_2D,
+		D3DPOOL_MANAGED,
+		&g_pVtxBuffRank2D,
+		NULL);
+
+	// 3DOBJ頂点バッファの生成
+	pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * MAX_VERTEX * g_nObjNum[RANKTYPE_3D],
+		D3DUSAGE_WRITEONLY,
+		FVF_VERTEX_3D,
+		D3DPOOL_MANAGED,
+		&g_pVtxBuffRank3D,
+		NULL);
+
+	SetCameraPos(0, { 0.0f ,65.0f ,0.0f }, { 0.0f,35.0f,60.0f }, { 0.0f,0.0f,0.0f }, CAMERATYPE_STOP);
+
+	// 頂点バッファをロックし、頂点情報へのポインタを取得
+	g_pVtxBuffRank2D->Lock(0, 0, (void**)&pVtx2D, 0);
+
+	VERTEX_2D* pCur2D = pVtx2D;					// 頂点情報へのポインタ
+
+	for (int nCntRank = 0,nWrite = 0; nCntRank < MAX_RANKINGOBJ; nCntRank++)
+	{
+		if (!g_aRankOBJ[nCntRank].bUse)
+		{ // 使用されていない
+			continue;
+		}
+
+		if (g_aRankOBJ[nCntRank].nObjType != RANKTYPE_2D)
+		{ // not2Dオブジェクト
+			continue;
+		}
+
+		pCur2D[0].pos = D3DXVECTOR3(g_aRankOBJ[nCntRank].pos.x - (g_aRankOBJ[nCntRank].size.x / 2), g_aRankOBJ[nCntRank].pos.y - (g_aRankOBJ[nCntRank].size.y / 2), g_aRankOBJ[nCntRank].pos.z);	// 右回りで設定する
+		pCur2D[1].pos = D3DXVECTOR3(g_aRankOBJ[nCntRank].pos.x + (g_aRankOBJ[nCntRank].size.x / 2), g_aRankOBJ[nCntRank].pos.y - (g_aRankOBJ[nCntRank].size.y / 2), g_aRankOBJ[nCntRank].pos.z);	// 2Dの場合Zの値は0にする
+		pCur2D[2].pos = D3DXVECTOR3(g_aRankOBJ[nCntRank].pos.x - (g_aRankOBJ[nCntRank].size.x / 2), g_aRankOBJ[nCntRank].pos.y + (g_aRankOBJ[nCntRank].size.y / 2), g_aRankOBJ[nCntRank].pos.z);
+		pCur2D[3].pos = D3DXVECTOR3(g_aRankOBJ[nCntRank].pos.x + (g_aRankOBJ[nCntRank].size.x / 2), g_aRankOBJ[nCntRank].pos.y + (g_aRankOBJ[nCntRank].size.y / 2), g_aRankOBJ[nCntRank].pos.z);
+
+		// rhwの設定
+		pCur2D[0].rhw = 1.0f;
+		pCur2D[1].rhw = 1.0f;
+		pCur2D[2].rhw = 1.0f;
+		pCur2D[3].rhw = 1.0f;
+
+		// 頂点カラーの設定
+		pCur2D[0].col = g_aRankOBJ[nCntRank].col;	// 0~255の値を設定
+		pCur2D[1].col = g_aRankOBJ[nCntRank].col;
+		pCur2D[2].col = g_aRankOBJ[nCntRank].col;
+		pCur2D[3].col = g_aRankOBJ[nCntRank].col;
+
+		if (g_aRankOBJ[nCntRank].NumIdx.x != -1 || g_aRankOBJ[nCntRank].NumIdx.y != -1)
+		{
+			pCur2D[0].tex = D3DXVECTOR2(0.0f + ((1.0f / g_aRank_TexInfo[g_aRankOBJ[nCntRank].nTexType].Block.x) * g_aRankOBJ[nCntRank].NumIdx.x), 0.0f + ((1.0f / g_aRank_TexInfo[g_aRankOBJ[nCntRank].nTexType].Block.y) * g_aRankOBJ[nCntRank].NumIdx.y));
+			pCur2D[1].tex = D3DXVECTOR2(0.0f + ((1.0f / g_aRank_TexInfo[g_aRankOBJ[nCntRank].nTexType].Block.x) + ((1.0f / g_aRank_TexInfo[g_aRankOBJ[nCntRank].nTexType].Block.x) * g_aRankOBJ[nCntRank].NumIdx.x)), 0.0f + ((1.0f / g_aRank_TexInfo[g_aRankOBJ[nCntRank].nTexType].Block.y) * g_aRankOBJ[nCntRank].NumIdx.y));
+			pCur2D[2].tex = D3DXVECTOR2(0.0f + ((1.0f / g_aRank_TexInfo[g_aRankOBJ[nCntRank].nTexType].Block.x) * g_aRankOBJ[nCntRank].NumIdx.x), 0.0f + ((1.0f / g_aRank_TexInfo[g_aRankOBJ[nCntRank].nTexType].Block.y) + ((1.0f / g_aRank_TexInfo[g_aRankOBJ[nCntRank].nTexType].Block.y) * g_aRankOBJ[nCntRank].NumIdx.y)));
+			pCur2D[3].tex = D3DXVECTOR2(0.0f + ((1.0f / g_aRank_TexInfo[g_aRankOBJ[nCntRank].nTexType].Block.x) + ((1.0f / g_aRank_TexInfo[g_aRankOBJ[nCntRank].nTexType].Block.x) * g_aRankOBJ[nCntRank].NumIdx.x)), 0.0f + ((1.0f / g_aRank_TexInfo[g_aRankOBJ[nCntRank].nTexType].Block.y) + ((1.0f / g_aRank_TexInfo[g_aRankOBJ[nCntRank].nTexType].Block.y) * g_aRankOBJ[nCntRank].NumIdx.y)));
+		}
+		else
+		{
+			pCur2D[0].tex = D3DXVECTOR2(0.0f, 0.0f);
+			pCur2D[1].tex = D3DXVECTOR2(1.0f, 0.0f);
+			pCur2D[2].tex = D3DXVECTOR2(0.0f, 1.0f);
+			pCur2D[3].tex = D3DXVECTOR2(1.0f, 1.0f);
+		}
+
+		pCur2D += 4;
+		nWrite++;
+
+		if (nWrite >= g_nObjNum[RANKTYPE_2D])
+		{ //予定数書いたら終了
+			break;
+		}
+	}
+	// 頂点バッファをアンロックする
+	g_pVtxBuffRank2D->Unlock();
+
+	// 頂点バッファをロックし、頂点情報へのポインタを取得
+	g_pVtxBuffRank3D->Lock(0, 0, (void**)&pVtx3D, 0);
+
+	VERTEX_3D* pCur3D = pVtx3D;					// 頂点情報へのポインタ
+
+	for (int nCntRank = 0, nWrite = 0; nCntRank < MAX_RANKINGOBJ; nCntRank++)
+	{
+		if (!g_aRankOBJ[nCntRank].bUse)
+		{ // 使用されてない
+			continue;
+		}
+
+		if (g_aRankOBJ[nCntRank].nObjType != RANKTYPE_3D)
+		{ // not2Dオブジェクト
+			continue;
+		}
+
+		pCur3D[0].pos = D3DXVECTOR3(g_aRankOBJ[nCntRank].pos.x - (g_aRankOBJ[nCntRank].size.x / 2), g_aRankOBJ[nCntRank].pos.y - (g_aRankOBJ[nCntRank].size.y / 2), g_aRankOBJ[nCntRank].pos.z);	// 右回りで設定する
+		pCur3D[1].pos = D3DXVECTOR3(g_aRankOBJ[nCntRank].pos.x + (g_aRankOBJ[nCntRank].size.x / 2), g_aRankOBJ[nCntRank].pos.y - (g_aRankOBJ[nCntRank].size.y / 2), g_aRankOBJ[nCntRank].pos.z);	// 2Dの場合Zの値は0にする
+		pCur3D[2].pos = D3DXVECTOR3(g_aRankOBJ[nCntRank].pos.x - (g_aRankOBJ[nCntRank].size.x / 2), g_aRankOBJ[nCntRank].pos.y + (g_aRankOBJ[nCntRank].size.y / 2), g_aRankOBJ[nCntRank].pos.z);
+		pCur3D[3].pos = D3DXVECTOR3(g_aRankOBJ[nCntRank].pos.x + (g_aRankOBJ[nCntRank].size.x / 2), g_aRankOBJ[nCntRank].pos.y + (g_aRankOBJ[nCntRank].size.y / 2), g_aRankOBJ[nCntRank].pos.z);
+
+		// rhwの設定
+		pCur3D[0].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+		pCur3D[1].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+		pCur3D[2].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+		pCur3D[3].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+
+		// 頂点カラーの設定
+		pCur3D[0].col = g_aRankOBJ[nCntRank].col;	// 0~255の値を設定
+		pCur3D[1].col = g_aRankOBJ[nCntRank].col;
+		pCur3D[2].col = g_aRankOBJ[nCntRank].col;
+		pCur3D[3].col = g_aRankOBJ[nCntRank].col;
+
+		if (g_aRankOBJ[nCntRank].NumIdx.x != -1 || g_aRankOBJ[nCntRank].NumIdx.y != -1)
+		{
+			pCur3D[0].tex = D3DXVECTOR2(0.0f + ((1.0f / g_aRank_TexInfo[g_aRankOBJ[nCntRank].nTexType].Block.x) * g_aRankOBJ[nCntRank].NumIdx.x), 0.0f + ((1.0f / g_aRank_TexInfo[g_aRankOBJ[nCntRank].nTexType].Block.y) + ((1.0f / g_aRank_TexInfo[g_aRankOBJ[nCntRank].nTexType].Block.y) * g_aRankOBJ[nCntRank].NumIdx.y)));
+			pCur3D[1].tex = D3DXVECTOR2(0.0f + ((1.0f / g_aRank_TexInfo[g_aRankOBJ[nCntRank].nTexType].Block.x) + ((1.0f / g_aRank_TexInfo[g_aRankOBJ[nCntRank].nTexType].Block.x) * g_aRankOBJ[nCntRank].NumIdx.x)), 0.0f + ((1.0f / g_aRank_TexInfo[g_aRankOBJ[nCntRank].nTexType].Block.y) + ((1.0f / g_aRank_TexInfo[g_aRankOBJ[nCntRank].nTexType].Block.y) * g_aRankOBJ[nCntRank].NumIdx.y)));
+			pCur3D[2].tex = D3DXVECTOR2(0.0f + ((1.0f / g_aRank_TexInfo[g_aRankOBJ[nCntRank].nTexType].Block.x) * g_aRankOBJ[nCntRank].NumIdx.x), 0.0f + ((1.0f / g_aRank_TexInfo[g_aRankOBJ[nCntRank].nTexType].Block.y) * g_aRankOBJ[nCntRank].NumIdx.y));
+			pCur3D[3].tex = D3DXVECTOR2(0.0f + ((1.0f / g_aRank_TexInfo[g_aRankOBJ[nCntRank].nTexType].Block.x) + ((1.0f / g_aRank_TexInfo[g_aRankOBJ[nCntRank].nTexType].Block.x) * g_aRankOBJ[nCntRank].NumIdx.x)), 0.0f + ((1.0f / g_aRank_TexInfo[g_aRankOBJ[nCntRank].nTexType].Block.y) * g_aRankOBJ[nCntRank].NumIdx.y));
+		}
+		else
+		{
+			pCur3D[0].tex = D3DXVECTOR2(0.0f, 1.0f);
+			pCur3D[1].tex = D3DXVECTOR2(1.0f, 1.0f);
+			pCur3D[2].tex = D3DXVECTOR2(0.0f, 0.0f);
+			pCur3D[3].tex = D3DXVECTOR2(1.0f, 0.0f);
+		}
+		pCur3D += 4;
+		nWrite++;
+
+		if (nWrite >= g_nObjNum[RANKTYPE_3D])
+		{ //予定数書いたら終了
+			break;
+		}
+	}
+	// 頂点バッファをアンロックする
+	g_pVtxBuffRank3D->Unlock();
 }
 
 //=======================================
@@ -257,23 +449,14 @@ void UninitRanking(void)
 	// モデルの終了処理
 	UninitFishes();
 
-	// 3Dエフェクトの終了処理
-	UninitEffect3D();
-
 	// 3Dパーティクルの終了処理
 	UninitParticle3D();
 
 	// 紙吹雪の終了処理
 	UninitConfetti();
 
-	// カメラの終了処理
-	UninitCamera();
-
 	// サウンドの終了処理
 	StopSound();
-
-	// フェードの終了処理
-	//UninitFade();
 
 	// テクスチャの破棄
 	for (int nCntRank = 0; nCntRank < RANK_CALC_SIZEARRAY(g_aRank_TexInfo); nCntRank++)
@@ -317,8 +500,6 @@ void UpdateRanking(void)
 	Fishes* pFishes = GetFishes();
 	static float N = 1;
 	static int TimeCnt = 0;						// 経過時間のカウント
-	int nPlayerCnt, nCntRank, nCntRank2, nCntRank3, n3D, n2D, nRank;
-	int nCpuCnt = 0;
 	float r = 0.0f, g = 0.0f, b = 0.0f;
 
 	if (pFade == FADE_IN)
@@ -342,9 +523,6 @@ void UpdateRanking(void)
 	}
 #endif
 
-	// ステージの更新処理
-	//UpdateStage();
-
 	// モデルの更新処理
 	UpdateFishes();
 
@@ -357,69 +535,91 @@ void UpdateRanking(void)
 	// 紙吹雪の更新処理
 	UpdateConfetti();
 
-	for (nCntRank = 0, n3D = 0, n2D = 0; nCntRank <= nNum2DObj + nNum3DObj; nCntRank++)
+	// 頂点バッファをロックし、頂点情報へのポインタを取得
+	g_pVtxBuffRank2D->Lock(0, 0, (void**)&pVtx2D, 0);
+
+	VERTEX_2D* pCur2D = pVtx2D;					// 頂点情報へのポインタ
+
+	for (int nCntRank = 0, nWrite = 0; nCntRank < MAX_RANKINGOBJ; nCntRank++)
 	{ // テクスチャ位置を動かす
 
-		if (g_aRankOBJ[nCntRank].nTexType == TEXTURE_BG_OCTO)
-		{
-			if (g_aRankOBJ[nCntRank].nObjType == RANKTYPE_3D)
-			{
-				// 頂点バッファをロックし、頂点情報へのポインタを取得
-				g_pVtxBuffRank3D->Lock(0, 0, (void**)&pVtx3D, 0);
-
-				pVtx3D += n3D * 4;		// 頂点データのポインタを4つ分進める
-
-				pVtx3D[0].tex += D3DXVECTOR2(0.0005f, 0.0005f);
-				pVtx3D[1].tex += D3DXVECTOR2(0.0005f, 0.0005f);
-				pVtx3D[2].tex += D3DXVECTOR2(0.0005f, 0.0005f);
-				pVtx3D[3].tex += D3DXVECTOR2(0.0005f, 0.0005f);
-
-				// 頂点バッファをアンロックする
-				g_pVtxBuffRank3D->Unlock();
-			}
-			else if (g_aRankOBJ[nCntRank].nObjType == RANKTYPE_2D)
-			{
-				// 頂点バッファをロックし、頂点情報へのポインタを取得
-				g_pVtxBuffRank2D->Lock(0, 0, (void**)&pVtx2D, 0);
-
-				pVtx2D += n2D * 4;		// 頂点データのポインタを4つ分進める
-
-				pVtx2D[0].tex -= D3DXVECTOR2(0.0005f, 0.0005f);
-				pVtx2D[1].tex -= D3DXVECTOR2(0.0005f, 0.0005f);
-				pVtx2D[2].tex -= D3DXVECTOR2(0.0005f, 0.0005f);
-				pVtx2D[3].tex -= D3DXVECTOR2(0.0005f, 0.0005f);
-
-				// 頂点バッファをアンロックする
-				g_pVtxBuffRank2D->Unlock();
-			}
+		if (!g_aRankOBJ[nCntRank].bUse ||g_aRankOBJ[nCntRank].nObjType != RANKTYPE_2D)
+		{ // 使用されてない // 2Dでない
+			continue;
 		}
-		else
-		{
-			if (g_aRankOBJ[nCntRank].nObjType == RANKTYPE_3D)
-			{
-				n3D++;
-			}
-			else if (g_aRankOBJ[nCntRank].nObjType == RANKTYPE_2D)
-			{
-				n2D++;
-			}
+		if (g_aRankOBJ[nCntRank].nTexType != TEXTURE_BG_OCTO)
+		{ // テクスチャタイプが違ったら
 
+			nWrite++;
+			pCur2D += 4;
+			continue;
+		}
+
+		pCur2D[0].tex += D3DXVECTOR2(0.0005f, 0.0005f);
+		pCur2D[1].tex += D3DXVECTOR2(0.0005f, 0.0005f);
+		pCur2D[2].tex += D3DXVECTOR2(0.0005f, 0.0005f);
+		pCur2D[3].tex += D3DXVECTOR2(0.0005f, 0.0005f);
+
+		pCur2D += 4;		// 頂点データのポインタを4つ分進める
+		nWrite++;
+
+		if (nWrite >= g_nObjNum[RANKTYPE_2D])
+		{ //予定数書いたら終了
+			break;
 		}
 	}
+	// 頂点バッファをアンロックする
+	g_pVtxBuffRank2D->Unlock();
 
-	for (nCntRank = 0, nCntRank2 = 0, nCntRank3 = 0, nPlayerCnt = 0, nCpuCnt = 0; nCntRank < MAX_RANK; nCntRank++)
+	// 頂点バッファをロックし、頂点情報へのポインタを取得
+	g_pVtxBuffRank3D->Lock(0, 0, (void**)&pVtx3D, 0);
+
+	VERTEX_3D* pCur3D = pVtx3D;					// 頂点情報へのポインタ
+
+	for (int nCntRank = 0, nWrite = 0; nCntRank < MAX_RANKINGOBJ; nCntRank++)
+	{ // テクスチャ位置を動かす
+
+		if (!g_aRankOBJ[nCntRank].bUse || g_aRankOBJ[nCntRank].nObjType != RANKTYPE_3D)
+		{ // 使用されてない// 3Dでない
+			continue;
+		}
+		if (g_aRankOBJ[nCntRank].nTexType != TEXTURE_BG_OCTO)
+		{ // テクスチャタイプが違ったら
+
+			nWrite++;
+			pCur3D += 4;
+			continue;
+		}
+
+		pCur3D[0].tex += D3DXVECTOR2(0.0005f, 0.0005f);
+		pCur3D[1].tex += D3DXVECTOR2(0.0005f, 0.0005f);
+		pCur3D[2].tex += D3DXVECTOR2(0.0005f, 0.0005f);
+		pCur3D[3].tex += D3DXVECTOR2(0.0005f, 0.0005f);
+
+		pCur3D += 4;		// 頂点データのポインタを4つ分進める
+		nWrite++;
+
+		if (nWrite >= g_nObjNum[RANKTYPE_3D])
+		{ //予定数書いたら終了
+			break;
+		}
+	}
+	// 頂点バッファをアンロックする
+	g_pVtxBuffRank3D->Unlock();
+
+	for (int nCntRank = 0, nCntRank2 = 0, nCntRank3 = 0, nPlayerCnt = 0, nCpuCnt = 0; nCntRank < MAX_RANK; nCntRank++)
 	{ // 番号をプレイヤーの上に移動させる
 
 		if (g_aRank_Info[nCntRank].nCharaIdx == RESULT_PLAYER_PLAYER)
 		{ // プレイヤーなら
 
-			for (nCntRank2 = 0; nCntRank2 <= nNum2DObj + nNum3DObj; nCntRank2++)
+			for (nCntRank2 = 0; nCntRank2 < MAX_RANKINGOBJ; nCntRank2++)
 			{
-				if (g_aRankOBJ[nCntRank2].nTexType == TEXTURE_PIN_P1 && nPlayerCnt == 0)
+				if (g_aRankOBJ[nCntRank2].nTexType == TEXTURE_PIN_P1 && g_aRankOBJ[nCntRank2].nObjType == RANKTYPE_3D && nPlayerCnt == 0)
 				{
 					break;
 				}
-				else if (g_aRankOBJ[nCntRank2].nTexType == TEXTURE_PIN_P2 && nPlayerCnt == 1)
+				else if (g_aRankOBJ[nCntRank2].nTexType == TEXTURE_PIN_P2 && g_aRankOBJ[nCntRank2].nObjType == RANKTYPE_3D && nPlayerCnt == 1)
 				{
 					break;
 				}
@@ -431,9 +631,9 @@ void UpdateRanking(void)
 		else if (g_aRank_Info[nCntRank].nCharaIdx == RESULT_PLAYER_COMPUTER)
 		{ // コンピューターなら
 
-			for (nCntRank2 = 0, nCntRank3 = 0; nCntRank2 <= nNum2DObj + nNum3DObj; nCntRank2++)
+			for (nCntRank2 = 0, nCntRank3 = 0; nCntRank2 < MAX_RANKINGOBJ; nCntRank2++)
 			{
-				if (g_aRankOBJ[nCntRank2].nTexType == TEXTURE_PIN_CPU && g_aRankOBJ[nCntRank2].NumIdx.y == 0)
+				if (g_aRankOBJ[nCntRank2].nTexType == TEXTURE_PIN_CPU && g_aRankOBJ[nCntRank2].nObjType == RANKTYPE_3D && g_aRankOBJ[nCntRank2].NumIdx.y == 0)
 				{
 					if (nCntRank3 >= nCpuCnt)
 					{
@@ -445,7 +645,7 @@ void UpdateRanking(void)
 			g_aRankOBJ[nCntRank2].pos = { pFishes[nCntRank].pos.x - g_aRankOBJ[nCntRank2].size.x * 0.45f ,pFishes[nCntRank].pos.y + 60 ,pFishes[nCntRank].pos.z };
 			g_aRankOBJ[nCntRank2].bDisp = true;
 
-			for (nCntRank2 = 0, nCntRank3 = 0; nCntRank2 <= nNum2DObj + nNum3DObj; nCntRank2++)
+			for (nCntRank2 = 0, nCntRank3 = 0; nCntRank2 < MAX_RANKINGOBJ; nCntRank2++)
 			{
 				if (g_aRankOBJ[nCntRank2].nTexType == TEXTURE_PIN_CPU && g_aRankOBJ[nCntRank2].NumIdx.y == nCpuCnt + 1)
 				{
@@ -483,7 +683,7 @@ void UpdateRanking(void)
 		// １位を中心に移動、その他を周りに倒す
 		float y = 0, rot = 0;
 
-		for (nCntRank = 0, nRank = 0, nCpuCnt = 0; nCntRank < MAX_RANK; nCntRank++)
+		for (int nCntRank = 0, nRank = 0, nCpuCnt = 0; nCntRank < MAX_RANK; nCntRank++)
 		{
 			if (g_aRank_Info[nCntRank].nRank == 0)
 			{
@@ -517,7 +717,7 @@ void UpdateRanking(void)
 		// サウンドの再生
 		PlaySound(SOUND_BGM_RANKING);
 
-		for (nCntRank = 0, nRank = 0, nCpuCnt = 0; nCntRank < MAX_RANK; nCntRank++)
+		for (int nCntRank = 0, nRank = 0, nCpuCnt = 0; nCntRank < MAX_RANK; nCntRank++)
 		{
 			if (g_aRank_Info[nCntRank].nRank == 0)
 			{
@@ -543,7 +743,7 @@ void UpdateRanking(void)
 	{
 		if (N < 40)
 		{
-			N++;
+			N ++;
 			SetCameraPos(0, { 0.0f + (N) ,85.0f ,-200.0f }, { 0.0f + (N),55.0f,0.0f }, { 0.0f,0.0f,0.0f }, CAMERATYPE_STOP);
 		}
 	}
@@ -553,77 +753,26 @@ void UpdateRanking(void)
 	}
 	if (TimeCnt == 700)
 	{
-		for (nCntRank = 0; nCntRank < MAX_RANK; nCntRank++)
-		{
-			SetRankingObj(/*pos*/{ 1300.0f,70.0f + nCntRank * 90.0f,0.0f }, /*color*/{ 1.0f,1.0f,1.0f,1.0f },/*size*/{ 900.0f,90.0f }, RANKTYPE_2D, TEXTURE_RANKSCORE, { -1,-1 }, true);
-			SetRankingObj(/*pos*/{ 1300.0f,70.0f + nCntRank * 90.0f,0.0f }, /*color*/{ 1.0f,1.0f,1.0f,1.0f },/*size*/{ 900.0f,90.0f }, RANKTYPE_2D, TEXTURE_RANKSCOREFLAME, { -1,-1 }, true);
-		}
-		for (nCntRank = 0, nCntRank2 = 0, nPlayerCnt = 0, nCpuCnt = 0; nCntRank < MAX_RANK; nCntRank++)
-		{ // 順位を貼り付け
+		for (int nCntRank = 0, nWrite = 0; nCntRank < MAX_RANKINGOBJ; nCntRank++)
+		{ // テクスチャ位置を動かす
 
-			if (g_aRank_Info[nCntRank].nRank == 0 && nRankNum[g_aRank_Info[nCntRank].nRank][1] == 0)
-			{ 
-
-				if (g_aRank_Info[nCntRank].nCharaIdx == RESULT_PLAYER_PLAYER)
-				{
-					if (nPlayerCnt == 0)
-					{
-						SetRankingObj(/*pos*/{ 930.0f,70.0f  ,0.0f }, /*color*/{ 1.0f,1.0f,0.0f,1.0f },/*size*/{ 65.0f,65.0f }, RANKTYPE_2D, TEXTURE_PIN_P1, { -1,-1 }, true);
-					}
-					else
-					{
-						SetRankingObj(/*pos*/{ 930.0f,70.0f  ,0.0f }, /*color*/{ 1.0f,1.0f,0.0f,1.0f },/*size*/{ 65.0f,65.0f }, RANKTYPE_2D, TEXTURE_PIN_P2, { -1,-1 }, true);
-					}
-				}
-				else if (g_aRank_Info[nCntRank].nCharaIdx == RESULT_PLAYER_COMPUTER)
-				{
-					SetRankingObj(/*pos*/{ 930.0f - 19,70.0f   ,0.0f }, /*color*/{ 1.0f,1.0f,0.0f,1.0f },/*size*/{ 50.0f,65.0f }, RANKTYPE_2D, TEXTURE_PIN_CPU, { 0,0 }, true);
-					SetRankingObj(/*pos*/{ 930.0f + 24,70.0f   ,0.0f }, /*color*/{ 1.0f,1.0f,0.0f,1.0f },/*size*/{ 50.0f,65.0f }, RANKTYPE_2D, TEXTURE_PIN_CPU, { 0,nCpuCnt + 1.0f }, true);
-				}
-				if (nRankNum[g_aRank_Info[nCntRank].nRank][0] != nRankNum[g_aRank_Info[nCntRank].nRank][1] + 1)
-				{
-					nRankNum[g_aRank_Info[nCntRank].nRank][1]++;
-				}
-
-				Score_Print({ 1175.0f ,70.0f ,0.0f }, RANKTYPE_2D, nCntRank, {1.0f,1.0f,0.0f,1.0f});
-
-				SetRankingObj(/*pos*/{ 840.0f - 19,70.0f  ,0.0f }, /*color*/{ 1.0f,1.0f,1.0f,1.0f },/*size*/{ 90.0f,90.0f }, RANKTYPE_2D, TEXTURE_RANKICON, { 0,0 }, true);
+			if (!g_aRankOBJ[nCntRank].bUse || g_aRankOBJ[nCntRank].nObjType != RANKTYPE_2D)
+			{ // 使用されてない // 2Dでない
+				continue;
 			}
-			else
-			{
-				nCntRank2 = g_aRank_Info[nCntRank].nRank + nRankNum[g_aRank_Info[nCntRank].nRank][1];
+			if (g_aRankOBJ[nCntRank].nTexType != TEXTURE_PIN_CPU &&
+				g_aRankOBJ[nCntRank].nTexType != TEXTURE_PIN_P1 &&
+				g_aRankOBJ[nCntRank].nTexType != TEXTURE_PIN_P2 &&
+				g_aRankOBJ[nCntRank].nTexType != TEXTURE_RANKICON &&
+				g_aRankOBJ[nCntRank].nTexType != TEXTURE_RANKSCORE &&
+				g_aRankOBJ[nCntRank].nTexType != TEXTURE_RANKSCOREFLAME &&
+				g_aRankOBJ[nCntRank].nTexType != TEXTURE_SCORENUM)
+			{ // テクスチャタイプが違ったら
 
-				if (g_aRank_Info[nCntRank].nCharaIdx == RESULT_PLAYER_PLAYER)
-				{
-					if (nPlayerCnt == 0)
-					{
-						SetRankingObj(/*pos*/{ 930.0f,70.0f + nCntRank2 * 90.0f ,0.0f }, /*color*/{ 1.0f,0.0f,0.0f,1.0f },/*size*/{ 65.0f,65.0f }, RANKTYPE_2D, TEXTURE_PIN_P1, { -1,-1 }, true);
-					}
-					else
-					{
-						SetRankingObj(/*pos*/{ 930.0f,70.0f + nCntRank2 * 90.0f ,0.0f }, /*color*/{ 0.2f,1.0f,0.2f,1.0f },/*size*/{ 65.0f,65.0f }, RANKTYPE_2D, TEXTURE_PIN_P2, { -1,-1 }, true);
-					}
-				}
-				else if (g_aRank_Info[nCntRank].nCharaIdx == RESULT_PLAYER_COMPUTER)
-				{
-					SetRankingObj(/*pos*/{ 930.0f - 19,70.0f + nCntRank2 * 90.0f  ,0.0f }, /*color*/{ 1.0f,1.0f,1.0f,1.0f },/*size*/{ 50.0f,65.0f }, RANKTYPE_2D, TEXTURE_PIN_CPU, { 0,0 }, true);
-					SetRankingObj(/*pos*/{ 930.0f + 24,70.0f + nCntRank2 * 90.0f  ,0.0f }, /*color*/{ 1.0f,1.0f,1.0f,1.0f },/*size*/{ 50.0f,65.0f }, RANKTYPE_2D, TEXTURE_PIN_CPU, { 0,nCpuCnt + 1.0f }, true);
-				}
-				if (nRankNum[g_aRank_Info[nCntRank].nRank][0] != nRankNum[g_aRank_Info[nCntRank].nRank][1] + 1)
-				{
-					nRankNum[g_aRank_Info[nCntRank].nRank][1]++;
-				}
+				continue;
+			}
 
-				Score_Print({ 1175.0f ,70.0f + nCntRank2 * 90.0f ,0.0f }, RANKTYPE_2D, nCntRank,{ 1.0f,1.0f,1.0f,1.0f });
-			}
-			if (g_aRank_Info[nCntRank].nCharaIdx == RESULT_PLAYER_PLAYER)
-			{
-				nPlayerCnt++;
-			}
-			else if (g_aRank_Info[nCntRank].nCharaIdx == RESULT_PLAYER_COMPUTER)
-			{
-				nCpuCnt++;
-			}
+			g_aRankOBJ[nCntRank].bDisp = true;
 		}
 	}
 	if (TimeCnt >= 700)
@@ -635,14 +784,14 @@ void UpdateRanking(void)
 			&& pFade == FADE_NONE)
 		{// 決定キー（ENTERキー）が押された
 
-			SetFade(MODE_TITLE);
+			SetFade(MODE_LOGO);
 		}
 
 #ifdef ENABLE_ONELAP
 		if (GetFade() == FADE_NONE)
 		{// フェード終了
 
-			SetFade(MODE_TITLE);
+			SetFade(MODE_LOGO);
 		}
 #endif
 	}
@@ -654,70 +803,75 @@ void UpdateRanking(void)
 void DrawRanking(void)
 {
 	LPDIRECT3DDEVICE9 pDevice;	// デバイスへのポインタ
+	D3DXMATRIX mtxWorld;		// 計算用マトリックス
 	D3DXMATRIX mtxTrans;		// 計算用マトリックス
 	D3DXMATRIX mtxView;			// ビューマトリックス取得用
 
 	// デバイスの取得
 	pDevice = GetDevice();
 
-	// ステージの描画処理
-	//DrawStage();
+	// ワールドマトリックスの初期化
+	D3DXMatrixIdentity(&mtxWorld);
 
-	for (int nCntRank = 0, VertexNum = 0; nCntRank <= nNum2DObj + nNum3DObj; nCntRank++)
+	// ワールドマトリックスの設定
+	pDevice->SetTransform(D3DTS_WORLD, &mtxWorld);
+
+	// 頂点バッファをデータストリームに設定
+	pDevice->SetStreamSource(0, g_pVtxBuffRank2D, 0, sizeof(VERTEX_2D));
+
+	// 頂点フォーマットの設定
+	pDevice->SetFVF(FVF_VERTEX_2D);
+
+	for (int nCntRank = 0, nWrite = 0; nCntRank < MAX_RANKINGOBJ; nCntRank++)
 	{  // 2Dオブジェクトの処理
 
-		// ワールドマトリックスの初期化
-		D3DXMatrixIdentity(&g_aRankOBJ[nCntRank].mtxWorld);
-
-		// ビューマトリックスを取得
-		pDevice->GetTransform(D3DTS_VIEW, &mtxView);
-
-		if (g_aRankOBJ[nCntRank].nObjType == RANKTYPE_2D)
+		if (!g_aRankOBJ[nCntRank].bUse || g_aRankOBJ[nCntRank].nObjType != RANKTYPE_2D)
 		{
-			if (g_aRankOBJ[nCntRank].nTexType == TEXTURE_RANKSCORE || g_aRankOBJ[nCntRank].nTexType == TEXTURE_RANKSCOREFLAME)
+			continue;
+		}
+		if (g_aRankOBJ[nCntRank].nTexType == TEXTURE_RANKSCORE || g_aRankOBJ[nCntRank].nTexType == TEXTURE_RANKSCOREFLAME)
+		{
+			// アルファテストを有効にする
+			pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+			pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
+			pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
+
+			if (g_aRankOBJ[nCntRank].nTexType == TEXTURE_RANKSCORE)
 			{
-				// アルファテストを有効にする
-				pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
-				pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
-				pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
-
-				if (g_aRankOBJ[nCntRank].nTexType == TEXTURE_RANKSCORE)
-				{
-					// 加算合成
-					pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_DESTCOLOR);
-					pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ZERO);
-				}
+				// 加算合成
+				pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_DESTCOLOR);
+				pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ZERO);
 			}
-			// ワールドマトリックスの設定
-			pDevice->SetTransform(D3DTS_WORLD, &g_aRankOBJ[nCntRank].mtxWorld);
-
-			// 頂点バッファをデータストリームに設定
-			pDevice->SetStreamSource(0, g_pVtxBuffRank2D, 0, sizeof(VERTEX_2D));
-
-			// 頂点フォーマットの設定
-			pDevice->SetFVF(FVF_VERTEX_2D);
-
-			if (g_aRankOBJ[nCntRank].bDisp == true)
-			{
-				// テクスチャの設定
-				pDevice->SetTexture(0, g_pTextureRank[g_aRankOBJ[nCntRank].nTexType]);
-
-				// ポリゴンの描画
-				pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,
-					VertexNum * MAX_VERTEX,	// 描画する最初の頂点インデックス
-					MAX_POLYGON);	// 描画するプリミティブ数
-			}
-			VertexNum++;
 		}
 
-		// アルファテストを無効にする
-		/*pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
-		pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
-		pDevice->SetRenderState(D3DRS_ALPHAREF, 0);*/
+		if (g_aRankOBJ[nCntRank].bDisp == true)
+		{
+			// テクスチャの設定
+			pDevice->SetTexture(0, g_pTextureRank[g_aRankOBJ[nCntRank].nTexType]);
 
-		// 元に戻す
-		pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-		pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+			// ポリゴンの描画
+			pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,
+				nWrite * MAX_VERTEX,	// 描画する最初の頂点インデックス
+				MAX_POLYGON);	// 描画するプリミティブ数
+		}
+		nWrite++;
+
+		if (g_aRankOBJ[nCntRank].nTexType == TEXTURE_RANKSCORE || g_aRankOBJ[nCntRank].nTexType == TEXTURE_RANKSCOREFLAME)
+		{
+			// アルファテストを無効にする
+			pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+			pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
+			pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
+
+			// 元に戻す
+			pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+			pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+		}
+
+		if (nWrite >= g_nObjNum[RANKTYPE_2D])
+		{
+			break;
+		}
 	}
 
 	DrawFishes();
@@ -726,61 +880,61 @@ void DrawRanking(void)
 	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
-	for (int nCntRank = 0, VertexNum = 0; nCntRank <= nNum2DObj + nNum3DObj; nCntRank++)
+	//アルファテストを有効にする
+	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);		// アルファブレンドを有効に設定
+	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);	// ( , 比較方法(より大きい))
+	pDevice->SetRenderState(D3DRS_ALPHAREF, 100);				// ( , 基準値)
+
+		// ポリゴンをカメラに対して正面に向ける
+	D3DXMatrixInverse(&mtxWorld, NULL, &mtxView);	// 逆行列を求める
+	mtxWorld._41 = 0.0f;
+	mtxWorld._42 = 0.0f;
+	mtxWorld._43 = 0.0f;
+
+		// 頂点バッファをデータストリームに設定
+	pDevice->SetStreamSource(0, g_pVtxBuffRank3D, 0, sizeof(VERTEX_3D));
+
+	// 頂点フォーマットの設定
+	pDevice->SetFVF(FVF_VERTEX_3D);
+
+	for (int nCntRank = 0, nWrite = 0; nCntRank < MAX_RANKINGOBJ; nCntRank++)
 	{ // 3Dオブジェクトの処理
 
-		if (g_aRankOBJ[nCntRank].nObjType == RANKTYPE_3D)
+		if (!g_aRankOBJ[nCntRank].bUse || g_aRankOBJ[nCntRank].nObjType != RANKTYPE_3D)
 		{
-			// ポリゴンをカメラに対して正面に向ける
-			D3DXMatrixInverse(&g_aRankOBJ[nCntRank].mtxWorld, NULL, &mtxView);	// 逆行列を求める
-			g_aRankOBJ[nCntRank].mtxWorld._41 = 0.0f;
-			g_aRankOBJ[nCntRank].mtxWorld._42 = 0.0f;
-			g_aRankOBJ[nCntRank].mtxWorld._43 = 0.0f;
+			continue;
+		}
 
-			// 位置を反映
-			D3DXMatrixTranslation(&mtxTrans, g_aRankOBJ[nCntRank].pos.x, g_aRankOBJ[nCntRank].pos.y, g_aRankOBJ[nCntRank].pos.z);
-			D3DXMatrixMultiply(&g_aRankOBJ[nCntRank].mtxWorld, &g_aRankOBJ[nCntRank].mtxWorld, &mtxTrans);
+		// 位置を反映
+		D3DXMatrixTranslation(&mtxTrans, g_aRankOBJ[nCntRank].pos.x, g_aRankOBJ[nCntRank].pos.y, g_aRankOBJ[nCntRank].pos.z);
+		D3DXMatrixMultiply(&g_aRankOBJ[nCntRank].mtxWorld, &mtxWorld, &mtxTrans);
 
-			// ワールドマトリックスの設定
-			pDevice->SetTransform(D3DTS_WORLD, &g_aRankOBJ[nCntRank].mtxWorld);
+		// ワールドマトリックスの設定
+		pDevice->SetTransform(D3DTS_WORLD, &g_aRankOBJ[nCntRank].mtxWorld);
 
-			// 頂点バッファをデータストリームに設定
-			pDevice->SetStreamSource(0, g_pVtxBuffRank3D, 0, sizeof(VERTEX_3D));
 
-			// 頂点フォーマットの設定
-			pDevice->SetFVF(FVF_VERTEX_3D);
+		if (g_aRankOBJ[nCntRank].bDisp == true)
+		{
+			// テクスチャの設定
+			pDevice->SetTexture(0, g_pTextureRank[g_aRankOBJ[nCntRank].nTexType]);
 
-			if (g_aRankOBJ[nCntRank].bDisp == true)
-			{
-				// Zテストを無効にする
-				//pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESS);
-				//pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);			// Zバッファ更新の無効の設定
+			// ポリゴンの描画
+			pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,
+				nWrite * MAX_VERTEX,		// 描画する最初の頂点インデックス
+				MAX_POLYGON);				// 描画するプリミティブ数
 
-				//アルファテストを有効にする
-				pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);		// アルファブレンドを有効に設定
-				pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);	// ( , 比較方法(より大きい))
-				pDevice->SetRenderState(D3DRS_ALPHAREF, 100);				// ( , 基準値)
+		}
+		nWrite++;
 
-				// テクスチャの設定
-				pDevice->SetTexture(0, g_pTextureRank[g_aRankOBJ[nCntRank].nTexType]);
-
-				// ポリゴンの描画
-				pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,
-					VertexNum * MAX_VERTEX,		// 描画する最初の頂点インデックス
-					MAX_POLYGON);				// 描画するプリミティブ数
-
-				// Zテストを有効にする
-				//pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
-				//pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);				// Zバッファ更新の有効の設定
-
-				//// アルファテストを無効にする
-				pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);			// アルファブレンドを無効に設定
-				pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);		// ( , 比較方法(すべて))
-				pDevice->SetRenderState(D3DRS_ALPHAREF, 0);						// ( , 基準値)
-			}
-			VertexNum++;
+		if (nWrite >= g_nObjNum[RANKTYPE_3D])
+		{
+			break;
 		}
 	}
+	//// アルファテストを無効にする
+	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);			// アルファブレンドを無効に設定
+	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);		// ( , 比較方法(すべて))
+	pDevice->SetRenderState(D3DRS_ALPHAREF, 0);						// ( , 基準値)
 
 	// 3Dエフェクトの描画処理
 	DrawEffect3D();
@@ -794,28 +948,12 @@ void DrawRanking(void)
 	// 元に戻す
 	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
-
-	// レンダーステートを元に戻す
-	pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
-
-	// Zテストを有効にする
-	pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
-	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
-
-	// アルファテストを無効にする
-	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
-	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
-	pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
-
 }
 
 //=======================================
 // ランキングOBjの設定
 //=======================================
-void SetRankingObj(D3DXVECTOR3 pos,		// 位置
+bool SetRankingObj(D3DXVECTOR3 pos,		// 位置
 	D3DXCOLOR col,						// 色
 	D3DXVECTOR2 size,					// サイズ
 	int nObjType,						// 2Dor3D
@@ -825,7 +963,6 @@ void SetRankingObj(D3DXVECTOR3 pos,		// 位置
 {
 	// ローカル変数宣言 -----------------
 
-	int nCntObj2D = 0, nCntObj3D = 0;
 	VERTEX_2D* pVtx2D;							// 頂点情報へのポインタ
 	VERTEX_3D* pVtx3D;							// 頂点情報へのポインタ
 	//LPDIRECT3DDEVICE9 pDevice = GetDevice();	// デバイスへのポインタ
@@ -833,7 +970,7 @@ void SetRankingObj(D3DXVECTOR3 pos,		// 位置
 
 	for (int nCntRank = 0; nCntRank < MAX_RANKINGOBJ; nCntRank++)
 	{
-		if (g_aRankOBJ[nCntRank].bUse == false)
+		if (!g_aRankOBJ[nCntRank].bUse)
 		{ // 使用されていない
 
 			if (nObjType == RANKTYPE_2D)
@@ -846,49 +983,11 @@ void SetRankingObj(D3DXVECTOR3 pos,		// 位置
 				g_aRankOBJ[nCntRank].nTexType = nTexType;
 				g_aRankOBJ[nCntRank].NumIdx = NumIdx;
 				g_aRankOBJ[nCntRank].bDisp = bDisp;
+				g_aRankOBJ[nCntRank].bUse = true;
+				g_aRankOBJ[nCntRank].VtxIdx = g_nObjNum[RANKTYPE_2D];
 
-				// 頂点バッファをロックし、頂点情報へのポインタを取得
-				g_pVtxBuffRank2D->Lock(0, 0, (void**)&pVtx2D, 0);
-
-				pVtx2D += 4 * nCntObj2D;
-
-				pVtx2D[0].pos = D3DXVECTOR3(pos.x - (size.x / 2), pos.y - (size.y / 2), pos.z);	// 右回りで設定する
-				pVtx2D[1].pos = D3DXVECTOR3(pos.x + (size.x / 2), pos.y - (size.y / 2), pos.z);	// 2Dの場合Zの値は0にする
-				pVtx2D[2].pos = D3DXVECTOR3(pos.x - (size.x / 2), pos.y + (size.y / 2), pos.z);
-				pVtx2D[3].pos = D3DXVECTOR3(pos.x + (size.x / 2), pos.y + (size.y / 2), pos.z);
-
-				// rhwの設定
-				pVtx2D[0].rhw = 1.0f;
-				pVtx2D[1].rhw = 1.0f;
-				pVtx2D[2].rhw = 1.0f;
-				pVtx2D[3].rhw = 1.0f;
-
-				// 頂点カラーの設定
-				pVtx2D[0].col = col;	// 0~255の値を設定
-				pVtx2D[1].col = col;
-				pVtx2D[2].col = col;
-				pVtx2D[3].col = col;
-
-				if (NumIdx.x != -1 || NumIdx.y != -1)
-				{
-					pVtx2D[0].tex = D3DXVECTOR2(0.0f + ((1.0f / g_aRank_TexInfo[nTexType].Block.x) * NumIdx.x), 0.0f + ((1.0f / g_aRank_TexInfo[nTexType].Block.y) * NumIdx.y));
-					pVtx2D[1].tex = D3DXVECTOR2(0.0f + ((1.0f / g_aRank_TexInfo[nTexType].Block.x) + ((1.0f / g_aRank_TexInfo[nTexType].Block.x) * NumIdx.x)), 0.0f + ((1.0f / g_aRank_TexInfo[nTexType].Block.y) * NumIdx.y));
-					pVtx2D[2].tex = D3DXVECTOR2(0.0f + ((1.0f / g_aRank_TexInfo[nTexType].Block.x) * NumIdx.x), 0.0f + ((1.0f / g_aRank_TexInfo[nTexType].Block.y) + ((1.0f / g_aRank_TexInfo[nTexType].Block.y) * NumIdx.y)));
-					pVtx2D[3].tex = D3DXVECTOR2(0.0f + ((1.0f / g_aRank_TexInfo[nTexType].Block.x) + ((1.0f / g_aRank_TexInfo[nTexType].Block.x) * NumIdx.x)), 0.0f + ((1.0f / g_aRank_TexInfo[nTexType].Block.y) + ((1.0f / g_aRank_TexInfo[nTexType].Block.y) * NumIdx.y)));
-				}
-				else
-				{
-					pVtx2D[0].tex = D3DXVECTOR2(0.0f, 0.0f);
-					pVtx2D[1].tex = D3DXVECTOR2(1.0f, 0.0f);
-					pVtx2D[2].tex = D3DXVECTOR2(0.0f, 1.0f);
-					pVtx2D[3].tex = D3DXVECTOR2(1.0f, 1.0f);
-				}
-
-				// 頂点バッファをアンロックする
-				g_pVtxBuffRank2D->Unlock();
-
-				g_aRankOBJ[nCntRank].bUse = true; 
-				break;
+				g_nObjNum[RANKTYPE_2D]++;
+				return true;
 			}
 			else if (nObjType == RANKTYPE_3D)
 			{ // 3Dオブジェクトにする
@@ -900,66 +999,15 @@ void SetRankingObj(D3DXVECTOR3 pos,		// 位置
 				g_aRankOBJ[nCntRank].nTexType = nTexType;
 				g_aRankOBJ[nCntRank].NumIdx = NumIdx;
 				g_aRankOBJ[nCntRank].bDisp = bDisp;
-
-				// 頂点バッファをロックし、頂点情報へのポインタを取得
-				g_pVtxBuffRank3D->Lock(0, 0, (void**)&pVtx3D, 0);
-
-				pVtx3D += 4 * nCntObj3D;
-
-				pVtx3D[0].pos = D3DXVECTOR3(pos.x - (size.x / 2), pos.y + (size.y / 2), pos.z);	// 右回りで設定する
-				pVtx3D[1].pos = D3DXVECTOR3(pos.x + (size.x / 2), pos.y + (size.y / 2), pos.z);	// 2Dの場合Zの値は0にする
-				pVtx3D[2].pos = D3DXVECTOR3(pos.x - (size.x / 2), pos.y - (size.y / 2), pos.z);
-				pVtx3D[3].pos = D3DXVECTOR3(pos.x + (size.x / 2), pos.y - (size.y / 2), pos.z);
-
-				// norの設定					 
-				pVtx3D[0].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
-				pVtx3D[1].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
-				pVtx3D[2].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
-				pVtx3D[3].nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
-
-				// 頂点カラーの設定
-				pVtx3D[0].col = col;	// 0~255の値を設定
-				pVtx3D[1].col = col;
-				pVtx3D[2].col = col;
-				pVtx3D[3].col = col;
-
-				if (NumIdx.x != -1 || NumIdx.y != -1)
-				{
-					// テクスチャ座標の設定
-					pVtx3D[0].tex = D3DXVECTOR2(0.0f + ((1.0f / g_aRank_TexInfo[nTexType].Block.x) * NumIdx.x), 0.0f + ((1.0f / g_aRank_TexInfo[nTexType].Block.y) * NumIdx.y));
-					pVtx3D[1].tex = D3DXVECTOR2(0.0f + ((1.0f / g_aRank_TexInfo[nTexType].Block.x) + ((1.0f / g_aRank_TexInfo[nTexType].Block.x) * NumIdx.x)), 0.0f + ((1.0f / g_aRank_TexInfo[nTexType].Block.y) * NumIdx.y));
-					pVtx3D[2].tex = D3DXVECTOR2(0.0f + ((1.0f / g_aRank_TexInfo[nTexType].Block.x) * NumIdx.x), 0.0f + ((1.0f / g_aRank_TexInfo[nTexType].Block.y) + ((1.0f / g_aRank_TexInfo[nTexType].Block.y) * NumIdx.y)));
-					pVtx3D[3].tex = D3DXVECTOR2(0.0f + ((1.0f / g_aRank_TexInfo[nTexType].Block.x) + ((1.0f / g_aRank_TexInfo[nTexType].Block.x) * NumIdx.x)), 0.0f + ((1.0f / g_aRank_TexInfo[nTexType].Block.y) + ((1.0f / g_aRank_TexInfo[nTexType].Block.y) * NumIdx.y)));
-				}
-				else
-				{
-					pVtx3D[0].tex = D3DXVECTOR2(0.0f, 0.0f);
-					pVtx3D[1].tex = D3DXVECTOR2(1.0f, 0.0f);
-					pVtx3D[2].tex = D3DXVECTOR2(0.0f, 1.0f);
-					pVtx3D[3].tex = D3DXVECTOR2(1.0f, 1.0f);
-				}
-
-				// 頂点バッファをアンロックする
-				g_pVtxBuffRank3D->Unlock();
-
 				g_aRankOBJ[nCntRank].bUse = true;
-				break;
-			}
-		}
-		else
-		{
-			if (g_aRankOBJ[nCntRank].nObjType == RANKTYPE_2D)
-			{
-				nCntObj2D++;
-			}
-			else if (g_aRankOBJ[nCntRank].nObjType == RANKTYPE_3D)
-			{
-				nCntObj3D++;
+				g_aRankOBJ[nCntRank].VtxIdx = g_nObjNum[RANKTYPE_3D];
+
+				g_nObjNum[RANKTYPE_3D]++;
+				return true;
 			}
 		}
 	}
-	nNum2DObj = nCntObj2D;
-	nNum3DObj = nCntObj3D;
+	return false;
 }
 
 //=======================================
@@ -983,10 +1031,10 @@ void Score_Print(D3DXVECTOR3 pos,int nType, int nCnt,D3DXCOLOR col)
 
 	for (nCntScore = 0, nDiv = 1; nCntScore < nDig; nCntScore++)
 	{
-		SetRankingObj(/*pos*/{ pos.x - nCntScore * 40.0f,pos.y  ,0.0f }, col,/*size*/{ 50.0f,65.0f }, nType, TEXTURE_SCORENUM, { float((g_aRank_Info[nCnt].nScore % (nDiv * 10)) / nDiv),0 }, true);
+		SetRankingObj(/*pos*/{ pos.x - nCntScore * 40.0f,pos.y  ,0.0f }, col,/*size*/{ 50.0f,65.0f }, nType, TEXTURE_SCORENUM, { float((g_aRank_Info[nCnt].nScore % (nDiv * 10)) / nDiv),0 }, false);
 
 		nDiv *= 10;
 	}
 
-	SetRankingObj(/*pos*/{ pos.x + 40.0f,pos.y +15.0f ,0.0f }, col,/*size*/{ 50.0f,65.0f }, nType, TEXTURE_SCORENUM, { 10,0 }, true);
+	SetRankingObj(/*pos*/{ pos.x + 40.0f,pos.y +15.0f ,0.0f }, col,/*size*/{ 50.0f,65.0f }, nType, TEXTURE_SCORENUM, { 10,0 }, false);
 }

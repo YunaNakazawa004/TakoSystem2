@@ -47,6 +47,7 @@ typedef struct
 	int nObjType;				// Objタイプ
 	int nTexType;				// Texタイプ
 	D3DXVECTOR2 NumIdx;			// 数字系テクスチャのインデックス
+	int VtxIdx;					// オブジェクト配列番号
 } RankingOBJ;
 
 // ランキング情報 ---------------------
@@ -64,7 +65,7 @@ void InitRanking(void);
 void UninitRanking(void);
 void UpdateRanking(void);
 void DrawRanking(void);
-void SetRankingObj(D3DXVECTOR3 pos,		// 位置
+bool SetRankingObj(D3DXVECTOR3 pos,		// 位置
 	D3DXCOLOR col,						// 色
 	D3DXVECTOR2 size,					// サイズ
 	int nObjType,						// 2Dor3D
