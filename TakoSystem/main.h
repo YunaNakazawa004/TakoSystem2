@@ -73,7 +73,7 @@
 #define ENABLE_ONELAP	// ˆêŽü‚³‚¹‚é‚©
 #endif
 
-#if 1
+#if 0
 #define ENABLE_ASSERT
 #endif;
 
