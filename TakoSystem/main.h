@@ -67,7 +67,7 @@
 #define INCYLINDER_RADIUS	(400.0f)														// “à‘¤‚Ì‰~’Œ‚Ì”¼Œa
 #define CYLINDER_HEIGHT		(2000.0f)														// ‰~’Œ‚Ì‚‚³
 
-#if 0
+#if 1
 #define ENABLE_ONELAP	// ˆêŽü‚³‚¹‚é‚©
 #endif
 

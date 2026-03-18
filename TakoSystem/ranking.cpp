@@ -8,9 +8,7 @@
 #include "camera.h"
 #include "light.h"
 
-#include "meshcylinder.h"
 #include "meshdome.h"
-#include "meshfield.h"
 #include "meshring.h"
 #include "meshorbit.h"
 
@@ -132,14 +130,8 @@ void InitRanking(void)
 	SetNumCamera(1);
 	SetCameraPos(0, { 0.0f,1000.0f,0.0f }, { 0.0f,0.0f,0.0f }, { 0.0f,0.0f,0.0f }, CAMERATYPE_STOP);
 
-	// メッシュシリンダーの初期化処理
-	InitMeshCylinder();
-
 	// モデルの初期化処理
 	InitFishes();
-
-	// メッシュフィールドの初期化処理
-	InitMeshField();
 
 	// 3Dエフェクトの初期化処理
 	InitEffect3D();
@@ -265,9 +257,6 @@ void UninitRanking(void)
 	// モデルの終了処理
 	UninitFishes();
 
-	// メッシュフィールドの終了処理
-	UninitMeshField();
-
 	// 3Dエフェクトの終了処理
 	UninitEffect3D();
 
@@ -358,9 +347,6 @@ void UpdateRanking(void)
 
 	// モデルの更新処理
 	UpdateFishes();
-
-	// メッシュフィールドの更新処理
-	UpdateMeshField();
 
 	// 3Dエフェクトの更新処理
 	UpdateEffect3D();
