@@ -334,6 +334,9 @@ void UpdateCamera(void)
 			pCamera->posV.x = pCamera->posR.x + sinf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance;
 			pCamera->posV.z = pCamera->posR.z + cosf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance;
 
+			pCamera->fViewAngle = DEFAULT_VIEW_ANGLE;
+			pCamera->fMoveVA = DEFAULT_VIEW_ANGLE;
+
 			break;
 
 		case CAMERATYPE_STOP:
@@ -342,6 +345,9 @@ void UpdateCamera(void)
 
 			pCamera->posV.x = pCamera->posR.x + sinf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance;
 			pCamera->posV.z = pCamera->posR.z + cosf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance;
+
+			pCamera->fViewAngle = DEFAULT_VIEW_ANGLE;
+			pCamera->fMoveVA = DEFAULT_VIEW_ANGLE;
 
 			break;
 		}

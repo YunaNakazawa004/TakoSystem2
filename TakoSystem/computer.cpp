@@ -558,7 +558,7 @@ void UpdateComputer(void)
 				pComputer->phys.move.z += (0.0f - pComputer->phys.move.z) * INERTIA_MOVE;
 			}
 
-			if (CollisionObjectArea(pComputer->phys.pos) == false)
+			if (CollisionObjectArea(pComputer->phys.pos) == false && GetMode() != MODE_TITLE)
 			{// ‰Q’ª
 				MoveOceanCurrents(&pComputer->phys.pos);
 
