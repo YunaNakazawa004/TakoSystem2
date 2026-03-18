@@ -343,7 +343,7 @@ void UpdateGame(void)
 		GiveResultForGame();
 
 		// フェードの設定
-		SetFade(MODE_RESULT);
+		SetFade(MODE_GAME);
 
 		g_gameState = GAMESTATE_END;	// 終了状態に設定
 
