@@ -44,7 +44,7 @@ SOUNDINFO g_aSoundInfo[SOUND_MAX] =
 	{"data/SE/landing.wav",0},				//着地音
 	{"data/SE/applause.wav",0},				//勝利音
 	{"data/SE/count.wav",0},				//カウント音
-	{"data/SE/countdown.wav",0},			//カウントダウン音
+	{"data/SE/countdown000.wav",0},			//カウントダウン音
 	{"data/SE/timeup.wav",0},				//タイムアップ音
 	{"data/SE/boot.wav",0},					//起動音
 	{"data/SE/cursormove.wav",0},			//カーソル移動音
@@ -62,6 +62,7 @@ SOUNDINFO g_aSoundInfo[SOUND_MAX] =
 	{"data/SE/ink.wav",0},					//視界悪化
 	{"data/SE/clear.wav",0},				//クリア(チュートリアル)
 	{"data/SE/foodnumup.wav",0},			//エサの上限が増える
+	{"data/SE/go000.wav",0},				//go音
 };
 
 //=============================================================================

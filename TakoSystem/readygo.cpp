@@ -292,6 +292,11 @@ void UpdateReady(void)
 
 					bGameStart = true;
 				}
+				if (g_aReady[nCntReady].Idx == 0 && g_aReady[nCntReady].bDisp == true)
+				{ // 音
+					// サウンドの再生
+					PlaySound(SOUND_SE_GO);
+				}
 			}
 			if (g_aReady[nCntReady].TexIdx == 2)
 			{ // TimeUpテクスチャなら
