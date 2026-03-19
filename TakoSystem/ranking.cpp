@@ -155,15 +155,18 @@ void InitRanking(void)
 		g_aRankOBJ[nCntRank].pos = { 0.0f,0.0f,0.0f };
 		g_aRankOBJ[nCntRank].size = { 0.0f,0.0f };
 	}
-
-	for (int nCntRank = 0, nCntRank2 = 0; nCntRank < MAX_RANK; nCntRank++, nCntRank2 = 0)
-	{ // ランキング情報の代入とモデルの設置
+	for (int nCntRank = 0; nCntRank < MAX_RANK; nCntRank++)
+	{ // プレイヤー情報の初期化と代入
 
 		g_aRank_Info[nCntRank].nCharaIdx = g_aGRP[nCntRank].typePlayer;
 		g_aRank_Info[nCntRank].nScore = g_aGRP[nCntRank].nTotalScore;
 		g_aRank_Info[nCntRank].nRank = 0;
 		nRankNum[nCntRank][0] = 0;
 		nRankNum[nCntRank][1] = 0;
+	}
+
+	for (int nCntRank = 0, nCntRank2 = 0; nCntRank < MAX_RANK; nCntRank++, nCntRank2 = 0)
+	{ // ランキング情報の代入とモデルの設置
 
 		for (; nCntRank2 < MAX_RANK; nCntRank2++)
 		{
@@ -211,11 +214,14 @@ void InitRanking(void)
 	SetRankingObj({ SCREEN_WIDTH / 2,SCREEN_HEIGHT / 2,1.0f }, { 1.0f,1.0f,1.0f,1.0f }, { 1280.0f,720.0f }, RANKTYPE_2D, TEXTURE_BG, { -1 ,-1 }, true);
 	SetRankingObj({ SCREEN_WIDTH / 2,SCREEN_HEIGHT / 2,1.0f }, { 1.0f,1.0f,1.0f,0.8f }, { 1280.0f,720.0f }, RANKTYPE_2D, TEXTURE_BG_OCTO, { -1 ,-1 }, true);
 
-	for (int nCntRank = 0, nCntRank2 = 0, nPlayerCnt = 0, nCpuCnt = 0; nCntRank < MAX_RANK; nCntRank++)
-	{ // 順位のOBJ設置
-
+	for (int nCntRank = 0; nCntRank < MAX_RANK; nCntRank++)
+	{
 		SetRankingObj(/*pos*/{ 1300.0f,70.0f + nCntRank * 90.0f,0.0f }, /*color*/{ 1.0f,1.0f,1.0f,1.0f },/*size*/{ 900.0f,90.0f }, RANKTYPE_2D, TEXTURE_RANKSCORE, { -1,-1 }, false);
 		SetRankingObj(/*pos*/{ 1300.0f,70.0f + nCntRank * 90.0f,0.0f }, /*color*/{ 1.0f,1.0f,1.0f,1.0f },/*size*/{ 900.0f,90.0f }, RANKTYPE_2D, TEXTURE_RANKSCOREFLAME, { -1,-1 }, false);
+	}
+
+	for (int nCntRank = 0, nCntRank2 = 0, nPlayerCnt = 0, nCpuCnt = 0; nCntRank < MAX_RANK; nCntRank++)
+	{ // 順位のOBJ設置
 
 		if (g_aRank_Info[nCntRank].nRank == 0 && nRankNum[g_aRank_Info[nCntRank].nRank][1] == 0)
 		{
@@ -435,6 +441,9 @@ void UninitRanking(void)
 {
 	// サウンドの停止
 	StopSound();
+
+	// ステージの終了処理
+	//UninitStage();
 
 	// モデルの終了処理
 	UninitFishes();
