@@ -190,18 +190,16 @@ void UninitPot(void)
 //=============================================================================
 void UpdatePot(void)
 {
-	Pot* pPot = GetPot();
-
-	for (int nCntPot = 0; nCntPot < MAX_POT; nCntPot++, pPot++)
+	for (int nCntPot = 0; nCntPot < MAX_POT; nCntPot++)
 	{
-		if (pPot->bUse == true)
+		if (g_aPot[nCntPot].bUse == true)
 		{
 			static int nCounter = 0;
 
 			//PrintDebugProc("[ %d ]\n入ってるエサの数 %d\n", nCntPot, g_aPot[nCntPot].nFood);
 			int nIdx = -1;
 
-			if (CollisionEsa(&nIdx, false, &pPot->pos, 0.0f) == true)
+			if (CollisionEsa(&nIdx, false, &g_aPot[nCntPot].pos, 0.0f) == true)
 			{// エサと接触した
 				Esa* pEsa = GetEsa();
 
@@ -209,8 +207,8 @@ void UpdatePot(void)
 				{// タコつぼに入れてる最中
 					
 					// ポットにエサを追加
-					Enqueue(&pPot->esaQueue, pEsa[nIdx].nIdxModel);
-					pPot->nFood++;
+					Enqueue(&g_aPot[nCntPot].esaQueue, pEsa[nIdx].nIdxModel);
+					g_aPot[nCntPot].nFood++;
 
 					// エサの削除処理
 					DelEsa(nIdx, false, -1);	// 削除したエサの種類を獲得
@@ -409,18 +407,17 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 {
 	//return false;
 
-	Pot* pPot = GetPot();
 	bool bColl = false;
 
-	for (int nCntPot = 0; nCntPot < MAX_POT; nCntPot++, pPot++)
+	for (int nCntPot = 0; nCntPot < MAX_POT; nCntPot++)
 	{
-		if (pPot->bUse == false)
+		if (g_aPot[nCntPot].bUse == false)
 		{// 使ってないのは無視
 			
 			continue;
 		}
 
-		D3DXVECTOR3 dist = pPot->pos - pos;
+		D3DXVECTOR3 dist = g_aPot[nCntPot].pos - pos;
 
 		if (D3DXVec3Length(&dist) < POT_RADIUS + fRadius)
 		{// 距離が当たり判定内
@@ -430,7 +427,7 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 			if		(pPlayer != NULL)
 			{// プレイヤーの判定
 
-				if ((pPot->nFood == 0 && pPlayer->Potstate == POTSTATE_NONE) || pPlayer->Potstate == POTSTATE_HIDE)
+				if ((g_aPot[nCntPot].nFood == 0 && pPlayer->Potstate == POTSTATE_NONE) || pPlayer->Potstate == POTSTATE_HIDE)
 				{// 中身が空
 
 					if (bTentacle == true && pPlayer->nFood > 0)
@@ -464,19 +461,19 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 						}
 						
 						// 衝撃波エフェクトの生成
-						SetMeshRing(MESHRINGTYPE_SHOCKWAVE, pPot->pos, CalcShockWaveRot(pPot->pos, pPlayer->pos),D3DXVECTOR2(16.0f,1.0f),D3DXVECTOR2(10.0f,7.0f),D3DXCOLOR(1.0f,1.0f,1.0f,1.0f));
+						SetMeshRing(MESHRINGTYPE_SHOCKWAVE, g_aPot[nCntPot].pos, CalcShockWaveRot(g_aPot[nCntPot].pos, pPlayer->pos),D3DXVECTOR2(16.0f,1.0f),D3DXVECTOR2(10.0f,7.0f),D3DXCOLOR(1.0f,1.0f,1.0f,1.0f));
 						
 						PlaySound(SOUND_SE_INBAIT);
 					}
 				}
-				else if (pPot->nFood > 0 && pPlayer->Potstate != POTSTATE_HIDE)
+				else if (g_aPot[nCntPot].nFood > 0 && pPlayer->Potstate != POTSTATE_HIDE)
 				{// 中身がある
 
 					if (bTentacle == true)
 					{// 触手
 
 						// ポットに入っているエサの数を設定
-						int nFood = pPot->nFood;
+						int nFood = g_aPot[nCntPot].nFood;
 						
 						// ポットの状態を更新
 						pPlayer->Potstate = POTSTATE_STEAL;		// ポットの状態を取られている状態に設定
@@ -490,11 +487,11 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 							{// 持っている数が上限に達していない
 
 								// ポットからエサを取り出す
-								int nIdx = Dequeue(&pPot->esaQueue);	// ポットからエサを取り出す
-								pPot->nFood--;							// ポットに入っているエサの数を減らす
+								int nIdx = Dequeue(&g_aPot[nCntPot].esaQueue);	// ポットからエサを取り出す
+								g_aPot[nCntPot].nFood--;							// ポットに入っているエサの数を減らす
 
 								// エサの生成
-								SetEsa(nIdx, true, ESA_ACTTYPE_GOTO_PLAYER, pPlayer->nIdx, pPot->pos, FIRST_POS);	// ポットからプレイヤーに向かうエサの生成
+								SetEsa(nIdx, true, ESA_ACTTYPE_GOTO_PLAYER, pPlayer->nIdx, g_aPot[nCntPot].pos, FIRST_POS);	// ポットからプレイヤーに向かうエサの生成
 							}
 						}
 
@@ -505,7 +502,7 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 						}
 
 						// 衝撃波エフェクトの生成
-						//SetMeshRing(MESHRINGTYPE_SHOCKWAVE, pPot->pos, CalcShockWaveRot(pPot->pos, pPlayer->pos), D3DXVECTOR2(16.0f, 1.0f), D3DXVECTOR2(10.0f, 7.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+						//SetMeshRing(MESHRINGTYPE_SHOCKWAVE, g_aPot[nCntPot].pos, CalcShockWaveRot(g_aPot[nCntPot].pos, pPlayer->pos), D3DXVECTOR2(16.0f, 1.0f), D3DXVECTOR2(10.0f, 7.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 
 						PlaySound(SOUND_SE_OUTBAIT);
 					}
@@ -519,7 +516,7 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 			else if (pComputer != NULL)
 			{// CPUの判定
 
-				if ((pPot->nFood == 0 && pComputer->Potstate == POTSTATE_NONE) || pComputer->Potstate == POTSTATE_HIDE)
+				if ((g_aPot[nCntPot].nFood == 0 && pComputer->Potstate == POTSTATE_NONE) || pComputer->Potstate == POTSTATE_HIDE)
 				{// 中身が空
 
 					if (bTentacle == true && pComputer->nFoodCount > 0)
@@ -546,14 +543,14 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 						}
 					}
 				}
-				else if (pPot->nFood > 0 && pComputer->Potstate != POTSTATE_HIDE)
+				else if (g_aPot[nCntPot].nFood > 0 && pComputer->Potstate != POTSTATE_HIDE)
 				{// 中身がある
 
 					if (bTentacle == true)
 					{// 触手
 
 						// ポットに入っているエサの数を設定
-						int nFood = pPot->nFood;
+						int nFood = g_aPot[nCntPot].nFood;
 						
 						pComputer->Potstate = POTSTATE_STEAL;
 						pComputer->nTargetPotIdx = nCntPot; 	// 取り出したポットのインデックスを設定
@@ -564,8 +561,8 @@ bool CollisionPotArea(D3DXVECTOR3 pos, float fRadius, Player* pPlayer, Computer*
 							{// 持てる数だけ持つ
 
 								// エサを取り出す
-								int nIdx = Dequeue(&pPot->esaQueue);
-								pPot->nFood--;
+								int nIdx = Dequeue(&g_aPot[nCntPot].esaQueue);
+								g_aPot[nCntPot].nFood--;
 
 								// エサの設定
 								SetEsa(nIdx, true, ESA_ACTTYPE_GOTO_COMPUTER, nCntPot, pComputer->phys.pos, FIRST_POS);		// コンピューターに向かうエサの設定

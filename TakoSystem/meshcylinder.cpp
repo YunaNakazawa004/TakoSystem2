@@ -112,33 +112,31 @@ void UpdateMeshCylinder(void)
 			continue;
 		}
 
-		MeshCylinder* pMeshC = &g_aMeshCylinder[nCntMeshC];
-
-		switch (pMeshC->state)
+		switch (g_aMeshCylinder[nCntMeshC].state)
 		{
 		case MESHCYLINDERSTATE_NONE:
-			pMeshC->col.a = 1.0f;
+			g_aMeshCylinder[nCntMeshC].col.a = 1.0f;
 
 			break;
 
 		case MESHCYLINDERSTATE_FADEIN:
-			pMeshC->col.a -= CYLINDER_FADE_SPEED;
+			g_aMeshCylinder[nCntMeshC].col.a -= CYLINDER_FADE_SPEED;
 
-			if (pMeshC->col.a <= 0.0f)
+			if (g_aMeshCylinder[nCntMeshC].col.a <= 0.0f)
 			{// 透明になった
-				pMeshC->col.a = 0.0f;
-				pMeshC->state = MESHCYLINDERSTATE_FADEOUT;
+				g_aMeshCylinder[nCntMeshC].col.a = 0.0f;
+				g_aMeshCylinder[nCntMeshC].state = MESHCYLINDERSTATE_FADEOUT;
 			}
 
 			break;
 
 		case MESHCYLINDERSTATE_FADEOUT:
-			pMeshC->col.a += CYLINDER_FADE_SPEED;
+			g_aMeshCylinder[nCntMeshC].col.a += CYLINDER_FADE_SPEED;
 
-			if (pMeshC->col.a >= 1.0f)
+			if (g_aMeshCylinder[nCntMeshC].col.a >= 1.0f)
 			{// 不透明になった
-				pMeshC->col.a = 1.0f;
-				pMeshC->state = MESHCYLINDERSTATE_FADEIN;
+				g_aMeshCylinder[nCntMeshC].col.a = 1.0f;
+				g_aMeshCylinder[nCntMeshC].state = MESHCYLINDERSTATE_FADEIN;
 			}
 
 			break;
@@ -154,7 +152,7 @@ void UpdateMeshCylinder(void)
 			for (int nCntMeshCylinder2 = 0; nCntMeshCylinder2 < (int)g_aMeshCylinder[nCntMeshC].block.x + 1; nCntMeshCylinder2++)
 			{
 				// テクスチャ座標の設定
-				pVtx[0].col = pMeshC->col;
+				pVtx[0].col = g_aMeshCylinder[nCntMeshC].col;
 
 				pVtx++;
 			}

@@ -84,40 +84,40 @@ void InitPlayer(void)
 	// プレイヤーの情報の初期化
 	for (int nCntPlayer = 0; nCntPlayer < MAX_PLAYER; nCntPlayer++, pPlayer++)
 	{
-		pPlayer->nIdx = nCntPlayer;
-		pPlayer->nCounter = 0;
-		pPlayer->pos = FIRST_POS;
-		pPlayer->posOld = FIRST_POS;
-		pPlayer->move = FIRST_POS;
-		pPlayer->rot = FIRST_POS;
-		pPlayer->state = PLAYERSTATE_APPEAR;
-		pPlayer->mode = PLAYERMODE_TUTORIAL;
-		pPlayer->TentacleState = PLTENTACLESTATE_NORMAL;
-		pPlayer->nCounterState = 0;
-		pPlayer->fAutoY = 0.0f;
-		pPlayer->fAngleX = 0.0f;
-		pPlayer->fAngleY = 0.0f;
-		pPlayer->fFogStart = (pPlayer->pos.y * 0.4f) + FOGS_MIN;
-		pPlayer->fFogEnd = (pPlayer->pos.y * 1.1f) + FOGE_MIN;
-		pPlayer->fRadius = PLAYER_RADIUS;
-		pPlayer->fHeight = PLAYER_HEIGHT;
-		pPlayer->bJump = false;
-		pPlayer->bLand = true;
-		pPlayer->bMove = false;
-		pPlayer->bAct = false;
-		pPlayer->bUse = false;
-		pPlayer->bBlind = false;
-		pPlayer->nBlindCounter = 0;
-		memset(&pPlayer->nOrbitIdx, -1, sizeof(int[8]));
-		pPlayer->nFood = 0;
-		pPlayer->nFoodNumIdx = -1;
-		pPlayer->esaQueue.nTail = -1;
-		memset(&pPlayer->esaQueue.nData, -1, sizeof(int[MAX_QUEUE]));
-		pPlayer->Potstate = POTSTATE_NONE;
-		pPlayer->nPotIdx = -1;
-		pPlayer->nMaxFood = 0;
-		pPlayer->nTentacleCooldown = 0;
-		pPlayer->nInkCooldown = 0;
+		g_aPlayer[nCntPlayer].nIdx = nCntPlayer;
+		g_aPlayer[nCntPlayer].nCounter = 0;
+		g_aPlayer[nCntPlayer].pos = FIRST_POS;
+		g_aPlayer[nCntPlayer].posOld = FIRST_POS;
+		g_aPlayer[nCntPlayer].move = FIRST_POS;
+		g_aPlayer[nCntPlayer].rot = FIRST_POS;
+		g_aPlayer[nCntPlayer].state = PLAYERSTATE_APPEAR;
+		g_aPlayer[nCntPlayer].mode = PLAYERMODE_TUTORIAL;
+		g_aPlayer[nCntPlayer].TentacleState = PLTENTACLESTATE_NORMAL;
+		g_aPlayer[nCntPlayer].nCounterState = 0;
+		g_aPlayer[nCntPlayer].fAutoY = 0.0f;
+		g_aPlayer[nCntPlayer].fAngleX = 0.0f;
+		g_aPlayer[nCntPlayer].fAngleY = 0.0f;
+		g_aPlayer[nCntPlayer].fFogStart = (g_aPlayer[nCntPlayer].pos.y * 0.4f) + FOGS_MIN;
+		g_aPlayer[nCntPlayer].fFogEnd = (g_aPlayer[nCntPlayer].pos.y * 1.1f) + FOGE_MIN;
+		g_aPlayer[nCntPlayer].fRadius = PLAYER_RADIUS;
+		g_aPlayer[nCntPlayer].fHeight = PLAYER_HEIGHT;
+		g_aPlayer[nCntPlayer].bJump = false;
+		g_aPlayer[nCntPlayer].bLand = true;
+		g_aPlayer[nCntPlayer].bMove = false;
+		g_aPlayer[nCntPlayer].bAct = false;
+		g_aPlayer[nCntPlayer].bUse = false;
+		g_aPlayer[nCntPlayer].bBlind = false;
+		g_aPlayer[nCntPlayer].nBlindCounter = 0;
+		memset(&g_aPlayer[nCntPlayer].nOrbitIdx, -1, sizeof(int[8]));
+		g_aPlayer[nCntPlayer].nFood = 0;
+		g_aPlayer[nCntPlayer].nFoodNumIdx = -1;
+		g_aPlayer[nCntPlayer].esaQueue.nTail = -1;
+		memset(&g_aPlayer[nCntPlayer].esaQueue.nData, -1, sizeof(int[MAX_QUEUE]));
+		g_aPlayer[nCntPlayer].Potstate = POTSTATE_NONE;
+		g_aPlayer[nCntPlayer].nPotIdx = -1;
+		g_aPlayer[nCntPlayer].nMaxFood = 0;
+		g_aPlayer[nCntPlayer].nTentacleCooldown = 0;
+		g_aPlayer[nCntPlayer].nInkCooldown = 0;
 	}
 
 	// ファイルからキャラクター情報をロード
@@ -127,20 +127,20 @@ void InitPlayer(void)
 
 	for (int nCntPlayer = 0; nCntPlayer < MAX_PLAYER; nCntPlayer++, pPlayer++)
 	{
-		pPlayer->motionType = MOTIONTYPE_NEUTRAL;
-		pPlayer->bLoopMotion = pPlayer->aMotionInfo[0].bLoop;
-		pPlayer->nNumKey = pPlayer->aMotionInfo[0].nNumKey;
-		pPlayer->nKey = 0;
-		pPlayer->nCounterMotion = 0;
-		pPlayer->bFinishMotion = false;
-		pPlayer->bBlendMotion = false;
-		pPlayer->motionTypeBlend = MOTIONTYPE_NEUTRAL;
-		pPlayer->bLoopMotionBlend = pPlayer->aMotionInfo[0].bLoop;
-		pPlayer->nNumKeyBlend = pPlayer->aMotionInfo[0].nNumKey;
-		pPlayer->nKeyBlend = 0;
-		pPlayer->nCounterMotionBlend = 0;
-		pPlayer->nFrameBlend = 0;
-		pPlayer->nCounterBlend = 0;
+		g_aPlayer[nCntPlayer].motionType = MOTIONTYPE_NEUTRAL;
+		g_aPlayer[nCntPlayer].bLoopMotion = g_aPlayer[nCntPlayer].aMotionInfo[0].bLoop;
+		g_aPlayer[nCntPlayer].nNumKey = g_aPlayer[nCntPlayer].aMotionInfo[0].nNumKey;
+		g_aPlayer[nCntPlayer].nKey = 0;
+		g_aPlayer[nCntPlayer].nCounterMotion = 0;
+		g_aPlayer[nCntPlayer].bFinishMotion = false;
+		g_aPlayer[nCntPlayer].bBlendMotion = false;
+		g_aPlayer[nCntPlayer].motionTypeBlend = MOTIONTYPE_NEUTRAL;
+		g_aPlayer[nCntPlayer].bLoopMotionBlend = g_aPlayer[nCntPlayer].aMotionInfo[0].bLoop;
+		g_aPlayer[nCntPlayer].nNumKeyBlend = g_aPlayer[nCntPlayer].aMotionInfo[0].nNumKey;
+		g_aPlayer[nCntPlayer].nKeyBlend = 0;
+		g_aPlayer[nCntPlayer].nCounterMotionBlend = 0;
+		g_aPlayer[nCntPlayer].nFrameBlend = 0;
+		g_aPlayer[nCntPlayer].nCounterBlend = 0;
 	}
 }
 
@@ -161,22 +161,22 @@ void UpdatePlayer(void)
 
 	for (int nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++, pPlayer++, pCamera++)
 	{
-		if (pPlayer->bUse == true)
+		if (g_aPlayer[nCntPlayer].bUse == true)
 		{// 使用している
 			int nValueH, nValueV;
 			int nValue;
 			float fmoveAngle = 0.0f;
 			float fAngle;
 
-			pPlayer->posOld = pPlayer->pos;
-			pPlayer->posX = pPlayer->pos + (pCamera->posR - pCamera->posV);
+			g_aPlayer[nCntPlayer].posOld = g_aPlayer[nCntPlayer].pos;
+			g_aPlayer[nCntPlayer].posX = g_aPlayer[nCntPlayer].pos + (pCamera->posR - pCamera->posV);
 
-			if (GetGameStart() == true && GetMode() == MODE_GAME && pPlayer->state == PLAYERSTATE_APPEAR)
+			if (GetGameStart() == true && GetMode() == MODE_GAME && g_aPlayer[nCntPlayer].state == PLAYERSTATE_APPEAR)
 			{// GOで操作可能にする
-				pPlayer->state = PLAYERSTATE_NORMAL;
+				g_aPlayer[nCntPlayer].state = PLAYERSTATE_NORMAL;
 			}
 
-			switch (pPlayer->state)
+			switch (g_aPlayer[nCntPlayer].state)
 			{
 			case PLAYERSTATE_NORMAL:			// 通常状態
 				//PrintDebugProc("プレイヤーの状態 : [ PLAYERSTATE_NORMAL ]\n");
@@ -211,154 +211,154 @@ void UpdatePlayer(void)
 			case PLAYERSTATE_BACKAREA:			// エリア戻り状態
 				//PrintDebugProc("プレイヤーの状態 : [ PLAYERSTATE_BACKAREA ]\n");
 
-				D3DXVECTOR3 correct = -pPlayer->pos;
-				pPlayer->move += *D3DXVec3Normalize(&pPlayer->move, &correct);
+				D3DXVECTOR3 correct = -g_aPlayer[nCntPlayer].pos;
+				g_aPlayer[nCntPlayer].move += *D3DXVec3Normalize(&g_aPlayer[nCntPlayer].move, &correct);
 
-				pPlayer->nCounterState--;
+				g_aPlayer[nCntPlayer].nCounterState--;
 
-				if (pPlayer->nCounterState < 0)
+				if (g_aPlayer[nCntPlayer].nCounterState < 0)
 				{// 戻り状態を終わる
-					pPlayer->state = PLAYERSTATE_NORMAL;
-					pPlayer->nCounterState = 0;
+					g_aPlayer[nCntPlayer].state = PLAYERSTATE_NORMAL;
+					g_aPlayer[nCntPlayer].nCounterState = 0;
 				}
 
 				break;
 			}
 
-			//PrintDebugProc("エサの数 %d / %d\n", pPlayer->nFood, pPlayer->nMaxFood * PLAYER_TENTACLE);
+			//PrintDebugProc("エサの数 %d / %d\n", g_aPlayer[nCntPlayer].nFood, g_aPlayer[nCntPlayer].nMaxFood * PLAYER_TENTACLE);
 
-			if (pPlayer->state != PLAYERSTATE_APPEAR && pPlayer->state != PLAYERSTATE_DASH && pPlayer->state != PLAYERSTATE_BACKAREA)
+			if (g_aPlayer[nCntPlayer].state != PLAYERSTATE_APPEAR && g_aPlayer[nCntPlayer].state != PLAYERSTATE_DASH && g_aPlayer[nCntPlayer].state != PLAYERSTATE_BACKAREA)
 			{// 出現状態のときは移動できない
 				// パッド移動
 				if (GetJoypadStick(nCntPlayer, JOYKEY_LEFTSTICK, &nValueH, &nValueV) == true)
 				{// パッドの移動優先
-					if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
+					if (g_aPlayer[nCntPlayer].TentacleState != PLTENTACLESTATE_TENTACLELONG)
 					{// 触手を伸ばしているときは向きを変えない
-						pPlayer->fAngleY = pCamera->rot.y + atan2f(-(float)nValueH, -D3DX_PI - (float)nValueV);
+						g_aPlayer[nCntPlayer].fAngleY = pCamera->rot.y + atan2f(-(float)nValueH, -D3DX_PI - (float)nValueV);
 					}
 
 					fAngle = atan2f((float)(nValueH), (float)(nValueV));
 
-					pPlayer->move.x += sinf(fAngle + pCamera->rot.y) * MOVEMENT.x/* * sinf((D3DX_PI * 0.5f) + pCamera->fAngle)*/;
-					//pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * (nValueV / 30300) * MOVEMENT.y;
-					pPlayer->move.z += cosf(fAngle + pCamera->rot.y) * MOVEMENT.z /** sinf((D3DX_PI * 0.5f) + pCamera->fAngle)*/;
+					g_aPlayer[nCntPlayer].move.x += sinf(fAngle + pCamera->rot.y) * MOVEMENT.x/* * sinf((D3DX_PI * 0.5f) + pCamera->fAngle)*/;
+					//g_aPlayer[nCntPlayer].move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * (nValueV / 30300) * MOVEMENT.y;
+					g_aPlayer[nCntPlayer].move.z += cosf(fAngle + pCamera->rot.y) * MOVEMENT.z /** sinf((D3DX_PI * 0.5f) + pCamera->fAngle)*/;
 
-					pPlayer->bMove = true;
+					g_aPlayer[nCntPlayer].bMove = true;
 				}
 				else if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_W) == true : GetKeyboardPress(DIK_UP) == true) || GetJoypadPress(nCntPlayer, JOYKEY_UP) == true)		// キーボード移動
 				{// 奥に移動
 					if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_A) == true : GetKeyboardPress(DIK_LEFT) == true) || GetJoypadPress(nCntPlayer, JOYKEY_LEFT) == true)
 					{// 左奥に移動
-						pPlayer->move.x += sinf(-D3DX_PI * 0.75f - pCamera->rot.y) * MOVEMENT.x;
-						//pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * MOVEMENT.y;
-						pPlayer->move.z += cosf(-D3DX_PI * 0.25f + pCamera->rot.y) * MOVEMENT.z;
+						g_aPlayer[nCntPlayer].move.x += sinf(-D3DX_PI * 0.75f - pCamera->rot.y) * MOVEMENT.x;
+						//g_aPlayer[nCntPlayer].move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * MOVEMENT.y;
+						g_aPlayer[nCntPlayer].move.z += cosf(-D3DX_PI * 0.25f + pCamera->rot.y) * MOVEMENT.z;
 
-						if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
+						if (g_aPlayer[nCntPlayer].TentacleState != PLTENTACLESTATE_TENTACLELONG)
 						{// 触手を伸ばしているときは向きを変えない
-							pPlayer->fAngleY = pCamera->rot.y - (-D3DX_PI * 0.75f);
+							g_aPlayer[nCntPlayer].fAngleY = pCamera->rot.y - (-D3DX_PI * 0.75f);
 						}
 					}
 					else if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_D) == true : GetKeyboardPress(DIK_RIGHT) == true) || GetJoypadPress(nCntPlayer, JOYKEY_RIGHT) == true)
 					{// 右奥に移動
-						pPlayer->move.x += sinf(D3DX_PI * 0.75f - pCamera->rot.y) * MOVEMENT.x;
-						//pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * MOVEMENT.y;
-						pPlayer->move.z += cosf(D3DX_PI * 0.25f + pCamera->rot.y) * MOVEMENT.z;
+						g_aPlayer[nCntPlayer].move.x += sinf(D3DX_PI * 0.75f - pCamera->rot.y) * MOVEMENT.x;
+						//g_aPlayer[nCntPlayer].move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * MOVEMENT.y;
+						g_aPlayer[nCntPlayer].move.z += cosf(D3DX_PI * 0.25f + pCamera->rot.y) * MOVEMENT.z;
 
-						if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
+						if (g_aPlayer[nCntPlayer].TentacleState != PLTENTACLESTATE_TENTACLELONG)
 						{// 触手を伸ばしているときは向きを変えない
-							pPlayer->fAngleY = pCamera->rot.y - (D3DX_PI * 0.75f);
+							g_aPlayer[nCntPlayer].fAngleY = pCamera->rot.y - (D3DX_PI * 0.75f);
 						}
 					}
 					else if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_W) == true : GetKeyboardPress(DIK_UP) == true) || GetJoypadPress(nCntPlayer, JOYKEY_UP) == true)
 					{// 奥に移動
-						pPlayer->move.x += sinf(D3DX_PI * 0.0f + pCamera->rot.y) * MOVEMENT.x;
-						//pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * MOVEMENT.y;
-						pPlayer->move.z += cosf(D3DX_PI * 0.0f + pCamera->rot.y) * MOVEMENT.z;
+						g_aPlayer[nCntPlayer].move.x += sinf(D3DX_PI * 0.0f + pCamera->rot.y) * MOVEMENT.x;
+						//g_aPlayer[nCntPlayer].move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * MOVEMENT.y;
+						g_aPlayer[nCntPlayer].move.z += cosf(D3DX_PI * 0.0f + pCamera->rot.y) * MOVEMENT.z;
 
-						if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
+						if (g_aPlayer[nCntPlayer].TentacleState != PLTENTACLESTATE_TENTACLELONG)
 						{// 触手を伸ばしているときは向きを変えない
-							pPlayer->fAngleY = pCamera->rot.y - D3DX_PI;
+							g_aPlayer[nCntPlayer].fAngleY = pCamera->rot.y - D3DX_PI;
 						}
 					}
 
-					pPlayer->bMove = true;
+					g_aPlayer[nCntPlayer].bMove = true;
 				}
 				else if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_S) == true : GetKeyboardPress(DIK_DOWN) == true) || GetJoypadPress(nCntPlayer, JOYKEY_DOWN) == true)
 				{// 手前に移動
 					if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_A) == true : GetKeyboardPress(DIK_LEFT) == true) || GetJoypadPress(nCntPlayer, JOYKEY_LEFT) == true)
 					{// 左手前に移動
-						pPlayer->move.x += sinf(-D3DX_PI * 0.25f - pCamera->rot.y) * MOVEMENT.x;
-						//pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * -MOVEMENT.y;
-						pPlayer->move.z += cosf(-D3DX_PI * 0.75f + pCamera->rot.y) * MOVEMENT.z;
+						g_aPlayer[nCntPlayer].move.x += sinf(-D3DX_PI * 0.25f - pCamera->rot.y) * MOVEMENT.x;
+						//g_aPlayer[nCntPlayer].move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * -MOVEMENT.y;
+						g_aPlayer[nCntPlayer].move.z += cosf(-D3DX_PI * 0.75f + pCamera->rot.y) * MOVEMENT.z;
 
-						if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
+						if (g_aPlayer[nCntPlayer].TentacleState != PLTENTACLESTATE_TENTACLELONG)
 						{// 触手を伸ばしているときは向きを変えない
-							pPlayer->fAngleY = pCamera->rot.y + (D3DX_PI * 0.25f);
+							g_aPlayer[nCntPlayer].fAngleY = pCamera->rot.y + (D3DX_PI * 0.25f);
 						}
 					}
 					else if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_D) == true : GetKeyboardPress(DIK_RIGHT) == true) || GetJoypadPress(nCntPlayer, JOYKEY_RIGHT) == true)
 					{// 右手前に移動
-						pPlayer->move.x += sinf(D3DX_PI * 0.25f - pCamera->rot.y) * MOVEMENT.x;
-						//pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * -MOVEMENT.y;
-						pPlayer->move.z += cosf(D3DX_PI * 0.75f + pCamera->rot.y) * MOVEMENT.z;
+						g_aPlayer[nCntPlayer].move.x += sinf(D3DX_PI * 0.25f - pCamera->rot.y) * MOVEMENT.x;
+						//g_aPlayer[nCntPlayer].move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * -MOVEMENT.y;
+						g_aPlayer[nCntPlayer].move.z += cosf(D3DX_PI * 0.75f + pCamera->rot.y) * MOVEMENT.z;
 
-						if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
+						if (g_aPlayer[nCntPlayer].TentacleState != PLTENTACLESTATE_TENTACLELONG)
 						{// 触手を伸ばしているときは向きを変えない
-							pPlayer->fAngleY = pCamera->rot.y + (-D3DX_PI * 0.25f);
+							g_aPlayer[nCntPlayer].fAngleY = pCamera->rot.y + (-D3DX_PI * 0.25f);
 						}
 					}
 					else if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_S) == true : GetKeyboardPress(DIK_DOWN) == true) || GetJoypadPress(nCntPlayer, JOYKEY_DOWN) == true)
 					{// 手前に移動
-						pPlayer->move.x += sinf(D3DX_PI * 1.0f + pCamera->rot.y) * MOVEMENT.x;
-						//pPlayer->move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * -MOVEMENT.y;
-						pPlayer->move.z += cosf(D3DX_PI * 1.0f + pCamera->rot.y) * MOVEMENT.z;
+						g_aPlayer[nCntPlayer].move.x += sinf(D3DX_PI * 1.0f + pCamera->rot.y) * MOVEMENT.x;
+						//g_aPlayer[nCntPlayer].move.y += cosf(((D3DX_PI * 0.5f) + pCamera->fAngle)) * -MOVEMENT.y;
+						g_aPlayer[nCntPlayer].move.z += cosf(D3DX_PI * 1.0f + pCamera->rot.y) * MOVEMENT.z;
 
-						if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
+						if (g_aPlayer[nCntPlayer].TentacleState != PLTENTACLESTATE_TENTACLELONG)
 						{// 触手を伸ばしているときは向きを変えない
-							pPlayer->fAngleY = pCamera->rot.y;
+							g_aPlayer[nCntPlayer].fAngleY = pCamera->rot.y;
 						}
 					}
 
-					pPlayer->bMove = true;
+					g_aPlayer[nCntPlayer].bMove = true;
 				}
 				else if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_A) == true : GetKeyboardPress(DIK_LEFT) == true) || GetJoypadPress(nCntPlayer, JOYKEY_LEFT) == true)
 				{// 左に移動
-					pPlayer->move.x += sinf(-D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.x;
-					pPlayer->move.z += cosf(-D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.z;
+					g_aPlayer[nCntPlayer].move.x += sinf(-D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.x;
+					g_aPlayer[nCntPlayer].move.z += cosf(-D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.z;
 
-					if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
+					if (g_aPlayer[nCntPlayer].TentacleState != PLTENTACLESTATE_TENTACLELONG)
 					{// 触手を伸ばしているときは向きを変えない
-						pPlayer->fAngleY = pCamera->rot.y + (D3DX_PI * 0.5f);
+						g_aPlayer[nCntPlayer].fAngleY = pCamera->rot.y + (D3DX_PI * 0.5f);
 					}
 
-					pPlayer->bMove = true;
+					g_aPlayer[nCntPlayer].bMove = true;
 				}
 				else if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_D) == true : GetKeyboardPress(DIK_RIGHT) == true) || GetJoypadPress(nCntPlayer, JOYKEY_RIGHT) == true)
 				{// 右に移動
-					pPlayer->move.x += sinf(D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.x;
-					pPlayer->move.z += cosf(D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.z;
+					g_aPlayer[nCntPlayer].move.x += sinf(D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.x;
+					g_aPlayer[nCntPlayer].move.z += cosf(D3DX_PI * 0.5f + pCamera->rot.y) * MOVEMENT.z;
 
-					if (pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG)
+					if (g_aPlayer[nCntPlayer].TentacleState != PLTENTACLESTATE_TENTACLELONG)
 					{// 触手を伸ばしているときは向きを変えない
-						pPlayer->fAngleY = pCamera->rot.y - (D3DX_PI * 0.5f);
+						g_aPlayer[nCntPlayer].fAngleY = pCamera->rot.y - (D3DX_PI * 0.5f);
 					}
 
-					pPlayer->bMove = true;
+					g_aPlayer[nCntPlayer].bMove = true;
 				}
 				else
 				{// プレイヤーの入力がない
-					pPlayer->bMove = false;
+					g_aPlayer[nCntPlayer].bMove = false;
 				}
 
 				if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_LCONTROL) == true : GetKeyboardPress(DIK_NUMPAD0) == true) ||
 					/*GetJoypadPress(nCntPlayer, JOYKEY_LEFT_SHOULDER) == true*/
 					GetJoypadShoulder(nCntPlayer, JOYKEY_LEFTTRIGGER, &nValue) == true)
 				{// 下降
-					pPlayer->move.y += -MOVEMENT.y;
+					g_aPlayer[nCntPlayer].move.y += -MOVEMENT.y;
 
-					pPlayer->bMove = true;
+					g_aPlayer[nCntPlayer].bMove = true;
 
-					if (pPlayer->mode == PLAYERMODE_TUTORIAL)
+					if (g_aPlayer[nCntPlayer].mode == PLAYERMODE_TUTORIAL)
 					{// チュートリアルモード
 						SetTutorialTxtState(TUTTXTTYPE_DOWN, TUTTXTSTATE_CLEAR);
 					}
@@ -366,44 +366,44 @@ void UpdatePlayer(void)
 				else if ((nCntPlayer == 0 ? GetKeyboardPress(DIK_LSHIFT) == true : GetKeyboardPress(DIK_NUMPAD2) == true) ||
 					GetJoypadPress(nCntPlayer, JOYKEY_LEFT_SHOULDER) == true)
 				{// 上昇
-					pPlayer->move.y += MOVEMENT.y;
+					g_aPlayer[nCntPlayer].move.y += MOVEMENT.y;
 
-					pPlayer->bMove = true;
+					g_aPlayer[nCntPlayer].bMove = true;
 
-					if (pPlayer->mode == PLAYERMODE_TUTORIAL)
+					if (g_aPlayer[nCntPlayer].mode == PLAYERMODE_TUTORIAL)
 					{// チュートリアルモード
 						SetTutorialTxtState(TUTTXTTYPE_UP, TUTTXTSTATE_CLEAR);
 					}
 				}
 			}
 
-			switch (pPlayer->TentacleState)
+			switch (g_aPlayer[nCntPlayer].TentacleState)
 			{
 			case PLTENTACLESTATE_NORMAL:			// 通常状態
-				pPlayer->aModel[2].scale.y = 1.0f;
-				pPlayer->fAngleX = 0.0f;
+				g_aPlayer[nCntPlayer].aModel[2].scale.y = 1.0f;
+				g_aPlayer[nCntPlayer].fAngleX = 0.0f;
 				SetCameraViewAngle(nCntPlayer, 45.0f);
 
 				break;
 
 			case PLTENTACLESTATE_TENTACLELONG:		// 触手伸ばし状態
-				if (pPlayer->motionType == MOTIONTYPE_INK || pPlayer->motionTypeBlend == MOTIONTYPE_INK)
+				if (g_aPlayer[nCntPlayer].motionType == MOTIONTYPE_INK || g_aPlayer[nCntPlayer].motionTypeBlend == MOTIONTYPE_INK)
 				{// モーションキャンセル
-					pPlayer->TentacleState = PLTENTACLESTATE_NORMAL;
+					g_aPlayer[nCntPlayer].TentacleState = PLTENTACLESTATE_NORMAL;
 				}
 				else
 				{// キャンセルしない
-					if (pPlayer->bFinishMotion == true)
+					if (g_aPlayer[nCntPlayer].bFinishMotion == true)
 					{// 触手が伸ばし終わったら
 						CrossHair* pCrossHair = GetCrossHair();
 						pCrossHair = &pCrossHair[nCntPlayer];
 
-						D3DXVECTOR3 tentaclePos = D3DXVECTOR3(pPlayer->aModel[4].mtxWorld._41, pPlayer->aModel[4].mtxWorld._42, pPlayer->aModel[4].mtxWorld._43);
+						D3DXVECTOR3 tentaclePos = D3DXVECTOR3(g_aPlayer[nCntPlayer].aModel[4].mtxWorld._41, g_aPlayer[nCntPlayer].aModel[4].mtxWorld._42, g_aPlayer[nCntPlayer].aModel[4].mtxWorld._43);
 						int nIdx = -1;
 
 						if (CollisionEsa(&nIdx, false, &tentaclePos, TENTACLE_RADIUS) == true &&
-							pPlayer->nFood < pPlayer->nMaxFood * PLAYER_TENTACLE &&
-							pPlayer->motionType != MOTIONTYPE_OCEANCULLENT)
+							g_aPlayer[nCntPlayer].nFood < g_aPlayer[nCntPlayer].nMaxFood * PLAYER_TENTACLE &&
+							g_aPlayer[nCntPlayer].motionType != MOTIONTYPE_OCEANCULLENT)
 						{// エサと接触した
 							Esa* pEsa = GetEsa();
 
@@ -415,8 +415,8 @@ void UpdatePlayer(void)
 
 								if (nIdxEsaType != -1)
 								{
-									pPlayer->nFood++;
-									Enqueue(&pPlayer->esaQueue, nIdxEsaType);
+									g_aPlayer[nCntPlayer].nFood++;
+									Enqueue(&g_aPlayer[nCntPlayer].esaQueue, nIdxEsaType);
 									EsaPlaySE(nIdxEsaType);
 								}
 							}
@@ -424,36 +424,36 @@ void UpdatePlayer(void)
 						else if (CollisionPotArea(tentaclePos, TENTACLE_RADIUS * 0.5f, pPlayer, NULL, true) == true ||
 							CollisionOcto(nCntPlayer, false, tentaclePos) == true)
 						{// エサをとる
-							pPlayer->TentacleState = PLTENTACLESTATE_TENTACLESHORT;
+							g_aPlayer[nCntPlayer].TentacleState = PLTENTACLESTATE_TENTACLESHORT;
 
 							SetMotionPlayer(nCntPlayer, MOTIONTYPE_TENTACLESHORT, true, 20);
 						}
 						else if (pCrossHair->state == CROSSHAIRSTATE_REACH &&
-							(CollisionMeshCylinder(&tentaclePos, &pPlayer->pos, &pPlayer->move,
+							(CollisionMeshCylinder(&tentaclePos, &g_aPlayer[nCntPlayer].pos, &g_aPlayer[nCntPlayer].move,
 								TENTACLE_RADIUS, TENTACLE_RADIUS, true) == true ||
 								tentaclePos.y < 0.0f) ||
-							CollisionObject(&tentaclePos, &pPlayer->pos, &pPlayer->move,
+							CollisionObject(&tentaclePos, &g_aPlayer[nCntPlayer].pos, &g_aPlayer[nCntPlayer].move,
 								TENTACLE_RADIUS, TENTACLE_RADIUS, true) == true)
 						{// 壁との当たり判定
-							pPlayer->state = PLAYERSTATE_DASH;
-							pPlayer->TentacleState = PLTENTACLESTATE_TENTACLESHORT;
+							g_aPlayer[nCntPlayer].state = PLAYERSTATE_DASH;
+							g_aPlayer[nCntPlayer].TentacleState = PLTENTACLESTATE_TENTACLESHORT;
 							SetMotionPlayer(nCntPlayer, MOTIONTYPE_DASH, true, 20);
 							PlaySound(SOUND_SE_HIGHSPEED);
 
 							SetCameraViewAngle(nCntPlayer, 15.0f);
 
 							// 衝撃波エフェクトの生成
-							SetMeshRing(MESHRINGTYPE_SHOCKWAVE, tentaclePos, CalcShockWaveRot(tentaclePos, pPlayer->pos), D3DXVECTOR2(16.0f, 1.0f), D3DXVECTOR2(10.0f, 7.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+							SetMeshRing(MESHRINGTYPE_SHOCKWAVE, tentaclePos, CalcShockWaveRot(tentaclePos, g_aPlayer[nCntPlayer].pos), D3DXVECTOR2(16.0f, 1.0f), D3DXVECTOR2(10.0f, 7.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 						}
 						else
 						{// 触手を伸ばす
-							if (pPlayer->aModel[2].scale.y < TENTACLE_RANGE * 0.1f)
+							if (g_aPlayer[nCntPlayer].aModel[2].scale.y < TENTACLE_RANGE * 0.1f)
 							{// リーチより短い
-								pPlayer->aModel[2].scale.y += 5.0f;
+								g_aPlayer[nCntPlayer].aModel[2].scale.y += 5.0f;
 							}
 							else
 							{// リーチの長さになった
-								pPlayer->TentacleState = PLTENTACLESTATE_TENTACLESHORT;
+								g_aPlayer[nCntPlayer].TentacleState = PLTENTACLESTATE_TENTACLESHORT;
 
 								SetMotionPlayer(nCntPlayer, MOTIONTYPE_TENTACLESHORT, true, 20);
 							}
@@ -464,180 +464,180 @@ void UpdatePlayer(void)
 				break;
 
 			case PLTENTACLESTATE_TENTACLESHORT:		// 触手縮め状態
-				if (pPlayer->aModel[2].scale.y > 1.0f)
+				if (g_aPlayer[nCntPlayer].aModel[2].scale.y > 1.0f)
 				{// 触手を短くする
-					pPlayer->aModel[2].scale.y += (1.0f - pPlayer->aModel[2].scale.y) * 0.5f;
+					g_aPlayer[nCntPlayer].aModel[2].scale.y += (1.0f - g_aPlayer[nCntPlayer].aModel[2].scale.y) * 0.5f;
 
 					PlaySound(SOUND_SE_TENTACLE_RETRACT);
 				}
 				else
 				{// 元の長さに戻す
-					pPlayer->aModel[2].scale.y = 1.0f;
-					pPlayer->TentacleState = PLTENTACLESTATE_NORMAL;
+					g_aPlayer[nCntPlayer].aModel[2].scale.y = 1.0f;
+					g_aPlayer[nCntPlayer].TentacleState = PLTENTACLESTATE_NORMAL;
 
-					if (pPlayer->motionType != MOTIONTYPE_DASH)
+					if (g_aPlayer[nCntPlayer].motionType != MOTIONTYPE_DASH)
 					{// 高速移動していないとき
-						pPlayer->fAngleX = 0.0f;
+						g_aPlayer[nCntPlayer].fAngleX = 0.0f;
 					}
 				}
 
 				break;
 			}
 
-			if (pPlayer->state == PLAYERSTATE_DASH)
+			if (g_aPlayer[nCntPlayer].state == PLAYERSTATE_DASH)
 			{// 高速移動
-				pPlayer->pos += pPlayer->vecX;
-				pPlayer->vecX.x += (0.0f - pPlayer->vecX.x) * DASH_MOVE;
-				pPlayer->vecX.y += (0.0f - pPlayer->vecX.y) * DASH_MOVE;
-				pPlayer->vecX.z += (0.0f - pPlayer->vecX.z) * DASH_MOVE;
+				g_aPlayer[nCntPlayer].pos += g_aPlayer[nCntPlayer].vecX;
+				g_aPlayer[nCntPlayer].vecX.x += (0.0f - g_aPlayer[nCntPlayer].vecX.x) * DASH_MOVE;
+				g_aPlayer[nCntPlayer].vecX.y += (0.0f - g_aPlayer[nCntPlayer].vecX.y) * DASH_MOVE;
+				g_aPlayer[nCntPlayer].vecX.z += (0.0f - g_aPlayer[nCntPlayer].vecX.z) * DASH_MOVE;
 
 				SetVibration(nCntPlayer, 1000, 1300, 10);
 
-				if (pPlayer->vecX.x < MOVE_ERROR && pPlayer->vecX.x > -MOVE_ERROR &&
-					pPlayer->vecX.y < MOVE_ERROR && pPlayer->vecX.y > -MOVE_ERROR &&
-					pPlayer->vecX.z < MOVE_ERROR && pPlayer->vecX.z > -MOVE_ERROR)
+				if (g_aPlayer[nCntPlayer].vecX.x < MOVE_ERROR && g_aPlayer[nCntPlayer].vecX.x > -MOVE_ERROR &&
+					g_aPlayer[nCntPlayer].vecX.y < MOVE_ERROR && g_aPlayer[nCntPlayer].vecX.y > -MOVE_ERROR &&
+					g_aPlayer[nCntPlayer].vecX.z < MOVE_ERROR && g_aPlayer[nCntPlayer].vecX.z > -MOVE_ERROR)
 				{// 止まった
-					pPlayer->vecX = FIRST_POS;
+					g_aPlayer[nCntPlayer].vecX = FIRST_POS;
 
 					SetCameraViewAngle(nCntPlayer, 45.0f);
 
-					if (pPlayer->motionType == MOTIONTYPE_DASH)
+					if (g_aPlayer[nCntPlayer].motionType == MOTIONTYPE_DASH)
 					{// 高速移動モーションしていたら
-						if (pPlayer->bMove == true)
+						if (g_aPlayer[nCntPlayer].bMove == true)
 						{// 移動してる
-							pPlayer->state = PLAYERSTATE_MOVE;
-							pPlayer->fAngleX = 0.0f;
+							g_aPlayer[nCntPlayer].state = PLAYERSTATE_MOVE;
+							g_aPlayer[nCntPlayer].fAngleX = 0.0f;
 							SetMotionPlayer(nCntPlayer, MOTIONTYPE_MOVE, true, 20);
 						}
 						else
 						{// 移動してない
-							pPlayer->state = PLAYERSTATE_WAIT;
-							pPlayer->fAngleX = 0.0f;
+							g_aPlayer[nCntPlayer].state = PLAYERSTATE_WAIT;
+							g_aPlayer[nCntPlayer].fAngleX = 0.0f;
 							SetMotionPlayer(nCntPlayer, MOTIONTYPE_NEUTRAL, true, 20);
 						}
 					}
 				}
 			}
 
-			if (pPlayer->bMove == false)
+			if (g_aPlayer[nCntPlayer].bMove == false)
 			{// 動いてないとき
-				pPlayer->fAutoY += 0.05f;
-				pPlayer->move.y += cosf(pPlayer->fAutoY) * 0.03f;
+				g_aPlayer[nCntPlayer].fAutoY += 0.05f;
+				g_aPlayer[nCntPlayer].move.y += cosf(g_aPlayer[nCntPlayer].fAutoY) * 0.03f;
 			}
-			else if (pPlayer->bMove == true && pPlayer->mode == PLAYERMODE_TUTORIAL)
+			else if (g_aPlayer[nCntPlayer].bMove == true && g_aPlayer[nCntPlayer].mode == PLAYERMODE_TUTORIAL)
 			{// 動いているとき
 				SetTutorialTxtState(TUTTXTTYPE_MOVE, TUTTXTSTATE_CLEAR);
 			}
 
-			if (pPlayer->nCounter % (ONE_SECOND * 10) == 0)
+			if (g_aPlayer[nCntPlayer].nCounter % (ONE_SECOND * 10) == 0)
 			{// 泳いでいる音
 				PlaySound(SOUND_SE_SWIM);
 			}
 
 			if (GetOceanCurrents() != OCEANCURRENTSSTATE_WIRLPOOL ||
-				(GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL && CollisionObjectArea(pPlayer->pos) == true))
+				(GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL && CollisionObjectArea(g_aPlayer[nCntPlayer].pos) == true))
 			{
-				if (pPlayer->state != PLAYERSTATE_DASH && pPlayer->state != PLAYERSTATE_INK && pPlayer->state != PLAYERSTATE_BACKAREA
-					&& pPlayer->bMove == true && pPlayer->TentacleState == PLTENTACLESTATE_NORMAL)
+				if (g_aPlayer[nCntPlayer].state != PLAYERSTATE_DASH && g_aPlayer[nCntPlayer].state != PLAYERSTATE_INK && g_aPlayer[nCntPlayer].state != PLAYERSTATE_BACKAREA
+					&& g_aPlayer[nCntPlayer].bMove == true && g_aPlayer[nCntPlayer].TentacleState == PLTENTACLESTATE_NORMAL)
 				{// 普通に移動しているとき
-					pPlayer->state = PLAYERSTATE_MOVE;
+					g_aPlayer[nCntPlayer].state = PLAYERSTATE_MOVE;
 					SetMotionPlayer(nCntPlayer, MOTIONTYPE_MOVE, true, 20);
 				}
-				else if (pPlayer->bMove == false && pPlayer->state != PLAYERSTATE_DASH &&
-					pPlayer->state != PLAYERSTATE_INK && pPlayer->TentacleState == PLTENTACLESTATE_NORMAL)
+				else if (g_aPlayer[nCntPlayer].bMove == false && g_aPlayer[nCntPlayer].state != PLAYERSTATE_DASH &&
+					g_aPlayer[nCntPlayer].state != PLAYERSTATE_INK && g_aPlayer[nCntPlayer].TentacleState == PLTENTACLESTATE_NORMAL)
 				{// 待機モーション
 					SetMotionPlayer(nCntPlayer, MOTIONTYPE_NEUTRAL, true, 20);
 				}
 			}
 
-			//PrintDebugProc("プレイヤーのpos ( %f %f %f )\n", pPlayer->pos.x, pPlayer->pos.y, pPlayer->pos.z);
+			//PrintDebugProc("プレイヤーのpos ( %f %f %f )\n", g_aPlayer[nCntPlayer].pos.x, g_aPlayer[nCntPlayer].pos.y, g_aPlayer[nCntPlayer].pos.z);
 
 #ifdef _DEBUG
 			if (GetKeyboardTrigger(DIK_BACKSPACE) == true || GetJoypadTrigger(nCntPlayer, JOYKEY_LEFT_THUMB) == true)
 			{// 位置回転リセット
-				pPlayer->pos = START_POS;
-				pPlayer->posOld = START_POS;
-				pPlayer->move = FIRST_POS;
-				pPlayer->rot = FIRST_POS;
-				pPlayer->fAngleY = 0.0f;
-				pPlayer->state = PLAYERSTATE_WAIT;
+				g_aPlayer[nCntPlayer].pos = START_POS;
+				g_aPlayer[nCntPlayer].posOld = START_POS;
+				g_aPlayer[nCntPlayer].move = FIRST_POS;
+				g_aPlayer[nCntPlayer].rot = FIRST_POS;
+				g_aPlayer[nCntPlayer].fAngleY = 0.0f;
+				g_aPlayer[nCntPlayer].state = PLAYERSTATE_WAIT;
 			}
 #endif
 			// クールダウン
-			if (pPlayer->nTentacleCooldown > 0)
+			if (g_aPlayer[nCntPlayer].nTentacleCooldown > 0)
 			{// 触手クールダウン
-				pPlayer->nTentacleCooldown--;
+				g_aPlayer[nCntPlayer].nTentacleCooldown--;
 			}
 
-			if (pPlayer->nInkCooldown > 0)
+			if (g_aPlayer[nCntPlayer].nInkCooldown > 0)
 			{// 墨吐きクールダウン
-				pPlayer->nInkCooldown--;
+				g_aPlayer[nCntPlayer].nInkCooldown--;
 			}
 
-			if (pPlayer->nBlindCounter > 0)
+			if (g_aPlayer[nCntPlayer].nBlindCounter > 0)
 			{// 視界悪化カウント
-				pPlayer->nBlindCounter--;
+				g_aPlayer[nCntPlayer].nBlindCounter--;
 			}
-			else if (pPlayer->nBlindCounter == 0)
+			else if (g_aPlayer[nCntPlayer].nBlindCounter == 0)
 			{// 視界悪化が終わる
-				pPlayer->bBlind = false;
-				pPlayer->nBlindCounter = 0;
+				g_aPlayer[nCntPlayer].bBlind = false;
+				g_aPlayer[nCntPlayer].nBlindCounter = 0;
 			}
 
-			//PrintDebugProc("プレイヤーのmove ( %f %f %f )\n", pPlayer->move.x, pPlayer->move.y, pPlayer->move.z);
+			//PrintDebugProc("プレイヤーのmove ( %f %f %f )\n", g_aPlayer[nCntPlayer].move.x, g_aPlayer[nCntPlayer].move.y, g_aPlayer[nCntPlayer].move.z);
 
-			if (CollisionObjectArea(pPlayer->pos) == false && pPlayer->pos.y < *GetWaterSurf_Height() + (PLAYER_HEIGHT * 0.5f))
+			if (CollisionObjectArea(g_aPlayer[nCntPlayer].pos) == false && g_aPlayer[nCntPlayer].pos.y < *GetWaterSurf_Height() + (PLAYER_HEIGHT * 0.5f))
 			{// 安地外のときに渦潮
 
-				if (pPlayer->mode != PLAYERMODE_TUTORIAL)
+				if (g_aPlayer[nCntPlayer].mode != PLAYERMODE_TUTORIAL)
 				{// チュートリアル中以外
-					MoveOceanCurrents(&pPlayer->pos);
+					MoveOceanCurrents(&g_aPlayer[nCntPlayer].pos);
 
 					if (GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL)
 					{// 安地外で渦潮
-						if (pPlayer->TentacleState == PLTENTACLESTATE_NORMAL && pPlayer->state != PLAYERSTATE_DASH &&
-							pPlayer->state != PLAYERSTATE_INK && pPlayer->state != PLAYERSTATE_BACKAREA)
+						if (g_aPlayer[nCntPlayer].TentacleState == PLTENTACLESTATE_NORMAL && g_aPlayer[nCntPlayer].state != PLAYERSTATE_DASH &&
+							g_aPlayer[nCntPlayer].state != PLAYERSTATE_INK && g_aPlayer[nCntPlayer].state != PLAYERSTATE_BACKAREA)
 						{// 触手が通常状態のときだけ
 							SetMotionPlayer(nCntPlayer, MOTIONTYPE_OCEANCULLENT, true, 20);
 
 							SetVibration(nCntPlayer, 10000, 10000, 1);	// 渦潮に巻き込まれている時の振動
 						}
 
-						if (pPlayer->nFood > 0 && pPlayer->nCounter % 15 == 0)
+						if (g_aPlayer[nCntPlayer].nFood > 0 && g_aPlayer[nCntPlayer].nCounter % 15 == 0)
 						{// エサを持っている
-							pPlayer->nFood--;
-							int nIdx = Dequeue(&pPlayer->esaQueue);
+							g_aPlayer[nCntPlayer].nFood--;
+							int nIdx = Dequeue(&g_aPlayer[nCntPlayer].esaQueue);
 							SetSubUiEsa(nCntPlayer);
 
-							SetEsa(nIdx, true, ESA_ACTTYPE_SWIM, 0, pPlayer->pos, FIRST_POS);
+							SetEsa(nIdx, true, ESA_ACTTYPE_SWIM, 0, g_aPlayer[nCntPlayer].pos, FIRST_POS);
 						}
 					}
 				}
 			}
 
-			if (pPlayer->state != PLAYERSTATE_DASH)
+			if (g_aPlayer[nCntPlayer].state != PLAYERSTATE_DASH)
 			{// 出現状態以外
 				// 慣性
-				pPlayer->pos += pPlayer->move;
-				pPlayer->move.x += (0.0f - pPlayer->move.x) * INERTIA_MOVE;
-				pPlayer->move.y += (0.0f - pPlayer->move.y) * INERTIA_MOVE;
-				pPlayer->move.z += (0.0f - pPlayer->move.z) * INERTIA_MOVE;
+				g_aPlayer[nCntPlayer].pos += g_aPlayer[nCntPlayer].move;
+				g_aPlayer[nCntPlayer].move.x += (0.0f - g_aPlayer[nCntPlayer].move.x) * INERTIA_MOVE;
+				g_aPlayer[nCntPlayer].move.y += (0.0f - g_aPlayer[nCntPlayer].move.y) * INERTIA_MOVE;
+				g_aPlayer[nCntPlayer].move.z += (0.0f - g_aPlayer[nCntPlayer].move.z) * INERTIA_MOVE;
 			}
 
-			D3DXVECTOR2 XZdist = D3DXVECTOR2(pPlayer->pos.x, pPlayer->pos.z);
+			D3DXVECTOR2 XZdist = D3DXVECTOR2(g_aPlayer[nCntPlayer].pos.x, g_aPlayer[nCntPlayer].pos.z);
 			float fDist = D3DXVec2Length(&XZdist);
 
 			if (fDist > OUTCYLINDER_RADIUS + ((OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) / 2) &&
-				pPlayer->mode != PLAYERMODE_TUTORIAL)
+				g_aPlayer[nCntPlayer].mode != PLAYERMODE_TUTORIAL)
 			{// 移動制限
-				pPlayer->fAngleY = atan2f(pPlayer->pos.x, pPlayer->pos.z);
-				pPlayer->state = PLAYERSTATE_BACKAREA;
-				pPlayer->nCounterState = ONE_SECOND;
+				g_aPlayer[nCntPlayer].fAngleY = atan2f(g_aPlayer[nCntPlayer].pos.x, g_aPlayer[nCntPlayer].pos.z);
+				g_aPlayer[nCntPlayer].state = PLAYERSTATE_BACKAREA;
+				g_aPlayer[nCntPlayer].nCounterState = ONE_SECOND;
 			}
 			else if (fDist <= OUTCYLINDER_RADIUS + ((OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) / 2) &&
-				pPlayer->mode == PLAYERMODE_TUTORIAL)
+				g_aPlayer[nCntPlayer].mode == PLAYERMODE_TUTORIAL)
 			{// エリア内に入ったらチュートリアルモード解除
-				if (pPlayer->mode == PLAYERMODE_TUTORIAL)
+				if (g_aPlayer[nCntPlayer].mode == PLAYERMODE_TUTORIAL)
 				{// チュートリアルモード
 					SetTutorialTxtState(TUTTXTTYPE_RULE, TUTTXTSTATE_FADE);
 
@@ -652,72 +652,72 @@ void UpdatePlayer(void)
 					SetTutorialTxt(TUTTXTTYPE_MOVE, TUTTXTSTATE_DISP, D3DXVECTOR3(-700.0f, 700.0f, -700.0f));
 				}
 
-				pPlayer->mode = PLAYERMODE_GAME;
+				g_aPlayer[nCntPlayer].mode = PLAYERMODE_GAME;
 
 				//// ランダムな位置に設定	このままじゃ2Pのとき2回目入るから一旦放置
 				//SetRandomComputer(ALL_OCTO - GetNumCamera());
 			}
 
-			if (pPlayer->pos.y < 0.0f)
+			if (g_aPlayer[nCntPlayer].pos.y < 0.0f)
 			{// 底
-				pPlayer->pos.y = 0.0f;
+				g_aPlayer[nCntPlayer].pos.y = 0.0f;
 
-				if (pPlayer->bLand == false)
+				if (g_aPlayer[nCntPlayer].bLand == false)
 				{// ついてなかった場合
-					SetSprayCircle(D3DXVECTOR3(pPlayer->pos.x, pPlayer->pos.y + 30.0f, pPlayer->pos.z),
+					SetSprayCircle(D3DXVECTOR3(g_aPlayer[nCntPlayer].pos.x, g_aPlayer[nCntPlayer].pos.y + 30.0f, g_aPlayer[nCntPlayer].pos.z),
 						D3DXCOLOR(0.9f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_CIRCLE);
 
 					SetVibration(nCntPlayer, 10000, 10000, 30);	// 地面に着地した時の振動
 				}
 
-				pPlayer->bLand = true;
+				g_aPlayer[nCntPlayer].bLand = true;
 			}
 			else
 			{// ついていないとき
-				pPlayer->bLand = false;
+				g_aPlayer[nCntPlayer].bLand = false;
 			}
 
-			if (pPlayer->pos.y < 10.0f && pPlayer->nCounter % FLOW_COUNT == 0 && pPlayer->bMove == true)
+			if (g_aPlayer[nCntPlayer].pos.y < 10.0f && g_aPlayer[nCntPlayer].nCounter % FLOW_COUNT == 0 && g_aPlayer[nCntPlayer].bMove == true)
 			{// 地面に近かったら
-				SetSprayFlow(D3DXVECTOR3(pPlayer->pos.x, pPlayer->pos.y + 20.0f, pPlayer->pos.z), pPlayer->rot,
+				SetSprayFlow(D3DXVECTOR3(g_aPlayer[nCntPlayer].pos.x, g_aPlayer[nCntPlayer].pos.y + 20.0f, g_aPlayer[nCntPlayer].pos.z), g_aPlayer[nCntPlayer].rot,
 					D3DXCOLOR(0.9f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_FLOW);
 
 				SetVibration(nCntPlayer, 256, 0, 1);	// 地面を移動している時の振動
 				PlaySound(SOUND_SE_LANDING);
 			}
 
-			if (pPlayer->pos.y > *GetWaterSurf_Height() - (PLAYER_HEIGHT * 0.5f))
+			if (g_aPlayer[nCntPlayer].pos.y > *GetWaterSurf_Height() - (PLAYER_HEIGHT * 0.5f))
 			{// 水上
 				// 重力
-				pPlayer->move.y += GRAVITY;
+				g_aPlayer[nCntPlayer].move.y += GRAVITY;
 			}
-			else if (pPlayer->pos.y > 340.0f && pPlayer->mode == PLAYERMODE_TUTORIAL)
+			else if (g_aPlayer[nCntPlayer].pos.y > 340.0f && g_aPlayer[nCntPlayer].mode == PLAYERMODE_TUTORIAL)
 			{// チュートリアルモード中の上方向制限
-				pPlayer->pos.y = 340.0f;
+				g_aPlayer[nCntPlayer].pos.y = 340.0f;
 			}
 
-			if (pPlayer->pos.y > *GetWaterSurf_Height() - (PLAYER_HEIGHT * 0.5f) &&
-				pPlayer->pos.y < *GetWaterSurf_Height() + (PLAYER_HEIGHT * 0.5f))
+			if (g_aPlayer[nCntPlayer].pos.y > *GetWaterSurf_Height() - (PLAYER_HEIGHT * 0.5f) &&
+				g_aPlayer[nCntPlayer].pos.y < *GetWaterSurf_Height() + (PLAYER_HEIGHT * 0.5f))
 			{// 水面付近				
-				if (pPlayer->bJump == false)
+				if (g_aPlayer[nCntPlayer].bJump == false)
 				{// 水の中から
 					PlaySound(SOUND_SE_FLOW);
 
-					pPlayer->bJump = true;
+					g_aPlayer[nCntPlayer].bJump = true;
 				}
 
-				if (pPlayer->nCounter % RIPPLE_COUNT == 0)
+				if (g_aPlayer[nCntPlayer].nCounter % RIPPLE_COUNT == 0)
 				{// 定期的に波紋
-					SetMeshRing(MESHRINGTYPE_RIPPLES, D3DXVECTOR3(pPlayer->pos.x + (rand() % 6 - 3), *GetWaterSurf_Height(), pPlayer->pos.z + (rand() % 6 - 3)), FIRST_POS,
+					SetMeshRing(MESHRINGTYPE_RIPPLES, D3DXVECTOR3(g_aPlayer[nCntPlayer].pos.x + (rand() % 6 - 3), *GetWaterSurf_Height(), g_aPlayer[nCntPlayer].pos.z + (rand() % 6 - 3)), FIRST_POS,
 						D3DXVECTOR2(24.0f, 1.0f), D3DXVECTOR2(10.0f, 7.0f), D3DXCOLOR(WHITE_VTX.r, WHITE_VTX.g, WHITE_VTX.b, 0.5f));
 
-					SetSprayCircle(D3DXVECTOR3(pPlayer->pos.x, *GetWaterSurf_Height(), pPlayer->pos.z),
+					SetSprayCircle(D3DXVECTOR3(g_aPlayer[nCntPlayer].pos.x, *GetWaterSurf_Height(), g_aPlayer[nCntPlayer].pos.z),
 						WHITE_VTX, SPRAYTYPE_CIRCLE);
 				}
 
-				if (pPlayer->nCounter % FLOW_COUNT == 0 && pPlayer->bMove == true)
+				if (g_aPlayer[nCntPlayer].nCounter % FLOW_COUNT == 0 && g_aPlayer[nCntPlayer].bMove == true)
 				{// 波
-					SetSprayFlow(D3DXVECTOR3(pPlayer->pos.x, *GetWaterSurf_Height(), pPlayer->pos.z), pPlayer->rot,
+					SetSprayFlow(D3DXVECTOR3(g_aPlayer[nCntPlayer].pos.x, *GetWaterSurf_Height(), g_aPlayer[nCntPlayer].pos.z), g_aPlayer[nCntPlayer].rot,
 						WHITE_VTX, SPRAYTYPE_FLOW);
 
 					SetVibration(nCntPlayer, 1000, 3500, 2);	// 水面から出た時の振動
@@ -725,79 +725,79 @@ void UpdatePlayer(void)
 			}
 			else
 			{// 水の中
-				pPlayer->bJump = false;
+				g_aPlayer[nCntPlayer].bJump = false;
 			}
 
 			//PrintDebugProc("fAngle : %f", pCamera->fAngle);
 
 			// 墨の当たり判定
-			CollisionInk(pPlayer->pos, &pPlayer->bBlind, &pPlayer->nBlindCounter, pPlayer->nIdx + 100);
+			CollisionInk(g_aPlayer[nCntPlayer].pos, &g_aPlayer[nCntPlayer].bBlind, &g_aPlayer[nCntPlayer].nBlindCounter, g_aPlayer[nCntPlayer].nIdx + 100);
 
-			pPlayer->fFogStart = (pPlayer->pos.y * 0.4f + (-pCamera->fAngle * 0.2f)) + FOGS_MIN;
+			g_aPlayer[nCntPlayer].fFogStart = (g_aPlayer[nCntPlayer].pos.y * 0.4f + (-pCamera->fAngle * 0.2f)) + FOGS_MIN;
 
-			if (pPlayer->fFogStart < FOGS_MIN)
+			if (g_aPlayer[nCntPlayer].fFogStart < FOGS_MIN)
 			{// フォグの最低値
-				pPlayer->fFogStart = FOGS_MIN;
+				g_aPlayer[nCntPlayer].fFogStart = FOGS_MIN;
 			}
-			else if (pPlayer->fFogStart > FOGS_MAX)
+			else if (g_aPlayer[nCntPlayer].fFogStart > FOGS_MAX)
 			{// フォグの最高値
-				pPlayer->fFogStart = FOGS_MAX;
+				g_aPlayer[nCntPlayer].fFogStart = FOGS_MAX;
 			}
 
-			pPlayer->fFogEnd = (pPlayer->pos.y * 1.1f + (-pCamera->fAngle * 0.2f)) + FOGE_MIN;
+			g_aPlayer[nCntPlayer].fFogEnd = (g_aPlayer[nCntPlayer].pos.y * 1.1f + (-pCamera->fAngle * 0.2f)) + FOGE_MIN;
 
-			if (pPlayer->fFogEnd < FOGE_MIN)
+			if (g_aPlayer[nCntPlayer].fFogEnd < FOGE_MIN)
 			{// フォグの最低値
-				pPlayer->fFogEnd = FOGE_MIN;
+				g_aPlayer[nCntPlayer].fFogEnd = FOGE_MIN;
 			}
-			else if (pPlayer->fFogEnd > FOGE_MAX)
+			else if (g_aPlayer[nCntPlayer].fFogEnd > FOGE_MAX)
 			{// フォグの最高値
-				pPlayer->fFogEnd = FOGE_MAX;
+				g_aPlayer[nCntPlayer].fFogEnd = FOGE_MAX;
 			}
 
-			if (pPlayer->bBlind == true)
+			if (g_aPlayer[nCntPlayer].bBlind == true)
 			{// 視界悪化中
-				pPlayer->fFogStart *= 0.5f;
-				pPlayer->fFogEnd *= 0.5f;
+				g_aPlayer[nCntPlayer].fFogStart *= 0.5f;
+				g_aPlayer[nCntPlayer].fFogEnd *= 0.5f;
 
 				D3DXVECTOR3 headPos = D3DXVECTOR3(
-					pPlayer->aModel[0].mtxWorld._41,
-					pPlayer->aModel[0].mtxWorld._42 + 10.0f,
-					pPlayer->aModel[0].mtxWorld._43);
+					g_aPlayer[nCntPlayer].aModel[0].mtxWorld._41,
+					g_aPlayer[nCntPlayer].aModel[0].mtxWorld._42 + 10.0f,
+					g_aPlayer[nCntPlayer].aModel[0].mtxWorld._43);
 
 				SetEffect3D(1, headPos, FIRST_POS, 0.0f, 15.0f, 0.0f, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), EFFECTTYPE_OCTOINK);
 			}
 
-			fmoveAngle = pPlayer->fAngleY - pPlayer->rot.y;
+			fmoveAngle = g_aPlayer[nCntPlayer].fAngleY - g_aPlayer[nCntPlayer].rot.y;
 
 			// 向きを調整
-			CorrectAngle(&pPlayer->fAngleY, fmoveAngle);
+			CorrectAngle(&g_aPlayer[nCntPlayer].fAngleY, fmoveAngle);
 
-			if (pPlayer->rot.y != pPlayer->fAngleY)
+			if (g_aPlayer[nCntPlayer].rot.y != g_aPlayer[nCntPlayer].fAngleY)
 			{// 目標地点につくまで慣性で角度を足す
-				pPlayer->rot.y += (pPlayer->fAngleY - pPlayer->rot.y) * INERTIA_ANGLE;
+				g_aPlayer[nCntPlayer].rot.y += (g_aPlayer[nCntPlayer].fAngleY - g_aPlayer[nCntPlayer].rot.y) * INERTIA_ANGLE;
 
 				// 向きを調整
-				CorrectAngle(&pPlayer->rot.y, pPlayer->rot.y);
+				CorrectAngle(&g_aPlayer[nCntPlayer].rot.y, g_aPlayer[nCntPlayer].rot.y);
 			}
 
 			// 向きを調整
-			CorrectAngle(&pPlayer->fAngleX, pPlayer->fAngleX - pPlayer->rot.x);
+			CorrectAngle(&g_aPlayer[nCntPlayer].fAngleX, g_aPlayer[nCntPlayer].fAngleX - g_aPlayer[nCntPlayer].rot.x);
 
-			if (pPlayer->rot.x != pPlayer->fAngleX)
+			if (g_aPlayer[nCntPlayer].rot.x != g_aPlayer[nCntPlayer].fAngleX)
 			{// 目標地点につくまで慣性で角度を足す
-				pPlayer->rot.x += (pPlayer->fAngleX - pPlayer->rot.x) * INERTIA_ANGLE;
+				g_aPlayer[nCntPlayer].rot.x += (g_aPlayer[nCntPlayer].fAngleX - g_aPlayer[nCntPlayer].rot.x) * INERTIA_ANGLE;
 
 				// 向きを調整
-				CorrectAngle(&pPlayer->rot.x, pPlayer->rot.x);
+				CorrectAngle(&g_aPlayer[nCntPlayer].rot.x, g_aPlayer[nCntPlayer].rot.x);
 			}
 
-			if ((pPlayer->mode != PLAYERMODE_TUTORIAL || pPlayer->state != PLAYERSTATE_APPEAR) &&
+			if ((g_aPlayer[nCntPlayer].mode != PLAYERMODE_TUTORIAL || g_aPlayer[nCntPlayer].state != PLAYERSTATE_APPEAR) &&
 				GetGameState() != GAMESTATE_LITTLETIME)
 			{// チュートリアルモードじゃないとき
-				if (pPlayer->nCounter % (ONE_SECOND * 50) == 0 && GetTime() != ONE_GAME && pPlayer->nCounter != 0)
+				if (g_aPlayer[nCntPlayer].nCounter % (ONE_SECOND * 50) == 0 && GetTime() != ONE_GAME && g_aPlayer[nCntPlayer].nCounter != 0)
 				{// 持てるエサの最大値が増える
-					pPlayer->nMaxFood++;
+					g_aPlayer[nCntPlayer].nMaxFood++;
 					PlaySound(SOUND_SE_FOODNUMUP);
 
 					if (GetNumCamera() == 1 && nCntPlayer == 0)
@@ -818,45 +818,45 @@ void UpdatePlayer(void)
 				}
 			}
 
-			if (pPlayer->nFood >= pPlayer->nMaxFood * PLAYER_TENTACLE)
+			if (g_aPlayer[nCntPlayer].nFood >= g_aPlayer[nCntPlayer].nMaxFood * PLAYER_TENTACLE)
 			{// 持てる数が満杯だったら
-				if (pPlayer->nFoodNumIdx == -1)
+				if (g_aPlayer[nCntPlayer].nFoodNumIdx == -1)
 				{// 設定してないとき
 					if (GetNumCamera() == 1 && nCntPlayer == 0)
 					{// 1人プレイの1P
-						pPlayer->nFoodNumIdx = SetFoodNum(FOODNUMTYPE_FULL, FOODNUMSTATE_DISP,
+						g_aPlayer[nCntPlayer].nFoodNumIdx = SetFoodNum(FOODNUMTYPE_FULL, FOODNUMSTATE_DISP,
 							D3DXVECTOR3(640.0f, 620.0f, 0.0f), 100.0f, 50.0f);
 					}
 					else if (GetNumCamera() == 2 && nCntPlayer == 0)
 					{// 2人プレイの1P
-						pPlayer->nFoodNumIdx = SetFoodNum(FOODNUMTYPE_FULL, FOODNUMSTATE_DISP,
+						g_aPlayer[nCntPlayer].nFoodNumIdx = SetFoodNum(FOODNUMTYPE_FULL, FOODNUMSTATE_DISP,
 							D3DXVECTOR3(320.0f, 620.0f, 0.0f), 100.0f, 50.0f);
 					}
 					else if (GetNumCamera() == 2 && nCntPlayer == 1)
 					{// 2人プレイの2P
-						pPlayer->nFoodNumIdx = SetFoodNum(FOODNUMTYPE_FULL, FOODNUMSTATE_DISP,
+						g_aPlayer[nCntPlayer].nFoodNumIdx = SetFoodNum(FOODNUMTYPE_FULL, FOODNUMSTATE_DISP,
 							D3DXVECTOR3(960.0f, 620.0f, 0.0f), 100.0f, 50.0f);
 					}
 				}
 			}
 			else
 			{// まだ持てる場合
-				if (pPlayer->nFoodNumIdx != -1)
+				if (g_aPlayer[nCntPlayer].nFoodNumIdx != -1)
 				{// インデックスが存在する
-					SetFoodNumState(pPlayer->nFoodNumIdx, FOODNUMSTATE_NONE);
-					pPlayer->nFoodNumIdx = -1;
+					SetFoodNumState(g_aPlayer[nCntPlayer].nFoodNumIdx, FOODNUMSTATE_NONE);
+					g_aPlayer[nCntPlayer].nFoodNumIdx = -1;
 				}
 			}
 
 			D3DXVECTOR3 dist;
-			dist = pPlayer->posX - pPlayer->pos;
+			dist = g_aPlayer[nCntPlayer].posX - g_aPlayer[nCntPlayer].pos;
 			D3DXVec3Normalize(&dist, &dist);
 			dist *= TENTACLE_REACH;
-			dist += pPlayer->pos;
+			dist += g_aPlayer[nCntPlayer].pos;
 
-			if (CollisionMeshCylinder(&dist, &pPlayer->pos, &pPlayer->move, 0.0f, 0.0f, true) == true ||
+			if (CollisionMeshCylinder(&dist, &g_aPlayer[nCntPlayer].pos, &g_aPlayer[nCntPlayer].move, 0.0f, 0.0f, true) == true ||
 				dist.y < 0.0f ||
-				CollisionObject(&dist, &pPlayer->pos, &pPlayer->move, 0.0f, 0.0f, true) == true)
+				CollisionObject(&dist, &g_aPlayer[nCntPlayer].pos, &g_aPlayer[nCntPlayer].move, 0.0f, 0.0f, true) == true)
 			{// 壁に当たった・オブジェクトに当たった・エサに当たった
 				// クロスヘアの設定
 				SetCrossHair(nCntPlayer, CROSSHAIRSTATE_REACH);
@@ -868,38 +868,38 @@ void UpdatePlayer(void)
 
 			if (((nCntPlayer == 0 ? GetKeyboardPress(DIK_E) == true : (GetKeyboardPress(DIK_END) == true || GetKeyboardPress(DIK_NUMPAD1) == true)) ||
 				GetJoypadShoulder(nCntPlayer, JOYKEY_RIGHTTRIGGER, &nValue) == true)
-				&& pPlayer->TentacleState != PLTENTACLESTATE_TENTACLELONG && pPlayer->state != PLAYERSTATE_DASH &&
-				pPlayer->state != PLAYERSTATE_APPEAR &&
-				pPlayer->nTentacleCooldown == 0 && pPlayer->pos.y < *GetWaterSurf_Height())
+				&& g_aPlayer[nCntPlayer].TentacleState != PLTENTACLESTATE_TENTACLELONG && g_aPlayer[nCntPlayer].state != PLAYERSTATE_DASH &&
+				g_aPlayer[nCntPlayer].state != PLAYERSTATE_APPEAR &&
+				g_aPlayer[nCntPlayer].nTentacleCooldown == 0 && g_aPlayer[nCntPlayer].pos.y < *GetWaterSurf_Height())
 			{// 触手伸ばしアクション
-				pPlayer->TentacleState = PLTENTACLESTATE_TENTACLELONG;
+				g_aPlayer[nCntPlayer].TentacleState = PLTENTACLESTATE_TENTACLELONG;
 
-				pPlayer->fAngleY = D3DX_PI + pCamera->rot.y;
-				CorrectAngle(&pPlayer->fAngleY, pPlayer->fAngleY);
+				g_aPlayer[nCntPlayer].fAngleY = D3DX_PI + pCamera->rot.y;
+				CorrectAngle(&g_aPlayer[nCntPlayer].fAngleY, g_aPlayer[nCntPlayer].fAngleY);
 
 				D3DXVECTOR3 dir, rot;
-				dir = pPlayer->posX - pPlayer->pos;
+				dir = g_aPlayer[nCntPlayer].posX - g_aPlayer[nCntPlayer].pos;
 				D3DXVec3Normalize(&dir, &dir);
 
 				//rot.y = D3DX_PI + atan2f(dir.x, dir.z);
 				rot.x = (dir.y / 0.95f) * 1.2f;
 				//rot.z = 0.0f;
 
-				pPlayer->fAngleX = rot.x;
-				//pPlayer->rot.y = rot.y;
-				CorrectAngle(&pPlayer->fAngleX, pPlayer->fAngleX);
-				//CorrectAngle(&pPlayer->rot.y, pPlayer->rot.y);
+				g_aPlayer[nCntPlayer].fAngleX = rot.x;
+				//g_aPlayer[nCntPlayer].rot.y = rot.y;
+				CorrectAngle(&g_aPlayer[nCntPlayer].fAngleX, g_aPlayer[nCntPlayer].fAngleX);
+				//CorrectAngle(&g_aPlayer[nCntPlayer].rot.y, g_aPlayer[nCntPlayer].rot.y);
 
-				pPlayer->vecX = (pCamera->posR - pCamera->posV) * DASH_RATE;
+				g_aPlayer[nCntPlayer].vecX = (pCamera->posR - pCamera->posV) * DASH_RATE;
 
 				SetMotionPlayer(nCntPlayer, MOTIONTYPE_TENTACLELONG, true, 20);
 
 				// クールダウンを設定
-				pPlayer->nTentacleCooldown = TENTACLE_CT;
+				g_aPlayer[nCntPlayer].nTentacleCooldown = TENTACLE_CT;
 
 				PlaySound(SOUND_SE_TENTACLE_STRETCH);
 
-				if (pPlayer->mode == PLAYERMODE_TUTORIAL)
+				if (g_aPlayer[nCntPlayer].mode == PLAYERMODE_TUTORIAL)
 				{// チュートリアルモード
 					SetTutorialTxtState(TUTTXTTYPE_TENT, TUTTXTSTATE_CLEAR);
 				}
@@ -908,48 +908,48 @@ void UpdatePlayer(void)
 			if (((nCntPlayer == 0 ? GetKeyboardPress(DIK_Q) == true : GetKeyboardPress(DIK_RSHIFT) == true) ||
 				/*GetJoypadShoulder(nCntPlayer, JOYKEY_LEFTTRIGGER, &nValue) == true*/
 				GetJoypadPress(nCntPlayer, JOYKEY_RIGHT_SHOULDER) == true) &&
-				pPlayer->state != PLAYERSTATE_INK && pPlayer->state != PLAYERSTATE_APPEAR && 
-				pPlayer->nInkCooldown == 0 &&
-				pPlayer->pos.y < *GetWaterSurf_Height())
+				g_aPlayer[nCntPlayer].state != PLAYERSTATE_INK && g_aPlayer[nCntPlayer].state != PLAYERSTATE_APPEAR && 
+				g_aPlayer[nCntPlayer].nInkCooldown == 0 &&
+				g_aPlayer[nCntPlayer].pos.y < *GetWaterSurf_Height())
 			{// 墨吐きアクション
-				pPlayer->state = PLAYERSTATE_INK;
+				g_aPlayer[nCntPlayer].state = PLAYERSTATE_INK;
 
 				SetMotionPlayer(nCntPlayer, MOTIONTYPE_INK, true, 20);
 
-				SetParticle3D(14, 30, pPlayer->pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pPlayer->rot.x, pPlayer->rot.y - D3DX_PI, pPlayer->rot.z), 4.0f, 420, 8.0f, 0.06f, EFFECTTYPE_OCTOINK, pPlayer->nIdx + 100);
-				SetParticle3D(14, 30, pPlayer->pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pPlayer->rot.x, pPlayer->rot.y - D3DX_PI, pPlayer->rot.z), 4.0f, 420, 8.0f, 0.06f, EFFECTTYPE_OCTOINK, pPlayer->nIdx + 100);
-				SetParticle3D(14, 30, pPlayer->pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(pPlayer->rot.x, pPlayer->rot.y - D3DX_PI, pPlayer->rot.z), 4.0f, 420, 8.0f, 0.06f, EFFECTTYPE_OCTOINK, pPlayer->nIdx + 100);
+				SetParticle3D(14, 30, g_aPlayer[nCntPlayer].pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(g_aPlayer[nCntPlayer].rot.x, g_aPlayer[nCntPlayer].rot.y - D3DX_PI, g_aPlayer[nCntPlayer].rot.z), 4.0f, 420, 8.0f, 0.06f, EFFECTTYPE_OCTOINK, g_aPlayer[nCntPlayer].nIdx + 100);
+				SetParticle3D(14, 30, g_aPlayer[nCntPlayer].pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(g_aPlayer[nCntPlayer].rot.x, g_aPlayer[nCntPlayer].rot.y - D3DX_PI, g_aPlayer[nCntPlayer].rot.z), 4.0f, 420, 8.0f, 0.06f, EFFECTTYPE_OCTOINK, g_aPlayer[nCntPlayer].nIdx + 100);
+				SetParticle3D(14, 30, g_aPlayer[nCntPlayer].pos, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), D3DXVECTOR3(g_aPlayer[nCntPlayer].rot.x, g_aPlayer[nCntPlayer].rot.y - D3DX_PI, g_aPlayer[nCntPlayer].rot.z), 4.0f, 420, 8.0f, 0.06f, EFFECTTYPE_OCTOINK, g_aPlayer[nCntPlayer].nIdx + 100);
 
 				// クールダウンを設定
-				pPlayer->nInkCooldown = INK_CT;
+				g_aPlayer[nCntPlayer].nInkCooldown = INK_CT;
 
 				PlaySound(SOUND_SE_MUD);
 
-				if (pPlayer->mode == PLAYERMODE_TUTORIAL)
+				if (g_aPlayer[nCntPlayer].mode == PLAYERMODE_TUTORIAL)
 				{// チュートリアルモード
 					SetTutorialTxtState(TUTTXTTYPE_INK, TUTTXTSTATE_CLEAR);
 				}
 			}
 
-			if (pPlayer->state == PLAYERSTATE_INK && pPlayer->bFinishMotion == true)
+			if (g_aPlayer[nCntPlayer].state == PLAYERSTATE_INK && g_aPlayer[nCntPlayer].bFinishMotion == true)
 			{// 墨吐きモーションが終わったら
-				pPlayer->state = PLAYERSTATE_WAIT;
+				g_aPlayer[nCntPlayer].state = PLAYERSTATE_WAIT;
 			}
 
 			// 当たり判定
-			CollisionMeshField(pPlayer->pos, pPlayer->rot, pPlayer->fRadius, pPlayer->fHeight);
-			CollisionSeaweed(pPlayer->pos);
-			CollisionPot(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight);
-			CollisionObject(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight, false);
-			CollisionMeshCylinder(&pPlayer->pos, &pPlayer->posOld, &pPlayer->move, pPlayer->fRadius, pPlayer->fHeight, false);
+			CollisionMeshField(g_aPlayer[nCntPlayer].pos, g_aPlayer[nCntPlayer].rot, g_aPlayer[nCntPlayer].fRadius, g_aPlayer[nCntPlayer].fHeight);
+			CollisionSeaweed(g_aPlayer[nCntPlayer].pos);
+			CollisionPot(&g_aPlayer[nCntPlayer].pos, &g_aPlayer[nCntPlayer].posOld, &g_aPlayer[nCntPlayer].move, g_aPlayer[nCntPlayer].fRadius, g_aPlayer[nCntPlayer].fHeight);
+			CollisionObject(&g_aPlayer[nCntPlayer].pos, &g_aPlayer[nCntPlayer].posOld, &g_aPlayer[nCntPlayer].move, g_aPlayer[nCntPlayer].fRadius, g_aPlayer[nCntPlayer].fHeight, false);
+			CollisionMeshCylinder(&g_aPlayer[nCntPlayer].pos, &g_aPlayer[nCntPlayer].posOld, &g_aPlayer[nCntPlayer].move, g_aPlayer[nCntPlayer].fRadius, g_aPlayer[nCntPlayer].fHeight, false);
 
 			int nIdx = -1;
 
-			if (CollisionEsa(&nIdx, false, &pPlayer->pos, pPlayer->fRadius) == true &&
-				pPlayer->nFood < pPlayer->nMaxFood * PLAYER_TENTACLE &&
-				(pPlayer->motionType != MOTIONTYPE_OCEANCULLENT || pPlayer->motionType != MOTIONTYPE_OCEANCULLENT) &&
+			if (CollisionEsa(&nIdx, false, &g_aPlayer[nCntPlayer].pos, g_aPlayer[nCntPlayer].fRadius) == true &&
+				g_aPlayer[nCntPlayer].nFood < g_aPlayer[nCntPlayer].nMaxFood * PLAYER_TENTACLE &&
+				(g_aPlayer[nCntPlayer].motionType != MOTIONTYPE_OCEANCULLENT || g_aPlayer[nCntPlayer].motionType != MOTIONTYPE_OCEANCULLENT) &&
 				GetOceanCurrents() != OCEANCURRENTSSTATE_WIRLPOOL && 
-				pPlayer->state != PLAYERSTATE_APPEAR)
+				g_aPlayer[nCntPlayer].state != PLAYERSTATE_APPEAR)
 			{// エサと接触した
 				Esa* pEsa = GetEsa();
 
@@ -961,26 +961,26 @@ void UpdatePlayer(void)
 
 					if (nIdxEsaType != -1)
 					{
-						pPlayer->nFood++;
-						Enqueue(&pPlayer->esaQueue, nIdxEsaType);
+						g_aPlayer[nCntPlayer].nFood++;
+						Enqueue(&g_aPlayer[nCntPlayer].esaQueue, nIdxEsaType);
 						EsaPlaySE(nIdxEsaType);
 					}
 				}
 			}
 
-			if (pPlayer->mode == PLAYERMODE_TUTORIAL && pPlayer->nFood > 0)
+			if (g_aPlayer[nCntPlayer].mode == PLAYERMODE_TUTORIAL && g_aPlayer[nCntPlayer].nFood > 0)
 			{// チュートリアルモード
 				SetTutorialTxtState(TUTTXTTYPE_ESA, TUTTXTSTATE_CLEAR);
 			}
 
-			if (pPlayer->nFood < 0)
+			if (g_aPlayer[nCntPlayer].nFood < 0)
 			{// 最小値0
-				pPlayer->nFood = 0;
+				g_aPlayer[nCntPlayer].nFood = 0;
 			}
 
-			CollisionPotArea(pPlayer->pos, pPlayer->fRadius, pPlayer, NULL, false);
+			CollisionPotArea(g_aPlayer[nCntPlayer].pos, g_aPlayer[nCntPlayer].fRadius, pPlayer, NULL, false);
 
-			pPlayer->nCounter++;
+			g_aPlayer[nCntPlayer].nCounter++;
 
 		}
 	}
@@ -1004,64 +1004,64 @@ void DrawPlayer(void)
 
 	for (int nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++, pPlayer++)
 	{
-		if (pPlayer->bUse == true)
+		if (g_aPlayer[nCntPlayer].bUse == true)
 		{// 使用しているとき
 
 			// ワールドマトリックスの初期化
-			D3DXMatrixIdentity(&pPlayer->mtxWorld);
+			D3DXMatrixIdentity(&g_aPlayer[nCntPlayer].mtxWorld);
 
 			// 向きを反映
-			D3DXMatrixRotationYawPitchRoll(&mtxRot, pPlayer->rot.y, pPlayer->rot.x, pPlayer->rot.z);
-			D3DXMatrixMultiply(&pPlayer->mtxWorld, &pPlayer->mtxWorld, &mtxRot);
+			D3DXMatrixRotationYawPitchRoll(&mtxRot, g_aPlayer[nCntPlayer].rot.y, g_aPlayer[nCntPlayer].rot.x, g_aPlayer[nCntPlayer].rot.z);
+			D3DXMatrixMultiply(&g_aPlayer[nCntPlayer].mtxWorld, &g_aPlayer[nCntPlayer].mtxWorld, &mtxRot);
 
 			// 位置を反映
-			D3DXMatrixTranslation(&mtxTrans, pPlayer->pos.x, pPlayer->pos.y, pPlayer->pos.z);
-			D3DXMatrixMultiply(&pPlayer->mtxWorld, &pPlayer->mtxWorld, &mtxTrans);
+			D3DXMatrixTranslation(&mtxTrans, g_aPlayer[nCntPlayer].pos.x, g_aPlayer[nCntPlayer].pos.y, g_aPlayer[nCntPlayer].pos.z);
+			D3DXMatrixMultiply(&g_aPlayer[nCntPlayer].mtxWorld, &g_aPlayer[nCntPlayer].mtxWorld, &mtxTrans);
 
 			// ワールドマトリックスの設定
-			pDevice->SetTransform(D3DTS_WORLD, &pPlayer->mtxWorld);
+			pDevice->SetTransform(D3DTS_WORLD, &g_aPlayer[nCntPlayer].mtxWorld);
 
 			// 現在のマテリアルを取得
 			pDevice->GetMaterial(&matDef);
 
 			// 全モデル(パーツ)の描画
-			for (int nCntModel = 0; nCntModel < pPlayer->nNumModel; nCntModel++)
+			for (int nCntModel = 0; nCntModel < g_aPlayer[nCntPlayer].nNumModel; nCntModel++)
 			{
 				D3DXMATRIX mtxRotModel, mtxTransModel, mtxScaleModel;		// 計算用マトリックス
 				D3DXMATRIX mtxParent;						// 親のマトリックス
 
 				// パーツのワールドマトリックスの初期化
-				D3DXMatrixIdentity(&pPlayer->aModel[nCntModel].mtxWorld);
+				D3DXMatrixIdentity(&g_aPlayer[nCntPlayer].aModel[nCntModel].mtxWorld);
 
 				// パーツの向きを反映
-				D3DXMatrixRotationYawPitchRoll(&mtxRotModel, pPlayer->aModel[nCntModel].rot.y, pPlayer->aModel[nCntModel].rot.x, pPlayer->aModel[nCntModel].rot.z);
-				D3DXMatrixMultiply(&pPlayer->aModel[nCntModel].mtxWorld, &pPlayer->aModel[nCntModel].mtxWorld, &mtxRotModel);
+				D3DXMatrixRotationYawPitchRoll(&mtxRotModel, g_aPlayer[nCntPlayer].aModel[nCntModel].rot.y, g_aPlayer[nCntPlayer].aModel[nCntModel].rot.x, g_aPlayer[nCntPlayer].aModel[nCntModel].rot.z);
+				D3DXMatrixMultiply(&g_aPlayer[nCntPlayer].aModel[nCntModel].mtxWorld, &g_aPlayer[nCntPlayer].aModel[nCntModel].mtxWorld, &mtxRotModel);
 
 				// 拡大率を反映
-				D3DXMatrixScaling(&mtxScaleModel, pPlayer->aModel[nCntModel].scale.x, pPlayer->aModel[nCntModel].scale.y, pPlayer->aModel[nCntModel].scale.z);
-				D3DXMatrixMultiply(&pPlayer->aModel[nCntModel].mtxWorld, &pPlayer->aModel[nCntModel].mtxWorld, &mtxScaleModel);
+				D3DXMatrixScaling(&mtxScaleModel, g_aPlayer[nCntPlayer].aModel[nCntModel].scale.x, g_aPlayer[nCntPlayer].aModel[nCntModel].scale.y, g_aPlayer[nCntPlayer].aModel[nCntModel].scale.z);
+				D3DXMatrixMultiply(&g_aPlayer[nCntPlayer].aModel[nCntModel].mtxWorld, &g_aPlayer[nCntPlayer].aModel[nCntModel].mtxWorld, &mtxScaleModel);
 
 				// パーツの位置を反映
-				D3DXMatrixTranslation(&mtxTransModel, pPlayer->aModel[nCntModel].pos.x, pPlayer->aModel[nCntModel].pos.y, pPlayer->aModel[nCntModel].pos.z);
-				D3DXMatrixMultiply(&pPlayer->aModel[nCntModel].mtxWorld, &pPlayer->aModel[nCntModel].mtxWorld, &mtxTransModel);
+				D3DXMatrixTranslation(&mtxTransModel, g_aPlayer[nCntPlayer].aModel[nCntModel].pos.x, g_aPlayer[nCntPlayer].aModel[nCntModel].pos.y, g_aPlayer[nCntPlayer].aModel[nCntModel].pos.z);
+				D3DXMatrixMultiply(&g_aPlayer[nCntPlayer].aModel[nCntModel].mtxWorld, &g_aPlayer[nCntPlayer].aModel[nCntModel].mtxWorld, &mtxTransModel);
 
 				// パーツの「親のマトリックス」を設定
-				if (pPlayer->aModel[nCntModel].nIdxModelParent != -1)
+				if (g_aPlayer[nCntPlayer].aModel[nCntModel].nIdxModelParent != -1)
 				{// 親モデルがある場合
-					mtxParent = pPlayer->aModel[pPlayer->aModel[nCntModel].nIdxModelParent].mtxWorld;
+					mtxParent = g_aPlayer[nCntPlayer].aModel[g_aPlayer[nCntPlayer].aModel[nCntModel].nIdxModelParent].mtxWorld;
 				}
 				else
 				{// 親モデルがない場合
-					mtxParent = pPlayer->mtxWorld;
+					mtxParent = g_aPlayer[nCntPlayer].mtxWorld;
 				}
 
 				// 算出した「パーツのワールドマトリックス」と「親のマトリックス」をかけ合わせる
-				D3DXMatrixMultiply(&pPlayer->aModel[nCntModel].mtxWorld,
-					&pPlayer->aModel[nCntModel].mtxWorld,
+				D3DXMatrixMultiply(&g_aPlayer[nCntPlayer].aModel[nCntModel].mtxWorld,
+					&g_aPlayer[nCntPlayer].aModel[nCntModel].mtxWorld,
 					&mtxParent);
 
 				// パーツのワールドマトリックスを設定
-				pDevice->SetTransform(D3DTS_WORLD, &pPlayer->aModel[nCntModel].mtxWorld);
+				pDevice->SetTransform(D3DTS_WORLD, &g_aPlayer[nCntPlayer].aModel[nCntModel].mtxWorld);
 
 				// マテリアルデータへのポインタを取得
 				pMat = (D3DXMATERIAL*)pTakoModel[nCntModel].pBuffMat->GetBufferPointer();
@@ -1084,16 +1084,16 @@ void DrawPlayer(void)
 
 			for (int nCntTent = 0; nCntTent < PLAYER_TENTACLE; nCntTent++)
 			{
-				if (pPlayer->nOrbitIdx[nCntTent] == -1)
+				if (g_aPlayer[nCntPlayer].nOrbitIdx[nCntTent] == -1)
 				{// 初回
-					pPlayer->nOrbitIdx[nCntTent] = SetMeshOrbit(D3DXVECTOR3(pPlayer->aModel[(nCntTent + 1) * 4].posOff.x, pPlayer->aModel[(nCntTent + 1) * 4].posOff.y, pPlayer->aModel[(nCntTent + 1) * 4].posOff.z),
-						D3DXVECTOR3(pPlayer->aModel[(nCntTent + 1) * 4].posOff.x, pPlayer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pPlayer->aModel[(nCntTent + 1) * 4].posOff.z),
-						D3DXCOLOR(0.0f, 0.0f, 1.0f, 0.5f), D3DXCOLOR(0.0f, 1.0f, 1.0f, 0.5f), &pPlayer->aModel[(nCntTent + 1) * 4].mtxWorld);
+					g_aPlayer[nCntPlayer].nOrbitIdx[nCntTent] = SetMeshOrbit(D3DXVECTOR3(g_aPlayer[nCntPlayer].aModel[(nCntTent + 1) * 4].posOff.x, g_aPlayer[nCntPlayer].aModel[(nCntTent + 1) * 4].posOff.y, g_aPlayer[nCntPlayer].aModel[(nCntTent + 1) * 4].posOff.z),
+						D3DXVECTOR3(g_aPlayer[nCntPlayer].aModel[(nCntTent + 1) * 4].posOff.x, g_aPlayer[nCntPlayer].aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, g_aPlayer[nCntPlayer].aModel[(nCntTent + 1) * 4].posOff.z),
+						D3DXCOLOR(0.0f, 0.0f, 1.0f, 0.5f), D3DXCOLOR(0.0f, 1.0f, 1.0f, 0.5f), &g_aPlayer[nCntPlayer].aModel[(nCntTent + 1) * 4].mtxWorld);
 				}
 
-				SetMeshOrbitPos(pPlayer->nOrbitIdx[nCntTent], D3DXVECTOR3(pPlayer->aModel[(nCntTent + 1) * 4].posOff.x, pPlayer->aModel[(nCntTent + 1) * 4].posOff.y, pPlayer->aModel[(nCntTent + 1) * 4].posOff.z),
-					D3DXVECTOR3(pPlayer->aModel[(nCntTent + 1) * 4].posOff.x, pPlayer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pPlayer->aModel[(nCntTent + 1) * 4].posOff.z),
-					D3DXCOLOR(0.0f, 0.0f, 1.0f, 0.5f), D3DXCOLOR(0.0f, 1.0f, 1.0f, 0.5f), &pPlayer->aModel[(nCntTent + 1) * 4].mtxWorld);
+				SetMeshOrbitPos(g_aPlayer[nCntPlayer].nOrbitIdx[nCntTent], D3DXVECTOR3(g_aPlayer[nCntPlayer].aModel[(nCntTent + 1) * 4].posOff.x, g_aPlayer[nCntPlayer].aModel[(nCntTent + 1) * 4].posOff.y, g_aPlayer[nCntPlayer].aModel[(nCntTent + 1) * 4].posOff.z),
+					D3DXVECTOR3(g_aPlayer[nCntPlayer].aModel[(nCntTent + 1) * 4].posOff.x, g_aPlayer[nCntPlayer].aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, g_aPlayer[nCntPlayer].aModel[(nCntTent + 1) * 4].posOff.z),
+					D3DXCOLOR(0.0f, 0.0f, 1.0f, 0.5f), D3DXCOLOR(0.0f, 1.0f, 1.0f, 0.5f), &g_aPlayer[nCntPlayer].aModel[(nCntTent + 1) * 4].mtxWorld);
 			}
 		}
 	}
@@ -1104,10 +1104,8 @@ void DrawPlayer(void)
 //=============================================================================
 void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType, PLAYERMODE mode, PLAYERSTATE state)
 {
-	Player* pPlayer = GetPlayer();
-
-	pPlayer[nIdx].nIdx = nIdx;
-	pPlayer[nIdx].nCounter = 0;
+	g_aPlayer[nIdx].nIdx = nIdx;
+	g_aPlayer[nIdx].nCounter = 0;
 
 	if (pos == FIRST_POS)
 	{// 初期座標の場合はランダムで決める
@@ -1118,63 +1116,63 @@ void SetPlayer(int nIdx, D3DXVECTOR3 pos, D3DXVECTOR3 rot, MOTIONTYPE MotionType
 		posRand.y = (float)(rand() % (int)(CYLINDER_HEIGHT * 0.6f)) + (CYLINDER_HEIGHT * 0.2f);
 		posRand.z = cosf(fAngle) * ((INCYLINDER_RADIUS * 1.5f) + (((float)(rand() % (int)(OUTCYLINDER_RADIUS - (INCYLINDER_RADIUS * 1.5f)) + 1))));
 
-		pPlayer[nIdx].pos = posRand;
-		pPlayer[nIdx].posOld = posRand;
-		pPlayer[nIdx].rot = D3DXVECTOR3(0.0f, fAngle, 0.0f);
-		pPlayer[nIdx].fAngleY = fAngle;
+		g_aPlayer[nIdx].pos = posRand;
+		g_aPlayer[nIdx].posOld = posRand;
+		g_aPlayer[nIdx].rot = D3DXVECTOR3(0.0f, fAngle, 0.0f);
+		g_aPlayer[nIdx].fAngleY = fAngle;
 
 		SetCameraPos(nIdx, FIRST_POS, FIRST_POS, D3DXVECTOR3(0.0f, fAngle + D3DX_PI, 0.0f), CAMERATYPE_PLAYER);
 	}
 	else
 	{// マップ内
-		pPlayer[nIdx].pos = pos;
-		pPlayer[nIdx].posOld = pos;
-		pPlayer[nIdx].rot = rot;
-		pPlayer[nIdx].fAngleY = rot.y;
+		g_aPlayer[nIdx].pos = pos;
+		g_aPlayer[nIdx].posOld = pos;
+		g_aPlayer[nIdx].rot = rot;
+		g_aPlayer[nIdx].fAngleY = rot.y;
 	}
 
-	pPlayer[nIdx].state = state;
-	pPlayer[nIdx].mode = mode;
-	pPlayer[nIdx].TentacleState = PLTENTACLESTATE_NORMAL;
-	pPlayer[nIdx].nCounterState = 0;
-	pPlayer[nIdx].fFogStart = (pPlayer[nIdx].pos.y * 0.4f) + FOGS_MIN;
-	pPlayer[nIdx].fFogEnd = (pPlayer[nIdx].pos.y * 1.1f) + FOGE_MIN;
-	pPlayer[nIdx].bJump = true;
-	pPlayer[nIdx].bLand = false;
-	pPlayer[nIdx].bAct = false;
-	pPlayer[nIdx].bMove = false;
-	pPlayer[nIdx].bUse = true;
-	pPlayer[nIdx].bBlind = false;
-	pPlayer[nIdx].nBlindCounter = 0;
-	pPlayer->nFoodNumIdx = -1;
-	pPlayer[nIdx].nFood = 0;
-	memset(&pPlayer[nIdx].esaQueue.nData, -1, sizeof(int[MAX_QUEUE]));
-	pPlayer[nIdx].Potstate = POTSTATE_NONE;
-	pPlayer[nIdx].nPotIdx = -1;
-	pPlayer[nIdx].nMaxFood = 1;
-	pPlayer[nIdx].nTentacleCooldown = 0;
-	pPlayer[nIdx].nInkCooldown = 0;
+	g_aPlayer[nIdx].state = state;
+	g_aPlayer[nIdx].mode = mode;
+	g_aPlayer[nIdx].TentacleState = PLTENTACLESTATE_NORMAL;
+	g_aPlayer[nIdx].nCounterState = 0;
+	g_aPlayer[nIdx].fFogStart = (g_aPlayer[nIdx].pos.y * 0.4f) + FOGS_MIN;
+	g_aPlayer[nIdx].fFogEnd = (g_aPlayer[nIdx].pos.y * 1.1f) + FOGE_MIN;
+	g_aPlayer[nIdx].bJump = true;
+	g_aPlayer[nIdx].bLand = false;
+	g_aPlayer[nIdx].bAct = false;
+	g_aPlayer[nIdx].bMove = false;
+	g_aPlayer[nIdx].bUse = true;
+	g_aPlayer[nIdx].bBlind = false;
+	g_aPlayer[nIdx].nBlindCounter = 0;
+	g_aPlayer[nIdx].nFoodNumIdx = -1;
+	g_aPlayer[nIdx].nFood = 0;
+	memset(&g_aPlayer[nIdx].esaQueue.nData, -1, sizeof(int[MAX_QUEUE]));
+	g_aPlayer[nIdx].Potstate = POTSTATE_NONE;
+	g_aPlayer[nIdx].nPotIdx = -1;
+	g_aPlayer[nIdx].nMaxFood = 1;
+	g_aPlayer[nIdx].nTentacleCooldown = 0;
+	g_aPlayer[nIdx].nInkCooldown = 0;
 
 
-	pPlayer[nIdx].motionType = MOTIONTYPE_NEUTRAL;
-	pPlayer[nIdx].bLoopMotion = pPlayer[nIdx].aMotionInfo[MOTIONTYPE_NEUTRAL].bLoop;
-	pPlayer[nIdx].nNumKey = pPlayer[nIdx].aMotionInfo[MOTIONTYPE_NEUTRAL].nNumKey;
-	pPlayer[nIdx].nKey = 0;
-	pPlayer[nIdx].nCounterMotion = 0;
-	pPlayer[nIdx].bFinishMotion = false;
-	pPlayer[nIdx].bBlendMotion = false;
-	pPlayer[nIdx].motionTypeBlend = MOTIONTYPE_NEUTRAL;
-	pPlayer[nIdx].bLoopMotionBlend = pPlayer[nIdx].aMotionInfo[MOTIONTYPE_NEUTRAL].bLoop;
-	pPlayer[nIdx].nNumKeyBlend = pPlayer[nIdx].aMotionInfo[MOTIONTYPE_NEUTRAL].nNumKey;
-	pPlayer[nIdx].nKeyBlend = 0;
-	pPlayer[nIdx].nCounterMotionBlend = 0;
-	pPlayer[nIdx].nFrameBlend = 0;
-	pPlayer[nIdx].nCounterBlend = 0;
+	g_aPlayer[nIdx].motionType = MOTIONTYPE_NEUTRAL;
+	g_aPlayer[nIdx].bLoopMotion = g_aPlayer[nIdx].aMotionInfo[MOTIONTYPE_NEUTRAL].bLoop;
+	g_aPlayer[nIdx].nNumKey = g_aPlayer[nIdx].aMotionInfo[MOTIONTYPE_NEUTRAL].nNumKey;
+	g_aPlayer[nIdx].nKey = 0;
+	g_aPlayer[nIdx].nCounterMotion = 0;
+	g_aPlayer[nIdx].bFinishMotion = false;
+	g_aPlayer[nIdx].bBlendMotion = false;
+	g_aPlayer[nIdx].motionTypeBlend = MOTIONTYPE_NEUTRAL;
+	g_aPlayer[nIdx].bLoopMotionBlend = g_aPlayer[nIdx].aMotionInfo[MOTIONTYPE_NEUTRAL].bLoop;
+	g_aPlayer[nIdx].nNumKeyBlend = g_aPlayer[nIdx].aMotionInfo[MOTIONTYPE_NEUTRAL].nNumKey;
+	g_aPlayer[nIdx].nKeyBlend = 0;
+	g_aPlayer[nIdx].nCounterMotionBlend = 0;
+	g_aPlayer[nIdx].nFrameBlend = 0;
+	g_aPlayer[nIdx].nCounterBlend = 0;
 
 	SetMotionPlayer(nIdx, MotionType, false, 0);
 
 	// 泡の設定
-	SetBubbleParticle(&pPlayer[nIdx].pos, true, -1, 30, 1, 30, 5.0f, 3.0f);
+	SetBubbleParticle(&g_aPlayer[nIdx].pos, true, -1, 30, 1, 30, 5.0f, 3.0f);
 }
 
 //=============================================================================
@@ -1211,7 +1209,6 @@ void LoadPlayer(void)
 {
 	// ローカル変数宣言
 	FILE* pFile;
-	Player* pPlayer = GetPlayer();
 	char aString[512] = {};				// ファイルのテキスト読み込み
 	char aTrash[512] = {};				// ごみ箱
 	char aModelName[128][512] = {};		// モデルの名前
@@ -1261,14 +1258,14 @@ void LoadPlayer(void)
 
 			if (strcmp(&aString[0], "NUM_MODEL") == 0)
 			{// モデル数の読み込み
-				fscanf(pFile, " = %d", &pPlayer->nNumModel);
+				fscanf(pFile, " = %d", &g_aPlayer[0].nNumModel);
 
 				continue;
 			}
 
 			if (strcmp(&aString[0], "MODEL_FILENAME") == 0)
 			{// モデルの名前読み込み
-				for (int nCntModel = 0; nCntModel < pPlayer->nNumModel; nCntModel++)
+				for (int nCntModel = 0; nCntModel < g_aPlayer[0].nNumModel; nCntModel++)
 				{
 					if (nCntModel > 0)
 					{// 2回目以降のMODEL_FILENAMEを読み込んでおく
@@ -1345,7 +1342,7 @@ void LoadPlayer(void)
 
 				if (strcmp(&aString[0], "RADIUS") == 0)
 				{// キャラクターの半径
-					fscanf(pFile, " = %f", &pPlayer->fRadius);
+					fscanf(pFile, " = %f", &g_aPlayer[0].fRadius);
 
 					fscanf(pFile, "%s", &aString[0]);
 
@@ -1360,7 +1357,7 @@ void LoadPlayer(void)
 
 				if (strcmp(&aString[0], "HEIGHT") == 0)
 				{// キャラクターの高さ
-					fscanf(pFile, " = %f", &pPlayer->fHeight);
+					fscanf(pFile, " = %f", &g_aPlayer[0].fHeight);
 
 					fscanf(pFile, "%s", &aString[0]);
 
@@ -1507,13 +1504,13 @@ void LoadPlayer(void)
 					}
 
 					// プレイヤーのモデル情報に設定
-					pPlayer->aModel[nCntParts].nIdx = nIdx;
-					pPlayer->aModel[nCntParts].nIdxModelParent = nIdxParent;
-					pPlayer->aModel[nCntParts].pos = pos;
-					pPlayer->aModel[nCntParts].rot = rot;
-					pPlayer->aModel[nCntParts].scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
-					pPlayer->aModel[nCntParts].posOff = pos;
-					pPlayer->aModel[nCntParts].rotOff = rot;
+					g_aPlayer[0].aModel[nCntParts].nIdx = nIdx;
+					g_aPlayer[0].aModel[nCntParts].nIdxModelParent = nIdxParent;
+					g_aPlayer[0].aModel[nCntParts].pos = pos;
+					g_aPlayer[0].aModel[nCntParts].rot = rot;
+					g_aPlayer[0].aModel[nCntParts].scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
+					g_aPlayer[0].aModel[nCntParts].posOff = pos;
+					g_aPlayer[0].aModel[nCntParts].rotOff = rot;
 				}
 
 				continue;
@@ -1538,11 +1535,11 @@ void LoadPlayer(void)
 					// ループの真偽を代入
 					if (nLoop == 0)
 					{// false
-						pPlayer->aMotionInfo[nCntMotion].bLoop = false;
+						g_aPlayer[0].aMotionInfo[nCntMotion].bLoop = false;
 					}
 					else if (nLoop == 1)
 					{// true
-						pPlayer->aMotionInfo[nCntMotion].bLoop = true;
+						g_aPlayer[0].aMotionInfo[nCntMotion].bLoop = true;
 					}
 
 					fscanf(pFile, "%s", &aString[0]);
@@ -1561,7 +1558,7 @@ void LoadPlayer(void)
 					fscanf(pFile, " = %d", &nNumKey);
 
 					// キーの総数を代入
-					pPlayer->aMotionInfo[nCntMotion].nNumKey = nNumKey;
+					g_aPlayer[0].aMotionInfo[nCntMotion].nNumKey = nNumKey;
 
 					fscanf(pFile, "%s", &aString[0]);
 
@@ -1594,7 +1591,7 @@ void LoadPlayer(void)
 					{// 再生フレーム数
 						fscanf(pFile, " = %d", &nFrame);
 
-						pPlayer->aMotionInfo[nCntMotion].aKeyInfo[nCntKey].nFrame = nFrame;
+						g_aPlayer[0].aMotionInfo[nCntMotion].aKeyInfo[nCntKey].nFrame = nFrame;
 
 						fscanf(pFile, "%s", &aString[0]);
 
@@ -1659,7 +1656,7 @@ void LoadPlayer(void)
 						}
 
 						// モーション情報に代入
-						pPlayer->aMotionInfo[nCntMotion].aKeyInfo[nCntKey].aKey[nCntPartsKey] = key;
+						g_aPlayer[0].aMotionInfo[nCntMotion].aKeyInfo[nCntKey].aKey[nCntPartsKey] = key;
 					}
 
 					if (strcmp(&aString[0], "END_KEYSET") == 0)
@@ -1680,11 +1677,11 @@ void LoadPlayer(void)
 		}
 
 		// モーションの総数を代入
-		pPlayer->nNumMotion = nCntMotion + 1;
+		g_aPlayer[0].nNumMotion = nCntMotion + 1;
 
 		if (GetNumCamera() > 1)
 		{// 1人プレイじゃない場合
-			pPlayer[1] = pPlayer[0];
+			g_aPlayer[1] = g_aPlayer[0];
 		}
 
 		fclose(pFile);
@@ -1706,7 +1703,7 @@ void UpdateMotionPlayer(void)
 	for (int nCntPlayer = 0; nCntPlayer < GetNumCamera(); nCntPlayer++, pPlayer++)
 	{
 		// 全モデル(パーツ)の更新
-		for (int nCntModel = 0; nCntModel < pPlayer->nNumModel; nCntModel++)
+		for (int nCntModel = 0; nCntModel < g_aPlayer[nCntPlayer].nNumModel; nCntModel++)
 		{
 			// ローカル変数宣言
 			KEY* pKey;
@@ -1717,33 +1714,33 @@ void UpdateMotionPlayer(void)
 			float fDiffKey, fRateKey;
 
 			// 1フレームあたりに動く割合
-			fRateKey = ((float)pPlayer->nCounterMotion / (float)pPlayer->aMotionInfo[pPlayer->motionType].aKeyInfo[pPlayer->nKey].nFrame);
+			fRateKey = ((float)g_aPlayer[nCntPlayer].nCounterMotion / (float)g_aPlayer[nCntPlayer].aMotionInfo[g_aPlayer[nCntPlayer].motionType].aKeyInfo[g_aPlayer[nCntPlayer].nKey].nFrame);
 
 			// 次のキー
-			if (pPlayer->bLoopMotion == true)
+			if (g_aPlayer[nCntPlayer].bLoopMotion == true)
 			{// ループモーション
-				nNextKey = (pPlayer->nKey + 1) % (pPlayer->aMotionInfo[pPlayer->motionType].nNumKey);
+				nNextKey = (g_aPlayer[nCntPlayer].nKey + 1) % (g_aPlayer[nCntPlayer].aMotionInfo[g_aPlayer[nCntPlayer].motionType].nNumKey);
 			}
 			else
 			{// ループしないモーション
-				nNextKey = pPlayer->nKey + 1;
+				nNextKey = g_aPlayer[nCntPlayer].nKey + 1;
 
-				if (nNextKey > pPlayer->aMotionInfo[pPlayer->motionType].nNumKey - 1)
+				if (nNextKey > g_aPlayer[nCntPlayer].aMotionInfo[g_aPlayer[nCntPlayer].motionType].nNumKey - 1)
 				{// キーの総数を超えた
-					nNextKey = pPlayer->aMotionInfo[pPlayer->motionType].nNumKey - 1;
+					nNextKey = g_aPlayer[nCntPlayer].aMotionInfo[g_aPlayer[nCntPlayer].motionType].nNumKey - 1;
 				}
 			}
 
 			// 現在のキーのポインタ
-			pKey = &pPlayer->aMotionInfo[pPlayer->motionType].aKeyInfo[pPlayer->nKey].aKey[nCntModel];
+			pKey = &g_aPlayer[nCntPlayer].aMotionInfo[g_aPlayer[nCntPlayer].motionType].aKeyInfo[g_aPlayer[nCntPlayer].nKey].aKey[nCntModel];
 
 			// 次のキーのポインタ
-			pKeyNext = &pPlayer->aMotionInfo[pPlayer->motionType].aKeyInfo[nNextKey].aKey[nCntModel];
+			pKeyNext = &g_aPlayer[nCntPlayer].aMotionInfo[g_aPlayer[nCntPlayer].motionType].aKeyInfo[nNextKey].aKey[nCntModel];
 
 			// モデルのポインタ
-			pModel = &pPlayer->aModel[nCntModel];
+			pModel = &g_aPlayer[nCntPlayer].aModel[nCntModel];
 
-			if (pPlayer->bBlendMotion == true)
+			if (g_aPlayer[nCntPlayer].bBlendMotion == true)
 			{// ブレンドあり
 				// ローカル変数宣言
 				KEY* pKeyBlend;
@@ -1753,31 +1750,31 @@ void UpdateMotionPlayer(void)
 				int nNextKeyBlend;
 
 				// 1フレームあたりに動く割合
-				fRateKeyBlend = ((float)pPlayer->nCounterMotionBlend / (float)pPlayer->aMotionInfo[pPlayer->motionTypeBlend].aKeyInfo[pPlayer->nKeyBlend].nFrame);
+				fRateKeyBlend = ((float)g_aPlayer[nCntPlayer].nCounterMotionBlend / (float)g_aPlayer[nCntPlayer].aMotionInfo[g_aPlayer[nCntPlayer].motionTypeBlend].aKeyInfo[g_aPlayer[nCntPlayer].nKeyBlend].nFrame);
 
 				// ブレンドの相対値
-				fRateBlend = (float)pPlayer->nCounterBlend / (float)pPlayer->nFrameBlend;
+				fRateBlend = (float)g_aPlayer[nCntPlayer].nCounterBlend / (float)g_aPlayer[nCntPlayer].nFrameBlend;
 
 				// 次のキー
-				if (pPlayer->bLoopMotionBlend == true)
+				if (g_aPlayer[nCntPlayer].bLoopMotionBlend == true)
 				{// ループモーション
-					nNextKeyBlend = (pPlayer->nKeyBlend + 1) % (pPlayer->aMotionInfo[pPlayer->motionTypeBlend].nNumKey);
+					nNextKeyBlend = (g_aPlayer[nCntPlayer].nKeyBlend + 1) % (g_aPlayer[nCntPlayer].aMotionInfo[g_aPlayer[nCntPlayer].motionTypeBlend].nNumKey);
 				}
 				else
 				{// ループしないモーション
-					nNextKeyBlend = pPlayer->nKeyBlend + 1;
+					nNextKeyBlend = g_aPlayer[nCntPlayer].nKeyBlend + 1;
 
-					if (nNextKeyBlend > pPlayer->aMotionInfo[pPlayer->motionTypeBlend].nNumKey - 1)
+					if (nNextKeyBlend > g_aPlayer[nCntPlayer].aMotionInfo[g_aPlayer[nCntPlayer].motionTypeBlend].nNumKey - 1)
 					{// キーの総数を超えた
-						nNextKeyBlend = pPlayer->aMotionInfo[pPlayer->motionTypeBlend].nNumKey - 1;
+						nNextKeyBlend = g_aPlayer[nCntPlayer].aMotionInfo[g_aPlayer[nCntPlayer].motionTypeBlend].nNumKey - 1;
 					}
 				}
 
 				// 現在のキーのポインタ
-				pKeyBlend = &pPlayer->aMotionInfo[pPlayer->motionTypeBlend].aKeyInfo[pPlayer->nKeyBlend].aKey[nCntModel];
+				pKeyBlend = &g_aPlayer[nCntPlayer].aMotionInfo[g_aPlayer[nCntPlayer].motionTypeBlend].aKeyInfo[g_aPlayer[nCntPlayer].nKeyBlend].aKey[nCntModel];
 
 				// 次のキーのポインタ
-				pKeyNextBlend = &pPlayer->aMotionInfo[pPlayer->motionTypeBlend].aKeyInfo[nNextKeyBlend].aKey[nCntModel];
+				pKeyNextBlend = &g_aPlayer[nCntPlayer].aMotionInfo[g_aPlayer[nCntPlayer].motionTypeBlend].aKeyInfo[nNextKeyBlend].aKey[nCntModel];
 
 				// キー情報から位置・向きを算出
 				// 位置X
@@ -1917,101 +1914,101 @@ void UpdateMotionPlayer(void)
 			}
 
 			// パーツの位置・向きを設定
-			pModel->pos = posDest + pPlayer->aModel[nCntModel].posOff;
-			pModel->rot = rotDest + pPlayer->aModel[nCntModel].rotOff;
+			pModel->pos = posDest + g_aPlayer[nCntPlayer].aModel[nCntModel].posOff;
+			pModel->rot = rotDest + g_aPlayer[nCntPlayer].aModel[nCntModel].rotOff;
 		}
 
-		if (pPlayer->bBlendMotion == true)
+		if (g_aPlayer[nCntPlayer].bBlendMotion == true)
 		{// ブレンドあり
-			pPlayer->nCounterMotion++;
+			g_aPlayer[nCntPlayer].nCounterMotion++;
 
-			if (pPlayer->nCounterMotion >= pPlayer->aMotionInfo[pPlayer->motionType].aKeyInfo[pPlayer->nKey].nFrame)
+			if (g_aPlayer[nCntPlayer].nCounterMotion >= g_aPlayer[nCntPlayer].aMotionInfo[g_aPlayer[nCntPlayer].motionType].aKeyInfo[g_aPlayer[nCntPlayer].nKey].nFrame)
 			{// 再生フレーム数に達したら現在のキーを1つ進める
-				pPlayer->nCounterMotion = 0;	// カウンターを戻す
+				g_aPlayer[nCntPlayer].nCounterMotion = 0;	// カウンターを戻す
 
 				// ループかどうか
-				if (pPlayer->bLoopMotion == true)
+				if (g_aPlayer[nCntPlayer].bLoopMotion == true)
 				{// ループモーション
-					pPlayer->nKey = (pPlayer->nKey + 1) % (pPlayer->aMotionInfo[pPlayer->motionType].nNumKey);
+					g_aPlayer[nCntPlayer].nKey = (g_aPlayer[nCntPlayer].nKey + 1) % (g_aPlayer[nCntPlayer].aMotionInfo[g_aPlayer[nCntPlayer].motionType].nNumKey);
 				}
 				else
 				{// ループしないモーション
-					pPlayer->nKey++;
+					g_aPlayer[nCntPlayer].nKey++;
 
-					if (pPlayer->nKey >= pPlayer->aMotionInfo[pPlayer->motionType].nNumKey - 1)
+					if (g_aPlayer[nCntPlayer].nKey >= g_aPlayer[nCntPlayer].aMotionInfo[g_aPlayer[nCntPlayer].motionType].nNumKey - 1)
 					{// キーの総数を超えた
-						pPlayer->nKey = pPlayer->aMotionInfo[pPlayer->motionType].nNumKey - 1;
+						g_aPlayer[nCntPlayer].nKey = g_aPlayer[nCntPlayer].aMotionInfo[g_aPlayer[nCntPlayer].motionType].nNumKey - 1;
 
-						pPlayer->bFinishMotion = true;
+						g_aPlayer[nCntPlayer].bFinishMotion = true;
 					}
 				}
 			}
 
-			pPlayer->nCounterMotionBlend++;
+			g_aPlayer[nCntPlayer].nCounterMotionBlend++;
 
-			if (pPlayer->nCounterMotionBlend >= pPlayer->aMotionInfo[pPlayer->motionTypeBlend].aKeyInfo[pPlayer->nKeyBlend].nFrame)
+			if (g_aPlayer[nCntPlayer].nCounterMotionBlend >= g_aPlayer[nCntPlayer].aMotionInfo[g_aPlayer[nCntPlayer].motionTypeBlend].aKeyInfo[g_aPlayer[nCntPlayer].nKeyBlend].nFrame)
 			{// 再生フレーム数に達したら現在のキーを1つ進める
-				pPlayer->nCounterMotionBlend = 0;	// カウンターを戻す
+				g_aPlayer[nCntPlayer].nCounterMotionBlend = 0;	// カウンターを戻す
 
 				// ループかどうか
-				if (pPlayer->bLoopMotionBlend == true)
+				if (g_aPlayer[nCntPlayer].bLoopMotionBlend == true)
 				{// ループモーション
-					pPlayer->nKeyBlend = (pPlayer->nKeyBlend + 1) % (pPlayer->aMotionInfo[pPlayer->motionTypeBlend].nNumKey);
+					g_aPlayer[nCntPlayer].nKeyBlend = (g_aPlayer[nCntPlayer].nKeyBlend + 1) % (g_aPlayer[nCntPlayer].aMotionInfo[g_aPlayer[nCntPlayer].motionTypeBlend].nNumKey);
 				}
 				else
 				{// ループしないモーション
-					pPlayer->nKeyBlend++;
+					g_aPlayer[nCntPlayer].nKeyBlend++;
 
-					if (pPlayer->nKeyBlend >= pPlayer->aMotionInfo[pPlayer->motionTypeBlend].nNumKey - 1)
+					if (g_aPlayer[nCntPlayer].nKeyBlend >= g_aPlayer[nCntPlayer].aMotionInfo[g_aPlayer[nCntPlayer].motionTypeBlend].nNumKey - 1)
 					{// キーの総数を超えた
-						pPlayer->nKeyBlend = pPlayer->aMotionInfo[pPlayer->motionTypeBlend].nNumKey - 1;
+						g_aPlayer[nCntPlayer].nKeyBlend = g_aPlayer[nCntPlayer].aMotionInfo[g_aPlayer[nCntPlayer].motionTypeBlend].nNumKey - 1;
 
-						pPlayer->bFinishMotion = true;
+						g_aPlayer[nCntPlayer].bFinishMotion = true;
 					}
 				}
 			}
 
-			pPlayer->nCounterBlend++;
+			g_aPlayer[nCntPlayer].nCounterBlend++;
 
-			if (pPlayer->nCounterBlend >= pPlayer->nFrameBlend)
+			if (g_aPlayer[nCntPlayer].nCounterBlend >= g_aPlayer[nCntPlayer].nFrameBlend)
 			{// ブレンドフレームに到達
 				// ブレンドモーションを現在のモーションに設定
-				pPlayer->motionType = pPlayer->motionTypeBlend;
-				pPlayer->bLoopMotion = pPlayer->bLoopMotionBlend;
-				pPlayer->nNumKey = pPlayer->nNumKeyBlend;
-				pPlayer->nKey = pPlayer->nKeyBlend;
-				pPlayer->nCounterMotion = pPlayer->nCounterMotionBlend;
-				//pPlayer->bFinishMotion = true;
+				g_aPlayer[nCntPlayer].motionType = g_aPlayer[nCntPlayer].motionTypeBlend;
+				g_aPlayer[nCntPlayer].bLoopMotion = g_aPlayer[nCntPlayer].bLoopMotionBlend;
+				g_aPlayer[nCntPlayer].nNumKey = g_aPlayer[nCntPlayer].nNumKeyBlend;
+				g_aPlayer[nCntPlayer].nKey = g_aPlayer[nCntPlayer].nKeyBlend;
+				g_aPlayer[nCntPlayer].nCounterMotion = g_aPlayer[nCntPlayer].nCounterMotionBlend;
+				//g_aPlayer[nCntPlayer].bFinishMotion = true;
 
-				pPlayer->nKeyBlend = 0;
-				pPlayer->nCounterMotionBlend = 0;
-				pPlayer->bBlendMotion = false;
-				pPlayer->nCounterBlend = 0;
-				pPlayer->nFrameBlend = 0;
+				g_aPlayer[nCntPlayer].nKeyBlend = 0;
+				g_aPlayer[nCntPlayer].nCounterMotionBlend = 0;
+				g_aPlayer[nCntPlayer].bBlendMotion = false;
+				g_aPlayer[nCntPlayer].nCounterBlend = 0;
+				g_aPlayer[nCntPlayer].nFrameBlend = 0;
 			}
 		}
 		else
 		{// ブレンドなし
-			pPlayer->nCounterMotion++;
+			g_aPlayer[nCntPlayer].nCounterMotion++;
 
-			if (pPlayer->nCounterMotion >= pPlayer->aMotionInfo[pPlayer->motionType].aKeyInfo[pPlayer->nKey].nFrame)
+			if (g_aPlayer[nCntPlayer].nCounterMotion >= g_aPlayer[nCntPlayer].aMotionInfo[g_aPlayer[nCntPlayer].motionType].aKeyInfo[g_aPlayer[nCntPlayer].nKey].nFrame)
 			{// 再生フレーム数に達したら現在のキーを1つ進める
-				pPlayer->nCounterMotion = 0;	// カウンターを戻す
+				g_aPlayer[nCntPlayer].nCounterMotion = 0;	// カウンターを戻す
 
 				// ループかどうか
-				if (pPlayer->bLoopMotion == true)
+				if (g_aPlayer[nCntPlayer].bLoopMotion == true)
 				{// ループモーション
-					pPlayer->nKey = (pPlayer->nKey + 1) % (pPlayer->aMotionInfo[pPlayer->motionType].nNumKey);
+					g_aPlayer[nCntPlayer].nKey = (g_aPlayer[nCntPlayer].nKey + 1) % (g_aPlayer[nCntPlayer].aMotionInfo[g_aPlayer[nCntPlayer].motionType].nNumKey);
 				}
 				else
 				{// ループしないモーション
-					pPlayer->nKey++;
+					g_aPlayer[nCntPlayer].nKey++;
 
-					if (pPlayer->nKey >= pPlayer->aMotionInfo[pPlayer->motionType].nNumKey - 1)
+					if (g_aPlayer[nCntPlayer].nKey >= g_aPlayer[nCntPlayer].aMotionInfo[g_aPlayer[nCntPlayer].motionType].nNumKey - 1)
 					{// キーの総数を超えた
-						pPlayer->nKey = pPlayer->aMotionInfo[pPlayer->motionType].nNumKey - 1;
+						g_aPlayer[nCntPlayer].nKey = g_aPlayer[nCntPlayer].aMotionInfo[g_aPlayer[nCntPlayer].motionType].nNumKey - 1;
 
-						pPlayer->bFinishMotion = true;
+						g_aPlayer[nCntPlayer].bFinishMotion = true;
 					}
 				}
 			}
@@ -2024,45 +2021,42 @@ void UpdateMotionPlayer(void)
 //=============================================================================
 void SetMotionPlayer(int nIdx, MOTIONTYPE motionType, bool bBlendMotion, int nFrameBlend)
 {
-	Player* pPlayer = GetPlayer();
-	pPlayer = &pPlayer[nIdx];
-
-	if (pPlayer->motionTypeBlend != motionType)
+	if (g_aPlayer[nIdx].motionTypeBlend != motionType)
 	{// 違うモーションが設定されたときだけ
 		if (bBlendMotion == true)
 		{// ブレンドあり
-			pPlayer->motionTypeBlend = motionType;
-			pPlayer->bLoopMotionBlend = pPlayer->aMotionInfo[motionType].bLoop;
-			pPlayer->nNumKeyBlend = pPlayer->aMotionInfo[motionType].nNumKey;
-			pPlayer->nKeyBlend = 0;
-			pPlayer->nCounterMotionBlend = 0;
-			pPlayer->bFinishMotion = false;
+			g_aPlayer[nIdx].motionTypeBlend = motionType;
+			g_aPlayer[nIdx].bLoopMotionBlend = g_aPlayer[nIdx].aMotionInfo[motionType].bLoop;
+			g_aPlayer[nIdx].nNumKeyBlend = g_aPlayer[nIdx].aMotionInfo[motionType].nNumKey;
+			g_aPlayer[nIdx].nKeyBlend = 0;
+			g_aPlayer[nIdx].nCounterMotionBlend = 0;
+			g_aPlayer[nIdx].bFinishMotion = false;
 
-			pPlayer->bBlendMotion = bBlendMotion;
-			pPlayer->nFrameBlend = nFrameBlend;
-			pPlayer->nCounterBlend = 0;
+			g_aPlayer[nIdx].bBlendMotion = bBlendMotion;
+			g_aPlayer[nIdx].nFrameBlend = nFrameBlend;
+			g_aPlayer[nIdx].nCounterBlend = 0;
 		}
 		else
 		{// ブレンドなし
-			pPlayer->motionType = motionType;
-			pPlayer->bLoopMotion = pPlayer->aMotionInfo[motionType].bLoop;
-			pPlayer->nNumKey = pPlayer->aMotionInfo[motionType].nNumKey;
-			pPlayer->nKey = 0;
-			pPlayer->nCounterMotion = 0;
-			pPlayer->bFinishMotion = false;
+			g_aPlayer[nIdx].motionType = motionType;
+			g_aPlayer[nIdx].bLoopMotion = g_aPlayer[nIdx].aMotionInfo[motionType].bLoop;
+			g_aPlayer[nIdx].nNumKey = g_aPlayer[nIdx].aMotionInfo[motionType].nNumKey;
+			g_aPlayer[nIdx].nKey = 0;
+			g_aPlayer[nIdx].nCounterMotion = 0;
+			g_aPlayer[nIdx].bFinishMotion = false;
 
-			pPlayer->bBlendMotion = bBlendMotion;
+			g_aPlayer[nIdx].bBlendMotion = bBlendMotion;
 
 			// 全モデル(パーツ)の初期設定
-			for (int nCntModel = 0; nCntModel < pPlayer->nNumModel; nCntModel++)
+			for (int nCntModel = 0; nCntModel < g_aPlayer[nIdx].nNumModel; nCntModel++)
 			{
-				pPlayer->aModel[nCntModel].pos.x = pPlayer->aMotionInfo[motionType].aKeyInfo[0].aKey[0].fPosX;
-				pPlayer->aModel[nCntModel].pos.y = pPlayer->aMotionInfo[motionType].aKeyInfo[0].aKey[0].fPosY;
-				pPlayer->aModel[nCntModel].pos.z = pPlayer->aMotionInfo[motionType].aKeyInfo[0].aKey[0].fPosZ;
+				g_aPlayer[nIdx].aModel[nCntModel].pos.x = g_aPlayer[nIdx].aMotionInfo[motionType].aKeyInfo[0].aKey[0].fPosX;
+				g_aPlayer[nIdx].aModel[nCntModel].pos.y = g_aPlayer[nIdx].aMotionInfo[motionType].aKeyInfo[0].aKey[0].fPosY;
+				g_aPlayer[nIdx].aModel[nCntModel].pos.z = g_aPlayer[nIdx].aMotionInfo[motionType].aKeyInfo[0].aKey[0].fPosZ;
 
-				pPlayer->aModel[nCntModel].rot.x = pPlayer->aMotionInfo[motionType].aKeyInfo[0].aKey[0].fRotX;
-				pPlayer->aModel[nCntModel].rot.y = pPlayer->aMotionInfo[motionType].aKeyInfo[0].aKey[0].fRotY;
-				pPlayer->aModel[nCntModel].rot.z = pPlayer->aMotionInfo[motionType].aKeyInfo[0].aKey[0].fRotZ;
+				g_aPlayer[nIdx].aModel[nCntModel].rot.x = g_aPlayer[nIdx].aMotionInfo[motionType].aKeyInfo[0].aKey[0].fRotX;
+				g_aPlayer[nIdx].aModel[nCntModel].rot.y = g_aPlayer[nIdx].aMotionInfo[motionType].aKeyInfo[0].aKey[0].fRotY;
+				g_aPlayer[nIdx].aModel[nCntModel].rot.z = g_aPlayer[nIdx].aMotionInfo[motionType].aKeyInfo[0].aKey[0].fRotZ;
 			}
 		}
 	}
