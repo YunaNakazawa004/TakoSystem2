@@ -82,57 +82,56 @@ void UninitCamera(void)
 //=============================================================================
 void UpdateCamera(void)
 {
-	Camera* pCamera = &g_aCamera[0];
-	Player* pPlayer = GetPlayer();
-
 	if (GetPause() == true)
 	{// ポーズ中
 		return;
 	}
 
 	// それぞれのカメラの処理
-	for (int nCntCamera = 0; nCntCamera < g_nNumCamera; nCntCamera++, pCamera++, pPlayer++)
+	for (int nCntCamera = 0; nCntCamera < g_nNumCamera; nCntCamera++)
 	{
-		switch (pCamera->type)
+		Player* pPlayer = GetPlayer();
+
+		switch (g_aCamera[nCntCamera].type)
 		{
 		case CAMERATYPE_PLAYER:
 			int nValueH, nValueV;
 
 			// プレイヤー向きを調整
-			CorrectAngle(&pPlayer->rot.y, ((pPlayer->rot.y - D3DX_PI) - pCamera->rot.y));
+			CorrectAngle(&pPlayer[nCntCamera].rot.y, ((pPlayer[nCntCamera].rot.y - D3DX_PI) - g_aCamera[nCntCamera].rot.y));
 
 			// 目的の注視点を設定
-			pCamera->posRDest.x = pPlayer->pos.x + sinf(D3DX_PI + pPlayer->fAngleY) * pCamera->fRDistance;
-			pCamera->posRDest.y = pPlayer->pos.y + HEIGHT;
-			pCamera->posRDest.z = pPlayer->pos.z + cosf(D3DX_PI + pPlayer->fAngleY) * pCamera->fRDistance;
+			g_aCamera[nCntCamera].posRDest.x = pPlayer[nCntCamera].pos.x + sinf(D3DX_PI + pPlayer[nCntCamera].fAngleY) * g_aCamera[nCntCamera].fRDistance;
+			g_aCamera[nCntCamera].posRDest.y = pPlayer[nCntCamera].pos.y + HEIGHT;
+			g_aCamera[nCntCamera].posRDest.z = pPlayer[nCntCamera].pos.z + cosf(D3DX_PI + pPlayer[nCntCamera].fAngleY) * g_aCamera[nCntCamera].fRDistance;
 
 			// 目的の視点を設定
-			pCamera->posVDest.x = pCamera->posRDest.x + sinf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance * sinf((D3DX_PI * 0.5f) - pCamera->fAngle);
-			pCamera->posVDest.y = pCamera->posRDest.y + cosf((D3DX_PI * 0.5f) - pCamera->fAngle) * pCamera->fDistance;
-			pCamera->posVDest.z = pCamera->posRDest.z + cosf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance * sinf((D3DX_PI * 0.5f) - pCamera->fAngle);
+			g_aCamera[nCntCamera].posVDest.x = g_aCamera[nCntCamera].posRDest.x + sinf(D3DX_PI + g_aCamera[nCntCamera].rot.y) * g_aCamera[nCntCamera].fDistance * sinf((D3DX_PI * 0.5f) - g_aCamera[nCntCamera].fAngle);
+			g_aCamera[nCntCamera].posVDest.y = g_aCamera[nCntCamera].posRDest.y + cosf((D3DX_PI * 0.5f) - g_aCamera[nCntCamera].fAngle) * g_aCamera[nCntCamera].fDistance;
+			g_aCamera[nCntCamera].posVDest.z = g_aCamera[nCntCamera].posRDest.z + cosf(D3DX_PI + g_aCamera[nCntCamera].rot.y) * g_aCamera[nCntCamera].fDistance * sinf((D3DX_PI * 0.5f) - g_aCamera[nCntCamera].fAngle);
 
 			if ((nCntCamera == 0 ? GetKeyboardPress(DIK_J) == true : GetKeyboardPress(DIK_NUMPAD4) == true)|| GetJoypadStick(nCntCamera, JOYKEY_RIGHTSTICK_LEFT, &nValueH, &nValueV) == true)
 			{// 右に旋回
-				pCamera->rot.y += -ROT.y;
+				g_aCamera[nCntCamera].rot.y += -ROT.y;
 
-				pCamera->posVDest.x = pCamera->posRDest.x + sinf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance * sinf((D3DX_PI * 0.5f) - pCamera->fAngle);
-				pCamera->posVDest.y = pCamera->posRDest.y + cosf((D3DX_PI * 0.5f) - pCamera->fAngle) * pCamera->fDistance;
-				pCamera->posVDest.z = pCamera->posRDest.z + cosf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance * sinf((D3DX_PI * 0.5f) - pCamera->fAngle);
+				g_aCamera[nCntCamera].posVDest.x = g_aCamera[nCntCamera].posRDest.x + sinf(D3DX_PI + g_aCamera[nCntCamera].rot.y) * g_aCamera[nCntCamera].fDistance * sinf((D3DX_PI * 0.5f) - g_aCamera[nCntCamera].fAngle);
+				g_aCamera[nCntCamera].posVDest.y = g_aCamera[nCntCamera].posRDest.y + cosf((D3DX_PI * 0.5f) - g_aCamera[nCntCamera].fAngle) * g_aCamera[nCntCamera].fDistance;
+				g_aCamera[nCntCamera].posVDest.z = g_aCamera[nCntCamera].posRDest.z + cosf(D3DX_PI + g_aCamera[nCntCamera].rot.y) * g_aCamera[nCntCamera].fDistance * sinf((D3DX_PI * 0.5f) - g_aCamera[nCntCamera].fAngle);
 			
-				if (pPlayer->mode == PLAYERMODE_TUTORIAL)
+				if (pPlayer[nCntCamera].mode == PLAYERMODE_TUTORIAL)
 				{// チュートリアルモード
 					SetTutorialTxtState(TUTTXTTYPE_CAMERA, TUTTXTSTATE_CLEAR);
 				}
 			}
 			else if ((nCntCamera == 0 ? GetKeyboardPress(DIK_L) == true : GetKeyboardPress(DIK_NUMPAD6) == true) || GetJoypadStick(nCntCamera, JOYKEY_RIGHTSTICK_RIGHT, &nValueH, &nValueV) == true)
 			{// 左に旋回
-				pCamera->rot.y += ROT.y;
+				g_aCamera[nCntCamera].rot.y += ROT.y;
 
-				pCamera->posVDest.x = pCamera->posRDest.x + sinf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance * sinf((D3DX_PI * 0.5f) - pCamera->fAngle);
-				pCamera->posVDest.y = pCamera->posRDest.y + cosf((D3DX_PI * 0.5f) - pCamera->fAngle) * pCamera->fDistance;
-				pCamera->posVDest.z = pCamera->posRDest.z + cosf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance * sinf((D3DX_PI * 0.5f) - pCamera->fAngle);
+				g_aCamera[nCntCamera].posVDest.x = g_aCamera[nCntCamera].posRDest.x + sinf(D3DX_PI + g_aCamera[nCntCamera].rot.y) * g_aCamera[nCntCamera].fDistance * sinf((D3DX_PI * 0.5f) - g_aCamera[nCntCamera].fAngle);
+				g_aCamera[nCntCamera].posVDest.y = g_aCamera[nCntCamera].posRDest.y + cosf((D3DX_PI * 0.5f) - g_aCamera[nCntCamera].fAngle) * g_aCamera[nCntCamera].fDistance;
+				g_aCamera[nCntCamera].posVDest.z = g_aCamera[nCntCamera].posRDest.z + cosf(D3DX_PI + g_aCamera[nCntCamera].rot.y) * g_aCamera[nCntCamera].fDistance * sinf((D3DX_PI * 0.5f) - g_aCamera[nCntCamera].fAngle);
 			
-				if (pPlayer->mode == PLAYERMODE_TUTORIAL)
+				if (pPlayer[nCntCamera].mode == PLAYERMODE_TUTORIAL)
 				{// チュートリアルモード
 					SetTutorialTxtState(TUTTXTTYPE_CAMERA, TUTTXTSTATE_CLEAR);
 				}
@@ -141,53 +140,53 @@ void UpdateCamera(void)
 			// 視点移動
 			if ((nCntCamera == 0 ? GetKeyboardPress(DIK_K) == true : GetKeyboardPress(DIK_NUMPAD5) == true) || GetJoypadStick(nCntCamera, JOYKEY_RIGHTSTICK_DOWN, &nValueH, &nValueV) == true)
 			{// 上に移動
-				pCamera->fAngle += ROT.y;
+				g_aCamera[nCntCamera].fAngle += ROT.y;
 
-				if (pCamera->fAngle > D3DX_PI * 0.4f)
+				if (g_aCamera[nCntCamera].fAngle > D3DX_PI * 0.4f)
 				{// 上の制限
-					pCamera->fAngle = D3DX_PI * 0.4f;
+					g_aCamera[nCntCamera].fAngle = D3DX_PI * 0.4f;
 				}
 
-				CorrectAngle(&pCamera->fAngle, pCamera->fAngle);
+				CorrectAngle(&g_aCamera[nCntCamera].fAngle, g_aCamera[nCntCamera].fAngle);
 
-				pCamera->posVDest.x = pCamera->posRDest.x + sinf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance * sinf((D3DX_PI * 0.5f) - pCamera->fAngle);
-				pCamera->posVDest.y = pCamera->posRDest.y + cosf((D3DX_PI * 0.5f) - pCamera->fAngle) * pCamera->fDistance;
-				pCamera->posVDest.z = pCamera->posRDest.z + cosf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance * sinf((D3DX_PI * 0.5f) - pCamera->fAngle);
+				g_aCamera[nCntCamera].posVDest.x = g_aCamera[nCntCamera].posRDest.x + sinf(D3DX_PI + g_aCamera[nCntCamera].rot.y) * g_aCamera[nCntCamera].fDistance * sinf((D3DX_PI * 0.5f) - g_aCamera[nCntCamera].fAngle);
+				g_aCamera[nCntCamera].posVDest.y = g_aCamera[nCntCamera].posRDest.y + cosf((D3DX_PI * 0.5f) - g_aCamera[nCntCamera].fAngle) * g_aCamera[nCntCamera].fDistance;
+				g_aCamera[nCntCamera].posVDest.z = g_aCamera[nCntCamera].posRDest.z + cosf(D3DX_PI + g_aCamera[nCntCamera].rot.y) * g_aCamera[nCntCamera].fDistance * sinf((D3DX_PI * 0.5f) - g_aCamera[nCntCamera].fAngle);
 			
-				if (pPlayer->mode == PLAYERMODE_TUTORIAL)
+				if (pPlayer[nCntCamera].mode == PLAYERMODE_TUTORIAL)
 				{// チュートリアルモード
 					SetTutorialTxtState(TUTTXTTYPE_CAMERA, TUTTXTSTATE_CLEAR);
 				}
 			}
 			else if ((nCntCamera == 0 ? GetKeyboardPress(DIK_I) == true : GetKeyboardPress(DIK_NUMPAD8) == true) || GetJoypadStick(nCntCamera, JOYKEY_RIGHTSTICK_UP, &nValueH, &nValueV) == true)
 			{// 下に移動
-				pCamera->fAngle += -ROT.y;
+				g_aCamera[nCntCamera].fAngle += -ROT.y;
 
-				if (pCamera->fAngle < -D3DX_PI * 0.4f)
+				if (g_aCamera[nCntCamera].fAngle < -D3DX_PI * 0.4f)
 				{// 下の制限
-					pCamera->fAngle = -D3DX_PI * 0.4f;
+					g_aCamera[nCntCamera].fAngle = -D3DX_PI * 0.4f;
 				}
 
-				CorrectAngle(&pCamera->fAngle, pCamera->fAngle);
+				CorrectAngle(&g_aCamera[nCntCamera].fAngle, g_aCamera[nCntCamera].fAngle);
 
-				pCamera->posVDest.x = pCamera->posRDest.x + sinf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance * sinf((D3DX_PI * 0.5f) - pCamera->fAngle);
-				pCamera->posVDest.y = pCamera->posRDest.y + cosf((D3DX_PI * 0.5f) - pCamera->fAngle) * pCamera->fDistance;
-				pCamera->posVDest.z = pCamera->posRDest.z + cosf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance * sinf((D3DX_PI * 0.5f) - pCamera->fAngle);
+				g_aCamera[nCntCamera].posVDest.x = g_aCamera[nCntCamera].posRDest.x + sinf(D3DX_PI + g_aCamera[nCntCamera].rot.y) * g_aCamera[nCntCamera].fDistance * sinf((D3DX_PI * 0.5f) - g_aCamera[nCntCamera].fAngle);
+				g_aCamera[nCntCamera].posVDest.y = g_aCamera[nCntCamera].posRDest.y + cosf((D3DX_PI * 0.5f) - g_aCamera[nCntCamera].fAngle) * g_aCamera[nCntCamera].fDistance;
+				g_aCamera[nCntCamera].posVDest.z = g_aCamera[nCntCamera].posRDest.z + cosf(D3DX_PI + g_aCamera[nCntCamera].rot.y) * g_aCamera[nCntCamera].fDistance * sinf((D3DX_PI * 0.5f) - g_aCamera[nCntCamera].fAngle);
 			
-				if (pPlayer->mode == PLAYERMODE_TUTORIAL)
+				if (pPlayer[nCntCamera].mode == PLAYERMODE_TUTORIAL)
 				{// チュートリアルモード
 					SetTutorialTxtState(TUTTXTTYPE_CAMERA, TUTTXTSTATE_CLEAR);
 				}
 			}
 
 			// カメラ向きを調整
-			CorrectAngle(&pCamera->rot.y, pCamera->rot.y);
+			CorrectAngle(&g_aCamera[nCntCamera].rot.y, g_aCamera[nCntCamera].rot.y);
 
 			// 注視点の補正
-			pCamera->posR += (pCamera->posRDest - pCamera->posR) * INERTIA_POSR;
+			g_aCamera[nCntCamera].posR += (g_aCamera[nCntCamera].posRDest - g_aCamera[nCntCamera].posR) * INERTIA_POSR;
 
 			// 視点の補正
-			pCamera->posV += (pCamera->posVDest - pCamera->posV) * INERTIA_POSV;
+			g_aCamera[nCntCamera].posV += (g_aCamera[nCntCamera].posVDest - g_aCamera[nCntCamera].posV) * INERTIA_POSV;
 
 
 #if 0
@@ -326,35 +325,35 @@ void UpdateCamera(void)
 			break;
 
 		case CAMERATYPE_POINT:
-			pCamera->rot.y += -AUTO_ROT.y;
+			g_aCamera[nCntCamera].rot.y += -AUTO_ROT.y;
 
 			// カメラ向きを調整
-			CorrectAngle(&pCamera->rot.y, pCamera->rot.y);
+			CorrectAngle(&g_aCamera[nCntCamera].rot.y, g_aCamera[nCntCamera].rot.y);
 
-			pCamera->posV.x = pCamera->posR.x + sinf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance;
-			pCamera->posV.z = pCamera->posR.z + cosf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance;
+			g_aCamera[nCntCamera].posV.x = g_aCamera[nCntCamera].posR.x + sinf(D3DX_PI + g_aCamera[nCntCamera].rot.y) * g_aCamera[nCntCamera].fDistance;
+			g_aCamera[nCntCamera].posV.z = g_aCamera[nCntCamera].posR.z + cosf(D3DX_PI + g_aCamera[nCntCamera].rot.y) * g_aCamera[nCntCamera].fDistance;
 
-			pCamera->fViewAngle = DEFAULT_VIEW_ANGLE;
-			pCamera->fMoveVA = DEFAULT_VIEW_ANGLE;
+			g_aCamera[nCntCamera].fViewAngle = DEFAULT_VIEW_ANGLE;
+			g_aCamera[nCntCamera].fMoveVA = DEFAULT_VIEW_ANGLE;
 
 			break;
 
 		case CAMERATYPE_STOP:
 			// カメラ向きを調整
-			CorrectAngle(&pCamera->rot.y, pCamera->rot.y);
+			CorrectAngle(&g_aCamera[nCntCamera].rot.y, g_aCamera[nCntCamera].rot.y);
 
-			pCamera->posV.x = pCamera->posR.x + sinf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance;
-			pCamera->posV.z = pCamera->posR.z + cosf(D3DX_PI + pCamera->rot.y) * pCamera->fDistance;
+			g_aCamera[nCntCamera].posV.x = g_aCamera[nCntCamera].posR.x + sinf(D3DX_PI + g_aCamera[nCntCamera].rot.y) * g_aCamera[nCntCamera].fDistance;
+			g_aCamera[nCntCamera].posV.z = g_aCamera[nCntCamera].posR.z + cosf(D3DX_PI + g_aCamera[nCntCamera].rot.y) * g_aCamera[nCntCamera].fDistance;
 
-			pCamera->fViewAngle = DEFAULT_VIEW_ANGLE;
-			pCamera->fMoveVA = DEFAULT_VIEW_ANGLE;
+			g_aCamera[nCntCamera].fViewAngle = DEFAULT_VIEW_ANGLE;
+			g_aCamera[nCntCamera].fMoveVA = DEFAULT_VIEW_ANGLE;
 
 			break;
 		}
 
-		if (pCamera->fMoveVA != 0.0f)
+		if (g_aCamera[nCntCamera].fMoveVA != 0.0f)
 		{// 視野角
-			pCamera->fViewAngle += (pCamera->fMoveVA - pCamera->fViewAngle) * INERTIA_VIEW_ANGLE;
+			g_aCamera[nCntCamera].fViewAngle += (g_aCamera[nCntCamera].fMoveVA - g_aCamera[nCntCamera].fViewAngle) * INERTIA_VIEW_ANGLE;
 		}
 	}
 }
@@ -436,14 +435,12 @@ void SetNumCamera(int nNum)
 //=============================================================================
 void SetCameraPos(int nIdx, D3DXVECTOR3 posV, D3DXVECTOR3 posR, D3DXVECTOR3 rot, CAMERATYPE type)
 {
-	Camera* pCamera = GetCamera();
-
-	pCamera[nIdx].posV = posV;
-	pCamera[nIdx].posVDest = posV;
-	pCamera[nIdx].posR = posR;
-	pCamera[nIdx].posRDest = posR;
-	pCamera[nIdx].rot = rot;
-	pCamera[nIdx].type = type;
+	g_aCamera[nIdx].posV = posV;
+	g_aCamera[nIdx].posVDest = posV;
+	g_aCamera[nIdx].posR = posR;
+	g_aCamera[nIdx].posRDest = posR;
+	g_aCamera[nIdx].rot = rot;
+	g_aCamera[nIdx].type = type;
 }
 
 //=============================================================================
@@ -451,9 +448,7 @@ void SetCameraPos(int nIdx, D3DXVECTOR3 posV, D3DXVECTOR3 posR, D3DXVECTOR3 rot,
 //=============================================================================
 void SetCameraViewAngle(int nIdx, float fViewAngle)
 {
-	Camera* pCamera = GetCamera();
-
-	pCamera[nIdx].fMoveVA = fViewAngle;
+	g_aCamera[nIdx].fMoveVA = fViewAngle;
 }
 
 //=============================================================================

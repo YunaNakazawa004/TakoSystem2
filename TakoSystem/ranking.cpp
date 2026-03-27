@@ -138,9 +138,6 @@ void InitRanking(void)
 	// モデルの初期化処理
 	InitFishes();
 
-	// 3Dパーティクルの初期化処理
-	InitParticle3D();
-
 	// 紙吹雪の初期化処理
 	InitConfetti();
 
@@ -448,9 +445,6 @@ void UninitRanking(void)
 	// モデルの終了処理
 	UninitFishes();
 
-	// 3Dパーティクルの終了処理
-	UninitParticle3D();
-
 	// 紙吹雪の終了処理
 	UninitConfetti();
 
@@ -524,12 +518,6 @@ void UpdateRanking(void)
 
 	// モデルの更新処理
 	UpdateFishes();
-
-	// 3Dエフェクトの更新処理
-	UpdateEffect3D();
-
-	// 3Dパーティクルの更新処理
-	UpdateParticle3D();
 
 	// 紙吹雪の更新処理
 	UpdateConfetti();
@@ -934,12 +922,6 @@ void DrawRanking(void)
 	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);			// アルファブレンドを無効に設定
 	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);		// ( , 比較方法(すべて))
 	pDevice->SetRenderState(D3DRS_ALPHAREF, 0);						// ( , 基準値)
-
-	// 3Dエフェクトの描画処理
-	DrawEffect3D();
-
-	// 3Dパーティクルの描画処理
-	DrawParticle3D();
 
 	// 紙吹雪の描画処理
 	DrawConfetti();
