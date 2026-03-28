@@ -436,19 +436,13 @@ void InitRanking(void)
 //=======================================
 void UninitRanking(void)
 {
-	// サウンドの停止
-	StopSound();
-
-	// ステージの終了処理
-	//UninitStage();
-
 	// モデルの終了処理
 	UninitFishes();
 
 	// 紙吹雪の終了処理
 	UninitConfetti();
 
-	// サウンドの終了処理
+	// サウンドの停止
 	StopSound();
 
 	// テクスチャの破棄
@@ -772,6 +766,7 @@ void UpdateRanking(void)
 		{// 決定キー（ENTERキー）が押された
 
 			SetFade(MODE_LOGO);
+			return;
 		}
 
 #ifdef ENABLE_ONELAP
@@ -779,6 +774,7 @@ void UpdateRanking(void)
 		{// フェード終了
 
 			SetFade(MODE_LOGO);
+			return;
 		}
 #endif
 	}

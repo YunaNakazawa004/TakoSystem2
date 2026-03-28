@@ -268,6 +268,7 @@ void UpdateLogo(void)
 
 		// フェードの設定
 		SetFade(MODE_TITLE);
+		return;
 	}
 #endif
 
@@ -276,6 +277,7 @@ void UpdateLogo(void)
 
 		// フェードの設定
 		SetFade(MODE_TITLE);
+		return;
 	}
 }
 

@@ -491,6 +491,7 @@ void UpdateTutorial(void)
 	{// フェード終了
 
 		SetFade(MODE_GAME);
+		return;
 	}
 #endif
 
