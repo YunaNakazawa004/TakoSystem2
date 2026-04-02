@@ -1264,7 +1264,7 @@ void SetLoadResult(const char* pFilename)
 	int nCntIdxInfo = 0;							// インデクスのカウンタ
 	int nCntPolygonInfo = 0;						// ポリゴンInfoのインデクスのカウンタ
 
-	char aErrorText[64] = {};						// エラー文章
+	char aErrorText[256] = {};						// エラー文章
 
 	// ====================================================
 

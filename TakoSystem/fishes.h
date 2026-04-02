@@ -56,24 +56,25 @@ typedef struct
 	D3DXVECTOR3 move;							// 移動量
 	D3DXVECTOR3 rot;							// 向き
 	float fAngle;								// 向きの最終地点
+
+	FISHESSTATE state;							// 状態
+	int nCounterState;							// 状態カウンター
+
 	int nType;									// 種類
 	int MoveTime;								// 移動時間
 	int StopTime;								// 停止時間
 	int nMoveCnt;								// 移動カウント
 	int	nStopCnt;								// 停止カウント
-	D3DXMATRIX mtxWorld;						// ワールドマトリックス
-	FISHESSTATE state;							// 状態
-	int nCounterState;							// 状態カウンター
-	float fRadius;								// 半径
-	float fHeight;								// 高さ
+
 	bool bMove;									// 動いているかどうか
 	bool bMoving;								// 動くかどうか
+	
+	D3DXMATRIX mtxWorld;						// ワールドマトリックス
+
 	bool bUse;									// 使用しているかどうか
-	int nModelIdx;								// 使用するモデル
+
 	Model aModel[MAX_NUMMODEL];					// モデル(パーツ)
-	int nNumModel;								// モデル(パーツ)の総数
-	MOTION_INFO aMotionInfo[MAX_MOTION];		// モーション情報
-	int nNumMotion;								// モーションの総数
+
 	MOTIONTYPE motionType;						// 現在のモーションの種類
 	bool bLoopMotion;							// 現在のループするかどうか
 	int nNumKey;								// 現在のキーの総数
@@ -94,33 +95,25 @@ typedef struct
 #if 1
 typedef struct
 {
+	Model aModel[MAX_NUMMODEL];					// モデル(パーツ)
+	char sModelFileName[100][100];				// モデル(パーツ)のファイル名
+	
+	// 使ってない
 	float fRadius;								// 半径
 	float fHeight;								// 高さ
-	Model aModel[MAX_NUMMODEL];					// モデル(パーツ)
-	Model_Info aModel_Info[MAX_NUMMODEL];		// モデル(パーツ)
-	int nNumModel;								// モデル(パーツ)の総数
-	char sModelFileName[100][100];				// モデル(パーツ)のファイル名
-	MOTION_INFO aMotionInfo[MAX_MOTION];		// モーション情報
-	int nNumMotion;								// モーションの総数
 	bool bBlendMotion;							// ブレンドモーションがあるかどうか
 	MOTIONTYPE motionTypeBlend;					// ブレンドモーションの種類
 	bool bLoopMotionBlend;						// ブレンドモーションがループするかどうか
 	int nNumKeyBlend;							// ブレンドモーションのキーの総数
 	int nFrameBlend;							// ブレンドフレーム数
 	int nCounterBlend;							// ブレンドカウンター
+
 	bool bUse;									// 使用状態
 
 }Fishes_Model;
 #endif
 
-// 生き物のモデル情報 -------------------
 
-typedef struct
-{
-	int Model_Idx;								// モデルのインデックス
-	char Model_FileName[256];					// モデルのファイルネーム
-
-}FishesInfo;
 
 //=======================================
 // プロトタイプ宣言

@@ -973,7 +973,7 @@ void SetLoadOceanCurrents(const char* pFilename)
 	int nNumTexture = 0;							// 読み込むテクスチャ数
 	int nCntTexture = 0;							// 読み取ったテクスチャ数
 
-	char aErrorText[64] = {};						// エラー文章
+	char aErrorText[256] = {};						// エラー文章
 
 	int nSetLay = -1;
 	D3DXVECTOR3 setLayPos;

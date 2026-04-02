@@ -173,7 +173,7 @@ void InitUiEsaWindow(void)
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();
 
 	HRESULT hr;					// 実行結果
-	char aErrerText[64] = {};	// エラーテキスト
+	char aErrerText[256] = {};	// エラーテキスト
 
 	// ====================================================
 

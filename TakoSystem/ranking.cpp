@@ -92,7 +92,7 @@ void InitRanking(void)
 {
 	// ローカル変数宣言 -----------------
 
-	int nCntObj2D = 0, nCntObj3D = 0;
+	//int nCntObj2D = 0, nCntObj3D = 0;
 	VERTEX_2D* pVtx2D;							// 頂点情報へのポインタ
 	VERTEX_3D* pVtx3D;							// 頂点情報へのポインタ
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();	// デバイスへのポインタ
@@ -717,7 +717,7 @@ void UpdateRanking(void)
 		// サウンドの再生
 		PlaySound(SOUND_BGM_RANKING);
 
-		for (int nCntRank = 0, nRank = 0, nCpuCnt = 0; nCntRank < MAX_RANK; nCntRank++)
+		for (int nCntRank = 0; nCntRank < MAX_RANK; nCntRank++)
 		{
 			if (g_aRank_Info[nCntRank].nRank == 0)
 			{
@@ -753,7 +753,7 @@ void UpdateRanking(void)
 	}
 	if (TimeCnt == 700)
 	{
-		for (int nCntRank = 0, nWrite = 0; nCntRank < MAX_RANKINGOBJ; nCntRank++)
+		for (int nCntRank = 0; nCntRank < MAX_RANKINGOBJ; nCntRank++)
 		{ // テクスチャ位置を動かす
 
 			if (!g_aRankOBJ[nCntRank].bUse || g_aRankOBJ[nCntRank].nObjType != RANKTYPE_2D)
@@ -963,8 +963,8 @@ bool SetRankingObj(D3DXVECTOR3 pos,		// 位置
 {
 	// ローカル変数宣言 -----------------
 
-	VERTEX_2D* pVtx2D;							// 頂点情報へのポインタ
-	VERTEX_3D* pVtx3D;							// 頂点情報へのポインタ
+	//VERTEX_2D* pVtx2D;							// 頂点情報へのポインタ
+	//VERTEX_3D* pVtx3D;							// 頂点情報へのポインタ
 	//LPDIRECT3DDEVICE9 pDevice = GetDevice();	// デバイスへのポインタ
 	//Fishes* pFishes = GetFishes();
 
