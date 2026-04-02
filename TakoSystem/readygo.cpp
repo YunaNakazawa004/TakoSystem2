@@ -273,6 +273,7 @@ void UpdateReady(void)
 					g_aReady[nCntReady].bDisp = false;
 
 					SetFade(MODE_GAME);
+					return;
 				}
 				if (g_aReady[nCntReady].Idx == 2 && bfrag[99] == false)
 				{
@@ -285,17 +286,18 @@ void UpdateReady(void)
 			if (g_aReady[nCntReady].TexIdx == 1)
 			{ // GOテクスチャなら
 
+				if (g_aReady[nCntReady].Idx == 0 && g_aReady[nCntReady].bDisp == true && g_aReady[nCntReady].nDelay < 0 && bfrag[98] == false)
+				{ // 音
+					// サウンドの再生
+					PlaySound(SOUND_SE_GO); 
+					bfrag[98] = true;
+				}
 				if (g_aReady[nCntReady].Idx == -1 && g_aReady[nCntReady].bDisp == true)
 				{ // 非表示にしてゲームスタート
 
 					g_aReady[nCntReady].bDisp = false;
 
 					bGameStart = true;
-				}
-				if (g_aReady[nCntReady].Idx == 0 && g_aReady[nCntReady].bDisp == true)
-				{ // 音
-					// サウンドの再生
-					PlaySound(SOUND_SE_GO);
 				}
 			}
 			if (g_aReady[nCntReady].TexIdx == 2)

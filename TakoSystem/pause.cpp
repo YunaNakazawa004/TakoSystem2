@@ -262,11 +262,13 @@ void UpdatePause(void)
 		case PAUSE_MENU_RETRY:
 			g_pauseMenu = PAUSE_MENU_RETRY;
 			SetFade(MODE_GAME);
+			return;
 			break;
 
 		case PAUSE_MENU_QUIT:
 			g_pauseMenu = PAUSE_MENU_QUIT;
 			SetFade(MODE_TITLE);
+			return;
 			break;
 
 		}

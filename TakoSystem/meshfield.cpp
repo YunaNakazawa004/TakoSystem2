@@ -288,81 +288,87 @@ void SetMeshField(MESHFIELDTYPE type, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECT
 			VERTEX_3D_MALTI* pVtx;					// 頂点情報へのポインタ
 			WORD* pIdx;							// インデックス情報へのポインタ
 
+			if (g_aMeshField[nCntMeshField].pVtxBuff == NULL)
+			{// NULLだったら作る
 			// 頂点バッファの生成
-			pDevice->CreateVertexBuffer(sizeof(VERTEX_3D_MALTI) * ((int)g_aMeshField[nCntMeshField].block.x + 1) * ((int)g_aMeshField[nCntMeshField].block.y + 1),
-				D3DUSAGE_WRITEONLY,
-				FVF_VERTEX_3D_MALTI,
-				D3DPOOL_MANAGED,
-				&g_aMeshField[nCntMeshField].pVtxBuff,
-				NULL);
+				pDevice->CreateVertexBuffer(sizeof(VERTEX_3D_MALTI) * ((int)g_aMeshField[nCntMeshField].block.x + 1) * ((int)g_aMeshField[nCntMeshField].block.y + 1),
+					D3DUSAGE_WRITEONLY,
+					FVF_VERTEX_3D_MALTI,
+					D3DPOOL_MANAGED,
+					&g_aMeshField[nCntMeshField].pVtxBuff,
+					NULL);
 
-			// 頂点バッファをロックし、頂点情報へのポインタを取得
-			g_aMeshField[nCntMeshField].pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+				// 頂点バッファをロックし、頂点情報へのポインタを取得
+				g_aMeshField[nCntMeshField].pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
-			// 頂点情報の設定
-			for (int nCntMeshField1 = 0; nCntMeshField1 < (int)g_aMeshField[nCntMeshField].block.y + 1; nCntMeshField1++)
-			{
-				for (int nCntMeshField2 = 0; nCntMeshField2 < (int)g_aMeshField[nCntMeshField].block.x + 1; nCntMeshField2++)
+				// 頂点情報の設定
+				for (int nCntMeshField1 = 0; nCntMeshField1 < (int)g_aMeshField[nCntMeshField].block.y + 1; nCntMeshField1++)
 				{
-					// 頂点座標の設定
-					pVtx[0].pos.x = -((g_aMeshField[nCntMeshField].block.x * g_aMeshField[nCntMeshField].size.x) * 0.5f) + (nCntMeshField2 * g_aMeshField[nCntMeshField].size.x);
-					pVtx[0].pos.y = 0.0f;
-					pVtx[0].pos.z = ((g_aMeshField[nCntMeshField].block.y * g_aMeshField[nCntMeshField].size.y) * 0.5f) - (nCntMeshField1 * g_aMeshField[nCntMeshField].size.y);
+					for (int nCntMeshField2 = 0; nCntMeshField2 < (int)g_aMeshField[nCntMeshField].block.x + 1; nCntMeshField2++)
+					{
+						// 頂点座標の設定
+						pVtx[0].pos.x = -((g_aMeshField[nCntMeshField].block.x * g_aMeshField[nCntMeshField].size.x) * 0.5f) + (nCntMeshField2 * g_aMeshField[nCntMeshField].size.x);
+						pVtx[0].pos.y = 0.0f;
+						pVtx[0].pos.z = ((g_aMeshField[nCntMeshField].block.y * g_aMeshField[nCntMeshField].size.y) * 0.5f) - (nCntMeshField1 * g_aMeshField[nCntMeshField].size.y);
 
-					// rhwの設定
-					pVtx[0].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+						// rhwの設定
+						pVtx[0].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 
-					// 頂点カラーの設定
-					pVtx[0].col = WHITE_VTX;
+						// 頂点カラーの設定
+						pVtx[0].col = WHITE_VTX;
 
-					// テクスチャ座標の設定
-					pVtx[0].tex = D3DXVECTOR2((float)nCntMeshField2, (float)nCntMeshField1);
-					pVtx[0].texM = D3DXVECTOR2((float)nCntMeshField2 / 2.0f, (float)nCntMeshField1 / 2.0f);
+						// テクスチャ座標の設定
+						pVtx[0].tex = D3DXVECTOR2((float)nCntMeshField2, (float)nCntMeshField1);
+						pVtx[0].texM = D3DXVECTOR2((float)nCntMeshField2 / 2.0f, (float)nCntMeshField1 / 2.0f);
 
-					pVtx++;
+						pVtx++;
+					}
 				}
-			}
 
-			// 頂点バッファをアンロックする
-			g_aMeshField[nCntMeshField].pVtxBuff->Unlock();
+				// 頂点バッファをアンロックする
+				g_aMeshField[nCntMeshField].pVtxBuff->Unlock();
+			}
 
 			// インデックスバッファの数
 			int nNumIdx = (((int)g_aMeshField[nCntMeshField].block.x) * ((int)g_aMeshField[nCntMeshField].block.y) * 2) + (((int)g_aMeshField[nCntMeshField].block.y - 1) * 4) + 2;
 
+			if (g_aMeshField[nCntMeshField].pIdxBuff == NULL)
+			{// NULLだったら作る
 			// インデックスバッファの生成
-			pDevice->CreateIndexBuffer(sizeof(WORD) * nNumIdx,
-				D3DUSAGE_WRITEONLY,
-				D3DFMT_INDEX16,
-				D3DPOOL_MANAGED,
-				&g_aMeshField[nCntMeshField].pIdxBuff,
-				NULL);
+				pDevice->CreateIndexBuffer(sizeof(WORD) * nNumIdx,
+					D3DUSAGE_WRITEONLY,
+					D3DFMT_INDEX16,
+					D3DPOOL_MANAGED,
+					&g_aMeshField[nCntMeshField].pIdxBuff,
+					NULL);
 
-			// インデックスバッファをロックし、頂点番号データへのポインタを取得
-			g_aMeshField[nCntMeshField].pIdxBuff->Lock(0, 0, (void**)&pIdx, 0);
+				// インデックスバッファをロックし、頂点番号データへのポインタを取得
+				g_aMeshField[nCntMeshField].pIdxBuff->Lock(0, 0, (void**)&pIdx, 0);
 
-			int nNum = 0;			// 縮退ポリゴン
+				int nNum = 0;			// 縮退ポリゴン
 
-			// 頂点番号データの設定
-			for (int nCntMeshField1 = 0; nCntMeshField1 < nNumIdx / 2; nCntMeshField1++)
-			{
-				if (nCntMeshField1 % ((int)g_aMeshField[nCntMeshField].block.x + 2) == ((int)g_aMeshField[nCntMeshField].block.x + 1))
-				{// 縮退ポリゴンのところ
-					nNum++;
+				// 頂点番号データの設定
+				for (int nCntMeshField1 = 0; nCntMeshField1 < nNumIdx / 2; nCntMeshField1++)
+				{
+					if (nCntMeshField1 % ((int)g_aMeshField[nCntMeshField].block.x + 2) == ((int)g_aMeshField[nCntMeshField].block.x + 1))
+					{// 縮退ポリゴンのところ
+						nNum++;
 
-					pIdx[0] = (WORD)(nCntMeshField1 - nNum);
-					pIdx[1] = (WORD)(nCntMeshField1 - nNum + ((int)g_aMeshField[nCntMeshField].block.x + 2));
+						pIdx[0] = (WORD)(nCntMeshField1 - nNum);
+						pIdx[1] = (WORD)(nCntMeshField1 - nNum + ((int)g_aMeshField[nCntMeshField].block.x + 2));
+					}
+					else
+					{// 縮退以外のポリゴン
+						pIdx[0] = (WORD)((nCntMeshField1 - nNum) + ((int)g_aMeshField[nCntMeshField].block.x + 1));
+						pIdx[1] = (WORD)((nCntMeshField1 - nNum));
+					}
+
+					pIdx += 2;
 				}
-				else
-				{// 縮退以外のポリゴン
-					pIdx[0] = (WORD)((nCntMeshField1 - nNum) + ((int)g_aMeshField[nCntMeshField].block.x + 1));
-					pIdx[1] = (WORD)((nCntMeshField1 - nNum));
-				}
 
-				pIdx += 2;
+				// インデックスバッファをアンロックする
+				g_aMeshField[nCntMeshField].pIdxBuff->Unlock();
 			}
-
-			// インデックスバッファをアンロックする
-			g_aMeshField[nCntMeshField].pIdxBuff->Unlock();
 
 			break;
 		}

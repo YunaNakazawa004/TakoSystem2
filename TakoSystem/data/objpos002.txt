@@ -20,7 +20,7 @@ TEXTURE_FILENAME = data/TEXTURE/suna.png				# [1]砂テクスチャ
 #------------------------------------------------------------------------------
 # モデル数
 #------------------------------------------------------------------------------
-NUM_MODEL = 20
+NUM_MODEL = 21
 
 #------------------------------------------------------------------------------
 # モデルファイル名
@@ -28,7 +28,7 @@ NUM_MODEL = 20
 MODEL_FILENAME = data/MODEL/rock/iwa000.x						# [0]岩
 MODEL_FILENAME = data/MODEL/rock/iwa001.x						# [1]岩2
 MODEL_FILENAME = data/MODEL/rock/iwa002.x						# [2]岩3
-MODEL_FILENAME = data/MODEL/Others_Object/ami000.x				# [3]網
+MODEL_FILENAME = data/MODEL/Others_Object/ami001.x				# [3]網
 MODEL_FILENAME = data/MODEL/Others_Object/fishborn001.x			# [4]魚の骨
 MODEL_FILENAME = data/MODEL/Others_Object/SangoSho.x			# [5]サンゴ礁
 MODEL_FILENAME = data/MODEL/Others_Object/taru002half.x			# [6]樽
@@ -45,6 +45,7 @@ MODEL_FILENAME = data/MODEL/rock/parts/parts009.x				# [16]デカ岩の一部3
 MODEL_FILENAME = data/MODEL/rock/parts/parts010.x				# [17]デカ岩の一部4
 MODEL_FILENAME = data/MODEL/rock/parts/parts011.x				# [18]デカ岩の一部5
 MODEL_FILENAME = data/MODEL/rock/parts/parts012.x				# [19]デカ岩の一部6
+MODEL_FILENAME = data/MODEL/rock/iwa007.x						# [20]岩6
 
 
 #------------------------------------------------------------------------------
@@ -539,7 +540,7 @@ MODELSET
 END_MODELSET
 
 MODELSET
-	TYPE = 9
+	TYPE = 20
 	POS = 120 0 1000
 	ROT = 0 180 0
 	SHADOW = 0

@@ -273,81 +273,87 @@ void SetWaterSurf(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVECTO
 			VERTEX_3D_MALTI* pVtx;					// 頂点情報へのポインタ
 			WORD* pIdx;							// インデックス情報へのポインタ
 
+			if (g_aWatersurf[nCntWaterSurf].pVtxBuff == NULL)
+			{// NULLだったら作る
 			// 頂点バッファの生成
-			pDevice->CreateVertexBuffer(sizeof(VERTEX_3D_MALTI) * ((int)g_aWatersurf[nCntWaterSurf].block.x + 1) * ((int)g_aWatersurf[nCntWaterSurf].block.y + 1),
-				D3DUSAGE_WRITEONLY,
-				FVF_VERTEX_3D_MALTI,
-				D3DPOOL_MANAGED,
-				&g_aWatersurf[nCntWaterSurf].pVtxBuff,
-				NULL);
+				pDevice->CreateVertexBuffer(sizeof(VERTEX_3D_MALTI) * ((int)g_aWatersurf[nCntWaterSurf].block.x + 1) * ((int)g_aWatersurf[nCntWaterSurf].block.y + 1),
+					D3DUSAGE_WRITEONLY,
+					FVF_VERTEX_3D_MALTI,
+					D3DPOOL_MANAGED,
+					&g_aWatersurf[nCntWaterSurf].pVtxBuff,
+					NULL);
 
-			// 頂点バッファをロックし、頂点情報へのポインタを取得
-			g_aWatersurf[nCntWaterSurf].pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+				// 頂点バッファをロックし、頂点情報へのポインタを取得
+				g_aWatersurf[nCntWaterSurf].pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
-			// 頂点情報の設定
-			for (int nCntWaterSurf1 = 0; nCntWaterSurf1 < (int)g_aWatersurf[nCntWaterSurf].block.y + 1; nCntWaterSurf1++)
-			{
-				for (int nCntWaterSurf2 = 0; nCntWaterSurf2 < (int)g_aWatersurf[nCntWaterSurf].block.x + 1; nCntWaterSurf2++)
+				// 頂点情報の設定
+				for (int nCntWaterSurf1 = 0; nCntWaterSurf1 < (int)g_aWatersurf[nCntWaterSurf].block.y + 1; nCntWaterSurf1++)
 				{
-					// 頂点座標の設定
-					pVtx[0].pos.x = -((g_aWatersurf[nCntWaterSurf].block.x * g_aWatersurf[nCntWaterSurf].size.x) * 0.5f) + (nCntWaterSurf2 * g_aWatersurf[nCntWaterSurf].size.x);
-					pVtx[0].pos.y = 0.0f;
-					pVtx[0].pos.z = ((g_aWatersurf[nCntWaterSurf].block.y * g_aWatersurf[nCntWaterSurf].size.y) * 0.5f) - (nCntWaterSurf1 * g_aWatersurf[nCntWaterSurf].size.y);
+					for (int nCntWaterSurf2 = 0; nCntWaterSurf2 < (int)g_aWatersurf[nCntWaterSurf].block.x + 1; nCntWaterSurf2++)
+					{
+						// 頂点座標の設定
+						pVtx[0].pos.x = -((g_aWatersurf[nCntWaterSurf].block.x * g_aWatersurf[nCntWaterSurf].size.x) * 0.5f) + (nCntWaterSurf2 * g_aWatersurf[nCntWaterSurf].size.x);
+						pVtx[0].pos.y = 0.0f;
+						pVtx[0].pos.z = ((g_aWatersurf[nCntWaterSurf].block.y * g_aWatersurf[nCntWaterSurf].size.y) * 0.5f) - (nCntWaterSurf1 * g_aWatersurf[nCntWaterSurf].size.y);
 
-					// rhwの設定
-					pVtx[0].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+						// rhwの設定
+						pVtx[0].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 
-					// 頂点カラーの設定
-					pVtx[0].col = col;
+						// 頂点カラーの設定
+						pVtx[0].col = col;
 
-					// テクスチャ座標の設定
-					pVtx[0].tex = D3DXVECTOR2((float)nCntWaterSurf2 / 5.0f, (float)nCntWaterSurf1 / 5.0f);
-					pVtx[0].texM = D3DXVECTOR2((float)nCntWaterSurf2 / 2.0f, (float)nCntWaterSurf1 / 2.0f);
+						// テクスチャ座標の設定
+						pVtx[0].tex = D3DXVECTOR2((float)nCntWaterSurf2 / 5.0f, (float)nCntWaterSurf1 / 5.0f);
+						pVtx[0].texM = D3DXVECTOR2((float)nCntWaterSurf2 / 2.0f, (float)nCntWaterSurf1 / 2.0f);
 
-					pVtx++;
+						pVtx++;
+					}
 				}
-			}
 
-			// 頂点バッファをアンロックする
-			g_aWatersurf[nCntWaterSurf].pVtxBuff->Unlock();
+				// 頂点バッファをアンロックする
+				g_aWatersurf[nCntWaterSurf].pVtxBuff->Unlock();
+			}
 
 			// インデックスバッファの数
 			int nNumIdx = (((int)g_aWatersurf[nCntWaterSurf].block.x) * ((int)g_aWatersurf[nCntWaterSurf].block.y) * 2) + (((int)g_aWatersurf[nCntWaterSurf].block.y - 1) * 4) + 2;
-
+			
+			if (g_aWatersurf[nCntWaterSurf].pIdxBuff == NULL)
+			{// NULLだったら作る
 			// インデックスバッファの生成
-			pDevice->CreateIndexBuffer(sizeof(WORD) * nNumIdx,
-				D3DUSAGE_WRITEONLY,
-				D3DFMT_INDEX16,
-				D3DPOOL_MANAGED,
-				&g_aWatersurf[nCntWaterSurf].pIdxBuff,
-				NULL);
+				pDevice->CreateIndexBuffer(sizeof(WORD) * nNumIdx,
+					D3DUSAGE_WRITEONLY,
+					D3DFMT_INDEX16,
+					D3DPOOL_MANAGED,
+					&g_aWatersurf[nCntWaterSurf].pIdxBuff,
+					NULL);
 
-			// インデックスバッファをロックし、頂点番号データへのポインタを取得
-			g_aWatersurf[nCntWaterSurf].pIdxBuff->Lock(0, 0, (void**)&pIdx, 0);
+				// インデックスバッファをロックし、頂点番号データへのポインタを取得
+				g_aWatersurf[nCntWaterSurf].pIdxBuff->Lock(0, 0, (void**)&pIdx, 0);
 
-			int nNum = 0;			// 縮退ポリゴン
+				int nNum = 0;			// 縮退ポリゴン
 
-			// 頂点番号データの設定
-			for (int nCntWaterSurf1 = 0; nCntWaterSurf1 < nNumIdx / 2; nCntWaterSurf1++)
-			{
-				if (nCntWaterSurf1 % ((int)g_aWatersurf[nCntWaterSurf].block.x + 2) == ((int)g_aWatersurf[nCntWaterSurf].block.x + 1))
-				{// 縮退ポリゴンのところ
-					nNum++;
+				// 頂点番号データの設定
+				for (int nCntWaterSurf1 = 0; nCntWaterSurf1 < nNumIdx / 2; nCntWaterSurf1++)
+				{
+					if (nCntWaterSurf1 % ((int)g_aWatersurf[nCntWaterSurf].block.x + 2) == ((int)g_aWatersurf[nCntWaterSurf].block.x + 1))
+					{// 縮退ポリゴンのところ
+						nNum++;
 
-					pIdx[0] = (WORD)(nCntWaterSurf1 - nNum);
-					pIdx[1] = (WORD)(nCntWaterSurf1 - nNum + ((int)g_aWatersurf[nCntWaterSurf].block.x + 2));
+						pIdx[0] = (WORD)(nCntWaterSurf1 - nNum);
+						pIdx[1] = (WORD)(nCntWaterSurf1 - nNum + ((int)g_aWatersurf[nCntWaterSurf].block.x + 2));
+					}
+					else
+					{// 縮退以外のポリゴン
+						pIdx[0] = (WORD)((nCntWaterSurf1 - nNum) + ((int)g_aWatersurf[nCntWaterSurf].block.x + 1));
+						pIdx[1] = (WORD)((nCntWaterSurf1 - nNum));
+					}
+
+					pIdx += 2;
 				}
-				else
-				{// 縮退以外のポリゴン
-					pIdx[0] = (WORD)((nCntWaterSurf1 - nNum) + ((int)g_aWatersurf[nCntWaterSurf].block.x + 1));
-					pIdx[1] = (WORD)((nCntWaterSurf1 - nNum));
-				}
 
-				pIdx += 2;
+				// インデックスバッファをアンロックする
+				g_aWatersurf[nCntWaterSurf].pIdxBuff->Unlock();
 			}
-
-			// インデックスバッファをアンロックする
-			g_aWatersurf[nCntWaterSurf].pIdxBuff->Unlock();
 
 			break;
 		}

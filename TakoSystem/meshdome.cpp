@@ -208,61 +208,43 @@ void SetMeshDome(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, float fRad
 			int nNumVtxCylinder = ((int)g_aMeshDome[nCntMeshDome].block.x + 1) * ((int)g_aMeshDome[nCntMeshDome].block.y + 1);
 			int nNumVtxFan = (int)g_aMeshDome[nCntMeshDome].block.x + 1;
 
+			if (g_aMeshDome[nCntMeshDome].pVtxBuff == NULL)
+			{// NULLだったら作る
 			// 頂点バッファの生成
-			pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * (nNumVtxCylinder + nNumVtxFan),
-				D3DUSAGE_WRITEONLY,
-				FVF_VERTEX_3D,
-				D3DPOOL_MANAGED,
-				&g_aMeshDome[nCntMeshDome].pVtxBuff,
-				NULL);
+				pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * (nNumVtxCylinder + nNumVtxFan),
+					D3DUSAGE_WRITEONLY,
+					FVF_VERTEX_3D,
+					D3DPOOL_MANAGED,
+					&g_aMeshDome[nCntMeshDome].pVtxBuff,
+					NULL);
 
-			// 頂点バッファをロックし、頂点情報へのポインタを取得
-			g_aMeshDome[nCntMeshDome].pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+				// 頂点バッファをロックし、頂点情報へのポインタを取得
+				g_aMeshDome[nCntMeshDome].pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
-			float fAngleX = ((D3DX_PI * 2.0f) / g_aMeshDome[nCntMeshDome].block.x);
-			float fAngleY = (D3DX_PI / 2.0f) / (g_aMeshDome[nCntMeshDome].block.y + 1);
+				float fAngleX = ((D3DX_PI * 2.0f) / g_aMeshDome[nCntMeshDome].block.x);
+				float fAngleY = (D3DX_PI / 2.0f) / (g_aMeshDome[nCntMeshDome].block.y + 1);
 
-			for (int nCntMeshDome1 = 0; nCntMeshDome1 < nNumVtxFan; nCntMeshDome1++)
-			{
-				if (nCntMeshDome1 == 0)
-				{// 真ん中
-					pVtx[0].pos.x = 0.0f;
-					pVtx[0].pos.y = g_aMeshDome[nCntMeshDome].fRadius;
-					pVtx[0].pos.z = 0.0f;
-
-					// テクスチャ座標の設定
-					pVtx[0].tex = D3DXVECTOR2(0.0f, 0.5f);
-				}
-				else
-				{// 真ん中以外
-					// 頂点座標の設定
-					pVtx[0].pos.x = sinf(-nCntMeshDome1 * fAngleX) * g_aMeshDome[nCntMeshDome].fRadius * sinf(fAngleY);
-					pVtx[0].pos.y = cosf(-fAngleY) * g_aMeshDome[nCntMeshDome].fRadius;
-					pVtx[0].pos.z = cosf(-nCntMeshDome1 * fAngleX) * g_aMeshDome[nCntMeshDome].fRadius * sinf(fAngleY);
-
-					// テクスチャ座標の設定
-					pVtx[0].tex = D3DXVECTOR2(0.5f, 1.0f);
-				}
-
-				// rhwの設定
-				pVtx[0].nor = D3DXVECTOR3(-pVtx[0].pos.x, -pVtx[0].pos.y, -pVtx[0].pos.z);
-				D3DXVec3Normalize(&pVtx[0].nor, &pVtx[0].nor);
-
-				// 頂点カラーの設定
-				pVtx[0].col = WHITE_VTX;
-
-				pVtx++;
-			}
-
-			// 頂点情報の設定
-			for (int nCntMeshDome1 = 0; nCntMeshDome1 < (int)g_aMeshDome[nCntMeshDome].block.y + 1; nCntMeshDome1++)
-			{
-				for (int nCntMeshDome2 = 0; nCntMeshDome2 < (int)g_aMeshDome[nCntMeshDome].block.x + 1; nCntMeshDome2++)
+				for (int nCntMeshDome1 = 0; nCntMeshDome1 < nNumVtxFan; nCntMeshDome1++)
 				{
-					// 頂点座標の設定
-					pVtx[0].pos.x = sinf(nCntMeshDome2 * fAngleX) * g_aMeshDome[nCntMeshDome].fRadius * sinf(fAngleY * (nCntMeshDome1 + 1));
-					pVtx[0].pos.y = cosf(fAngleY * (nCntMeshDome1 + 1)) * g_aMeshDome[nCntMeshDome].fRadius;
-					pVtx[0].pos.z = cosf(nCntMeshDome2 * fAngleX) * g_aMeshDome[nCntMeshDome].fRadius * sinf(fAngleY * (nCntMeshDome1 + 1));
+					if (nCntMeshDome1 == 0)
+					{// 真ん中
+						pVtx[0].pos.x = 0.0f;
+						pVtx[0].pos.y = g_aMeshDome[nCntMeshDome].fRadius;
+						pVtx[0].pos.z = 0.0f;
+
+						// テクスチャ座標の設定
+						pVtx[0].tex = D3DXVECTOR2(0.0f, 0.5f);
+					}
+					else
+					{// 真ん中以外
+						// 頂点座標の設定
+						pVtx[0].pos.x = sinf(-nCntMeshDome1 * fAngleX) * g_aMeshDome[nCntMeshDome].fRadius * sinf(fAngleY);
+						pVtx[0].pos.y = cosf(-fAngleY) * g_aMeshDome[nCntMeshDome].fRadius;
+						pVtx[0].pos.z = cosf(-nCntMeshDome1 * fAngleX) * g_aMeshDome[nCntMeshDome].fRadius * sinf(fAngleY);
+
+						// テクスチャ座標の設定
+						pVtx[0].tex = D3DXVECTOR2(0.5f, 1.0f);
+					}
 
 					// rhwの設定
 					pVtx[0].nor = D3DXVECTOR3(-pVtx[0].pos.x, -pVtx[0].pos.y, -pVtx[0].pos.z);
@@ -271,68 +253,92 @@ void SetMeshDome(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, float fRad
 					// 頂点カラーの設定
 					pVtx[0].col = WHITE_VTX;
 
-					// テクスチャ座標の設定
-					pVtx[0].tex.x = (float)(1.0f / g_aMeshDome[nCntMeshDome].block.x * nCntMeshDome2);
-					pVtx[0].tex.y = (float)(1.0f / g_aMeshDome[nCntMeshDome].block.y * nCntMeshDome1);
-
 					pVtx++;
 				}
-			}
 
-			// 頂点バッファをアンロックする
-			g_aMeshDome[nCntMeshDome].pVtxBuff->Unlock();
+				// 頂点情報の設定
+				for (int nCntMeshDome1 = 0; nCntMeshDome1 < (int)g_aMeshDome[nCntMeshDome].block.y + 1; nCntMeshDome1++)
+				{
+					for (int nCntMeshDome2 = 0; nCntMeshDome2 < (int)g_aMeshDome[nCntMeshDome].block.x + 1; nCntMeshDome2++)
+					{
+						// 頂点座標の設定
+						pVtx[0].pos.x = sinf(nCntMeshDome2 * fAngleX) * g_aMeshDome[nCntMeshDome].fRadius * sinf(fAngleY * (nCntMeshDome1 + 1));
+						pVtx[0].pos.y = cosf(fAngleY * (nCntMeshDome1 + 1)) * g_aMeshDome[nCntMeshDome].fRadius;
+						pVtx[0].pos.z = cosf(nCntMeshDome2 * fAngleX) * g_aMeshDome[nCntMeshDome].fRadius * sinf(fAngleY * (nCntMeshDome1 + 1));
+
+						// rhwの設定
+						pVtx[0].nor = D3DXVECTOR3(-pVtx[0].pos.x, -pVtx[0].pos.y, -pVtx[0].pos.z);
+						D3DXVec3Normalize(&pVtx[0].nor, &pVtx[0].nor);
+
+						// 頂点カラーの設定
+						pVtx[0].col = WHITE_VTX;
+
+						// テクスチャ座標の設定
+						pVtx[0].tex.x = (float)(1.0f / g_aMeshDome[nCntMeshDome].block.x * nCntMeshDome2);
+						pVtx[0].tex.y = (float)(1.0f / g_aMeshDome[nCntMeshDome].block.y * nCntMeshDome1);
+
+						pVtx++;
+					}
+				}
+
+				// 頂点バッファをアンロックする
+				g_aMeshDome[nCntMeshDome].pVtxBuff->Unlock();
+			}
 
 			// インデックスバッファの数
 			int nNumIdxCylinder = (((int)g_aMeshDome[nCntMeshDome].block.x) * ((int)g_aMeshDome[nCntMeshDome].block.y) * 2) + (((int)g_aMeshDome[nCntMeshDome].block.y - 1) * 4) + 2;
 			int nNumIdxFan = (int)g_aMeshDome[nCntMeshDome].block.x + 2;
 
+			if (g_aMeshDome[nCntMeshDome].pIdxBuff == NULL)
+			{// NULLだったら作る
 			// インデックスバッファの生成
-			pDevice->CreateIndexBuffer(sizeof(WORD) * (nNumIdxCylinder + nNumIdxFan),
-				D3DUSAGE_WRITEONLY,
-				D3DFMT_INDEX16,
-				D3DPOOL_MANAGED,
-				&g_aMeshDome[nCntMeshDome].pIdxBuff,
-				NULL);
+				pDevice->CreateIndexBuffer(sizeof(WORD) * (nNumIdxCylinder + nNumIdxFan),
+					D3DUSAGE_WRITEONLY,
+					D3DFMT_INDEX16,
+					D3DPOOL_MANAGED,
+					&g_aMeshDome[nCntMeshDome].pIdxBuff,
+					NULL);
 
-			// インデックスバッファをロックし、頂点番号データへのポインタを取得
-			g_aMeshDome[nCntMeshDome].pIdxBuff->Lock(0, 0, (void**)&pIdx, 0);
+				// インデックスバッファをロックし、頂点番号データへのポインタを取得
+				g_aMeshDome[nCntMeshDome].pIdxBuff->Lock(0, 0, (void**)&pIdx, 0);
 
-			// 頂点番号データの設定
-			for (int nCntMeshDome1 = 0; nCntMeshDome1 < nNumIdxFan; nCntMeshDome1++)
-			{
-				pIdx[0] = (WORD)nCntMeshDome1;
+				// 頂点番号データの設定
+				for (int nCntMeshDome1 = 0; nCntMeshDome1 < nNumIdxFan; nCntMeshDome1++)
+				{
+					pIdx[0] = (WORD)nCntMeshDome1;
 
-				if (nCntMeshDome1 == nNumIdxFan - 1)
-				{// 最後は戻ってくる
-					pIdx[0] = 1;
+					if (nCntMeshDome1 == nNumIdxFan - 1)
+					{// 最後は戻ってくる
+						pIdx[0] = 1;
+					}
+
+					pIdx++;
 				}
 
-				pIdx++;
+				int nNum = 0;			// 縮退ポリゴン
+
+				// 頂点番号データの設定
+				for (int nCntMeshDome1 = 0; nCntMeshDome1 < nNumIdxCylinder / 2; nCntMeshDome1++)
+				{
+					if (nCntMeshDome1 % ((int)g_aMeshDome[nCntMeshDome].block.x + 2) == ((int)g_aMeshDome[nCntMeshDome].block.x + 1))
+					{// 縮退ポリゴンのところ
+						nNum++;
+
+						pIdx[0] = (WORD)(((int)g_aMeshDome[nCntMeshDome].block.x + 1) + nCntMeshDome1 - nNum);
+						pIdx[1] = (WORD)(((int)g_aMeshDome[nCntMeshDome].block.x + 1) + nCntMeshDome1 - nNum + ((int)g_aMeshDome[nCntMeshDome].block.x + 2));
+					}
+					else
+					{// 縮退以外のポリゴン
+						pIdx[0] = (WORD)(((int)g_aMeshDome[nCntMeshDome].block.x + 1) + (nCntMeshDome1 - nNum) + ((int)g_aMeshDome[nCntMeshDome].block.x + 1));
+						pIdx[1] = (WORD)(((int)g_aMeshDome[nCntMeshDome].block.x + 1) + (nCntMeshDome1 - nNum));
+					}
+
+					pIdx += 2;
+				}
+
+				// インデックスバッファをアンロックする
+				g_aMeshDome[nCntMeshDome].pIdxBuff->Unlock();
 			}
-
-			int nNum = 0;			// 縮退ポリゴン
-
-			// 頂点番号データの設定
-			for (int nCntMeshDome1 = 0; nCntMeshDome1 < nNumIdxCylinder / 2; nCntMeshDome1++)
-			{
-				if (nCntMeshDome1 % ((int)g_aMeshDome[nCntMeshDome].block.x + 2) == ((int)g_aMeshDome[nCntMeshDome].block.x + 1))
-				{// 縮退ポリゴンのところ
-					nNum++;
-
-					pIdx[0] = (WORD)(((int)g_aMeshDome[nCntMeshDome].block.x + 1) + nCntMeshDome1 - nNum);
-					pIdx[1] = (WORD)(((int)g_aMeshDome[nCntMeshDome].block.x + 1) + nCntMeshDome1 - nNum + ((int)g_aMeshDome[nCntMeshDome].block.x + 2));
-				}
-				else
-				{// 縮退以外のポリゴン
-					pIdx[0] = (WORD)(((int)g_aMeshDome[nCntMeshDome].block.x + 1) + (nCntMeshDome1 - nNum) + ((int)g_aMeshDome[nCntMeshDome].block.x + 1));
-					pIdx[1] = (WORD)(((int)g_aMeshDome[nCntMeshDome].block.x + 1) + (nCntMeshDome1 - nNum));
-				}
-
-				pIdx += 2;
-			}
-
-			// インデックスバッファをアンロックする
-			g_aMeshDome[nCntMeshDome].pIdxBuff->Unlock();
 
 			break;
 		}

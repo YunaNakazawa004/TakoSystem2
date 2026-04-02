@@ -326,6 +326,7 @@ void UpdateTitle(void)
 	if (g_bTestTitle == true)
 	{
 		SetFade(MODE_LOGO);
+		return;
 	}
 #endif 
 #endif
@@ -611,6 +612,7 @@ void UpdateTitle(void)
 			// モード設定
 			PlaySound(SOUND_SE_DECISION);
 			SetFade(MODE_TUTORIAL);
+			return;
 		}
 
 	}
@@ -626,6 +628,7 @@ void UpdateTitle(void)
 	{// 時間経過でランキングへ移行
 
 		SetFade(MODE_LOGO);
+		return;
 	}
 
 #ifdef ENABLE_ONELAP
@@ -633,6 +636,7 @@ void UpdateTitle(void)
 	{// フェード終了字にゲーム
 
 		SetFade(MODE_TUTORIAL);
+		return;
 	}
 #endif
 }

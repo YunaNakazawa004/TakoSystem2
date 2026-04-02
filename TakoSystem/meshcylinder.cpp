@@ -112,33 +112,31 @@ void UpdateMeshCylinder(void)
 			continue;
 		}
 
-		MeshCylinder* pMeshC = &g_aMeshCylinder[nCntMeshC];
-
-		switch (pMeshC->state)
+		switch (g_aMeshCylinder[nCntMeshC].state)
 		{
 		case MESHCYLINDERSTATE_NONE:
-			pMeshC->col.a = 1.0f;
+			g_aMeshCylinder[nCntMeshC].col.a = 1.0f;
 
 			break;
 
 		case MESHCYLINDERSTATE_FADEIN:
-			pMeshC->col.a -= CYLINDER_FADE_SPEED;
+			g_aMeshCylinder[nCntMeshC].col.a -= CYLINDER_FADE_SPEED;
 
-			if (pMeshC->col.a <= 0.0f)
+			if (g_aMeshCylinder[nCntMeshC].col.a <= 0.0f)
 			{// 透明になった
-				pMeshC->col.a = 0.0f;
-				pMeshC->state = MESHCYLINDERSTATE_FADEOUT;
+				g_aMeshCylinder[nCntMeshC].col.a = 0.0f;
+				g_aMeshCylinder[nCntMeshC].state = MESHCYLINDERSTATE_FADEOUT;
 			}
 
 			break;
 
 		case MESHCYLINDERSTATE_FADEOUT:
-			pMeshC->col.a += CYLINDER_FADE_SPEED;
+			g_aMeshCylinder[nCntMeshC].col.a += CYLINDER_FADE_SPEED;
 
-			if (pMeshC->col.a >= 1.0f)
+			if (g_aMeshCylinder[nCntMeshC].col.a >= 1.0f)
 			{// 不透明になった
-				pMeshC->col.a = 1.0f;
-				pMeshC->state = MESHCYLINDERSTATE_FADEIN;
+				g_aMeshCylinder[nCntMeshC].col.a = 1.0f;
+				g_aMeshCylinder[nCntMeshC].state = MESHCYLINDERSTATE_FADEIN;
 			}
 
 			break;
@@ -154,7 +152,7 @@ void UpdateMeshCylinder(void)
 			for (int nCntMeshCylinder2 = 0; nCntMeshCylinder2 < (int)g_aMeshCylinder[nCntMeshC].block.x + 1; nCntMeshCylinder2++)
 			{
 				// テクスチャ座標の設定
-				pVtx[0].col = pMeshC->col;
+				pVtx[0].col = g_aMeshCylinder[nCntMeshC].col;
 
 				pVtx++;
 			}
@@ -279,99 +277,105 @@ int SetMeshCylinder(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR2 block, D3DXVEC
 			VERTEX_3D* pVtx;					// 頂点情報へのポインタ
 			WORD* pIdx;							// インデックス情報へのポインタ
 
+			if (g_aMeshCylinder[nCntMeshCylinder].pVtxBuff == NULL)
+			{// NULLだったら作る
 			// 頂点バッファの生成
-			pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * ((int)g_aMeshCylinder[nCntMeshCylinder].block.x + 1) * ((int)g_aMeshCylinder[nCntMeshCylinder].block.y + 1),
-				D3DUSAGE_WRITEONLY,
-				FVF_VERTEX_3D,
-				D3DPOOL_MANAGED,
-				&g_aMeshCylinder[nCntMeshCylinder].pVtxBuff,
-				NULL);
+				pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * ((int)g_aMeshCylinder[nCntMeshCylinder].block.x + 1) * ((int)g_aMeshCylinder[nCntMeshCylinder].block.y + 1),
+					D3DUSAGE_WRITEONLY,
+					FVF_VERTEX_3D,
+					D3DPOOL_MANAGED,
+					&g_aMeshCylinder[nCntMeshCylinder].pVtxBuff,
+					NULL);
 
-			// 頂点バッファをロックし、頂点情報へのポインタを取得
-			g_aMeshCylinder[nCntMeshCylinder].pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+				// 頂点バッファをロックし、頂点情報へのポインタを取得
+				g_aMeshCylinder[nCntMeshCylinder].pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
-			// 頂点情報の設定
-			for (int nCntMeshCylinder1 = 0; nCntMeshCylinder1 < (int)g_aMeshCylinder[nCntMeshCylinder].block.y + 1; nCntMeshCylinder1++)
-			{
-				for (int nCntMeshCylinder2 = 0; nCntMeshCylinder2 < (int)g_aMeshCylinder[nCntMeshCylinder].block.x + 1; nCntMeshCylinder2++)
+				// 頂点情報の設定
+				for (int nCntMeshCylinder1 = 0; nCntMeshCylinder1 < (int)g_aMeshCylinder[nCntMeshCylinder].block.y + 1; nCntMeshCylinder1++)
 				{
-					// 頂点座標の設定
-					if (bInside == true)
-					{// 内側
-						pVtx[0].pos.x = sinf(nCntMeshCylinder2 * ((D3DX_PI * 2.0f) / g_aMeshCylinder[nCntMeshCylinder].block.x)) * g_aMeshCylinder[nCntMeshCylinder].size.x;
-						pVtx[0].pos.y = g_aMeshCylinder[nCntMeshCylinder].size.y - ((g_aMeshCylinder[nCntMeshCylinder].size.y / g_aMeshCylinder[nCntMeshCylinder].block.y) * nCntMeshCylinder1);
-						pVtx[0].pos.z = cosf(nCntMeshCylinder2 * ((D3DX_PI * 2.0f) / g_aMeshCylinder[nCntMeshCylinder].block.x)) * g_aMeshCylinder[nCntMeshCylinder].size.x;
-					}
-					else
-					{// 外側
-						pVtx[0].pos.x = sinf(-nCntMeshCylinder2 * ((D3DX_PI * 2.0f) / g_aMeshCylinder[nCntMeshCylinder].block.x)) * g_aMeshCylinder[nCntMeshCylinder].size.x;
-						pVtx[0].pos.y = g_aMeshCylinder[nCntMeshCylinder].size.y - ((g_aMeshCylinder[nCntMeshCylinder].size.y / g_aMeshCylinder[nCntMeshCylinder].block.y) * nCntMeshCylinder1);
-						pVtx[0].pos.z = cosf(-nCntMeshCylinder2 * ((D3DX_PI * 2.0f) / g_aMeshCylinder[nCntMeshCylinder].block.x)) * g_aMeshCylinder[nCntMeshCylinder].size.x;
-					}
+					for (int nCntMeshCylinder2 = 0; nCntMeshCylinder2 < (int)g_aMeshCylinder[nCntMeshCylinder].block.x + 1; nCntMeshCylinder2++)
+					{
+						// 頂点座標の設定
+						if (bInside == true)
+						{// 内側
+							pVtx[0].pos.x = sinf(nCntMeshCylinder2 * ((D3DX_PI * 2.0f) / g_aMeshCylinder[nCntMeshCylinder].block.x)) * g_aMeshCylinder[nCntMeshCylinder].size.x;
+							pVtx[0].pos.y = g_aMeshCylinder[nCntMeshCylinder].size.y - ((g_aMeshCylinder[nCntMeshCylinder].size.y / g_aMeshCylinder[nCntMeshCylinder].block.y) * nCntMeshCylinder1);
+							pVtx[0].pos.z = cosf(nCntMeshCylinder2 * ((D3DX_PI * 2.0f) / g_aMeshCylinder[nCntMeshCylinder].block.x)) * g_aMeshCylinder[nCntMeshCylinder].size.x;
+						}
+						else
+						{// 外側
+							pVtx[0].pos.x = sinf(-nCntMeshCylinder2 * ((D3DX_PI * 2.0f) / g_aMeshCylinder[nCntMeshCylinder].block.x)) * g_aMeshCylinder[nCntMeshCylinder].size.x;
+							pVtx[0].pos.y = g_aMeshCylinder[nCntMeshCylinder].size.y - ((g_aMeshCylinder[nCntMeshCylinder].size.y / g_aMeshCylinder[nCntMeshCylinder].block.y) * nCntMeshCylinder1);
+							pVtx[0].pos.z = cosf(-nCntMeshCylinder2 * ((D3DX_PI * 2.0f) / g_aMeshCylinder[nCntMeshCylinder].block.x)) * g_aMeshCylinder[nCntMeshCylinder].size.x;
+						}
 
-					// rhwの設定
-					pVtx[0].nor = D3DXVECTOR3(pVtx[0].pos.x, 0.0f, pVtx[0].pos.z);
-					D3DXVec3Normalize(&pVtx[0].nor, &pVtx[0].nor);
+						// rhwの設定
+						pVtx[0].nor = D3DXVECTOR3(pVtx[0].pos.x, 0.0f, pVtx[0].pos.z);
+						D3DXVec3Normalize(&pVtx[0].nor, &pVtx[0].nor);
 
-					// 頂点カラーの設定
-					pVtx[0].col = col;
+						// 頂点カラーの設定
+						pVtx[0].col = col;
 
-					if (type == MESHCYLINDERTYPE_SEA)
-					{// 海
-						// テクスチャ座標の設定
-						pVtx[0].tex = D3DXVECTOR2((float)nCntMeshCylinder2, (float)nCntMeshCylinder1);
+						if (type == MESHCYLINDERTYPE_SEA)
+						{// 海
+							// テクスチャ座標の設定
+							pVtx[0].tex = D3DXVECTOR2((float)nCntMeshCylinder2, (float)nCntMeshCylinder1);
+						}
+						else
+						{// 岩とか
+							// テクスチャ座標の設定
+							pVtx[0].tex = D3DXVECTOR2((float)nCntMeshCylinder2 / g_aMeshCylinder[nCntMeshCylinder].block.x
+								, (float)nCntMeshCylinder1);
+						}
+
+						pVtx++;
 					}
-					else
-					{// 岩とか
-						// テクスチャ座標の設定
-						pVtx[0].tex = D3DXVECTOR2((float)nCntMeshCylinder2 / g_aMeshCylinder[nCntMeshCylinder].block.x
-							, (float)nCntMeshCylinder1);
-					}
-
-					pVtx++;
 				}
-			}
 
-			// 頂点バッファをアンロックする
-			g_aMeshCylinder[nCntMeshCylinder].pVtxBuff->Unlock();
+				// 頂点バッファをアンロックする
+				g_aMeshCylinder[nCntMeshCylinder].pVtxBuff->Unlock();
+			}
 
 			// インデックスバッファの数
 			int nNumIdx = (((int)g_aMeshCylinder[nCntMeshCylinder].block.x) * ((int)g_aMeshCylinder[nCntMeshCylinder].block.y) * 2) + (((int)g_aMeshCylinder[nCntMeshCylinder].block.y - 1) * 4) + 2;
 
+			if (g_aMeshCylinder[nCntMeshCylinder].pIdxBuff == NULL)
+			{// NULLだったら作る
 			// インデックスバッファの生成
-			pDevice->CreateIndexBuffer(sizeof(WORD) * nNumIdx,
-				D3DUSAGE_WRITEONLY,
-				D3DFMT_INDEX16,
-				D3DPOOL_MANAGED,
-				&g_aMeshCylinder[nCntMeshCylinder].pIdxBuff,
-				NULL);
+				pDevice->CreateIndexBuffer(sizeof(WORD) * nNumIdx,
+					D3DUSAGE_WRITEONLY,
+					D3DFMT_INDEX16,
+					D3DPOOL_MANAGED,
+					&g_aMeshCylinder[nCntMeshCylinder].pIdxBuff,
+					NULL);
 
-			// インデックスバッファをロックし、頂点番号データへのポインタを取得
-			g_aMeshCylinder[nCntMeshCylinder].pIdxBuff->Lock(0, 0, (void**)&pIdx, 0);
+				// インデックスバッファをロックし、頂点番号データへのポインタを取得
+				g_aMeshCylinder[nCntMeshCylinder].pIdxBuff->Lock(0, 0, (void**)&pIdx, 0);
 
-			int nNum = 0;			// 縮退ポリゴン
+				int nNum = 0;			// 縮退ポリゴン
 
-			// 頂点番号データの設定
-			for (int nCntMeshCylinder1 = 0; nCntMeshCylinder1 < nNumIdx / 2; nCntMeshCylinder1++)
-			{
-				if (nCntMeshCylinder1 % ((int)g_aMeshCylinder[nCntMeshCylinder].block.x + 2) == ((int)g_aMeshCylinder[nCntMeshCylinder].block.x + 1))
-				{// 縮退ポリゴンのところ
-					nNum++;
+				// 頂点番号データの設定
+				for (int nCntMeshCylinder1 = 0; nCntMeshCylinder1 < nNumIdx / 2; nCntMeshCylinder1++)
+				{
+					if (nCntMeshCylinder1 % ((int)g_aMeshCylinder[nCntMeshCylinder].block.x + 2) == ((int)g_aMeshCylinder[nCntMeshCylinder].block.x + 1))
+					{// 縮退ポリゴンのところ
+						nNum++;
 
-					pIdx[0] = (WORD)(nCntMeshCylinder1 - nNum);
-					pIdx[1] = (WORD)(nCntMeshCylinder1 + ((int)g_aMeshCylinder[nCntMeshCylinder].block.x + 1));
+						pIdx[0] = (WORD)(nCntMeshCylinder1 - nNum);
+						pIdx[1] = (WORD)(nCntMeshCylinder1 + ((int)g_aMeshCylinder[nCntMeshCylinder].block.x + 1));
+					}
+					else
+					{// 縮退以外のポリゴン
+						pIdx[0] = (WORD)((nCntMeshCylinder1 - nNum) + ((int)g_aMeshCylinder[nCntMeshCylinder].block.x + 1));
+						pIdx[1] = (WORD)((nCntMeshCylinder1 - nNum));
+					}
+
+					pIdx += 2;
 				}
-				else
-				{// 縮退以外のポリゴン
-					pIdx[0] = (WORD)((nCntMeshCylinder1 - nNum) + ((int)g_aMeshCylinder[nCntMeshCylinder].block.x + 1));
-					pIdx[1] = (WORD)((nCntMeshCylinder1 - nNum));
-				}
 
-				pIdx += 2;
+				// インデックスバッファをアンロックする
+				g_aMeshCylinder[nCntMeshCylinder].pIdxBuff->Unlock();
 			}
-
-			// インデックスバッファをアンロックする
-			g_aMeshCylinder[nCntMeshCylinder].pIdxBuff->Unlock();
 
 			return nCntMeshCylinder;
 		}

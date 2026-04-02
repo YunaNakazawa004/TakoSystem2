@@ -35,15 +35,14 @@ void InitSeaweed(void)
 	// ローカル変数宣言
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();			// デバイスへのポインタ
 	D3DXMATERIAL* pMat;
-	Seaweed* pSeaweed = GetSeaweed();
 
 	// 海藻の情報の初期化
-	for (int nCntSeaweed = 0; nCntSeaweed < MAX_SEAWEED; nCntSeaweed++, pSeaweed++)
+	for (int nCntSeaweed = 0; nCntSeaweed < MAX_SEAWEED; nCntSeaweed++)
 	{
-		pSeaweed->pos = FIRST_POS;
-		pSeaweed->rot = FIRST_POS;
-		pSeaweed->bUse = false;
-		pSeaweed->nNumModel = 0;
+		g_aSeaweed[nCntSeaweed].pos = FIRST_POS;
+		g_aSeaweed[nCntSeaweed].rot = FIRST_POS;
+		g_aSeaweed[nCntSeaweed].bUse = false;
+		g_aSeaweed[nCntSeaweed].nNumModel = 0;
 	}
 
 	// モデルの読み込み
@@ -118,25 +117,24 @@ void UninitSeaweed(void)
 //=============================================================================
 void UpdateSeaweed(void)
 {
-	Seaweed* pSeaweed = GetSeaweed();
 	//static int nCounter = 0;
 
-	for (int nCntSeaweed = 0; nCntSeaweed < MAX_SEAWEED; nCntSeaweed++, pSeaweed++)
+	for (int nCntSeaweed = 0; nCntSeaweed < MAX_SEAWEED; nCntSeaweed++)
 	{
-		if (pSeaweed->bUse == false)
+		if (g_aSeaweed[nCntSeaweed].bUse == false)
 		{// 使用してないとき
 			continue;
 		}
 
-		for (int nCntModel = 0; nCntModel < pSeaweed->nNumModel; nCntModel++)
+		for (int nCntModel = 0; nCntModel < g_aSeaweed[nCntSeaweed].nNumModel; nCntModel++)
 		{
 			if (nCntModel == 0)
 			{// 根本
-				pSeaweed->aModel[nCntModel].fAngle += 0.01f;
+				g_aSeaweed[nCntSeaweed].aModel[nCntModel].fAngle += 0.01f;
 			}
 			else
 			{// それ以外
-				pSeaweed->aModel[nCntModel].fAngle = 0.01f + pSeaweed->aModel[nCntModel - 1].fAngle;
+				g_aSeaweed[nCntSeaweed].aModel[nCntModel].fAngle = 0.01f + g_aSeaweed[nCntSeaweed].aModel[nCntModel - 1].fAngle;
 			}
 
 #if 0
@@ -150,39 +148,39 @@ void UpdateSeaweed(void)
 					rotDest.y = (float)(rand() % 629 - 314) / 100.0f;
 					rotDest.z = (float)(rand() % 629 - 314) / 100.0f;
 
-					pSeaweed->aModel[nCntModel].rotDest = rotDest + pSeaweed->aModel[nCntModel].rotOff;
+					g_aSeaweed[nCntSeaweed].aModel[nCntModel].rotDest = rotDest + g_aSeaweed[nCntSeaweed].aModel[nCntModel].rotOff;
 				}
 				else
 				{
-					pSeaweed->aModel[nCntModel].rotDest = -pSeaweed->aModel[nCntModel - 1].rotDest;
+					g_aSeaweed[nCntSeaweed].aModel[nCntModel].rotDest = -g_aSeaweed[nCntSeaweed].aModel[nCntModel - 1].rotDest;
 				}
 			}
 
-			pSeaweed->aModel[nCntModel].rot +=
-				(pSeaweed->aModel[nCntModel].rotDest - pSeaweed->aModel[nCntModel].rot) * 0.005f;
+			g_aSeaweed[nCntSeaweed].aModel[nCntModel].rot +=
+				(g_aSeaweed[nCntSeaweed].aModel[nCntModel].rotDest - g_aSeaweed[nCntSeaweed].aModel[nCntModel].rot) * 0.005f;
 #endif
 
-			CorrectAngle(&pSeaweed->aModel[nCntModel].fAngle, pSeaweed->aModel[nCntModel].fAngle);
+			CorrectAngle(&g_aSeaweed[nCntSeaweed].aModel[nCntModel].fAngle, g_aSeaweed[nCntSeaweed].aModel[nCntModel].fAngle);
 
-			pSeaweed->aModel[nCntModel].pos.x = pSeaweed->aModel[nCntModel].posOff.x +
-				(sinf(pSeaweed->aModel[nCntModel].fAngle) * 3.0f);
-			pSeaweed->aModel[nCntModel].pos.z = pSeaweed->aModel[nCntModel].posOff.z +
-				(cosf(pSeaweed->aModel[nCntModel].fAngle) * 3.0f);
+			g_aSeaweed[nCntSeaweed].aModel[nCntModel].pos.x = g_aSeaweed[nCntSeaweed].aModel[nCntModel].posOff.x +
+				(sinf(g_aSeaweed[nCntSeaweed].aModel[nCntModel].fAngle) * 3.0f);
+			g_aSeaweed[nCntSeaweed].aModel[nCntModel].pos.z = g_aSeaweed[nCntSeaweed].aModel[nCntModel].posOff.z +
+				(cosf(g_aSeaweed[nCntSeaweed].aModel[nCntModel].fAngle) * 3.0f);
 
-			pSeaweed->aModel[nCntModel].rot.x +=
-				(pSeaweed->aModel[nCntModel].rotDest.x - pSeaweed->aModel[nCntModel].rot.x) * 0.01f;
-			pSeaweed->aModel[nCntModel].rot.x +=
-				(pSeaweed->aModel[nCntModel].rotDest.z - pSeaweed->aModel[nCntModel].rot.z) * 0.01f;
+			g_aSeaweed[nCntSeaweed].aModel[nCntModel].rot.x +=
+				(g_aSeaweed[nCntSeaweed].aModel[nCntModel].rotDest.x - g_aSeaweed[nCntSeaweed].aModel[nCntModel].rot.x) * 0.01f;
+			g_aSeaweed[nCntSeaweed].aModel[nCntModel].rot.x +=
+				(g_aSeaweed[nCntSeaweed].aModel[nCntModel].rotDest.z - g_aSeaweed[nCntSeaweed].aModel[nCntModel].rot.z) * 0.01f;
 
-			pSeaweed->aModel[nCntModel].rot.x +=
-				(pSeaweed->aModel[nCntModel].rotOff.x - pSeaweed->aModel[nCntModel].rot.x) * 0.01f;
-			pSeaweed->aModel[nCntModel].rot.z +=
-				(pSeaweed->aModel[nCntModel].rotOff.z - pSeaweed->aModel[nCntModel].rot.z) * 0.01f;
+			g_aSeaweed[nCntSeaweed].aModel[nCntModel].rot.x +=
+				(g_aSeaweed[nCntSeaweed].aModel[nCntModel].rotOff.x - g_aSeaweed[nCntSeaweed].aModel[nCntModel].rot.x) * 0.01f;
+			g_aSeaweed[nCntSeaweed].aModel[nCntModel].rot.z +=
+				(g_aSeaweed[nCntSeaweed].aModel[nCntModel].rotOff.z - g_aSeaweed[nCntSeaweed].aModel[nCntModel].rot.z) * 0.01f;
 
-			pSeaweed->aModel[nCntModel].rotDest.x +=
-				(0.0f - pSeaweed->aModel[nCntModel].rotDest.x) * 0.01f;
-			pSeaweed->aModel[nCntModel].rotDest.z +=
-				(0.0f - pSeaweed->aModel[nCntModel].rotDest.z) * 0.01f;
+			g_aSeaweed[nCntSeaweed].aModel[nCntModel].rotDest.x +=
+				(0.0f - g_aSeaweed[nCntSeaweed].aModel[nCntModel].rotDest.x) * 0.01f;
+			g_aSeaweed[nCntSeaweed].aModel[nCntModel].rotDest.z +=
+				(0.0f - g_aSeaweed[nCntSeaweed].aModel[nCntModel].rotDest.z) * 0.01f;
 		}
 	}
 
@@ -199,77 +197,76 @@ void DrawSeaweed(void)
 	D3DXMATRIX mtxRot, mtxTrans;		// 計算用マトリックス
 	D3DMATERIAL9 matDef;				// 現在のマテリアル保存用
 	D3DXMATERIAL* pMat;					// マテリアルデータへのポインタ
-	Seaweed* pSeaweed = GetSeaweed();
 
-	for (int nCntSeaweed = 0; nCntSeaweed < MAX_SEAWEED; nCntSeaweed++, pSeaweed++)
+	for (int nCntSeaweed = 0; nCntSeaweed < MAX_SEAWEED; nCntSeaweed++)
 	{
-		if (pSeaweed->bUse == true)
+		if (g_aSeaweed[nCntSeaweed].bUse == true)
 		{// 使用しているとき
 			// ワールドマトリックスの初期化
-			D3DXMatrixIdentity(&pSeaweed->mtxWorld);
+			D3DXMatrixIdentity(&g_aSeaweed[nCntSeaweed].mtxWorld);
 
 			// 向きを反映
-			D3DXMatrixRotationYawPitchRoll(&mtxRot, pSeaweed->rot.y, pSeaweed->rot.x, pSeaweed->rot.z);
-			D3DXMatrixMultiply(&pSeaweed->mtxWorld, &pSeaweed->mtxWorld, &mtxRot);
+			D3DXMatrixRotationYawPitchRoll(&mtxRot, g_aSeaweed[nCntSeaweed].rot.y, g_aSeaweed[nCntSeaweed].rot.x, g_aSeaweed[nCntSeaweed].rot.z);
+			D3DXMatrixMultiply(&g_aSeaweed[nCntSeaweed].mtxWorld, &g_aSeaweed[nCntSeaweed].mtxWorld, &mtxRot);
 
 			// 位置を反映
-			D3DXMatrixTranslation(&mtxTrans, pSeaweed->pos.x, pSeaweed->pos.y, pSeaweed->pos.z);
-			D3DXMatrixMultiply(&pSeaweed->mtxWorld, &pSeaweed->mtxWorld, &mtxTrans);
+			D3DXMatrixTranslation(&mtxTrans, g_aSeaweed[nCntSeaweed].pos.x, g_aSeaweed[nCntSeaweed].pos.y, g_aSeaweed[nCntSeaweed].pos.z);
+			D3DXMatrixMultiply(&g_aSeaweed[nCntSeaweed].mtxWorld, &g_aSeaweed[nCntSeaweed].mtxWorld, &mtxTrans);
 
 			// ワールドマトリックスの設定
-			pDevice->SetTransform(D3DTS_WORLD, &pSeaweed->mtxWorld);
+			pDevice->SetTransform(D3DTS_WORLD, &g_aSeaweed[nCntSeaweed].mtxWorld);
 
 			// 現在のマテリアルを取得
 			pDevice->GetMaterial(&matDef);
 
 			// 全モデル(パーツ)の描画
-			for (int nCntModel = 0; nCntModel < pSeaweed->nNumModel; nCntModel++)
+			for (int nCntModel = 0; nCntModel < g_aSeaweed[nCntSeaweed].nNumModel; nCntModel++)
 			{
 				D3DXMATRIX mtxRotModel, mtxTransModel, mtxScaleModel;		// 計算用マトリックス
 				D3DXMATRIX mtxParent;						// 親のマトリックス
 
 				// パーツのワールドマトリックスの初期化
-				D3DXMatrixIdentity(&pSeaweed->aModel[nCntModel].mtxWorld);
+				D3DXMatrixIdentity(&g_aSeaweed[nCntSeaweed].aModel[nCntModel].mtxWorld);
 
 				// パーツの向きを反映
-				D3DXMatrixRotationYawPitchRoll(&mtxRotModel, pSeaweed->aModel[nCntModel].rot.y, pSeaweed->aModel[nCntModel].rot.x, pSeaweed->aModel[nCntModel].rot.z);
-				D3DXMatrixMultiply(&pSeaweed->aModel[nCntModel].mtxWorld, &pSeaweed->aModel[nCntModel].mtxWorld, &mtxRotModel);
+				D3DXMatrixRotationYawPitchRoll(&mtxRotModel, g_aSeaweed[nCntSeaweed].aModel[nCntModel].rot.y, g_aSeaweed[nCntSeaweed].aModel[nCntModel].rot.x, g_aSeaweed[nCntSeaweed].aModel[nCntModel].rot.z);
+				D3DXMatrixMultiply(&g_aSeaweed[nCntSeaweed].aModel[nCntModel].mtxWorld, &g_aSeaweed[nCntSeaweed].aModel[nCntModel].mtxWorld, &mtxRotModel);
 
 				// パーツの位置を反映
-				D3DXMatrixTranslation(&mtxTransModel, pSeaweed->aModel[nCntModel].pos.x, pSeaweed->aModel[nCntModel].pos.y, pSeaweed->aModel[nCntModel].pos.z);
-				D3DXMatrixMultiply(&pSeaweed->aModel[nCntModel].mtxWorld, &pSeaweed->aModel[nCntModel].mtxWorld, &mtxTransModel);
+				D3DXMatrixTranslation(&mtxTransModel, g_aSeaweed[nCntSeaweed].aModel[nCntModel].pos.x, g_aSeaweed[nCntSeaweed].aModel[nCntModel].pos.y, g_aSeaweed[nCntSeaweed].aModel[nCntModel].pos.z);
+				D3DXMatrixMultiply(&g_aSeaweed[nCntSeaweed].aModel[nCntModel].mtxWorld, &g_aSeaweed[nCntSeaweed].aModel[nCntModel].mtxWorld, &mtxTransModel);
 
 				// パーツの「親のマトリックス」を設定
-				if (pSeaweed->aModel[nCntModel].nIdxModelParent != -1)
+				if (g_aSeaweed[nCntSeaweed].aModel[nCntModel].nIdxModelParent != -1)
 				{// 親モデルがある場合
-					mtxParent = pSeaweed->aModel[pSeaweed->aModel[nCntModel].nIdxModelParent].mtxWorld;
+					mtxParent = g_aSeaweed[nCntSeaweed].aModel[g_aSeaweed[nCntSeaweed].aModel[nCntModel].nIdxModelParent].mtxWorld;
 				}
 				else
 				{// 親モデルがない場合
-					mtxParent = pSeaweed->mtxWorld;
+					mtxParent = g_aSeaweed[nCntSeaweed].mtxWorld;
 				}
 
 				// 算出した「パーツのワールドマトリックス」と「親のマトリックス」をかけ合わせる
-				D3DXMatrixMultiply(&pSeaweed->aModel[nCntModel].mtxWorld,
-					&pSeaweed->aModel[nCntModel].mtxWorld,
+				D3DXMatrixMultiply(&g_aSeaweed[nCntSeaweed].aModel[nCntModel].mtxWorld,
+					&g_aSeaweed[nCntSeaweed].aModel[nCntModel].mtxWorld,
 					&mtxParent);
 
 				// パーツのワールドマトリックスを設定
-				pDevice->SetTransform(D3DTS_WORLD, &pSeaweed->aModel[nCntModel].mtxWorld);
+				pDevice->SetTransform(D3DTS_WORLD, &g_aSeaweed[nCntSeaweed].aModel[nCntModel].mtxWorld);
 
 				// マテリアルデータへのポインタを取得
-				pMat = (D3DXMATERIAL*)g_SeaweedModel[pSeaweed->aModel[nCntModel].type].pBuffMat->GetBufferPointer();
+				pMat = (D3DXMATERIAL*)g_SeaweedModel[g_aSeaweed[nCntSeaweed].aModel[nCntModel].type].pBuffMat->GetBufferPointer();
 
-				for (int nCntMat = 0; nCntMat < (int)g_SeaweedModel[pSeaweed->aModel[nCntModel].type].dwNumMat; nCntMat++)
+				for (int nCntMat = 0; nCntMat < (int)g_SeaweedModel[g_aSeaweed[nCntSeaweed].aModel[nCntModel].type].dwNumMat; nCntMat++)
 				{
 					// マテリアルの設定
 					pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
 
 					// テクスチャの設定
-					pDevice->SetTexture(0, g_SeaweedModel[pSeaweed->aModel[nCntModel].type].apTexture[nCntMat]);
+					pDevice->SetTexture(0, g_SeaweedModel[g_aSeaweed[nCntSeaweed].aModel[nCntModel].type].apTexture[nCntMat]);
 
 					// モデルパーツの描画
-					g_SeaweedModel[pSeaweed->aModel[nCntModel].type].pMesh->DrawSubset(nCntMat);
+					g_SeaweedModel[g_aSeaweed[nCntSeaweed].aModel[nCntModel].type].pMesh->DrawSubset(nCntMat);
 				}
 			}
 
@@ -284,47 +281,45 @@ void DrawSeaweed(void)
 //=============================================================================
 void SetSeaweed(D3DXVECTOR3 pos, int nLength)
 {
-	Seaweed* pSeaweed = GetSeaweed();
-
-	for (int nCntSeaweed = 0; nCntSeaweed < MAX_SEAWEED; nCntSeaweed++, pSeaweed++)
+	for (int nCntSeaweed = 0; nCntSeaweed < MAX_SEAWEED; nCntSeaweed++)
 	{
-		if (pSeaweed->bUse == false)
+		if (g_aSeaweed[nCntSeaweed].bUse == false)
 		{// 使用していない
-			pSeaweed->pos = pos;
-			pSeaweed->rot = D3DXVECTOR3(0.0f, (float)(rand() % 629 - 314) / 1000.0f, 0.0f);
-			pSeaweed->bUse = true;
-			pSeaweed->nNumModel = nLength;
+			g_aSeaweed[nCntSeaweed].pos = pos;
+			g_aSeaweed[nCntSeaweed].rot = D3DXVECTOR3(0.0f, (float)(rand() % 629 - 314) / 1000.0f, 0.0f);
+			g_aSeaweed[nCntSeaweed].bUse = true;
+			g_aSeaweed[nCntSeaweed].nNumModel = nLength;
 
 			for (int nCntModel = 0; nCntModel < nLength; nCntModel++)
 			{
-				pSeaweed->aModel[nCntModel].nIdx = nCntModel;
-				pSeaweed->aModel[nCntModel].nIdxModelParent = nCntModel - 1;
+				g_aSeaweed[nCntSeaweed].aModel[nCntModel].nIdx = nCntModel;
+				g_aSeaweed[nCntSeaweed].aModel[nCntModel].nIdxModelParent = nCntModel - 1;
 
 				if (nCntModel == 0)
 				{// 親
-					pSeaweed->aModel[nCntModel].pos = FIRST_POS;
-					pSeaweed->aModel[nCntModel].posOff = FIRST_POS;
+					g_aSeaweed[nCntSeaweed].aModel[nCntModel].pos = FIRST_POS;
+					g_aSeaweed[nCntSeaweed].aModel[nCntModel].posOff = FIRST_POS;
 				}
 				else
 				{// 親以外
-					pSeaweed->aModel[nCntModel].pos = D3DXVECTOR3(0.0f, SEAWEED_HEIGHT, 0.0f);
-					pSeaweed->aModel[nCntModel].posOff = D3DXVECTOR3(0.0f, SEAWEED_HEIGHT, 0.0f);
+					g_aSeaweed[nCntSeaweed].aModel[nCntModel].pos = D3DXVECTOR3(0.0f, SEAWEED_HEIGHT, 0.0f);
+					g_aSeaweed[nCntSeaweed].aModel[nCntModel].posOff = D3DXVECTOR3(0.0f, SEAWEED_HEIGHT, 0.0f);
 				}
 
 				D3DXVECTOR3 rot = FIRST_POS;
 				rot.y = (float)(rand() % 629 - 314) / 1000.0f;
 
-				pSeaweed->aModel[nCntModel].rot = rot;
-				pSeaweed->aModel[nCntModel].rotOff = rot;
-				pSeaweed->aModel[nCntModel].rotDest = FIRST_POS;
+				g_aSeaweed[nCntSeaweed].aModel[nCntModel].rot = rot;
+				g_aSeaweed[nCntSeaweed].aModel[nCntModel].rotOff = rot;
+				g_aSeaweed[nCntSeaweed].aModel[nCntModel].rotDest = FIRST_POS;
 
 				if (nCntModel != nLength - 1)
 				{// 最後以外
-					pSeaweed->aModel[nCntModel].type = SEAWEEDTYPE_BOTTOM;
+					g_aSeaweed[nCntSeaweed].aModel[nCntModel].type = SEAWEEDTYPE_BOTTOM;
 				}
 				else
 				{// 最後
-					pSeaweed->aModel[nCntModel].type = SEAWEEDTYPE_TOP;
+					g_aSeaweed[nCntSeaweed].aModel[nCntModel].type = SEAWEEDTYPE_TOP;
 				}
 			}
 
@@ -367,32 +362,30 @@ void SetRandomSeaweed(int nAmount)
 //=============================================================================
 void CollisionSeaweed(D3DXVECTOR3 pos)
 {
-	Seaweed* pSeaweed = GetSeaweed();
-
-	for (int nCntSeaweed = 0; nCntSeaweed < MAX_SEAWEED; nCntSeaweed++, pSeaweed++)
+	for (int nCntSeaweed = 0; nCntSeaweed < MAX_SEAWEED; nCntSeaweed++)
 	{
-		if (pSeaweed->bUse == false)
+		if (g_aSeaweed[nCntSeaweed].bUse == false)
 		{// 使用してないとき
 			continue;
 		}
 
-		for (int nCntModel = 0; nCntModel < pSeaweed->nNumModel; nCntModel++)
+		for (int nCntModel = 0; nCntModel < g_aSeaweed[nCntSeaweed].nNumModel; nCntModel++)
 		{
-			D3DXVECTOR3 SeaweedPos = D3DXVECTOR3(pSeaweed->aModel[nCntModel].mtxWorld._41,
-				pSeaweed->aModel[nCntModel].mtxWorld._42, pSeaweed->aModel[nCntModel].mtxWorld._43);
+			D3DXVECTOR3 SeaweedPos = D3DXVECTOR3(g_aSeaweed[nCntSeaweed].aModel[nCntModel].mtxWorld._41,
+				g_aSeaweed[nCntSeaweed].aModel[nCntModel].mtxWorld._42, g_aSeaweed[nCntSeaweed].aModel[nCntModel].mtxWorld._43);
 			D3DXVECTOR3 dist = SeaweedPos - pos;
 
 			if (D3DXVec3Length(&dist) < SEAWEED_DIST)
 			{// 近い
 				D3DXVec3Normalize(&dist, &dist);
 
-				pSeaweed->aModel[nCntModel].rotDest.x = sinf(dist.z);
-				pSeaweed->aModel[nCntModel].rotDest.z = cosf(dist.x);
+				g_aSeaweed[nCntSeaweed].aModel[nCntModel].rotDest.x = sinf(dist.z);
+				g_aSeaweed[nCntSeaweed].aModel[nCntModel].rotDest.z = cosf(dist.x);
 
-				if (nCntModel != pSeaweed->nNumModel - 1)
+				if (nCntModel != g_aSeaweed[nCntSeaweed].nNumModel - 1)
 				{// 最後じゃないとき
-					pSeaweed->aModel[nCntModel + 1].rotDest.x = -pSeaweed->aModel[nCntModel].rotDest.x;
-					pSeaweed->aModel[nCntModel + 1].rotDest.z = -pSeaweed->aModel[nCntModel].rotDest.z;
+					g_aSeaweed[nCntSeaweed].aModel[nCntModel + 1].rotDest.x = -g_aSeaweed[nCntSeaweed].aModel[nCntModel].rotDest.x;
+					g_aSeaweed[nCntSeaweed].aModel[nCntModel + 1].rotDest.z = -g_aSeaweed[nCntSeaweed].aModel[nCntModel].rotDest.z;
 				}
 
 				break;

@@ -135,82 +135,79 @@ void InitComputer(void)
 	// ローカル変数宣言
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();			// デバイスへのポインタ
 	D3DXMATERIAL* pMat;
-	Computer* pComputer = GetComputer();
 
 	// CPUの情報の初期化
-	for (int nCntComputer = 0; nCntComputer < MAX_COMPUTER; nCntComputer++, pComputer++)
+	for (int nCntComputer = 0; nCntComputer < MAX_COMPUTER; nCntComputer++)
 	{
-		pComputer->nIdx = nCntComputer;
-		pComputer->nCounter = 0;
-		pComputer->state = CPUSTATE_APPEAR;
-		pComputer->nCounterState = 0;
-		pComputer->phys.pos = FIRST_POS;
-		pComputer->phys.posOld = FIRST_POS;
-		pComputer->phys.move = FIRST_POS;
-		pComputer->phys.rot = FIRST_POS;
-		pComputer->phys.dir = FIRST_POS;
-		pComputer->phys.fAngleY = 0.0f;
-		pComputer->phys.fAngleX = 0.0f;
-		pComputer->phys.fRadius = CPU_WIDTH;
-		pComputer->phys.fHeight = CPU_HEIGHT;
-		pComputer->bLand = false;
-		pComputer->bUse = false;
+		g_aComputer[nCntComputer].nIdx = nCntComputer;
+		g_aComputer[nCntComputer].nCounter = 0;
+		g_aComputer[nCntComputer].state = CPUSTATE_APPEAR;
+		g_aComputer[nCntComputer].nCounterState = 0;
+		g_aComputer[nCntComputer].phys.pos = FIRST_POS;
+		g_aComputer[nCntComputer].phys.posOld = FIRST_POS;
+		g_aComputer[nCntComputer].phys.move = FIRST_POS;
+		g_aComputer[nCntComputer].phys.rot = FIRST_POS;
+		g_aComputer[nCntComputer].phys.dir = FIRST_POS;
+		g_aComputer[nCntComputer].phys.fAngleY = 0.0f;
+		g_aComputer[nCntComputer].phys.fAngleX = 0.0f;
+		g_aComputer[nCntComputer].phys.fRadius = CPU_WIDTH;
+		g_aComputer[nCntComputer].phys.fHeight = CPU_HEIGHT;
+		g_aComputer[nCntComputer].bLand = false;
+		g_aComputer[nCntComputer].bUse = false;
 
-		pComputer->nTargetFoodIdx = -1;
-		pComputer->nTargetEnemyIdx = -1;
-		pComputer->nTargetPotIdx = -1;
-		pComputer->targetWall = FIRST_POS;
-		pComputer->extarget = FIRST_POS;
-		pComputer->posX = FIRST_POS;
-		pComputer->vecX = FIRST_POS;
+		g_aComputer[nCntComputer].nTargetFoodIdx = -1;
+		g_aComputer[nCntComputer].nTargetEnemyIdx = -1;
+		g_aComputer[nCntComputer].nTargetPotIdx = -1;
+		g_aComputer[nCntComputer].targetWall = FIRST_POS;
+		g_aComputer[nCntComputer].extarget = FIRST_POS;
+		g_aComputer[nCntComputer].posX = FIRST_POS;
+		g_aComputer[nCntComputer].vecX = FIRST_POS;
 
-		pComputer->fFoodScore = 0;
-		pComputer->fAttackScore = 0;
-		pComputer->fEscapeScore = 0;
-		pComputer->fInkScore = 0;
+		g_aComputer[nCntComputer].fFoodScore = 0;
+		g_aComputer[nCntComputer].fAttackScore = 0;
+		g_aComputer[nCntComputer].fEscapeScore = 0;
+		g_aComputer[nCntComputer].fInkScore = 0;
 
-		pComputer->nTentacleCooldown = 0;
-		pComputer->nInkCooldown = 0;
-		pComputer->nThinkCooldown = 0;
-		pComputer->nExploreCooldown = 0;
+		g_aComputer[nCntComputer].nTentacleCooldown = 0;
+		g_aComputer[nCntComputer].nInkCooldown = 0;
+		g_aComputer[nCntComputer].nThinkCooldown = 0;
+		g_aComputer[nCntComputer].nExploreCooldown = 0;
 
-		pComputer->bBlinded = false;
-		pComputer->nBlindCounter = 0;
+		g_aComputer[nCntComputer].bBlinded = false;
+		g_aComputer[nCntComputer].nBlindCounter = 0;
 
-		pComputer->nFoodCount = 0;
-		pComputer->esaQueue.nTail = -1;
-		memset(&pComputer->esaQueue.nData, -1, sizeof(int[MAX_QUEUE]));
-		pComputer->Potstate = POTSTATE_NONE;
-		pComputer->nMaxFood = 1;
-		memset(&pComputer->nOrbitIdx, -1, sizeof(int[8]));
+		g_aComputer[nCntComputer].nFoodCount = 0;
+		g_aComputer[nCntComputer].esaQueue.nTail = -1;
+		memset(&g_aComputer[nCntComputer].esaQueue.nData, -1, sizeof(int[MAX_QUEUE]));
+		g_aComputer[nCntComputer].Potstate = POTSTATE_NONE;
+		g_aComputer[nCntComputer].nMaxFood = 1;
+		memset(&g_aComputer[nCntComputer].nOrbitIdx, -1, sizeof(int[8]));
 
-		pComputer->nCurrentNode = 0;
-		pComputer->nNextNode = 0;
+		g_aComputer[nCntComputer].nCurrentNode = 0;
+		g_aComputer[nCntComputer].nNextNode = 0;
 	}
 
 	// ファイルからキャラクター情報をロード
 	LoadComputer();
 
-	pComputer = GetComputer();
-
-	for (int nCntComputer = 0; nCntComputer < MAX_COMPUTER; nCntComputer++, pComputer++)
+	for (int nCntComputer = 0; nCntComputer < MAX_COMPUTER; nCntComputer++)
 
 	{// コンピューターの総数分繰り返す
 
-		pComputer->motionType = MOTIONTYPE_NEUTRAL;							// モーションの種類をニュートラルに設定
-		pComputer->bLoopMotion = pComputer->aMotionInfo[0].bLoop;			// ニュートラルモーションのループ状態を設定
-		pComputer->nNumKey = pComputer->aMotionInfo[0].nNumKey;				// ニュートラルモーションのキーの総数を設定
-		pComputer->nKey = 0;												// 現在のキーを初期化
-		pComputer->nCounterMotion = 0;										// モーションカウンタを初期化
-		pComputer->bFinishMotion = false;									// モーションを終了していない状態に設定
-		pComputer->bBlendMotion = false;									// ブレンドしない状態に設定
-		pComputer->motionTypeBlend = MOTIONTYPE_NEUTRAL;					// ブレンド時のモーションをニュートラルに設定
-		pComputer->bLoopMotionBlend = pComputer->aMotionInfo[0].bLoop;		// ニュートラルモーションのループ状態を設定
-		pComputer->nNumKeyBlend = pComputer->aMotionInfo[0].nNumKey;		// ニュートラルモーションのキーの総数を設定 
-		pComputer->nKeyBlend = 0;											// ブレンド時のキーを初期化
-		pComputer->nCounterMotionBlend = 0;									// ブレンド時のモーションカウンタを初期化
-		pComputer->nFrameBlend = 0;											// ブレンドフレーム数を初期化
-		pComputer->nCounterBlend = 0;										// ブレンドカウンタを初期化
+		g_aComputer[nCntComputer].motionType = MOTIONTYPE_NEUTRAL;							// モーションの種類をニュートラルに設定
+		g_aComputer[nCntComputer].bLoopMotion = g_aComputer[nCntComputer].aMotionInfo[0].bLoop;			// ニュートラルモーションのループ状態を設定
+		g_aComputer[nCntComputer].nNumKey = g_aComputer[nCntComputer].aMotionInfo[0].nNumKey;				// ニュートラルモーションのキーの総数を設定
+		g_aComputer[nCntComputer].nKey = 0;												// 現在のキーを初期化
+		g_aComputer[nCntComputer].nCounterMotion = 0;										// モーションカウンタを初期化
+		g_aComputer[nCntComputer].bFinishMotion = false;									// モーションを終了していない状態に設定
+		g_aComputer[nCntComputer].bBlendMotion = false;									// ブレンドしない状態に設定
+		g_aComputer[nCntComputer].motionTypeBlend = MOTIONTYPE_NEUTRAL;					// ブレンド時のモーションをニュートラルに設定
+		g_aComputer[nCntComputer].bLoopMotionBlend = g_aComputer[nCntComputer].aMotionInfo[0].bLoop;		// ニュートラルモーションのループ状態を設定
+		g_aComputer[nCntComputer].nNumKeyBlend = g_aComputer[nCntComputer].aMotionInfo[0].nNumKey;		// ニュートラルモーションのキーの総数を設定 
+		g_aComputer[nCntComputer].nKeyBlend = 0;											// ブレンド時のキーを初期化
+		g_aComputer[nCntComputer].nCounterMotionBlend = 0;									// ブレンド時のモーションカウンタを初期化
+		g_aComputer[nCntComputer].nFrameBlend = 0;											// ブレンドフレーム数を初期化
+		g_aComputer[nCntComputer].nCounterBlend = 0;										// ブレンドカウンタを初期化
 	}
 
 	// モデルの読み込み
@@ -286,63 +283,62 @@ void UninitComputer(void)
 //=============================================================================
 void UpdateComputer(void)
 {
-	Computer* pComputer = GetComputer();
 	float fmoveAngle = 0.0f;
 
-	for (int nCntComputer = 0; nCntComputer < MAX_COMPUTER; nCntComputer++, pComputer++)
+	for (int nCntComputer = 0; nCntComputer < MAX_COMPUTER; nCntComputer++)
 	{
-		if (pComputer->bUse == true)
+		if (g_aComputer[nCntComputer].bUse == true)
 		{
-			if (pComputer->nThinkCooldown > 0)
+			if (g_aComputer[nCntComputer].nThinkCooldown > 0)
 			{// 思考クールダウン
-				pComputer->nThinkCooldown--;
+				g_aComputer[nCntComputer].nThinkCooldown--;
 			}
 			else
 			{// 何フレームごとに1回判断
-				pComputer->nThinkCooldown = CPU_THINK;
+				g_aComputer[nCntComputer].nThinkCooldown = CPU_THINK;
 
 				// スコア計算
-				CalcScore(pComputer);
+				CalcScore(&g_aComputer[nCntComputer]);
 
 				// ノードの設置
 				CreateOuterNodes3D();
 				CreateInnerNodes3D();
 			}
 
-			PrintDebugProc("ENEMY : [ %d ]\n", pComputer->nIdx);
+			PrintDebugProc("ENEMY : [ %d ]\n", g_aComputer[nCntComputer].nIdx);
 
-			pComputer->phys.posOld = pComputer->phys.pos;
+			g_aComputer[nCntComputer].phys.posOld = g_aComputer[nCntComputer].phys.pos;
 
-			if (pComputer->nInkCooldown > 0)
+			if (g_aComputer[nCntComputer].nInkCooldown > 0)
 			{//	墨吐きクールダウン
-				pComputer->nInkCooldown--;
+				g_aComputer[nCntComputer].nInkCooldown--;
 			}
 
-			if (pComputer->nBlindCounter > 0)
+			if (g_aComputer[nCntComputer].nBlindCounter > 0)
 			{//	視界悪化のカウント
-				pComputer->nBlindCounter--;
+				g_aComputer[nCntComputer].nBlindCounter--;
 			}
-			else if (pComputer->nBlindCounter == 0)
+			else if (g_aComputer[nCntComputer].nBlindCounter == 0)
 			{// 視界悪化が回復
-				pComputer->bBlinded = false;
-				pComputer->nBlindCounter = 0;
+				g_aComputer[nCntComputer].bBlinded = false;
+				g_aComputer[nCntComputer].nBlindCounter = 0;
 			}
 
-			if (pComputer->nTentacleCooldown > 0)
+			if (g_aComputer[nCntComputer].nTentacleCooldown > 0)
 			{// 触手クールダウン
-				pComputer->nTentacleCooldown--;
+				g_aComputer[nCntComputer].nTentacleCooldown--;
 			}
 
-			if (D3DXVec3Length(&pComputer->phys.move) > 0.1f)
+			if (D3DXVec3Length(&g_aComputer[nCntComputer].phys.move) > 0.1f)
 			{// 方向ベクトル
-				D3DXVec3Normalize(&pComputer->phys.dir, &pComputer->phys.move);
+				D3DXVec3Normalize(&g_aComputer[nCntComputer].phys.dir, &g_aComputer[nCntComputer].phys.move);
 			}
 			else
 			{// 止まってるときは向き基準
-				D3DXVec3Normalize(&pComputer->phys.dir, &pComputer->phys.rot);
+				D3DXVec3Normalize(&g_aComputer[nCntComputer].phys.dir, &g_aComputer[nCntComputer].phys.rot);
 			}
 
-			switch (pComputer->state)
+			switch (g_aComputer[nCntComputer].state)
 			{
 			case CPUSTATE_APPEAR:				// 出現状態
 				PrintDebugProc("CPUの状態 : [ CPUSTATE_APPEAR ]\n");
@@ -352,35 +348,35 @@ void UpdateComputer(void)
 			case CPUSTATE_EXPLORE:				// 探索
 				PrintDebugProc("CPUの状態 : [ CPUSTATE_EXPLORE ]\n");
 
-				Explore(pComputer);
+				Explore(&g_aComputer[nCntComputer]);
 
 				break;
 
 			case CPUSTATE_MOVE_TO_FOOD:			// エサを取りに行く
 				PrintDebugProc("CPUの状態 : [ CPUSTATE_MOVE_TO_FOOD ]\n");
 
-				MoveToFood(pComputer);
+				MoveToFood(&g_aComputer[nCntComputer]);
 
 				break;
 
 			case CPUSTATE_ESCAPE:				// 回避
 				PrintDebugProc("CPUの状態 : [ CPUSTATE_ESCAPE ]\n");
 
-				Escape(pComputer);
+				Escape(&g_aComputer[nCntComputer]);
 
 				break;
 
 			case CPUSTATE_ATTACK:				// 敵を追う
 				PrintDebugProc("CPUの状態 : [ CPUSTATE_ATTACK ]\n");
 
-				AttackEnemy(pComputer);
+				AttackEnemy(&g_aComputer[nCntComputer]);
 
 				break;
 
 			case CPUSTATE_INK_ATTACK:			// 墨吐き
 				PrintDebugProc("CPUの状態 : [ CPUSTATE_INK_ATTACK ]\n");
 
-				InkAttack(pComputer);
+				InkAttack(&g_aComputer[nCntComputer]);
 
 				break;
 
@@ -392,77 +388,77 @@ void UpdateComputer(void)
 			case CPUSTATE_GO_TO_POT:			// タコつぼへ向かう
 				PrintDebugProc("CPUの状態 : [ CPUSTATE_GO_TO_POT ]\n");
 
-				GoToPot(pComputer);
+				GoToPot(&g_aComputer[nCntComputer]);
 
 				break;
 
 			case CPUSTATE_HIDE_FOOD:			// エサを隠す
 				PrintDebugProc("CPUの状態 : [ CPUSTATE_HIDE_FOOD ]\n");
 
-				HideFood(pComputer);
+				HideFood(&g_aComputer[nCntComputer]);
 
 				break;
 
 			case CPUSTATE_STEAL_FOOD:			// 隠されたエサを奪う
 				PrintDebugProc("CPUの状態 : [ CPUSTATE_STEAL_FOOD ]\n");
 
-				StealFood(pComputer);
+				StealFood(&g_aComputer[nCntComputer]);
 
 				break;
 
 			case CPUSTATE_FINAL_COLLECT:		// 終盤の回収行動
 				PrintDebugProc("CPUの状態 : [ CPUSTATE_FINAL_COLLECT ]\n");
 
-				FinalCollect(pComputer);
+				FinalCollect(&g_aComputer[nCntComputer]);
 
 				break;
 
 			case CPUSTATE_HIDE:					// 隠れ状態
 				PrintDebugProc("CPUの状態 : [ CPUSTATE_HIDE ]\n");
 
-				Hide(pComputer);
+				Hide(&g_aComputer[nCntComputer]);
 
 				break;
 
 			case CPUSTATE_BACKAREA:				// エリア戻り状態
 				PrintDebugProc("CPUの状態 : [ CPUSTATE_BACKAREA ]\n");
 
-				D3DXVECTOR3 correct = -pComputer->phys.pos;
-				pComputer->phys.move += *D3DXVec3Normalize(&pComputer->phys.move, &correct);
+				D3DXVECTOR3 correct = -g_aComputer[nCntComputer].phys.pos;
+				g_aComputer[nCntComputer].phys.move += *D3DXVec3Normalize(&g_aComputer[nCntComputer].phys.move, &correct);
 
-				pComputer->nCounterState--;
+				g_aComputer[nCntComputer].nCounterState--;
 
-				if (pComputer->nCounterState < 0)
+				if (g_aComputer[nCntComputer].nCounterState < 0)
 				{// 戻り状態を終わる
-					pComputer->state = CPUSTATE_APPEAR;
-					pComputer->nCounterState = 0;
+					g_aComputer[nCntComputer].state = CPUSTATE_APPEAR;
+					g_aComputer[nCntComputer].nCounterState = 0;
 				}
 
 				break;
 			}
 
-			switch (pComputer->TentState)
+			switch (g_aComputer[nCntComputer].TentState)
 			{
 			case CPUTENTACLESTATE_NORMAL:			// 通常状態
-				pComputer->aModel[2].scale.y = 1.0f;
+				g_aComputer[nCntComputer].aModel[2].scale.y = 1.0f;
 
 				break;
 
 			case CPUTENTACLESTATE_TENTACLELONG:		// 触手伸ばし状態
-				if (pComputer->motionType == MOTIONTYPE_INK || pComputer->motionTypeBlend == MOTIONTYPE_INK)
+				if (g_aComputer[nCntComputer].motionType == MOTIONTYPE_INK || g_aComputer[nCntComputer].motionTypeBlend == MOTIONTYPE_INK)
 				{// モーションキャンセル
-					pComputer->TentState = CPUTENTACLESTATE_NORMAL;
+					g_aComputer[nCntComputer].TentState = CPUTENTACLESTATE_NORMAL;
 				}
 				else
 				{// キャンセルしない
-					if (pComputer->bFinishMotion == true)
+					if (g_aComputer[nCntComputer].bFinishMotion == true)
 					{// 触手が伸ばし終わったら
-						D3DXVECTOR3 tentaclePos = D3DXVECTOR3(pComputer->aModel[4].mtxWorld._41, pComputer->aModel[4].mtxWorld._42, pComputer->aModel[4].mtxWorld._43);
+						D3DXVECTOR3 tentaclePos = D3DXVECTOR3(g_aComputer[nCntComputer].aModel[4].mtxWorld._41, g_aComputer[nCntComputer].aModel[4].mtxWorld._42, g_aComputer[nCntComputer].aModel[4].mtxWorld._43);
 						int nIdx = -1;
 
-						if (CollisionEsa(&nIdx, false, &tentaclePos, pComputer->phys.fRadius) == true &&
-							pComputer->nFoodCount < pComputer->nMaxFood * CPU_TENTACLE &&
-							pComputer->motionType != MOTIONTYPE_OCEANCULLENT)
+						if (CollisionEsa(&nIdx, false, &tentaclePos, g_aComputer[nCntComputer].phys.fRadius) == true &&
+							g_aComputer[nCntComputer].nFoodCount < g_aComputer[nCntComputer].nMaxFood * CPU_TENTACLE &&
+							g_aComputer[nCntComputer].motionType != MOTIONTYPE_OCEANCULLENT)
 						{// エサと接触した
 							
 							// エサの削除処理
@@ -470,41 +466,41 @@ void UpdateComputer(void)
 
 							if (nIdxEsaType != -1)
 							{
-								pComputer->nFoodCount++;
-								Enqueue(&pComputer->esaQueue, nIdxEsaType);
+								g_aComputer[nCntComputer].nFoodCount++;
+								Enqueue(&g_aComputer[nCntComputer].esaQueue, nIdxEsaType);
 							}
 
-							pComputer->state = CPUSTATE_EXPLORE;
+							g_aComputer[nCntComputer].state = CPUSTATE_EXPLORE;
 						}
-						else if (CollisionPotArea(tentaclePos, TENTACLE_RADIUS * 0.5f, NULL, pComputer, true) == true ||
+						else if (CollisionPotArea(tentaclePos, TENTACLE_RADIUS * 0.5f, NULL, &g_aComputer[nCntComputer], true) == true ||
 							CollisionOcto(nCntComputer, true, tentaclePos) == true)
 						{// タコつぼからエサをとる
-							pComputer->TentState = CPUTENTACLESTATE_TENTACLESHORT;
+							g_aComputer[nCntComputer].TentState = CPUTENTACLESTATE_TENTACLESHORT;
 
 							SetMotionComputer(nCntComputer, MOTIONTYPE_TENTACLESHORT, true, 20);
 
-							pComputer->state = CPUSTATE_EXPLORE;
+							g_aComputer[nCntComputer].state = CPUSTATE_EXPLORE;
 						}
-						else if (CollisionMeshCylinder(&tentaclePos, &pComputer->phys.pos, &pComputer->phys.move,
+						else if (CollisionMeshCylinder(&tentaclePos, &g_aComputer[nCntComputer].phys.pos, &g_aComputer[nCntComputer].phys.move,
 							TENTACLE_RADIUS, TENTACLE_RADIUS, true) == true ||
 							tentaclePos.y < 0.0f ||
-							CollisionObject(&tentaclePos, &pComputer->phys.pos, &pComputer->phys.move,
+							CollisionObject(&tentaclePos, &g_aComputer[nCntComputer].phys.pos, &g_aComputer[nCntComputer].phys.move,
 								TENTACLE_RADIUS, TENTACLE_RADIUS, true) == true)
 						{// 壁との当たり判定
-							pComputer->TentState = CPUTENTACLESTATE_TENTACLESHORT;
+							g_aComputer[nCntComputer].TentState = CPUTENTACLESTATE_TENTACLESHORT;
 							SetMotionComputer(nCntComputer, MOTIONTYPE_DASH, true, 20);
 
-							pComputer->state = CPUSTATE_EXPLORE;
+							g_aComputer[nCntComputer].state = CPUSTATE_EXPLORE;
 						}
 						else
 						{// 触手を伸ばす
-							if (pComputer->aModel[2].scale.y < TENTACLE_RANGE * 0.1f)
+							if (g_aComputer[nCntComputer].aModel[2].scale.y < TENTACLE_RANGE * 0.1f)
 							{// リーチより短い
-								pComputer->aModel[2].scale.y += 5.0f;
+								g_aComputer[nCntComputer].aModel[2].scale.y += 5.0f;
 							}
 							else
 							{// リーチの長さになった
-								pComputer->TentState = CPUTENTACLESTATE_TENTACLESHORT;
+								g_aComputer[nCntComputer].TentState = CPUTENTACLESTATE_TENTACLESHORT;
 
 								SetMotionComputer(nCntComputer, MOTIONTYPE_TENTACLESHORT, true, 20);
 							}
@@ -515,223 +511,223 @@ void UpdateComputer(void)
 				break;
 
 			case CPUTENTACLESTATE_TENTACLESHORT:		// 触手縮め状態
-				if (pComputer->aModel[2].scale.y > 1.0f)
+				if (g_aComputer[nCntComputer].aModel[2].scale.y > 1.0f)
 				{// 触手を短くする
-					pComputer->aModel[2].scale.y += (1.0f - pComputer->aModel[2].scale.y) * 0.5f;
+					g_aComputer[nCntComputer].aModel[2].scale.y += (1.0f - g_aComputer[nCntComputer].aModel[2].scale.y) * 0.5f;
 				}
 				else
 				{// 元の長さに戻す
-					pComputer->aModel[2].scale.y = 1.0f;
-					pComputer->TentState = CPUTENTACLESTATE_NORMAL;
+					g_aComputer[nCntComputer].aModel[2].scale.y = 1.0f;
+					g_aComputer[nCntComputer].TentState = CPUTENTACLESTATE_NORMAL;
 				}
 
 				break;
 			}
 
-			//PrintDebugProc("触手の長さ %f\n", pComputer->aModel[2].scale.y);
+			//PrintDebugProc("触手の長さ %f\n", g_aComputer[nCntComputer].aModel[2].scale.y);
 
 			// 移動量制限
-			if (pComputer->phys.move.x > MAX_MOVE)
+			if (g_aComputer[nCntComputer].phys.move.x > MAX_MOVE)
 			{// 最大X
-				pComputer->phys.move.x = MAX_MOVE;
+				g_aComputer[nCntComputer].phys.move.x = MAX_MOVE;
 			}
-			else if (pComputer->phys.move.x < -MAX_MOVE)
+			else if (g_aComputer[nCntComputer].phys.move.x < -MAX_MOVE)
 			{// 最小X
-				pComputer->phys.move.x = -MAX_MOVE;
+				g_aComputer[nCntComputer].phys.move.x = -MAX_MOVE;
 			}
 
-			if (pComputer->phys.move.z > MAX_MOVE)
+			if (g_aComputer[nCntComputer].phys.move.z > MAX_MOVE)
 			{// 最大Z
-				pComputer->phys.move.z = MAX_MOVE;
+				g_aComputer[nCntComputer].phys.move.z = MAX_MOVE;
 			}
-			else if (pComputer->phys.move.z < -MAX_MOVE)
+			else if (g_aComputer[nCntComputer].phys.move.z < -MAX_MOVE)
 			{// 最小Z
-				pComputer->phys.move.z = -MAX_MOVE;
+				g_aComputer[nCntComputer].phys.move.z = -MAX_MOVE;
 			}
 
-			if (pComputer->state != CPUSTATE_APPEAR)
+			if (g_aComputer[nCntComputer].state != CPUSTATE_APPEAR)
 			{// 出現状態以外
 				// 慣性
-				pComputer->phys.pos += pComputer->phys.move;
-				pComputer->phys.move.x += (0.0f - pComputer->phys.move.x) * INERTIA_MOVE;
-				pComputer->phys.move.y += (0.0f - pComputer->phys.move.y) * INERTIA_MOVE;
-				pComputer->phys.move.z += (0.0f - pComputer->phys.move.z) * INERTIA_MOVE;
+				g_aComputer[nCntComputer].phys.pos += g_aComputer[nCntComputer].phys.move;
+				g_aComputer[nCntComputer].phys.move.x += (0.0f - g_aComputer[nCntComputer].phys.move.x) * INERTIA_MOVE;
+				g_aComputer[nCntComputer].phys.move.y += (0.0f - g_aComputer[nCntComputer].phys.move.y) * INERTIA_MOVE;
+				g_aComputer[nCntComputer].phys.move.z += (0.0f - g_aComputer[nCntComputer].phys.move.z) * INERTIA_MOVE;
 			}
 
-			if (CollisionObjectArea(pComputer->phys.pos) == false && GetMode() != MODE_TITLE)
+			if (CollisionObjectArea(g_aComputer[nCntComputer].phys.pos) == false && GetMode() != MODE_TITLE)
 			{// 渦潮
-				MoveOceanCurrents(&pComputer->phys.pos);
+				MoveOceanCurrents(&g_aComputer[nCntComputer].phys.pos);
 
 				if (GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL)
 				{// 安地外で渦潮
-					if (pComputer->TentState == PLTENTACLESTATE_NORMAL &&
-						(pComputer->motionType != MOTIONTYPE_DASH || pComputer->motionTypeBlend != MOTIONTYPE_DASH) &&
-						pComputer->state != CPUSTATE_INK_ATTACK && pComputer->state != CPUSTATE_BACKAREA)
+					if (g_aComputer[nCntComputer].TentState == PLTENTACLESTATE_NORMAL &&
+						(g_aComputer[nCntComputer].motionType != MOTIONTYPE_DASH || g_aComputer[nCntComputer].motionTypeBlend != MOTIONTYPE_DASH) &&
+						g_aComputer[nCntComputer].state != CPUSTATE_INK_ATTACK && g_aComputer[nCntComputer].state != CPUSTATE_BACKAREA)
 					{// 触手が通常状態のときだけ
 						SetMotionComputer(nCntComputer, MOTIONTYPE_OCEANCULLENT, true, 20);
 					}
 
-					if (pComputer->nFoodCount > 0 && pComputer->nCounter % 15 == 0)
+					if (g_aComputer[nCntComputer].nFoodCount > 0 && g_aComputer[nCntComputer].nCounter % 15 == 0)
 					{// エサを持っている
-						pComputer->nFoodCount--;
-						int nIdx = Dequeue(&pComputer->esaQueue);
+						g_aComputer[nCntComputer].nFoodCount--;
+						int nIdx = Dequeue(&g_aComputer[nCntComputer].esaQueue);
 
-						SetEsa(nIdx, true, ESA_ACTTYPE_SWIM, 0, pComputer->phys.pos, FIRST_POS);
+						SetEsa(nIdx, true, ESA_ACTTYPE_SWIM, 0, g_aComputer[nCntComputer].phys.pos, FIRST_POS);
 					}
 				}
 			}
 
-			if (pComputer->TentState == CPUTENTACLESTATE_NORMAL &&
-				D3DXVec3Length(&pComputer->phys.move) > 0.1f &&
-				pComputer->state != CPUSTATE_INK_ATTACK && pComputer->state != CPUSTATE_BACKAREA &&
-				(pComputer->motionType != MOTIONTYPE_DASH || pComputer->motionTypeBlend != MOTIONTYPE_DASH) &&
+			if (g_aComputer[nCntComputer].TentState == CPUTENTACLESTATE_NORMAL &&
+				D3DXVec3Length(&g_aComputer[nCntComputer].phys.move) > 0.1f &&
+				g_aComputer[nCntComputer].state != CPUSTATE_INK_ATTACK && g_aComputer[nCntComputer].state != CPUSTATE_BACKAREA &&
+				(g_aComputer[nCntComputer].motionType != MOTIONTYPE_DASH || g_aComputer[nCntComputer].motionTypeBlend != MOTIONTYPE_DASH) &&
 				(GetOceanCurrents() != OCEANCURRENTSSTATE_WIRLPOOL ||
-					(GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL && CollisionObjectArea(pComputer->phys.pos) == true)))
+					(GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL && CollisionObjectArea(g_aComputer[nCntComputer].phys.pos) == true)))
 			{// 移動モーション
 				SetMotionComputer(nCntComputer, MOTIONTYPE_MOVE, true, 20);
 			}
-			else if (pComputer->TentState == CPUTENTACLESTATE_NORMAL &&
-				D3DXVec3Length(&pComputer->phys.move) < 0.1f &&
-				pComputer->state != CPUSTATE_INK_ATTACK &&
-				(pComputer->motionType != MOTIONTYPE_DASH || pComputer->motionTypeBlend != MOTIONTYPE_DASH) &&
+			else if (g_aComputer[nCntComputer].TentState == CPUTENTACLESTATE_NORMAL &&
+				D3DXVec3Length(&g_aComputer[nCntComputer].phys.move) < 0.1f &&
+				g_aComputer[nCntComputer].state != CPUSTATE_INK_ATTACK &&
+				(g_aComputer[nCntComputer].motionType != MOTIONTYPE_DASH || g_aComputer[nCntComputer].motionTypeBlend != MOTIONTYPE_DASH) &&
 				(GetOceanCurrents() != OCEANCURRENTSSTATE_WIRLPOOL ||
-					(GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL && CollisionObjectArea(pComputer->phys.pos) == true)))
+					(GetOceanCurrents() == OCEANCURRENTSSTATE_WIRLPOOL && CollisionObjectArea(g_aComputer[nCntComputer].phys.pos) == true)))
 			{// 待機モーション
 				SetMotionComputer(nCntComputer, MOTIONTYPE_NEUTRAL, true, 20);
 			}
-			else if (pComputer->motionType == MOTIONTYPE_DASH &&
-				D3DXVec3Length(&pComputer->phys.move) < 3.0f)
+			else if (g_aComputer[nCntComputer].motionType == MOTIONTYPE_DASH &&
+				D3DXVec3Length(&g_aComputer[nCntComputer].phys.move) < 3.0f)
 			{// 高速移動モーションからの切り替え
-				if (D3DXVec3Length(&pComputer->phys.move) > 0.1f)
+				if (D3DXVec3Length(&g_aComputer[nCntComputer].phys.move) > 0.1f)
 				{// 動いている
 					SetMotionComputer(nCntComputer, MOTIONTYPE_MOVE, true, 20);
 				}
-				else if (D3DXVec3Length(&pComputer->phys.move) < 0.1f)
+				else if (D3DXVec3Length(&g_aComputer[nCntComputer].phys.move) < 0.1f)
 				{// 止まっている
 					SetMotionComputer(nCntComputer, MOTIONTYPE_NEUTRAL, true, 20);
 				}
 			}
 
-			D3DXVECTOR2 XZdist = D3DXVECTOR2(pComputer->phys.pos.x, pComputer->phys.pos.z);
+			D3DXVECTOR2 XZdist = D3DXVECTOR2(g_aComputer[nCntComputer].phys.pos.x, g_aComputer[nCntComputer].phys.pos.z);
 			float fDist = D3DXVec2Length(&XZdist);
 
 			if (fDist > OUTCYLINDER_RADIUS + ((OUTCYLINDER_RADIUS - INCYLINDER_RADIUS) / 2))
 			{// 移動制限
-				pComputer->phys.fAngleY = atan2f(pComputer->phys.pos.x, pComputer->phys.pos.z);
-				pComputer->state = CPUSTATE_BACKAREA;
-				pComputer->nCounterState = ONE_SECOND;
+				g_aComputer[nCntComputer].phys.fAngleY = atan2f(g_aComputer[nCntComputer].phys.pos.x, g_aComputer[nCntComputer].phys.pos.z);
+				g_aComputer[nCntComputer].state = CPUSTATE_BACKAREA;
+				g_aComputer[nCntComputer].nCounterState = ONE_SECOND;
 			}
 
-			if (pComputer->phys.pos.y < 0.0f)
+			if (g_aComputer[nCntComputer].phys.pos.y < 0.0f)
 			{// 底
-				pComputer->phys.pos.y = 0.0f;
+				g_aComputer[nCntComputer].phys.pos.y = 0.0f;
 
-				if (pComputer->bLand == false)
+				if (g_aComputer[nCntComputer].bLand == false)
 				{// ついてなかった場合
-					SetSprayCircle(D3DXVECTOR3(pComputer->phys.pos.x, pComputer->phys.pos.y + 30.0f, pComputer->phys.pos.z),
+					SetSprayCircle(D3DXVECTOR3(g_aComputer[nCntComputer].phys.pos.x, g_aComputer[nCntComputer].phys.pos.y + 30.0f, g_aComputer[nCntComputer].phys.pos.z),
 						D3DXCOLOR(0.9f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_CIRCLE);
 				}
 
-				pComputer->bLand = true;
+				g_aComputer[nCntComputer].bLand = true;
 			}
 			else
 			{// ついていないとき
-				pComputer->bLand = false;
+				g_aComputer[nCntComputer].bLand = false;
 			}
 
-			if (pComputer->phys.pos.y < 10.0f && pComputer->nCounter % FLOW_COUNT == 0)
+			if (g_aComputer[nCntComputer].phys.pos.y < 10.0f && g_aComputer[nCntComputer].nCounter % FLOW_COUNT == 0)
 			{// 地面に近かったら
-				SetSprayFlow(D3DXVECTOR3(pComputer->phys.pos.x, pComputer->phys.pos.y + 20.0f, pComputer->phys.pos.z), pComputer->phys.rot,
+				SetSprayFlow(D3DXVECTOR3(g_aComputer[nCntComputer].phys.pos.x, g_aComputer[nCntComputer].phys.pos.y + 20.0f, g_aComputer[nCntComputer].phys.pos.z), g_aComputer[nCntComputer].phys.rot,
 					D3DXCOLOR(0.9f, 0.9f, 0.7f, 1.0f), SPRAYTYPE_FLOW);
 			}
 
-			if (pComputer->phys.pos.y > *GetWaterSurf_Height() - CPU_HEIGHT)
+			if (g_aComputer[nCntComputer].phys.pos.y > *GetWaterSurf_Height() - CPU_HEIGHT)
 			{// 上											  
 				// 重力
-				pComputer->phys.move.y += GRAVITY;
+				g_aComputer[nCntComputer].phys.move.y += GRAVITY;
 
-				if (pComputer->nCounter % RIPPLE_COUNT == 0)
+				if (g_aComputer[nCntComputer].nCounter % RIPPLE_COUNT == 0)
 				{// 定期的に波紋
-					SetMeshRing(MESHRINGTYPE_RIPPLES,D3DXVECTOR3(pComputer->phys.pos.x + (rand() % 6 - 3), *GetWaterSurf_Height(), pComputer->phys.pos.z + (rand() % 6 - 3)), FIRST_POS,
+					SetMeshRing(MESHRINGTYPE_RIPPLES,D3DXVECTOR3(g_aComputer[nCntComputer].phys.pos.x + (rand() % 6 - 3), *GetWaterSurf_Height(), g_aComputer[nCntComputer].phys.pos.z + (rand() % 6 - 3)), FIRST_POS,
 						D3DXVECTOR2(24.0f, 1.0f), D3DXVECTOR2(10.0f, 7.0f), D3DXCOLOR(WHITE_VTX.r, WHITE_VTX.g, WHITE_VTX.b, 0.5f));
 
-					SetSprayCircle(D3DXVECTOR3(pComputer->phys.pos.x, *GetWaterSurf_Height(), pComputer->phys.pos.z),
+					SetSprayCircle(D3DXVECTOR3(g_aComputer[nCntComputer].phys.pos.x, *GetWaterSurf_Height(), g_aComputer[nCntComputer].phys.pos.z),
 						WHITE_VTX, SPRAYTYPE_CIRCLE);
 				}
 
-				if (pComputer->nCounter % FLOW_COUNT == 0)
+				if (g_aComputer[nCntComputer].nCounter % FLOW_COUNT == 0)
 				{// 波
-					SetSprayFlow(D3DXVECTOR3(pComputer->phys.pos.x, *GetWaterSurf_Height(), pComputer->phys.pos.z), pComputer->phys.rot,
+					SetSprayFlow(D3DXVECTOR3(g_aComputer[nCntComputer].phys.pos.x, *GetWaterSurf_Height(), g_aComputer[nCntComputer].phys.pos.z), g_aComputer[nCntComputer].phys.rot,
 						WHITE_VTX, SPRAYTYPE_FLOW);
 				}
 			}
 
 			// 墨の当たり判定
-			CollisionInk(pComputer->phys.pos, &pComputer->bBlinded, &pComputer->nBlindCounter, pComputer->nIdx);
+			CollisionInk(g_aComputer[nCntComputer].phys.pos, &g_aComputer[nCntComputer].bBlinded, &g_aComputer[nCntComputer].nBlindCounter, g_aComputer[nCntComputer].nIdx);
 
-			if (pComputer->bBlinded == true)
+			if (g_aComputer[nCntComputer].bBlinded == true)
 			{// 視界が悪そうなエフェクト
 				D3DXVECTOR3 headPos = D3DXVECTOR3(
-					pComputer->aModel[0].mtxWorld._41,
-					pComputer->aModel[0].mtxWorld._42 + 10.0f,
-					pComputer->aModel[0].mtxWorld._43);
+					g_aComputer[nCntComputer].aModel[0].mtxWorld._41,
+					g_aComputer[nCntComputer].aModel[0].mtxWorld._42 + 10.0f,
+					g_aComputer[nCntComputer].aModel[0].mtxWorld._43);
 
-				SetEffect3D(5, pComputer->phys.pos, FIRST_POS, 0.0f, 15.0f, 0.0f, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), EFFECTTYPE_OCTOINK);
+				SetEffect3D(5, g_aComputer[nCntComputer].phys.pos, FIRST_POS, 0.0f, 15.0f, 0.0f, D3DXCOLOR(0.0f, 0.0f, 0.1f, 1.0f), EFFECTTYPE_OCTOINK);
 			}
 
-			pComputer->phys.fAngleY = D3DX_PI + atan2f(pComputer->phys.dir.x, pComputer->phys.dir.z);
-			pComputer->phys.fAngleX = (pComputer->phys.dir.y / 0.95f) * 1.2f;
+			g_aComputer[nCntComputer].phys.fAngleY = D3DX_PI + atan2f(g_aComputer[nCntComputer].phys.dir.x, g_aComputer[nCntComputer].phys.dir.z);
+			g_aComputer[nCntComputer].phys.fAngleX = (g_aComputer[nCntComputer].phys.dir.y / 0.95f) * 1.2f;
 
-			fmoveAngle = pComputer->phys.fAngleY - pComputer->phys.rot.y;
+			fmoveAngle = g_aComputer[nCntComputer].phys.fAngleY - g_aComputer[nCntComputer].phys.rot.y;
 
 			// 向きを調整
-			CorrectAngle(&pComputer->phys.fAngleY, fmoveAngle);
+			CorrectAngle(&g_aComputer[nCntComputer].phys.fAngleY, fmoveAngle);
 
-			if (pComputer->phys.rot.y != pComputer->phys.fAngleY)
+			if (g_aComputer[nCntComputer].phys.rot.y != g_aComputer[nCntComputer].phys.fAngleY)
 			{// 目標地点につくまで慣性で角度を足す
-				pComputer->phys.rot.y += (pComputer->phys.fAngleY - pComputer->phys.rot.y) * INERTIA_ANGLE;
+				g_aComputer[nCntComputer].phys.rot.y += (g_aComputer[nCntComputer].phys.fAngleY - g_aComputer[nCntComputer].phys.rot.y) * INERTIA_ANGLE;
 
 				// 向きを調整
-				CorrectAngle(&pComputer->phys.rot.y, pComputer->phys.rot.y);
+				CorrectAngle(&g_aComputer[nCntComputer].phys.rot.y, g_aComputer[nCntComputer].phys.rot.y);
 			}
 
 			// 向きを調整
-			CorrectAngle(&pComputer->phys.fAngleX, pComputer->phys.fAngleX - pComputer->phys.rot.x);
+			CorrectAngle(&g_aComputer[nCntComputer].phys.fAngleX, g_aComputer[nCntComputer].phys.fAngleX - g_aComputer[nCntComputer].phys.rot.x);
 
-			if (pComputer->phys.rot.x != pComputer->phys.fAngleX)
+			if (g_aComputer[nCntComputer].phys.rot.x != g_aComputer[nCntComputer].phys.fAngleX)
 			{// 目標地点につくまで慣性で角度を足す
-				pComputer->phys.rot.x += (pComputer->phys.fAngleX - pComputer->phys.rot.x) * INERTIA_ANGLE;
+				g_aComputer[nCntComputer].phys.rot.x += (g_aComputer[nCntComputer].phys.fAngleX - g_aComputer[nCntComputer].phys.rot.x) * INERTIA_ANGLE;
 
 				// 向きを調整
-				CorrectAngle(&pComputer->phys.rot.x, pComputer->phys.rot.x);
+				CorrectAngle(&g_aComputer[nCntComputer].phys.rot.x, g_aComputer[nCntComputer].phys.rot.x);
 			}
 
-			if (pComputer->nCounter % (ONE_SECOND * 60) == 0 && GetTime() != ONE_GAME)
+			if (g_aComputer[nCntComputer].nCounter % (ONE_SECOND * 60) == 0 && GetTime() != ONE_GAME)
 			{// 持てるエサの最大値が増える
-				pComputer->nMaxFood++;
+				g_aComputer[nCntComputer].nMaxFood++;
 			}
 
 			//PrintDebugProc("ENEMY : pos ( %f %f %f )\n",
-			//	pComputer->phys.pos.x, pComputer->phys.pos.y, pComputer->phys.pos.z);
+			//	g_aComputer[nCntComputer].phys.pos.x, g_aComputer[nCntComputer].phys.pos.y, g_aComputer[nCntComputer].phys.pos.z);
 			//PrintDebugProc("ENEMY : move ( %f %f %f )\n",
-			//	pComputer->phys.move.x, pComputer->phys.move.y, pComputer->phys.move.z);
-			PrintDebugProc("ENEMY : nFood ( %d )\n", pComputer->nFoodCount);
-			//PrintDebugProc("ENEMY : TargetPot ( %d )\n", pComputer->nTargetPotIdx);
-			//PrintDebugProc("ENEMY : TargetEnemy ( %d )\n", pComputer->nTargetEnemyIdx);
+			//	g_aComputer[nCntComputer].phys.move.x, g_aComputer[nCntComputer].phys.move.y, g_aComputer[nCntComputer].phys.move.z);
+			PrintDebugProc("ENEMY : nFood ( %d )\n", g_aComputer[nCntComputer].nFoodCount);
+			//PrintDebugProc("ENEMY : TargetPot ( %d )\n", g_aComputer[nCntComputer].nTargetPotIdx);
+			//PrintDebugProc("ENEMY : TargetEnemy ( %d )\n", g_aComputer[nCntComputer].nTargetEnemyIdx);
 			//PrintDebugProc("ENEMY : ノード ( %f %f %f )\n",
-			//	pComputer->extarget.x, pComputer->extarget.y, pComputer->extarget.z);
+			//	g_aComputer[nCntComputer].extarget.x, g_aComputer[nCntComputer].extarget.y, g_aComputer[nCntComputer].extarget.z);
 
 			// 当たり判定
-			CollisionMeshField(pComputer->phys.pos, pComputer->phys.rot, pComputer->phys.fRadius, pComputer->phys.fHeight);
-			CollisionObject(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, false);
-			CollisionPot(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius);
-			CollisionMeshCylinder(&pComputer->phys.pos, &pComputer->phys.posOld, &pComputer->phys.move, pComputer->phys.fRadius, pComputer->phys.fRadius, false);
+			CollisionMeshField(g_aComputer[nCntComputer].phys.pos, g_aComputer[nCntComputer].phys.rot, g_aComputer[nCntComputer].phys.fRadius, g_aComputer[nCntComputer].phys.fHeight);
+			CollisionObject(&g_aComputer[nCntComputer].phys.pos, &g_aComputer[nCntComputer].phys.posOld, &g_aComputer[nCntComputer].phys.move, g_aComputer[nCntComputer].phys.fRadius, g_aComputer[nCntComputer].phys.fRadius, false);
+			CollisionPot(&g_aComputer[nCntComputer].phys.pos, &g_aComputer[nCntComputer].phys.posOld, &g_aComputer[nCntComputer].phys.move, g_aComputer[nCntComputer].phys.fRadius, g_aComputer[nCntComputer].phys.fRadius);
+			CollisionMeshCylinder(&g_aComputer[nCntComputer].phys.pos, &g_aComputer[nCntComputer].phys.posOld, &g_aComputer[nCntComputer].phys.move, g_aComputer[nCntComputer].phys.fRadius, g_aComputer[nCntComputer].phys.fRadius, false);
 
 			int nIdx = -1;
 
-			if (CollisionEsa(&nIdx, false, &pComputer->phys.pos, pComputer->phys.fRadius) == true &&
-				pComputer->nFoodCount < pComputer->nMaxFood * CPU_TENTACLE &&
-				(pComputer->motionType != MOTIONTYPE_OCEANCULLENT || pComputer->motionType != MOTIONTYPE_OCEANCULLENT) &&
+			if (CollisionEsa(&nIdx, false, &g_aComputer[nCntComputer].phys.pos, g_aComputer[nCntComputer].phys.fRadius) == true &&
+				g_aComputer[nCntComputer].nFoodCount < g_aComputer[nCntComputer].nMaxFood * CPU_TENTACLE &&
+				(g_aComputer[nCntComputer].motionType != MOTIONTYPE_OCEANCULLENT || g_aComputer[nCntComputer].motionType != MOTIONTYPE_OCEANCULLENT) &&
 				GetOceanCurrents() != OCEANCURRENTSSTATE_WIRLPOOL)
 			{// エサと接触した
 				Esa* pEsa = GetEsa();
@@ -744,20 +740,20 @@ void UpdateComputer(void)
 
 					if (nIdxEsaType != -1)
 					{
-						pComputer->nFoodCount++;
-						Enqueue(&pComputer->esaQueue, nIdxEsaType);
+						g_aComputer[nCntComputer].nFoodCount++;
+						Enqueue(&g_aComputer[nCntComputer].esaQueue, nIdxEsaType);
 					}
 				}
 			}
 
-			if (pComputer->nFoodCount < 0)
+			if (g_aComputer[nCntComputer].nFoodCount < 0)
 			{// 最小値0
-				pComputer->nFoodCount = 0;
+				g_aComputer[nCntComputer].nFoodCount = 0;
 			}
 
-			CollisionPotArea(pComputer->phys.pos, pComputer->phys.fRadius, NULL, pComputer, false);
+			CollisionPotArea(g_aComputer[nCntComputer].phys.pos, g_aComputer[nCntComputer].phys.fRadius, NULL, &g_aComputer[nCntComputer], false);
 
-			pComputer->nCounter++;
+			g_aComputer[nCntComputer].nCounter++;
 
 			// モーションの更新処理
 			UpdateMotionComputer(nCntComputer);
@@ -775,67 +771,66 @@ void DrawComputer(void)
 	D3DXMATRIX mtxRot, mtxTrans;		// 計算用マトリックス
 	D3DMATERIAL9 matDef;				// 現在のマテリアル保存用
 	D3DXMATERIAL* pMat;					// マテリアルデータへのポインタ
-	Computer* pComputer = GetComputer();
 
-	for (int nCntComputer = 0; nCntComputer < MAX_COMPUTER; nCntComputer++, pComputer++)
+	for (int nCntComputer = 0; nCntComputer < MAX_COMPUTER; nCntComputer++)
 	{
-		if (pComputer->bUse == true)
+		if (g_aComputer[nCntComputer].bUse == true)
 		{// 使用しているとき
 			// ワールドマトリックスの初期化
-			D3DXMatrixIdentity(&pComputer->phys.mtxWorld);
+			D3DXMatrixIdentity(&g_aComputer[nCntComputer].phys.mtxWorld);
 
 			// 向きを反映
-			D3DXMatrixRotationYawPitchRoll(&mtxRot, pComputer->phys.rot.y, pComputer->phys.rot.x, pComputer->phys.rot.z);
-			D3DXMatrixMultiply(&pComputer->phys.mtxWorld, &pComputer->phys.mtxWorld, &mtxRot);
+			D3DXMatrixRotationYawPitchRoll(&mtxRot, g_aComputer[nCntComputer].phys.rot.y, g_aComputer[nCntComputer].phys.rot.x, g_aComputer[nCntComputer].phys.rot.z);
+			D3DXMatrixMultiply(&g_aComputer[nCntComputer].phys.mtxWorld, &g_aComputer[nCntComputer].phys.mtxWorld, &mtxRot);
 
 			// 位置を反映
-			D3DXMatrixTranslation(&mtxTrans, pComputer->phys.pos.x, pComputer->phys.pos.y, pComputer->phys.pos.z);
-			D3DXMatrixMultiply(&pComputer->phys.mtxWorld, &pComputer->phys.mtxWorld, &mtxTrans);
+			D3DXMatrixTranslation(&mtxTrans, g_aComputer[nCntComputer].phys.pos.x, g_aComputer[nCntComputer].phys.pos.y, g_aComputer[nCntComputer].phys.pos.z);
+			D3DXMatrixMultiply(&g_aComputer[nCntComputer].phys.mtxWorld, &g_aComputer[nCntComputer].phys.mtxWorld, &mtxTrans);
 
 			// ワールドマトリックスの設定
-			pDevice->SetTransform(D3DTS_WORLD, &pComputer->phys.mtxWorld);
+			pDevice->SetTransform(D3DTS_WORLD, &g_aComputer[nCntComputer].phys.mtxWorld);
 
 			// 現在のマテリアルを取得
 			pDevice->GetMaterial(&matDef);
 
 			// 全モデル(パーツ)の描画
-			for (int nCntModel = 0; nCntModel < pComputer->nNumModel; nCntModel++)
+			for (int nCntModel = 0; nCntModel < g_aComputer[nCntComputer].nNumModel; nCntModel++)
 			{
 				D3DXMATRIX mtxRotModel, mtxTransModel, mtxScaleModel;		// 計算用マトリックス
 				D3DXMATRIX mtxParent;						// 親のマトリックス
 
 				// パーツのワールドマトリックスの初期化
-				D3DXMatrixIdentity(&pComputer->aModel[nCntModel].mtxWorld);
+				D3DXMatrixIdentity(&g_aComputer[nCntComputer].aModel[nCntModel].mtxWorld);
 
 				// パーツの向きを反映
-				D3DXMatrixRotationYawPitchRoll(&mtxRotModel, pComputer->aModel[nCntModel].rot.y, pComputer->aModel[nCntModel].rot.x, pComputer->aModel[nCntModel].rot.z);
-				D3DXMatrixMultiply(&pComputer->aModel[nCntModel].mtxWorld, &pComputer->aModel[nCntModel].mtxWorld, &mtxRotModel);
+				D3DXMatrixRotationYawPitchRoll(&mtxRotModel, g_aComputer[nCntComputer].aModel[nCntModel].rot.y, g_aComputer[nCntComputer].aModel[nCntModel].rot.x, g_aComputer[nCntComputer].aModel[nCntModel].rot.z);
+				D3DXMatrixMultiply(&g_aComputer[nCntComputer].aModel[nCntModel].mtxWorld, &g_aComputer[nCntComputer].aModel[nCntModel].mtxWorld, &mtxRotModel);
 
 				// 拡大率を反映
-				D3DXMatrixScaling(&mtxScaleModel, pComputer->aModel[nCntModel].scale.x, pComputer->aModel[nCntModel].scale.y, pComputer->aModel[nCntModel].scale.z);
-				D3DXMatrixMultiply(&pComputer->aModel[nCntModel].mtxWorld, &pComputer->aModel[nCntModel].mtxWorld, &mtxScaleModel);
+				D3DXMatrixScaling(&mtxScaleModel, g_aComputer[nCntComputer].aModel[nCntModel].scale.x, g_aComputer[nCntComputer].aModel[nCntModel].scale.y, g_aComputer[nCntComputer].aModel[nCntModel].scale.z);
+				D3DXMatrixMultiply(&g_aComputer[nCntComputer].aModel[nCntModel].mtxWorld, &g_aComputer[nCntComputer].aModel[nCntModel].mtxWorld, &mtxScaleModel);
 
 				// パーツの位置を反映
-				D3DXMatrixTranslation(&mtxTransModel, pComputer->aModel[nCntModel].pos.x, pComputer->aModel[nCntModel].pos.y, pComputer->aModel[nCntModel].pos.z);
-				D3DXMatrixMultiply(&pComputer->aModel[nCntModel].mtxWorld, &pComputer->aModel[nCntModel].mtxWorld, &mtxTransModel);
+				D3DXMatrixTranslation(&mtxTransModel, g_aComputer[nCntComputer].aModel[nCntModel].pos.x, g_aComputer[nCntComputer].aModel[nCntModel].pos.y, g_aComputer[nCntComputer].aModel[nCntModel].pos.z);
+				D3DXMatrixMultiply(&g_aComputer[nCntComputer].aModel[nCntModel].mtxWorld, &g_aComputer[nCntComputer].aModel[nCntModel].mtxWorld, &mtxTransModel);
 
 				// パーツの「親のマトリックス」を設定
-				if (pComputer->aModel[nCntModel].nIdxModelParent != -1)
+				if (g_aComputer[nCntComputer].aModel[nCntModel].nIdxModelParent != -1)
 				{// 親モデルがある場合
-					mtxParent = pComputer->aModel[pComputer->aModel[nCntModel].nIdxModelParent].mtxWorld;
+					mtxParent = g_aComputer[nCntComputer].aModel[g_aComputer[nCntComputer].aModel[nCntModel].nIdxModelParent].mtxWorld;
 				}
 				else
 				{// 親モデルがない場合
-					mtxParent = pComputer->phys.mtxWorld;
+					mtxParent = g_aComputer[nCntComputer].phys.mtxWorld;
 				}
 
 				// 算出した「パーツのワールドマトリックス」と「親のマトリックス」をかけ合わせる
-				D3DXMatrixMultiply(&pComputer->aModel[nCntModel].mtxWorld,
-					&pComputer->aModel[nCntModel].mtxWorld,
+				D3DXMatrixMultiply(&g_aComputer[nCntComputer].aModel[nCntModel].mtxWorld,
+					&g_aComputer[nCntComputer].aModel[nCntModel].mtxWorld,
 					&mtxParent);
 
 				// パーツのワールドマトリックスを設定
-				pDevice->SetTransform(D3DTS_WORLD, &pComputer->aModel[nCntModel].mtxWorld);
+				pDevice->SetTransform(D3DTS_WORLD, &g_aComputer[nCntComputer].aModel[nCntModel].mtxWorld);
 
 				// マテリアルデータへのポインタを取得
 				pMat = (D3DXMATERIAL*)g_ComputerModel[nCntModel].pBuffMat->GetBufferPointer();
@@ -867,26 +862,26 @@ void DrawComputer(void)
 
 			for (int nCntTent = 0; nCntTent < CPU_TENTACLE; nCntTent++)
 			{
-				int nIdx = pComputer->nOrbitIdx[nCntTent];
+				int nIdx = g_aComputer[nCntComputer].nOrbitIdx[nCntTent];
 
 				if (nIdx == -1)
 				{// 初回
-					nIdx = SetMeshOrbit(D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
-						D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
-						D3DXCOLOR(0.0f, 0.0f, 1.0f, 0.5f), D3DXCOLOR(0.0f, 1.0f, 1.0f, 0.5f), &pComputer->aModel[(nCntTent + 1) * 4].mtxWorld);
+					nIdx = SetMeshOrbit(D3DXVECTOR3(g_aComputer[nCntComputer].aModel[(nCntTent + 1) * 4].posOff.x, g_aComputer[nCntComputer].aModel[(nCntTent + 1) * 4].posOff.y, g_aComputer[nCntComputer].aModel[(nCntTent + 1) * 4].posOff.z),
+						D3DXVECTOR3(g_aComputer[nCntComputer].aModel[(nCntTent + 1) * 4].posOff.x, g_aComputer[nCntComputer].aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, g_aComputer[nCntComputer].aModel[(nCntTent + 1) * 4].posOff.z),
+						D3DXCOLOR(0.0f, 0.0f, 1.0f, 0.5f), D3DXCOLOR(0.0f, 1.0f, 1.0f, 0.5f), &g_aComputer[nCntComputer].aModel[(nCntTent + 1) * 4].mtxWorld);
 
 					if (nIdx < 0)
 					{// 範囲外
-						pComputer->nOrbitIdx[nCntTent] = -1;
+						g_aComputer[nCntComputer].nOrbitIdx[nCntTent] = -1;
 						continue;
 					}
 
-					pComputer->nOrbitIdx[nCntTent] = nIdx;
+					g_aComputer[nCntComputer].nOrbitIdx[nCntTent] = nIdx;
 				}
 
-				SetMeshOrbitPos(pComputer->nOrbitIdx[nCntTent], D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
-					D3DXVECTOR3(pComputer->aModel[(nCntTent + 1) * 4].posOff.x, pComputer->aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, pComputer->aModel[(nCntTent + 1) * 4].posOff.z),
-					D3DXCOLOR(0.0f, 0.0f, 1.0f, 0.5f), D3DXCOLOR(0.0f, 1.0f, 1.0f, 0.5f), &pComputer->aModel[(nCntTent + 1) * 4].mtxWorld);
+				SetMeshOrbitPos(g_aComputer[nCntComputer].nOrbitIdx[nCntTent], D3DXVECTOR3(g_aComputer[nCntComputer].aModel[(nCntTent + 1) * 4].posOff.x, g_aComputer[nCntComputer].aModel[(nCntTent + 1) * 4].posOff.y, g_aComputer[nCntComputer].aModel[(nCntTent + 1) * 4].posOff.z),
+					D3DXVECTOR3(g_aComputer[nCntComputer].aModel[(nCntTent + 1) * 4].posOff.x, g_aComputer[nCntComputer].aModel[(nCntTent + 1) * 4].posOff.y + 5.5f, g_aComputer[nCntComputer].aModel[(nCntTent + 1) * 4].posOff.z),
+					D3DXCOLOR(0.0f, 0.0f, 1.0f, 0.5f), D3DXCOLOR(0.0f, 1.0f, 1.0f, 0.5f), &g_aComputer[nCntComputer].aModel[(nCntTent + 1) * 4].mtxWorld);
 			}
 		}
 	}

@@ -331,42 +331,48 @@ void SetMeshRing(MESHRINGTYPE type, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR
 
 			nNumIdx = (((int)g_aMeshRing[nCntMeshRing].block.x + 1) * ((int)g_aMeshRing[nCntMeshRing].block.y + 1));
 
+			if (g_aMeshRing[nCntMeshRing].pVtxBuff == NULL)
+			{// NULLだったら作る
 				// 頂点バッファの生成
-			pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * nNumIdx,
-										D3DUSAGE_WRITEONLY,
-										FVF_VERTEX_3D,
-										D3DPOOL_MANAGED,
-										&g_aMeshRing[nCntMeshRing].pVtxBuff,
-										NULL);
+				pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * nNumIdx,
+					D3DUSAGE_WRITEONLY,
+					FVF_VERTEX_3D,
+					D3DPOOL_MANAGED,
+					&g_aMeshRing[nCntMeshRing].pVtxBuff,
+					NULL);
 
-			// 頂点の設定
-			SetVtxMeshRing(nCntMeshRing);
+				// 頂点の設定
+				SetVtxMeshRing(nCntMeshRing);
+			}
 
 			// インデックスバッファの数
 			nNumIdx = (((int)g_aMeshRing[nCntMeshRing].block.x) * ((int)g_aMeshRing[nCntMeshRing].block.y) * 2) + (((int)g_aMeshRing[nCntMeshRing].block.y - 1) * 4) + 2;
 
+			if (g_aMeshRing[nCntMeshRing].pIdxBuff == NULL)
+			{// NULLだったら作る
 			// インデックスバッファの生成
-			pDevice->CreateIndexBuffer(sizeof(WORD) * nNumIdx,
-									   D3DUSAGE_WRITEONLY,
-									   D3DFMT_INDEX16,
-									   D3DPOOL_MANAGED,
-									   &g_aMeshRing[nCntMeshRing].pIdxBuff,
-									   NULL);
+				pDevice->CreateIndexBuffer(sizeof(WORD) * nNumIdx,
+					D3DUSAGE_WRITEONLY,
+					D3DFMT_INDEX16,
+					D3DPOOL_MANAGED,
+					&g_aMeshRing[nCntMeshRing].pIdxBuff,
+					NULL);
 
-			// インデックスバッファをロックし、頂点番号データへのポインタを取得
-			g_aMeshRing[nCntMeshRing].pIdxBuff->Lock(0, 0, (void**)&pIdx, 0);
+				// インデックスバッファをロックし、頂点番号データへのポインタを取得
+				g_aMeshRing[nCntMeshRing].pIdxBuff->Lock(0, 0, (void**)&pIdx, 0);
 
-			//int nNum = 0;			// 縮退ポリゴン
+				//int nNum = 0;			// 縮退ポリゴン
 
-			// 頂点番号データの設定
-			for (int nCntMeshRing1 = 0; nCntMeshRing1 < nNumIdx; nCntMeshRing1++)
-			{
-				pIdx[0] = (WORD)nCntMeshRing1;
-				pIdx++;
+				// 頂点番号データの設定
+				for (int nCntMeshRing1 = 0; nCntMeshRing1 < nNumIdx; nCntMeshRing1++)
+				{
+					pIdx[0] = (WORD)nCntMeshRing1;
+					pIdx++;
+				}
+
+				// インデックスバッファをアンロックする
+				g_aMeshRing[nCntMeshRing].pIdxBuff->Unlock();
 			}
-
-			// インデックスバッファをアンロックする
-			g_aMeshRing[nCntMeshRing].pIdxBuff->Unlock();
 
 			break;
 		}

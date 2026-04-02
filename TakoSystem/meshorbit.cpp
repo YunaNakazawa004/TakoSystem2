@@ -44,24 +44,22 @@ void InitMeshOrbit(void)
 	// メッシュオービット情報の初期化
 	for (int nCntMeshOrbit = 0; nCntMeshOrbit < MAX_MESHORBIT; nCntMeshOrbit++)
 	{
-		MeshOrbit* pMeshOrbit = &g_aMeshOrbit[nCntMeshOrbit];
-
-		pMeshOrbit->pVtxBuff = NULL;
-		pMeshOrbit->pIdxBuff = NULL;
-		pMeshOrbit->aOffset[0] = FIRST_POS;
-		pMeshOrbit->aOffset[1] = FIRST_POS;
-		pMeshOrbit->aCol[0] = WHITE_VTX;
-		pMeshOrbit->aCol[1] = WHITE_VTX;
+		g_aMeshOrbit[nCntMeshOrbit].pVtxBuff = NULL;
+		g_aMeshOrbit[nCntMeshOrbit].pIdxBuff = NULL;
+		g_aMeshOrbit[nCntMeshOrbit].aOffset[0] = FIRST_POS;
+		g_aMeshOrbit[nCntMeshOrbit].aOffset[1] = FIRST_POS;
+		g_aMeshOrbit[nCntMeshOrbit].aCol[0] = WHITE_VTX;
+		g_aMeshOrbit[nCntMeshOrbit].aCol[1] = WHITE_VTX;
 
 		for (int nCntPoint = 0; nCntPoint < MAX_ORBIT_VTX; nCntPoint += 2)
 		{
-			pMeshOrbit->aPosPoint[nCntPoint] = pMeshOrbit->aOffset[0];
-			pMeshOrbit->aPosPoint[nCntPoint + 1] = pMeshOrbit->aOffset[1];
-			pMeshOrbit->aColPoint[nCntPoint] = pMeshOrbit->aCol[0];
-			pMeshOrbit->aColPoint[nCntPoint + 1] = pMeshOrbit->aCol[1];
+			g_aMeshOrbit[nCntMeshOrbit].aPosPoint[nCntPoint] = g_aMeshOrbit[nCntMeshOrbit].aOffset[0];
+			g_aMeshOrbit[nCntMeshOrbit].aPosPoint[nCntPoint + 1] = g_aMeshOrbit[nCntMeshOrbit].aOffset[1];
+			g_aMeshOrbit[nCntMeshOrbit].aColPoint[nCntPoint] = g_aMeshOrbit[nCntMeshOrbit].aCol[0];
+			g_aMeshOrbit[nCntMeshOrbit].aColPoint[nCntPoint + 1] = g_aMeshOrbit[nCntMeshOrbit].aCol[1];
 		}
 
-		pMeshOrbit->bUse = false;
+		g_aMeshOrbit[nCntMeshOrbit].bUse = false;
 
 		VERTEX_3D* pVtx;					// 頂点情報へのポインタ
 		WORD* pIdx;							// インデックス情報へのポインタ
@@ -71,17 +69,17 @@ void InitMeshOrbit(void)
 			D3DUSAGE_WRITEONLY,
 			FVF_VERTEX_3D,
 			D3DPOOL_MANAGED,
-			&pMeshOrbit->pVtxBuff,
+			&g_aMeshOrbit[nCntMeshOrbit].pVtxBuff,
 			NULL);
 
 		// 頂点バッファをロックし、頂点情報へのポインタを取得
-		pMeshOrbit->pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+		g_aMeshOrbit[nCntMeshOrbit].pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 		// 頂点情報の設定
 		for (int nCntPoint = 0; nCntPoint < MAX_ORBIT_VTX; nCntPoint++)
 		{
 			// 頂点座標の設定
-			pVtx[0].pos = pMeshOrbit->aPosPoint[nCntPoint];
+			pVtx[0].pos = g_aMeshOrbit[nCntMeshOrbit].aPosPoint[nCntPoint];
 
 			// rhwの設定
 			pVtx[0].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
@@ -96,17 +94,17 @@ void InitMeshOrbit(void)
 		}
 
 		// 頂点バッファをアンロックする
-		pMeshOrbit->pVtxBuff->Unlock();
+		g_aMeshOrbit[nCntMeshOrbit].pVtxBuff->Unlock();
 
 		// インデックスバッファの生成
 		pDevice->CreateIndexBuffer(sizeof(WORD) * MAX_ORBIT_VTX,
 			D3DUSAGE_WRITEONLY,
 			D3DFMT_INDEX16,
 			D3DPOOL_MANAGED,
-			&pMeshOrbit->pIdxBuff,
+			&g_aMeshOrbit[nCntMeshOrbit].pIdxBuff,
 			NULL);
 
-		pMeshOrbit->pIdxBuff->Lock(0, 0, (void**)&pIdx, 0);
+		g_aMeshOrbit[nCntMeshOrbit].pIdxBuff->Lock(0, 0, (void**)&pIdx, 0);
 
 		for (int nCntPoint = 0; nCntPoint < MAX_ORBIT_VTX; nCntPoint++)
 		{
@@ -115,7 +113,7 @@ void InitMeshOrbit(void)
 			pIdx++;
 		}
 
-		pMeshOrbit->pIdxBuff->Unlock();
+		g_aMeshOrbit[nCntMeshOrbit].pIdxBuff->Unlock();
 	}
 }
 
@@ -164,31 +162,31 @@ void UpdateMeshOrbit(void)
 	{
 		MeshOrbit* pMeshOrbit = &g_aMeshOrbit[nCntMeshOrbit];
 
-		if (pMeshOrbit->bUse == true)
+		if (g_aMeshOrbit[nCntMeshOrbit].bUse == true)
 		{// 使用しているとき
 			VERTEX_3D* pVtx;					// 頂点情報へのポインタ
 
 			// 頂点バッファをロックし、頂点情報へのポインタを取得
-			pMeshOrbit->pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+			g_aMeshOrbit[nCntMeshOrbit].pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 			// 頂点情報の設定
 			for (int nCntPoint = 0; nCntPoint < MAX_ORBIT_VTX; nCntPoint++)
 			{
-				pMeshOrbit->aColPoint[nCntPoint].a -= ALPHA_MINUS;
+				g_aMeshOrbit[nCntMeshOrbit].aColPoint[nCntPoint].a -= ALPHA_MINUS;
 
-				if (pMeshOrbit->aColPoint[nCntPoint].a < 0.0f)
+				if (g_aMeshOrbit[nCntMeshOrbit].aColPoint[nCntPoint].a < 0.0f)
 				{// 最低値
-					pMeshOrbit->aColPoint[nCntPoint].a = 0.0f;
+					g_aMeshOrbit[nCntMeshOrbit].aColPoint[nCntPoint].a = 0.0f;
 				}
 
 				// 頂点カラーの設定
-				pVtx[0].col = pMeshOrbit->aColPoint[nCntPoint];
+				pVtx[0].col = g_aMeshOrbit[nCntMeshOrbit].aColPoint[nCntPoint];
 
 				pVtx++;
 			}
 
 			// 頂点バッファをアンロックする
-			pMeshOrbit->pVtxBuff->Unlock();
+			g_aMeshOrbit[nCntMeshOrbit].pVtxBuff->Unlock();
 		}
 	}
 #endif 
@@ -201,9 +199,8 @@ void DrawMeshOrbit(void)
 {
 	// ローカル変数宣言
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();			// デバイスへのポインタ
-	MeshOrbit* pMeshOrbit = GetMeshOrbit();
 
-	for (int nCntMeshOrbit = 0; nCntMeshOrbit < MAX_MESHORBIT; nCntMeshOrbit++, pMeshOrbit++)
+	for (int nCntMeshOrbit = 0; nCntMeshOrbit < MAX_MESHORBIT; nCntMeshOrbit++)
 	{
 		// アルファテストを有効にする
 		pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
@@ -220,65 +217,65 @@ void DrawMeshOrbit(void)
 		pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
 		pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
-		if (pMeshOrbit->bUse == true)
+		if (g_aMeshOrbit[nCntMeshOrbit].bUse == true)
 		{// 使用しているとき
 			// 保存してある頂点座標と頂点カラーをずらす
 			for (int nCntPoint = MAX_ORBIT_VTX - 1; nCntPoint >= 3; nCntPoint -= 2)
 			{
-				pMeshOrbit->aPosPoint[nCntPoint] = pMeshOrbit->aPosPoint[nCntPoint - 2];
-				pMeshOrbit->aPosPoint[nCntPoint - 1] = pMeshOrbit->aPosPoint[nCntPoint - 3];
-				pMeshOrbit->aColPoint[nCntPoint] = pMeshOrbit->aColPoint[nCntPoint - 2];
-				pMeshOrbit->aColPoint[nCntPoint - 1] = pMeshOrbit->aColPoint[nCntPoint - 3];
+				g_aMeshOrbit[nCntMeshOrbit].aPosPoint[nCntPoint] = g_aMeshOrbit[nCntMeshOrbit].aPosPoint[nCntPoint - 2];
+				g_aMeshOrbit[nCntMeshOrbit].aPosPoint[nCntPoint - 1] = g_aMeshOrbit[nCntMeshOrbit].aPosPoint[nCntPoint - 3];
+				g_aMeshOrbit[nCntMeshOrbit].aColPoint[nCntPoint] = g_aMeshOrbit[nCntMeshOrbit].aColPoint[nCntPoint - 2];
+				g_aMeshOrbit[nCntMeshOrbit].aColPoint[nCntPoint - 1] = g_aMeshOrbit[nCntMeshOrbit].aColPoint[nCntPoint - 3];
 			}
 
-			D3DXMATRIX mtxParent = pMeshOrbit->pMtxParent;
+			D3DXMATRIX mtxParent = g_aMeshOrbit[nCntMeshOrbit].pMtxParent;
 
 			// 親のマトリックスにオフセットを掛けて新しい位置を算出
-			D3DXVec3TransformCoord(&pMeshOrbit->aPosPoint[0], &pMeshOrbit->aOffset[0], &mtxParent);
-			D3DXVec3TransformCoord(&pMeshOrbit->aPosPoint[1], &pMeshOrbit->aOffset[1], &mtxParent);
+			D3DXVec3TransformCoord(&g_aMeshOrbit[nCntMeshOrbit].aPosPoint[0], &g_aMeshOrbit[nCntMeshOrbit].aOffset[0], &mtxParent);
+			D3DXVec3TransformCoord(&g_aMeshOrbit[nCntMeshOrbit].aPosPoint[1], &g_aMeshOrbit[nCntMeshOrbit].aOffset[1], &mtxParent);
 
 			// 色の初期値を設定
-			pMeshOrbit->aColPoint[0] = pMeshOrbit->aCol[0];
-			pMeshOrbit->aColPoint[1] = pMeshOrbit->aCol[1];
+			g_aMeshOrbit[nCntMeshOrbit].aColPoint[0] = g_aMeshOrbit[nCntMeshOrbit].aCol[0];
+			g_aMeshOrbit[nCntMeshOrbit].aColPoint[1] = g_aMeshOrbit[nCntMeshOrbit].aCol[1];
 
 			VERTEX_3D* pVtx;					// 頂点情報へのポインタ
 
 			// 頂点バッファをロックし、頂点情報へのポインタを取得
-			pMeshOrbit->pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+			g_aMeshOrbit[nCntMeshOrbit].pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 			// 頂点情報の設定
 			for (int nCntPoint = 0; nCntPoint < MAX_ORBIT_VTX; nCntPoint++)
 			{
 				// 頂点座標の設定
-				pVtx[0].pos = pMeshOrbit->aPosPoint[nCntPoint];
+				pVtx[0].pos = g_aMeshOrbit[nCntMeshOrbit].aPosPoint[nCntPoint];
 
-				pMeshOrbit->aColPoint[nCntPoint].a -= ALPHA_MINUS;
+				g_aMeshOrbit[nCntMeshOrbit].aColPoint[nCntPoint].a -= ALPHA_MINUS;
 
-				if (pMeshOrbit->aColPoint[nCntPoint].a < 0.0f)
+				if (g_aMeshOrbit[nCntMeshOrbit].aColPoint[nCntPoint].a < 0.0f)
 				{// 最低値
-					pMeshOrbit->aColPoint[nCntPoint].a = 0.0f;
+					g_aMeshOrbit[nCntMeshOrbit].aColPoint[nCntPoint].a = 0.0f;
 				}
 
 				// 頂点カラーの設定
-				pVtx[0].col = pMeshOrbit->aColPoint[nCntPoint];
+				pVtx[0].col = g_aMeshOrbit[nCntMeshOrbit].aColPoint[nCntPoint];
 
 				pVtx++;
 			}
 
 			// 頂点バッファをアンロックする
-			pMeshOrbit->pVtxBuff->Unlock();
+			g_aMeshOrbit[nCntMeshOrbit].pVtxBuff->Unlock();
 
 			// ワールドマトリックスの初期化
-			D3DXMatrixIdentity(&pMeshOrbit->mtxWorld);
+			D3DXMatrixIdentity(&g_aMeshOrbit[nCntMeshOrbit].mtxWorld);
 
 			// ワールドマトリックスの設定
-			pDevice->SetTransform(D3DTS_WORLD, &pMeshOrbit->mtxWorld);
+			pDevice->SetTransform(D3DTS_WORLD, &g_aMeshOrbit[nCntMeshOrbit].mtxWorld);
 
 			// 頂点バッファをデータストリームに設定
-			pDevice->SetStreamSource(0, pMeshOrbit->pVtxBuff, 0, sizeof(VERTEX_3D));
+			pDevice->SetStreamSource(0, g_aMeshOrbit[nCntMeshOrbit].pVtxBuff, 0, sizeof(VERTEX_3D));
 
 			// インデックスバッファをデータストリームに設定
-			pDevice->SetIndices(pMeshOrbit->pIdxBuff);
+			pDevice->SetIndices(g_aMeshOrbit[nCntMeshOrbit].pIdxBuff);
 
 			// 頂点フォーマットの設定
 			pDevice->SetFVF(FVF_VERTEX_3D);
@@ -318,18 +315,16 @@ void SetMeshOrbitPos(int nIdx, D3DXVECTOR3 Offset0, D3DXVECTOR3 Offset1, D3DXCOL
 		return;
 	}
 
-	MeshOrbit* pMeshOrbit = &g_aMeshOrbit[nIdx];
-
-	if (pMeshOrbit->bUse == false)
+	if (g_aMeshOrbit[nIdx].bUse == false)
 	{// 使ってなかったら無視
 		return;
 	}
 
-	pMeshOrbit->aOffset[0] = Offset0;
-	pMeshOrbit->aOffset[1] = Offset1;
-	pMeshOrbit->aCol[0] = col0;
-	pMeshOrbit->aCol[1] = col1;
-	pMeshOrbit->pMtxParent = *pMtxParent;
+	g_aMeshOrbit[nIdx].aOffset[0] = Offset0;
+	g_aMeshOrbit[nIdx].aOffset[1] = Offset1;
+	g_aMeshOrbit[nIdx].aCol[0] = col0;
+	g_aMeshOrbit[nIdx].aCol[1] = col1;
+	g_aMeshOrbit[nIdx].pMtxParent = *pMtxParent;
 }
 
 //=============================================================================
@@ -343,39 +338,39 @@ int SetMeshOrbit(D3DXVECTOR3 Offset0, D3DXVECTOR3 Offset1, D3DXCOLOR col0, D3DXC
 	{
 		MeshOrbit* pMeshOrbit = &g_aMeshOrbit[nCntMeshOrbit];
 
-		if (pMeshOrbit->bUse == false)
+		if (g_aMeshOrbit[nCntMeshOrbit].bUse == false)
 		{// 使用していない
-			pMeshOrbit->bUse = true;
-			pMeshOrbit->aOffset[0] = Offset0;
-			pMeshOrbit->aOffset[1] = Offset1;
-			pMeshOrbit->aCol[0] = col0;
-			pMeshOrbit->aCol[1] = col1;
-			pMeshOrbit->pMtxParent = *pMtxParent;
+			g_aMeshOrbit[nCntMeshOrbit].bUse = true;
+			g_aMeshOrbit[nCntMeshOrbit].aOffset[0] = Offset0;
+			g_aMeshOrbit[nCntMeshOrbit].aOffset[1] = Offset1;
+			g_aMeshOrbit[nCntMeshOrbit].aCol[0] = col0;
+			g_aMeshOrbit[nCntMeshOrbit].aCol[1] = col1;
+			g_aMeshOrbit[nCntMeshOrbit].pMtxParent = *pMtxParent;
 
-			D3DXMATRIX mtxParent = pMeshOrbit->pMtxParent;
+			D3DXMATRIX mtxParent = g_aMeshOrbit[nCntMeshOrbit].pMtxParent;
 
 			for (int nCntPoint = 0; nCntPoint < MAX_ORBIT_VTX; nCntPoint += 2)
 			{
-				D3DXVec3TransformCoord(&pMeshOrbit->aPosPoint[nCntPoint], &pMeshOrbit->aOffset[0], &mtxParent);
-				D3DXVec3TransformCoord(&pMeshOrbit->aPosPoint[nCntPoint + 1], &pMeshOrbit->aOffset[1], &mtxParent);
+				D3DXVec3TransformCoord(&g_aMeshOrbit[nCntMeshOrbit].aPosPoint[nCntPoint], &g_aMeshOrbit[nCntMeshOrbit].aOffset[0], &mtxParent);
+				D3DXVec3TransformCoord(&g_aMeshOrbit[nCntMeshOrbit].aPosPoint[nCntPoint + 1], &g_aMeshOrbit[nCntMeshOrbit].aOffset[1], &mtxParent);
 			}
 
 			//VERTEX_3D* pVtx;					// 頂点情報へのポインタ
 
 			//// 頂点バッファをロックし、頂点情報へのポインタを取得
-			//pMeshOrbit->pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+			//g_aMeshOrbit[nCntMeshOrbit].pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 			//// 頂点情報の設定
 			//for (int nCntPoint = 0; nCntPoint < MAX_ORBIT_VTX; nCntPoint++)
 			//{
 			//	// 頂点座標の設定
-			//	pVtx[0].pos = pMeshOrbit->aPosPoint[nCntPoint];
+			//	pVtx[0].pos = g_aMeshOrbit[nCntMeshOrbit].aPosPoint[nCntPoint];
 
 			//	pVtx++;
 			//}
 
 			//// 頂点バッファをアンロックする
-			//pMeshOrbit->pVtxBuff->Unlock();
+			//g_aMeshOrbit[nCntMeshOrbit].pVtxBuff->Unlock();
 
 			return nCntMeshOrbit;
 		}

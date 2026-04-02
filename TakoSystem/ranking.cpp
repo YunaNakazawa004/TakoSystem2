@@ -92,7 +92,7 @@ void InitRanking(void)
 {
 	// ローカル変数宣言 -----------------
 
-	//int nCntObj2D = 0, nCntObj3D = 0;
+	int nCntObj2D = 0, nCntObj3D = 0;
 	VERTEX_2D* pVtx2D;							// 頂点情報へのポインタ
 	VERTEX_3D* pVtx3D;							// 頂点情報へのポインタ
 	LPDIRECT3DDEVICE9 pDevice = GetDevice();	// デバイスへのポインタ
@@ -139,8 +139,6 @@ void InitRanking(void)
 	// モデルの初期化処理
 	InitFishes();
 
-	// 3Dパーティクルの初期化処理
-	InitParticle3D();
 
 	// 紙吹雪の初期化処理
 	InitConfetti();
@@ -440,22 +438,16 @@ void InitRanking(void)
 //=======================================
 void UninitRanking(void)
 {
-	// サウンドの停止
-	StopSound();
-
-	// ステージの終了処理
-	//UninitStage();
 
 	// モデルの終了処理
 	UninitFishes();
 
-	// 3Dパーティクルの終了処理
-	UninitParticle3D();
 
 	// 紙吹雪の終了処理
 	UninitConfetti();
 
-	// サウンドの終了処理
+
+	// サウンドの停止
 	StopSound();
 
 	// テクスチャの破棄
@@ -526,11 +518,6 @@ void UpdateRanking(void)
 	// モデルの更新処理
 	UpdateFishes();
 
-	// 3Dエフェクトの更新処理
-	UpdateEffect3D();
-
-	// 3Dパーティクルの更新処理
-	UpdateParticle3D();
 
 	// 紙吹雪の更新処理
 	UpdateConfetti();
@@ -785,6 +772,7 @@ void UpdateRanking(void)
 		{// 決定キー（ENTERキー）が押された
 
 			SetFade(MODE_LOGO);
+			return;
 		}
 
 #ifdef ENABLE_ONELAP
@@ -792,6 +780,7 @@ void UpdateRanking(void)
 		{// フェード終了
 
 			SetFade(MODE_LOGO);
+			return;
 		}
 #endif
 	}
@@ -936,12 +925,6 @@ void DrawRanking(void)
 	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);		// ( , 比較方法(すべて))
 	pDevice->SetRenderState(D3DRS_ALPHAREF, 0);						// ( , 基準値)
 
-	// 3Dエフェクトの描画処理
-	DrawEffect3D();
-
-	// 3Dパーティクルの描画処理
-	DrawParticle3D();
-
 	// 紙吹雪の描画処理
 	DrawConfetti();
 
@@ -966,9 +949,7 @@ bool SetRankingObj(D3DXVECTOR3 pos,		// 位置
 	//VERTEX_2D* pVtx2D;							// 頂点情報へのポインタ
 	//VERTEX_3D* pVtx3D;							// 頂点情報へのポインタ
 	//LPDIRECT3DDEVICE9 pDevice = GetDevice();	// デバイスへのポインタ
-	//Fishes* pFishes = GetFishes();
-
-	for (int nCntRank = 0; nCntRank < MAX_RANKINGOBJ; nCntRank++)
+	//Fishes* pFishes = GetFishes();	for (int nCntRank = 0; nCntRank < MAX_RANKINGOBJ; nCntRank++)
 	{
 		if (!g_aRankOBJ[nCntRank].bUse)
 		{ // 使用されていない

@@ -462,6 +462,7 @@ void UpdateResult(void)
 
 		// モード設定
 		SetFade(MODE_RANKING);
+		return;
 	}
 
 #if 0
@@ -770,6 +771,7 @@ void UpdateResult(void)
 		
 		// モード設定
 		SetFade(MODE_RANKING);
+		return;
 	}
 #endif
 }
