@@ -561,10 +561,10 @@ void Draw(void)
 			
 			// フェードの描画処理
 			DrawFade();
-		}
 
-		// デバッグ表示の描画処理
-		DrawDebugProc();
+			// デバッグ表示の描画処理
+			DrawDebugProc();
+		}
 
 		// ビューポートを元に戻す
 		g_pD3DDevice->SetViewport(&viewportDef);
